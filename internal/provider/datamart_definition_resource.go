@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"terraform-provider-trocco/internal/client"
+
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"terraform-provider-trocco/internal/client"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
 func NewDatamartDefinitionResource() resource.Resource {
@@ -19,17 +21,21 @@ type datamartDefinitionResource struct {
 }
 
 type datamartDefinitionModel struct {
-	ID                     types.Int64  `tfsdk:"id"`
-	Name                   types.String `tfsdk:"name"`
-	DataWarehouseType      types.String `tfsdk:"data_warehouse_type"`
-	IsRunnableConcurrently types.Bool   `tfsdk:"is_runnable_concurrently"`
-	// TODO: nest & optional & other values
-	BiqueryConnectionID types.Int64  `tfsdk:"bigquery_connection_id"`
-	QueryMode           types.String `tfsdk:"query_mode"`
-	Query               types.String `tfsdk:"query"`
-	DestinationDataset  types.String `tfsdk:"destination_dataset"`
-	DestinationTable    types.String `tfsdk:"destination_table"`
-	WriteDisposition    types.String `tfsdk:"write_disposition"`
+	ID                     types.Int64             `tfsdk:"id"`
+	Name                   types.String            `tfsdk:"name"`
+	Description            types.String            `tfsdk:"description"`
+	DataWarehouseType      types.String            `tfsdk:"data_warehouse_type"`
+	IsRunnableConcurrently types.Bool              `tfsdk:"is_runnable_concurrently"`
+	DatamartBigqueryOption *datamartBigqueryOption `tfsdk:"datamart_bigquery_option"`
+}
+type datamartBigqueryOption struct {
+	BigqueryConnectionID types.Int64  `tfsdk:"bigquery_connection_id"`
+	QueryMode            types.String `tfsdk:"query_mode"`
+	Query                types.String `tfsdk:"query"`
+	DestinationDataset   types.String `tfsdk:"destination_dataset"`
+	DestinationTable     types.String `tfsdk:"destination_table"`
+	WriteDisposition     types.String `tfsdk:"write_disposition"`
+	Location             types.String `tfsdk:"location"`
 }
 
 func (r *datamartDefinitionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -63,29 +69,40 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 			"name": schema.StringAttribute{
 				Required: true,
 			},
+			"description": schema.StringAttribute{
+				Optional: true,
+			},
 			"data_warehouse_type": schema.StringAttribute{
 				Required: true,
 			},
 			"is_runnable_concurrently": schema.BoolAttribute{
 				Required: true,
 			},
-			"bigquery_connection_id": schema.Int64Attribute{
-				Required: true,
-			},
-			"query_mode": schema.StringAttribute{
-				Required: true,
-			},
-			"query": schema.StringAttribute{
-				Required: true,
-			},
-			"destination_dataset": schema.StringAttribute{
-				Required: true,
-			},
-			"destination_table": schema.StringAttribute{
-				Required: true,
-			},
-			"write_disposition": schema.StringAttribute{
-				Required: true,
+			"datamart_bigquery_option": schema.SingleNestedAttribute{
+				Optional: true,
+				Attributes: map[string]schema.Attribute{
+					"bigquery_connection_id": schema.Int64Attribute{
+						Required: true,
+					},
+					"query_mode": schema.StringAttribute{
+						Required: true,
+					},
+					"query": schema.StringAttribute{
+						Required: true,
+					},
+					"destination_dataset": schema.StringAttribute{
+						Optional: true,
+					},
+					"destination_table": schema.StringAttribute{
+						Optional: true,
+					},
+					"write_disposition": schema.StringAttribute{
+						Optional: true,
+					},
+					"location": schema.StringAttribute{
+						Optional: true,
+					},
+				},
 			},
 		},
 	}
@@ -99,20 +116,38 @@ func (r *datamartDefinitionResource) Create(ctx context.Context, req resource.Cr
 		return
 	}
 
-	destiantionDataset := plan.DestinationDataset.ValueString()
-	destiantionTable := plan.DestinationTable.ValueString()
-	writeDisposition := plan.WriteDisposition.ValueString()
+	var description *string
+	var destinationDataset *string
+	var destinationTable *string
+	var writeDisposition *string
+	var location *string
+	if plan.DatamartBigqueryOption.QueryMode.ValueString() == "insert" {
+		descriptionValue := plan.Description.ValueString()
+		description = &descriptionValue
+		destiantionDatasetValue := plan.DatamartBigqueryOption.DestinationDataset.ValueString()
+		destinationDataset = &destiantionDatasetValue
+		destiantionTableValue := plan.DatamartBigqueryOption.DestinationTable.ValueString()
+		destinationTable = &destiantionTableValue
+		writeDispositionValue := plan.DatamartBigqueryOption.WriteDisposition.ValueString()
+		writeDisposition = &writeDispositionValue
+	}
+	if plan.DatamartBigqueryOption.QueryMode.ValueString() == "query" {
+		locationValue := plan.DatamartBigqueryOption.Location.ValueString()
+		location = &locationValue
+	}
 	res, err := r.client.CreateDatamartDefinition(&client.CreateDatamartDefinitionsInput{
 		Name:                   plan.Name.ValueString(),
+		Description:            description,
 		DataWarehouseType:      plan.DataWarehouseType.ValueString(),
 		IsRunnableConcurrently: plan.IsRunnableConcurrently.ValueBool(),
 		DatamartBigqueryOption: client.CreateDatamartBigqueryOption{
-			BigqueryConnectionID: plan.BiqueryConnectionID.ValueInt64(),
-			QueryMode:            plan.QueryMode.ValueString(),
-			Query:                plan.Query.ValueString(),
-			DestinationDataset:   &destiantionDataset,
-			DestinationTable:     &destiantionTable,
-			WriteDisposition:     &writeDisposition,
+			BigqueryConnectionID: plan.DatamartBigqueryOption.BigqueryConnectionID.ValueInt64(),
+			QueryMode:            plan.DatamartBigqueryOption.QueryMode.ValueString(),
+			Query:                plan.DatamartBigqueryOption.Query.ValueString(),
+			DestinationDataset:   destinationDataset,
+			DestinationTable:     destinationTable,
+			WriteDisposition:     writeDisposition,
+			Location:             location,
 		},
 	})
 	if err != nil {
@@ -123,25 +158,13 @@ func (r *datamartDefinitionResource) Create(ctx context.Context, req resource.Cr
 		return
 	}
 
-	datamartDefinition, err := r.client.GetDatamartDefinition(res.ID)
+	plan, err = r.fetchModel(res.ID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"failed to get datamart definition",
 			fmt.Sprintf("failed to get datamart definition: %v", err),
 		)
 		return
-	}
-	plan = datamartDefinitionModel{
-		ID:                     types.Int64Value(datamartDefinition.ID),
-		Name:                   types.StringValue(datamartDefinition.Name),
-		DataWarehouseType:      types.StringValue(datamartDefinition.DataWarehouseType),
-		IsRunnableConcurrently: types.BoolValue(datamartDefinition.IsRunnableConcurrently),
-		BiqueryConnectionID:    types.Int64Value(datamartDefinition.DatamartBigqueryOption.BigqueryConnectionID),
-		QueryMode:              types.StringValue(datamartDefinition.DatamartBigqueryOption.QueryMode),
-		Query:                  types.StringValue(datamartDefinition.DatamartBigqueryOption.Query),
-		DestinationDataset:     types.StringValue(datamartDefinition.DatamartBigqueryOption.DestinationDataset),
-		DestinationTable:       types.StringValue(datamartDefinition.DatamartBigqueryOption.DestinationTable),
-		WriteDisposition:       types.StringValue(datamartDefinition.DatamartBigqueryOption.WriteDisposition),
 	}
 
 	diags = resp.State.Set(ctx, &plan)
@@ -160,25 +183,13 @@ func (r *datamartDefinitionResource) Read(ctx context.Context, req resource.Read
 	}
 
 	id := state.ID.ValueInt64()
-	datamartDefinition, err := r.client.GetDatamartDefinition(id)
+	state, err := r.fetchModel(id)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"failed to get datamart definition",
 			fmt.Sprintf("failed to get datamart definition: %v", err),
 		)
 		return
-	}
-	state = datamartDefinitionModel{
-		ID:                     types.Int64Value(datamartDefinition.ID),
-		Name:                   types.StringValue(datamartDefinition.Name),
-		DataWarehouseType:      types.StringValue(datamartDefinition.DataWarehouseType),
-		IsRunnableConcurrently: types.BoolValue(datamartDefinition.IsRunnableConcurrently),
-		BiqueryConnectionID:    types.Int64Value(datamartDefinition.DatamartBigqueryOption.BigqueryConnectionID),
-		QueryMode:              types.StringValue(datamartDefinition.DatamartBigqueryOption.QueryMode),
-		Query:                  types.StringValue(datamartDefinition.DatamartBigqueryOption.Query),
-		DestinationDataset:     types.StringValue(datamartDefinition.DatamartBigqueryOption.DestinationDataset),
-		DestinationTable:       types.StringValue(datamartDefinition.DatamartBigqueryOption.DestinationTable),
-		WriteDisposition:       types.StringValue(datamartDefinition.DatamartBigqueryOption.WriteDisposition),
 	}
 
 	diags = resp.State.Set(ctx, &state)
@@ -215,24 +226,57 @@ func (r *datamartDefinitionResource) Update(ctx context.Context, req resource.Up
 		return
 	}
 
-	updateName := plan.Name.ValueString()
-	updateIsRunnableConcurrently := plan.IsRunnableConcurrently.ValueBool()
-	updateBiqueryConnectionID := plan.BiqueryConnectionID.ValueInt64()
-	updateQueryMode := plan.QueryMode.ValueString()
-	updateQuery := plan.Query.ValueString()
-	updateDestinationDataset := plan.DestinationDataset.ValueString()
-	updateDestinationTable := plan.DestinationTable.ValueString()
-	updateWriteDisposition := plan.WriteDisposition.ValueString()
+	var name *string
+	var description *string
+	var isRunnableConcurrently *bool
+	var biqueryConnectionID *int64
+	var queryMode *string
+	var query *string
+	var destinationDataset *string
+	var destinationTable *string
+	var writeDisposition *string
+	var location *string
+	nameValue := plan.Name.ValueString()
+	name = &nameValue
+	descriptionValue := plan.Description.ValueString()
+	description = &descriptionValue
+	isRunnableConcurrentlyValue := plan.IsRunnableConcurrently.ValueBool()
+	isRunnableConcurrently = &isRunnableConcurrentlyValue
+	biqueryConnectionIDValue := plan.DatamartBigqueryOption.BigqueryConnectionID.ValueInt64()
+	biqueryConnectionID = &biqueryConnectionIDValue
+	queryModeValue := plan.DatamartBigqueryOption.QueryMode.ValueString()
+	queryMode = &queryModeValue
+	queryValue := plan.DatamartBigqueryOption.Query.ValueString()
+	query = &queryValue
+
+	nextQueryMode := state.DatamartBigqueryOption.QueryMode.ValueString()
+	if !plan.DatamartBigqueryOption.QueryMode.IsNull() {
+		nextQueryMode = plan.DatamartBigqueryOption.QueryMode.ValueString()
+	}
+	if nextQueryMode == "insert" {
+		destiantionDatasetValue := plan.DatamartBigqueryOption.DestinationDataset.ValueString()
+		destinationDataset = &destiantionDatasetValue
+		destiantionTableValue := plan.DatamartBigqueryOption.DestinationTable.ValueString()
+		destinationTable = &destiantionTableValue
+		writeDispositionValue := plan.DatamartBigqueryOption.WriteDisposition.ValueString()
+		writeDisposition = &writeDispositionValue
+	}
+	if nextQueryMode == "query" {
+		locationValue := plan.DatamartBigqueryOption.Location.ValueString()
+		location = &locationValue
+	}
 	updateRequest := client.UpdateDatamartDefinitionsInput{
-		Name:                   &updateName,
-		IsRunnableConcurrently: &updateIsRunnableConcurrently,
+		Name:                   name,
+		Description:            description,
+		IsRunnableConcurrently: isRunnableConcurrently,
 		DatamartBigqueryOption: client.UpdateDatamartBigqueryOption{
-			BigqueryConnectionID: &updateBiqueryConnectionID,
-			QueryMode:            &updateQueryMode,
-			Query:                &updateQuery,
-			DestinationDataset:   &updateDestinationDataset,
-			DestinationTable:     &updateDestinationTable,
-			WriteDisposition:     &updateWriteDisposition,
+			BigqueryConnectionID: biqueryConnectionID,
+			QueryMode:            queryMode,
+			Query:                query,
+			DestinationDataset:   destinationDataset,
+			DestinationTable:     destinationTable,
+			WriteDisposition:     writeDisposition,
+			Location:             location,
 		},
 	}
 	err := r.client.UpdateDatamartDefinition(state.ID.ValueInt64(), &updateRequest)
@@ -244,7 +288,7 @@ func (r *datamartDefinitionResource) Update(ctx context.Context, req resource.Up
 		return
 	}
 
-	datamartDefinition, err := r.client.GetDatamartDefinition(state.ID.ValueInt64())
+	state, err = r.fetchModel(state.ID.ValueInt64())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"failed to get datamart definition",
@@ -252,22 +296,54 @@ func (r *datamartDefinitionResource) Update(ctx context.Context, req resource.Up
 		)
 		return
 	}
-	state = datamartDefinitionModel{
-		ID:                     state.ID,
-		Name:                   types.StringValue(datamartDefinition.Name),
-		DataWarehouseType:      types.StringValue(datamartDefinition.DataWarehouseType),
-		IsRunnableConcurrently: types.BoolValue(datamartDefinition.IsRunnableConcurrently),
-		BiqueryConnectionID:    types.Int64Value(datamartDefinition.DatamartBigqueryOption.BigqueryConnectionID),
-		QueryMode:              types.StringValue(datamartDefinition.DatamartBigqueryOption.QueryMode),
-		Query:                  types.StringValue(datamartDefinition.DatamartBigqueryOption.Query),
-		DestinationDataset:     types.StringValue(datamartDefinition.DatamartBigqueryOption.DestinationDataset),
-		DestinationTable:       types.StringValue(datamartDefinition.DatamartBigqueryOption.DestinationTable),
-		WriteDisposition:       types.StringValue(datamartDefinition.DatamartBigqueryOption.WriteDisposition),
-	}
 
 	diags := resp.State.Set(ctx, state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+}
+
+func (r *datamartDefinitionResource) fetchModel(id int64) (datamartDefinitionModel, error) {
+	datamartDefinition, err := r.client.GetDatamartDefinition(id)
+	if err != nil {
+		return datamartDefinitionModel{}, err
+	}
+	var description basetypes.StringValue
+	if datamartDefinition.Description != "" {
+		description = types.StringValue(datamartDefinition.Description)
+	}
+	var destinationDataset basetypes.StringValue
+	if datamartDefinition.DatamartBigqueryOption.DestinationDataset != "" {
+		destinationDataset = types.StringValue(datamartDefinition.DatamartBigqueryOption.DestinationDataset)
+	}
+	var destinationTable basetypes.StringValue
+	if datamartDefinition.DatamartBigqueryOption.DestinationTable != "" {
+		destinationTable = types.StringValue(datamartDefinition.DatamartBigqueryOption.DestinationTable)
+	}
+	var writeDisposition basetypes.StringValue
+	if datamartDefinition.DatamartBigqueryOption.WriteDisposition != "" {
+		writeDisposition = types.StringValue(datamartDefinition.DatamartBigqueryOption.WriteDisposition)
+	}
+	var location basetypes.StringValue
+	if datamartDefinition.DatamartBigqueryOption.Location != "" {
+		location = types.StringValue(datamartDefinition.DatamartBigqueryOption.Location)
+	}
+	model := datamartDefinitionModel{
+		ID:                     types.Int64Value(datamartDefinition.ID),
+		Name:                   types.StringValue(datamartDefinition.Name),
+		Description:            description,
+		DataWarehouseType:      types.StringValue(datamartDefinition.DataWarehouseType),
+		IsRunnableConcurrently: types.BoolValue(datamartDefinition.IsRunnableConcurrently),
+		DatamartBigqueryOption: &datamartBigqueryOption{
+			BigqueryConnectionID: types.Int64Value(datamartDefinition.DatamartBigqueryOption.BigqueryConnectionID),
+			QueryMode:            types.StringValue(datamartDefinition.DatamartBigqueryOption.QueryMode),
+			Query:                types.StringValue(datamartDefinition.DatamartBigqueryOption.Query),
+			DestinationDataset:   destinationDataset,
+			DestinationTable:     destinationTable,
+			WriteDisposition:     writeDisposition,
+			Location:             location,
+		},
+	}
+	return model, nil
 }
