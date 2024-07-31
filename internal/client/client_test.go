@@ -16,8 +16,8 @@ func TestNewTroccoClient(t *testing.T) {
 		if client.BaseURL != "https://trocco.io" {
 			t.Errorf("Expected BaseURL to be https://trocco.io, got %s", client.BaseURL)
 		}
-		if client.APIToken != "1234567890" {
-			t.Errorf("Expected APIToken to be 1234567890, got %s", client.APIToken)
+		if client.APIKey != "1234567890" {
+			t.Errorf("Expected APIKey to be 1234567890, got %s", client.APIKey)
 		}
 	})
 }

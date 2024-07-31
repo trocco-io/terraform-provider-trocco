@@ -26,31 +26,31 @@ var RegionURLMap = map[string]string{
 
 type TroccoClient struct {
 	BaseURL    string
-	APIToken   string
+	APIKey     string
 	httpClient *http.Client
 }
 
-func NewTroccoClient(apiToken string) *TroccoClient {
+func NewTroccoClient(apiKey string) *TroccoClient {
 	return &TroccoClient{
 		BaseURL:    BaseURLJapan,
-		APIToken:   apiToken,
+		APIKey:     apiKey,
 		httpClient: &http.Client{},
 	}
 }
 
-func NewTroccoClientWithRegion(apiToken, region string) (*TroccoClient, error) {
+func NewTroccoClientWithRegion(apiKey, region string) (*TroccoClient, error) {
 	baseURL, ok := RegionURLMap[region]
 	if !ok {
 		return nil, fmt.Errorf("invalid region: %s", region)
 	}
 	return &TroccoClient{
 		BaseURL:    baseURL,
-		APIToken:   apiToken,
+		APIKey:     apiKey,
 		httpClient: &http.Client{},
 	}, nil
 }
 
-func NewDevTroccoClient(apiToken, baseURL string) *TroccoClient {
+func NewDevTroccoClient(apiKey, baseURL string) *TroccoClient {
 	httpClient := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
@@ -60,7 +60,7 @@ func NewDevTroccoClient(apiToken, baseURL string) *TroccoClient {
 	}
 	return &TroccoClient{
 		BaseURL:    baseURL,
-		APIToken:   apiToken,
+		APIKey:     apiKey,
 		httpClient: httpClient,
 	}
 }
@@ -81,7 +81,7 @@ func (client *TroccoClient) Do(
 	if err != nil {
 		return err
 	}
-	req.Header.Set("Authorization", "Token "+client.APIToken)
+	req.Header.Set("Authorization", "Token "+client.APIKey)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := client.httpClient.Do(req)

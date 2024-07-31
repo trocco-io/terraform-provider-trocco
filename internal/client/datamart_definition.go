@@ -164,7 +164,7 @@ type CreateDatamartDefinitionInput struct {
 	Description            *string                            `json:"description,omitempty"`
 	IsRunnableConcurrently bool                               `json:"is_runnable_concurrently"`
 	ResourceGroupID        *int64                             `json:"resource_group_id,omitempty"`
-	CustomVariableSettings []CustomVariableSettingInput       `json:"custom_variable_settings,omitempty"`
+	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
 	DatamartBigqueryOption *CreateDatamartBigqueryOptionInput `json:"datamart_bigquery_option,omitempty"`
 }
 
@@ -177,7 +177,7 @@ func (input *CreateDatamartDefinitionInput) SetResourceGroupID(resourceGroupID i
 }
 
 func (input *CreateDatamartDefinitionInput) SetCustomVariableSettings(customVariableSettings []CustomVariableSettingInput) {
-	input.CustomVariableSettings = customVariableSettings
+	input.CustomVariableSettings = &customVariableSettings
 }
 
 func (input *CreateDatamartDefinitionInput) SetDatamartBigqueryOption(datamartBigqueryOption CreateDatamartBigqueryOptionInput) {
@@ -227,18 +227,18 @@ func NewTimestampTypeCustomVariableSettingInput(
 }
 
 type CreateDatamartBigqueryOptionInput struct {
-	BigqueryConnectionID int64    `json:"bigquery_connection_id"`
-	QueryMode            string   `json:"query_mode"`
-	Query                string   `json:"query"`
-	DestinationDataset   *string  `json:"destination_dataset,omitempty"`
-	DestinationTable     *string  `json:"destination_table,omitempty"`
-	WriteDisposition     *string  `json:"write_disposition,omitempty"`
-	BeforeLoad           *string  `json:"before_load,omitempty"`
-	Partitioning         *string  `json:"partitioning,omitempty"`
-	PartitioningTime     *string  `json:"partitioning_time,omitempty"`
-	PartitioningField    *string  `json:"partitioning_field,omitempty"`
-	ClusteringFields     []string `json:"clustering_fields,omitempty"`
-	Location             *string  `json:"location,omitempty"`
+	BigqueryConnectionID int64     `json:"bigquery_connection_id"`
+	QueryMode            string    `json:"query_mode"`
+	Query                string    `json:"query"`
+	DestinationDataset   *string   `json:"destination_dataset,omitempty"`
+	DestinationTable     *string   `json:"destination_table,omitempty"`
+	WriteDisposition     *string   `json:"write_disposition,omitempty"`
+	BeforeLoad           *string   `json:"before_load,omitempty"`
+	Partitioning         *string   `json:"partitioning,omitempty"`
+	PartitioningTime     *string   `json:"partitioning_time,omitempty"`
+	PartitioningField    *string   `json:"partitioning_field,omitempty"`
+	ClusteringFields     *[]string `json:"clustering_fields,omitempty"`
+	Location             *string   `json:"location,omitempty"`
 }
 
 func NewInsertModeCreateDatamartBigqueryOptionInput(
@@ -288,7 +288,7 @@ func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetPartitioning
 }
 
 func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetClusteringFields(clusteringFields []string) {
-	datamartBigqueryOption.ClusteringFields = clusteringFields
+	datamartBigqueryOption.ClusteringFields = &clusteringFields
 }
 
 type CreateDatamartDefinitionOutput struct {
@@ -313,11 +313,11 @@ type UpdateDatamartDefinitionInput struct {
 	Description            *string                            `json:"description,omitempty,omitempty"`
 	IsRunnableConcurrently *bool                              `json:"is_runnable_concurrently,omitempty"`
 	ResourceGroupID        *int64                             `json:"resource_group_id,omitempty"`
-	CustomVariableSettings []CustomVariableSettingInput       `json:"custom_variable_settings,omitempty"`
+	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
 	DatamartBigqueryOption *UpdateDatamartBigqueryOptionInput `json:"datamart_bigquery_option,omitempty"`
-	Schedules              []ScheduleInput                    `json:"schedules,omitempty"`
-	Notifications          []DatamartNotificationInput        `json:"notifications,omitempty"`
-	Labels                 []string                           `json:"labels,omitempty"`
+	Schedules              *[]ScheduleInput                   `json:"schedules,omitempty"`
+	Notifications          *[]DatamartNotificationInput       `json:"notifications,omitempty"`
+	Labels                 *[]string                          `json:"labels,omitempty"`
 }
 
 func (input *UpdateDatamartDefinitionInput) SetName(name string) {
@@ -337,7 +337,7 @@ func (input *UpdateDatamartDefinitionInput) SetResourceGroupID(resourceGroupID i
 }
 
 func (input *UpdateDatamartDefinitionInput) SetCustomVariableSettings(customVariableSettings []CustomVariableSettingInput) {
-	input.CustomVariableSettings = customVariableSettings
+	input.CustomVariableSettings = &customVariableSettings
 }
 
 func (input *UpdateDatamartDefinitionInput) SetDatamartBigqueryOption(datamartBigqueryOption UpdateDatamartBigqueryOptionInput) {
@@ -345,30 +345,30 @@ func (input *UpdateDatamartDefinitionInput) SetDatamartBigqueryOption(datamartBi
 }
 
 func (input *UpdateDatamartDefinitionInput) SetSchedules(schedules []ScheduleInput) {
-	input.Schedules = schedules
+	input.Schedules = &schedules
 }
 
 func (input *UpdateDatamartDefinitionInput) SetNotifications(notifications []DatamartNotificationInput) {
-	input.Notifications = notifications
+	input.Notifications = &notifications
 }
 
 func (input *UpdateDatamartDefinitionInput) SetLabels(labels []string) {
-	input.Labels = labels
+	input.Labels = &labels
 }
 
 type UpdateDatamartBigqueryOptionInput struct {
-	BigqueryConnectionID *int64   `json:"bigquery_connection_id,omitempty"`
-	QueryMode            *string  `json:"query_mode,omitempty"`
-	Query                *string  `json:"query,omitempty"`
-	DestinationDataset   *string  `json:"destination_dataset,omitempty"`
-	DestinationTable     *string  `json:"destination_table,omitempty"`
-	WriteDisposition     *string  `json:"write_disposition,omitempty"`
-	BeforeLoad           *string  `json:"before_load,omitempty"`
-	Partitioning         *string  `json:"partitioning,omitempty"`
-	PartitioningTime     *string  `json:"partitioning_time,omitempty"`
-	PartitioningField    *string  `json:"partitioning_field,omitempty"`
-	ClusteringFields     []string `json:"clustering_fields,omitempty"`
-	Location             *string  `json:"location,omitempty"`
+	BigqueryConnectionID *int64    `json:"bigquery_connection_id,omitempty"`
+	QueryMode            *string   `json:"query_mode,omitempty"`
+	Query                *string   `json:"query,omitempty"`
+	DestinationDataset   *string   `json:"destination_dataset,omitempty"`
+	DestinationTable     *string   `json:"destination_table,omitempty"`
+	WriteDisposition     *string   `json:"write_disposition,omitempty"`
+	BeforeLoad           *string   `json:"before_load,omitempty"`
+	Partitioning         *string   `json:"partitioning,omitempty"`
+	PartitioningTime     *string   `json:"partitioning_time,omitempty"`
+	PartitioningField    *string   `json:"partitioning_field,omitempty"`
+	ClusteringFields     *[]string `json:"clustering_fields,omitempty"`
+	Location             *string   `json:"location,omitempty"`
 }
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetBigqueryConnectionID(bigqueryConnectionID int64) {
@@ -412,7 +412,7 @@ func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetPartitioning
 }
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetClusteringFields(clusteringFields []string) {
-	datamartBigqueryOption.ClusteringFields = clusteringFields
+	datamartBigqueryOption.ClusteringFields = &clusteringFields
 }
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLocation(location string) {
@@ -488,7 +488,7 @@ type DatamartNotificationInput struct {
 	EmailID          *int64  `json:"email_id,omitempty"`
 	NotificationType string  `json:"notification_type"`
 	NotifyWhen       *string `json:"notify_when,omitempty"`
-	RecordCount      *int    `json:"record_count,omitempty"`
+	RecordCount      *int64  `json:"record_count,omitempty"`
 	RecordOperator   *string `json:"record_operator,omitempty"`
 	Message          string  `json:"message"`
 }
@@ -523,7 +523,7 @@ func NewEmailJobDatamartNotificationInput(
 
 func NewSlackRecordDatamartNotificationInput(
 	slackChannelID int64,
-	recordCount int,
+	recordCount int64,
 	recordOperator string,
 	message string,
 ) DatamartNotificationInput {
@@ -539,7 +539,7 @@ func NewSlackRecordDatamartNotificationInput(
 
 func NewEmailRecordDatamartNotificationInput(
 	emailID int64,
-	recordCount int,
+	recordCount int64,
 	recordOperator string,
 	message string,
 ) DatamartNotificationInput {
