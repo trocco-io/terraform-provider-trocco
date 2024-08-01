@@ -90,8 +90,7 @@ type labelModel struct {
 }
 
 func (r *datamartDefinitionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	// resp.TypeName = req.ProviderTypeName + "_datamart_definition"
-	resp.TypeName = "datamart_definition"
+	resp.TypeName = req.ProviderTypeName + "_datamart_definition"
 }
 
 func (r *datamartDefinitionResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
