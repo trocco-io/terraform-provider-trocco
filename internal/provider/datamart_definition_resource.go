@@ -50,18 +50,18 @@ type customVariableSettingModel struct {
 }
 
 type datamartBigqueryOptionModel struct {
-	BigqueryConnectionID types.Int64    `tfsdk:"bigquery_connection_id"`
-	QueryMode            types.String   `tfsdk:"query_mode"`
-	Query                types.String   `tfsdk:"query"`
-	DestinationDataset   types.String   `tfsdk:"destination_dataset"`
-	DestinationTable     types.String   `tfsdk:"destination_table"`
-	WriteDisposition     types.String   `tfsdk:"write_disposition"`
-	BeforeLoad           types.String   `tfsdk:"before_load"`
-	Partitioning         types.String   `tfsdk:"partitioning"`
-	PartitioningTime     types.String   `tfsdk:"partitioning_time"`
-	PartitioningField    types.String   `tfsdk:"partitioning_field"`
-	ClusteringFields     []types.String `tfsdk:"clustering_fields"`
-	Location             types.String   `tfsdk:"location"`
+	BigqueryConnectionID types.Int64        `tfsdk:"bigquery_connection_id"`
+	QueryMode            types.String       `tfsdk:"query_mode"`
+	Query                TrimmedStringValue `tfsdk:"query"`
+	DestinationDataset   types.String       `tfsdk:"destination_dataset"`
+	DestinationTable     types.String       `tfsdk:"destination_table"`
+	WriteDisposition     types.String       `tfsdk:"write_disposition"`
+	BeforeLoad           types.String       `tfsdk:"before_load"`
+	Partitioning         types.String       `tfsdk:"partitioning"`
+	PartitioningTime     types.String       `tfsdk:"partitioning_time"`
+	PartitioningField    types.String       `tfsdk:"partitioning_field"`
+	ClusteringFields     []types.String     `tfsdk:"clustering_fields"`
+	Location             types.String       `tfsdk:"location"`
 }
 
 type datamartNotificationModel struct {
@@ -173,7 +173,8 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 						Required: true,
 					},
 					"query": schema.StringAttribute{
-						Required: true,
+						Required:   true,
+						CustomType: TrimmedStringType{},
 					},
 					"destination_dataset": schema.StringAttribute{
 						Optional: true,
@@ -769,7 +770,7 @@ func (r *datamartDefinitionResource) fetchModel(id int64) (*datamartDefinitionMo
 		datamartBigqueryOption := &datamartBigqueryOptionModel{
 			BigqueryConnectionID: types.Int64Value(datamartDefinition.DatamartBigqueryOption.BigqueryConnectionID),
 			QueryMode:            types.StringValue(datamartDefinition.DatamartBigqueryOption.QueryMode),
-			Query:                types.StringValue(datamartDefinition.DatamartBigqueryOption.Query),
+			Query:                TrimmedStringValue{types.StringValue(datamartDefinition.DatamartBigqueryOption.Query)},
 		}
 		if datamartDefinition.DatamartBigqueryOption.DestinationDataset != nil {
 			datamartBigqueryOption.DestinationDataset = types.StringValue(*datamartDefinition.DatamartBigqueryOption.DestinationDataset)
