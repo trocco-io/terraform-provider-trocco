@@ -7,9 +7,11 @@ import (
 
 	"terraform-provider-trocco/internal/client"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -118,6 +120,9 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 			},
 			"name": schema.StringAttribute{
 				Required: true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtMost(255),
+				},
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -125,6 +130,9 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 			},
 			"data_warehouse_type": schema.StringAttribute{
 				Required: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("bigquery"),
+				},
 			},
 			"is_runnable_concurrently": schema.BoolAttribute{
 				Required: true,
@@ -138,9 +146,13 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
 							Required: true,
+							// TODO: $name$ validation
 						},
 						"type": schema.StringAttribute{
 							Required: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("string", "timestamp", "timestamp_runtime"),
+							},
 						},
 						"value": schema.StringAttribute{
 							Optional: true,
@@ -150,9 +162,15 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 						},
 						"unit": schema.StringAttribute{
 							Optional: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("hour", "date", "month"),
+							},
 						},
 						"direction": schema.StringAttribute{
 							Optional: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("ago", "later"),
+							},
 						},
 						"format": schema.StringAttribute{
 							Optional: true,
@@ -171,6 +189,9 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 					},
 					"query_mode": schema.StringAttribute{
 						Required: true,
+						Validators: []validator.String{
+							stringvalidator.OneOf("insert", "query"),
+						},
 					},
 					"query": schema.StringAttribute{
 						Required:   true,
@@ -184,15 +205,24 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 					},
 					"write_disposition": schema.StringAttribute{
 						Optional: true,
+						Validators: []validator.String{
+							stringvalidator.OneOf("append", "truncate"),
+						},
 					},
 					"before_load": schema.StringAttribute{
 						Optional: true,
 					},
 					"partitioning": schema.StringAttribute{
 						Optional: true,
+						Validators: []validator.String{
+							stringvalidator.OneOf("ingestion_time", "time_unit_column"),
+						},
 					},
 					"partitioning_time": schema.StringAttribute{
 						Optional: true,
+						Validators: []validator.String{
+							stringvalidator.OneOf("DAY", "HOUR", "MONTH", "YEAR"),
+						},
 					},
 					"partitioning_field": schema.StringAttribute{
 						Optional: true,
@@ -212,6 +242,9 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 					Attributes: map[string]schema.Attribute{
 						"destination_type": schema.StringAttribute{
 							Required: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("slack", "email"),
+							},
 						},
 						"slack_channel_id": schema.Int64Attribute{
 							Optional: true,
@@ -221,15 +254,24 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 						},
 						"notification_type": schema.StringAttribute{
 							Required: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("job", "record"),
+							},
 						},
 						"notify_when": schema.StringAttribute{
 							Optional: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("finished", "failed"),
+							},
 						},
 						"record_count": schema.Int64Attribute{
 							Optional: true,
 						},
 						"record_operator": schema.StringAttribute{
 							Optional: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("above", "below"),
+							},
 						},
 						"message": schema.StringAttribute{
 							Optional: true,
@@ -243,6 +285,9 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 					Attributes: map[string]schema.Attribute{
 						"frequency": schema.StringAttribute{
 							Required: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("hourly", "daily", "weekly", "monthly"),
+							},
 						},
 						"minute": schema.Int32Attribute{
 							Optional: true,
