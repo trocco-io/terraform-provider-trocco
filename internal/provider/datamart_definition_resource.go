@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -54,7 +55,7 @@ type customVariableSettingModel struct {
 type datamartBigqueryOptionModel struct {
 	BigqueryConnectionID types.Int64        `tfsdk:"bigquery_connection_id"`
 	QueryMode            types.String       `tfsdk:"query_mode"`
-	Query                TrimmedStringValue `tfsdk:"query"`
+	Query                trimmedStringValue `tfsdk:"query"`
 	DestinationDataset   types.String       `tfsdk:"destination_dataset"`
 	DestinationTable     types.String       `tfsdk:"destination_table"`
 	WriteDisposition     types.String       `tfsdk:"write_disposition"`
@@ -146,7 +147,9 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
 							Required: true,
-							// TODO: $name$ validation
+							Validators: []validator.String{
+								wrappingDollarValidator{},
+							},
 						},
 						"type": schema.StringAttribute{
 							Required: true,
@@ -179,6 +182,9 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 							Optional: true,
 						},
 					},
+					PlanModifiers: []planmodifier.Object{
+						&customVariableSettingPlanModifier{},
+					},
 				},
 			},
 			"datamart_bigquery_option": schema.SingleNestedAttribute{
@@ -195,7 +201,7 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 					},
 					"query": schema.StringAttribute{
 						Required:   true,
-						CustomType: TrimmedStringType{},
+						CustomType: trimmedStringType{},
 					},
 					"destination_dataset": schema.StringAttribute{
 						Optional: true,
@@ -234,6 +240,9 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 					"location": schema.StringAttribute{
 						Optional: true,
 					},
+				},
+				PlanModifiers: []planmodifier.Object{
+					&datamartBigqueryOptionPlanModifier{},
 				},
 			},
 			"notifications": schema.SetNestedAttribute{
@@ -277,6 +286,9 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 							Optional: true,
 						},
 					},
+					PlanModifiers: []planmodifier.Object{
+						&datamartNotificationPlanModifier{},
+					},
 				},
 			},
 			"schedules": schema.SetNestedAttribute{
@@ -290,7 +302,7 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 							},
 						},
 						"minute": schema.Int32Attribute{
-							Optional: true,
+							Required: true,
 						},
 						"hour": schema.Int32Attribute{
 							Optional: true,
@@ -302,8 +314,11 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 							Optional: true,
 						},
 						"time_zone": schema.StringAttribute{
-							Optional: true,
+							Required: true,
 						},
+					},
+					PlanModifiers: []planmodifier.Object{
+						&schedulePlanModifier{},
 					},
 				},
 			},
@@ -768,6 +783,28 @@ func (r *datamartDefinitionResource) ImportState(ctx context.Context, req resour
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
+func (r datamartDefinitionResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var data datamartDefinitionModel
+
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	switch data.DataWarehouseType.ValueString() {
+	case "bigquery":
+		{
+			if data.DatamartBigqueryOption == nil {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("data_warehouse_type"),
+					"Missing Datamart Bigquery Option",
+					"Expected datamart_bigquery_option to be configured for bigquery data warehouse type.",
+				)
+			}
+		}
+	}
+}
+
 func (r *datamartDefinitionResource) fetchModel(id int64) (*datamartDefinitionModel, error) {
 	datamartDefinition, err := r.client.GetDatamartDefinition(id)
 	if err != nil {
@@ -815,7 +852,7 @@ func (r *datamartDefinitionResource) fetchModel(id int64) (*datamartDefinitionMo
 		datamartBigqueryOption := &datamartBigqueryOptionModel{
 			BigqueryConnectionID: types.Int64Value(datamartDefinition.DatamartBigqueryOption.BigqueryConnectionID),
 			QueryMode:            types.StringValue(datamartDefinition.DatamartBigqueryOption.QueryMode),
-			Query:                TrimmedStringValue{types.StringValue(datamartDefinition.DatamartBigqueryOption.Query)},
+			Query:                trimmedStringValue{types.StringValue(datamartDefinition.DatamartBigqueryOption.Query)},
 		}
 		if datamartDefinition.DatamartBigqueryOption.DestinationDataset != nil {
 			datamartBigqueryOption.DestinationDataset = types.StringValue(*datamartDefinition.DatamartBigqueryOption.DestinationDataset)

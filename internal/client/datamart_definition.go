@@ -421,7 +421,7 @@ func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLocation(loc
 
 type ScheduleInput struct {
 	Frequency string `json:"frequency"`
-	Minute    *int   `json:"minute,omitempty"`
+	Minute    int    `json:"minute,omitempty"`
 	Hour      *int   `json:"hour,omitempty"`
 	Day       *int   `json:"day,omitempty"`
 	DayOfWeek *int   `json:"day_of_week,omitempty"`
@@ -434,7 +434,7 @@ func NewHourlyScheduleInput(
 ) ScheduleInput {
 	return ScheduleInput{
 		Frequency: "hourly",
-		Minute:    &minute,
+		Minute:    minute,
 		TimeZone:  timeZone,
 	}
 }
@@ -447,7 +447,7 @@ func NewDailyScheduleInput(
 	return ScheduleInput{
 		Frequency: "daily",
 		Hour:      &hour,
-		Minute:    &minute,
+		Minute:    minute,
 		TimeZone:  timeZone,
 	}
 }
@@ -462,7 +462,7 @@ func NewWeeklyScheduleInput(
 		Frequency: "weekly",
 		DayOfWeek: &dayOfWeek,
 		Hour:      &hour,
-		Minute:    &minute,
+		Minute:    minute,
 		TimeZone:  timeZone,
 	}
 }
@@ -477,7 +477,7 @@ func NewMonthlyScheduleInput(
 		Frequency: "monthly",
 		Day:       &day,
 		Hour:      &hour,
-		Minute:    &minute,
+		Minute:    minute,
 		TimeZone:  timeZone,
 	}
 }
