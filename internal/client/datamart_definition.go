@@ -129,7 +129,7 @@ type DatamartNotification struct {
 
 type Schedule struct {
 	Frequency string `json:"frequency"`
-	Minute    *int   `json:"minute"`
+	Minute    int    `json:"minute"`
 	Hour      *int   `json:"hour"`
 	Day       *int   `json:"day"`
 	DayOfWeek *int   `json:"day_of_week"`
@@ -421,7 +421,7 @@ func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLocation(loc
 
 type ScheduleInput struct {
 	Frequency string `json:"frequency"`
-	Minute    int    `json:"minute,omitempty"`
+	Minute    int    `json:"minute"`
 	Hour      *int   `json:"hour,omitempty"`
 	Day       *int   `json:"day,omitempty"`
 	DayOfWeek *int   `json:"day_of_week,omitempty"`

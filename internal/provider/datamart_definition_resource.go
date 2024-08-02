@@ -920,9 +920,7 @@ func (r *datamartDefinitionResource) fetchModel(id int64) (*datamartDefinitionMo
 				Frequency: types.StringValue(v.Frequency),
 				TimeZone:  types.StringValue(v.TimeZone),
 			}
-			if v.Minute != nil {
-				schedules[i].Minute = types.Int32Value(int32(*v.Minute))
-			}
+			schedules[i].Minute = types.Int32Value(int32(v.Minute))
 			if v.Hour != nil {
 				schedules[i].Hour = types.Int32Value(int32(*v.Hour))
 			}
