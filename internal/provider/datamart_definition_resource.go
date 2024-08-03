@@ -8,6 +8,7 @@ import (
 	"terraform-provider-trocco/internal/client"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -129,7 +130,10 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
-				Computed: true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+				MarkdownDescription: "It must be at least 1 character",
 			},
 			"data_warehouse_type": schema.StringAttribute{
 				Required: true,
@@ -248,20 +252,23 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 						Validators: []validator.String{
 							stringvalidator.OneOf("DAY", "HOUR", "MONTH", "YEAR"),
 						},
-						MarkdownDescription: "The following partitioning time units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Valid for `insert` mode",
+						MarkdownDescription: "The following partitioning time units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Valid for `insert` mode. Required when `partitioning` is set",
 					},
 					"partitioning_field": schema.StringAttribute{
 						Optional:            true,
-						MarkdownDescription: "Valid for `insert` mode",
+						MarkdownDescription: "Required when `partitioning` is `time_unit_column`",
 					},
 					"clustering_fields": schema.ListAttribute{
-						Optional:            true,
-						ElementType:         types.StringType,
-						MarkdownDescription: "Valid for `insert` mode",
+						Optional:    true,
+						ElementType: types.StringType,
+						Validators: []validator.List{
+							listvalidator.SizeAtMost(4),
+						},
+						MarkdownDescription: "Valid for `insert` mode. At most 4 fields can be specified.",
 					},
 					"location": schema.StringAttribute{
 						Optional:            true,
-						MarkdownDescription: "Required for `query` mode",
+						MarkdownDescription: "Valid for `query` mode",
 					},
 				},
 				PlanModifiers: []planmodifier.Object{
@@ -620,10 +627,14 @@ func (r *datamartDefinitionResource) Update(ctx context.Context, req resource.Up
 	input.SetName(plan.Name.ValueString())
 	if !plan.Description.IsNull() {
 		input.SetDescription(plan.Description.ValueString())
+	} else {
+		input.SetDescriptionEmpty()
 	}
 	input.SetIsRunnableConcurrently(plan.IsRunnableConcurrently.ValueBool())
 	if !plan.ResourceGroupID.IsNull() {
 		input.SetResourceGroupID(plan.ResourceGroupID.ValueInt64())
+	} else {
+		input.SetResourceGroupIDEmpty()
 	}
 	if plan.CustomVariableSettings != nil {
 		customVariableSettingInputs := make([]client.CustomVariableSettingInput, len(plan.CustomVariableSettings))
@@ -665,9 +676,13 @@ func (r *datamartDefinitionResource) Update(ctx context.Context, req resource.Up
 		}
 		if !plan.DatamartBigqueryOption.BeforeLoad.IsNull() {
 			optionInput.SetBeforeLoad(plan.DatamartBigqueryOption.BeforeLoad.ValueString())
+		} else {
+			optionInput.SetBeforeLoadEmpty()
 		}
 		if !plan.DatamartBigqueryOption.Partitioning.IsNull() {
 			optionInput.SetPartitioning(plan.DatamartBigqueryOption.Partitioning.ValueString())
+		} else {
+			optionInput.SetPartitioningEmpty()
 		}
 		if !plan.DatamartBigqueryOption.PartitioningTime.IsNull() {
 			optionInput.SetPartitioningTime(plan.DatamartBigqueryOption.PartitioningTime.ValueString())
@@ -681,9 +696,13 @@ func (r *datamartDefinitionResource) Update(ctx context.Context, req resource.Up
 				clusteringFields[i] = v.ValueString()
 			}
 			optionInput.SetClusteringFields(clusteringFields)
+		} else {
+			optionInput.SetClusteringFields([]string{})
 		}
 		if !plan.DatamartBigqueryOption.Location.IsNull() {
 			optionInput.SetLocation(plan.DatamartBigqueryOption.Location.ValueString())
+		} else {
+			optionInput.SetLocationEmpty()
 		}
 		input.SetDatamartBigqueryOption(optionInput)
 	}
@@ -861,9 +880,11 @@ func (r *datamartDefinitionResource) fetchModel(id int64) (*datamartDefinitionMo
 	model := datamartDefinitionModel{
 		ID:                     types.Int64Value(datamartDefinition.ID),
 		Name:                   types.StringValue(datamartDefinition.Name),
-		Description:            types.StringValue(datamartDefinition.Description),
 		DataWarehouseType:      types.StringValue(datamartDefinition.DataWarehouseType),
 		IsRunnableConcurrently: types.BoolValue(datamartDefinition.IsRunnableConcurrently),
+	}
+	if datamartDefinition.Description != nil {
+		model.Description = types.StringValue(*datamartDefinition.Description)
 	}
 	if datamartDefinition.ResourceGroup != nil {
 		model.ResourceGroupID = types.Int64Value(datamartDefinition.ResourceGroup.ID)

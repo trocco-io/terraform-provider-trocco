@@ -69,7 +69,7 @@ type GetDatamartDefinitionOutput struct {
 type DatamartDefinition struct {
 	ID                     int64                   `json:"id"`
 	Name                   string                  `json:"name"`
-	Description            string                  `json:"description"`
+	Description            *string                 `json:"description"`
 	DataWarehouseType      string                  `json:"data_warehouse_type"`
 	IsRunnableConcurrently bool                    `json:"is_runnable_concurrently"`
 	ResourceGroup          *ResourceGroup          `json:"resource_group"`
@@ -151,6 +151,12 @@ func (client *TroccoClient) GetDatamartDefinition(id int64) (*GetDatamartDefinit
 	err := client.Do(http.MethodGet, path, nil, output)
 	if err != nil {
 		return nil, err
+	}
+	if output.Description != nil && *output.Description == "" {
+		output.Description = nil
+	}
+	if output.DatamartBigqueryOption != nil && output.DatamartBigqueryOption.Partitioning != nil && *output.DatamartBigqueryOption.Partitioning == "" {
+		output.DatamartBigqueryOption.Partitioning = nil
 	}
 	return output, nil
 }
@@ -312,7 +318,7 @@ type UpdateDatamartDefinitionInput struct {
 	Name                   *string                            `json:"name,omitempty"`
 	Description            *string                            `json:"description,omitempty"`
 	IsRunnableConcurrently *bool                              `json:"is_runnable_concurrently,omitempty"`
-	ResourceGroupID        *int64                             `json:"resource_group_id,omitempty"`
+	ResourceGroupID        *NullableInt64                     `json:"resource_group_id,omitempty"`
 	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
 	DatamartBigqueryOption *UpdateDatamartBigqueryOptionInput `json:"datamart_bigquery_option,omitempty"`
 	Schedules              *[]ScheduleInput                   `json:"schedules,omitempty"`
@@ -328,12 +334,21 @@ func (input *UpdateDatamartDefinitionInput) SetDescription(description string) {
 	input.Description = &description
 }
 
+func (input *UpdateDatamartDefinitionInput) SetDescriptionEmpty() {
+	var description string
+	input.Description = &description
+}
+
 func (input *UpdateDatamartDefinitionInput) SetIsRunnableConcurrently(isRunnableConcurrently bool) {
 	input.IsRunnableConcurrently = &isRunnableConcurrently
 }
 
 func (input *UpdateDatamartDefinitionInput) SetResourceGroupID(resourceGroupID int64) {
-	input.ResourceGroupID = &resourceGroupID
+	input.ResourceGroupID = &NullableInt64{Value: resourceGroupID, Valid: true}
+}
+
+func (input *UpdateDatamartDefinitionInput) SetResourceGroupIDEmpty() {
+	input.ResourceGroupID = &NullableInt64{Valid: false}
 }
 
 func (input *UpdateDatamartDefinitionInput) SetCustomVariableSettings(customVariableSettings []CustomVariableSettingInput) {
@@ -357,18 +372,18 @@ func (input *UpdateDatamartDefinitionInput) SetLabels(labels []string) {
 }
 
 type UpdateDatamartBigqueryOptionInput struct {
-	BigqueryConnectionID *int64    `json:"bigquery_connection_id,omitempty"`
-	QueryMode            *string   `json:"query_mode,omitempty"`
-	Query                *string   `json:"query,omitempty"`
-	DestinationDataset   *string   `json:"destination_dataset,omitempty"`
-	DestinationTable     *string   `json:"destination_table,omitempty"`
-	WriteDisposition     *string   `json:"write_disposition,omitempty"`
-	BeforeLoad           *string   `json:"before_load,omitempty"`
-	Partitioning         *string   `json:"partitioning,omitempty"`
-	PartitioningTime     *string   `json:"partitioning_time,omitempty"`
-	PartitioningField    *string   `json:"partitioning_field,omitempty"`
-	ClusteringFields     *[]string `json:"clustering_fields,omitempty"`
-	Location             *string   `json:"location,omitempty"`
+	BigqueryConnectionID *int64          `json:"bigquery_connection_id,omitempty"`
+	QueryMode            *string         `json:"query_mode,omitempty"`
+	Query                *string         `json:"query,omitempty"`
+	DestinationDataset   *string         `json:"destination_dataset,omitempty"`
+	DestinationTable     *string         `json:"destination_table,omitempty"`
+	WriteDisposition     *string         `json:"write_disposition,omitempty"`
+	BeforeLoad           *NullableString `json:"before_load,omitempty"`
+	Partitioning         *NullableString `json:"partitioning,omitempty"`
+	PartitioningTime     *string         `json:"partitioning_time,omitempty"`
+	PartitioningField    *string         `json:"partitioning_field,omitempty"`
+	ClusteringFields     *[]string       `json:"clustering_fields,omitempty"`
+	Location             *NullableString `json:"location,omitempty"`
 }
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetBigqueryConnectionID(bigqueryConnectionID int64) {
@@ -396,11 +411,19 @@ func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetWriteDisposi
 }
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetBeforeLoad(beforeLoad string) {
-	datamartBigqueryOption.BeforeLoad = &beforeLoad
+	datamartBigqueryOption.BeforeLoad = &NullableString{Value: beforeLoad, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetBeforeLoadEmpty() {
+	datamartBigqueryOption.BeforeLoad = &NullableString{Valid: false}
 }
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetPartitioning(partitioning string) {
-	datamartBigqueryOption.Partitioning = &partitioning
+	datamartBigqueryOption.Partitioning = &NullableString{Value: partitioning, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetPartitioningEmpty() {
+	datamartBigqueryOption.Partitioning = &NullableString{Valid: false}
 }
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetPartitioningTime(partitioningTime string) {
@@ -416,7 +439,11 @@ func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetClusteringFi
 }
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLocation(location string) {
-	datamartBigqueryOption.Location = &location
+	datamartBigqueryOption.Location = &NullableString{Value: location, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLocationEmpty() {
+	datamartBigqueryOption.Location = &NullableString{Valid: false}
 }
 
 type ScheduleInput struct {

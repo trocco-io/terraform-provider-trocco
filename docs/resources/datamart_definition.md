@@ -206,7 +206,7 @@ resource "trocco_datamart_definition" "with_labels" {
 
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--custom_variable_settings))
 - `datamart_bigquery_option` (Attributes) Required for `bigquery` data warehouse type (see [below for nested schema](#nestedatt--datamart_bigquery_option))
-- `description` (String)
+- `description` (String) It must be at least 1 character
 - `labels` (Attributes Set) (see [below for nested schema](#nestedatt--labels))
 - `notifications` (Attributes Set) (see [below for nested schema](#nestedatt--notifications))
 - `resource_group_id` (Number) Resource group ID to which the datamart definition belongs
@@ -246,13 +246,13 @@ Required:
 Optional:
 
 - `before_load` (String) Valid for `insert` mode
-- `clustering_fields` (List of String) Valid for `insert` mode
+- `clustering_fields` (List of String) Valid for `insert` mode. At most 4 fields can be specified.
 - `destination_dataset` (String) Required for `insert` mode
 - `destination_table` (String) Required for `insert` mode
-- `location` (String) Required for `query` mode
+- `location` (String) Valid for `query` mode
 - `partitioning` (String) The following partitioning types are supported: `ingestion_time`, `time_unit_column`. Valid for `insert` mode
-- `partitioning_field` (String) Valid for `insert` mode
-- `partitioning_time` (String) The following partitioning time units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Valid for `insert` mode
+- `partitioning_field` (String) Required when `partitioning` is `time_unit_column`
+- `partitioning_time` (String) The following partitioning time units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Valid for `insert` mode. Required when `partitioning` is set
 - `write_disposition` (String) The following write dispositions are supported: `append`, `truncate`. Required for `insert` mode
 
 
