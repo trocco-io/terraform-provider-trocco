@@ -362,7 +362,7 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 							MarkdownDescription: "The following record operators are supported: `above`, `below`. Required for `record` notification type",
 						},
 						"message": schema.StringAttribute{
-							Optional: true,
+							Required: true,
 						},
 					},
 					PlanModifiers: []planmodifier.Object{
