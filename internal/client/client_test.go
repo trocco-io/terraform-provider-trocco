@@ -12,6 +12,7 @@ func TestNewTroccoClient(t *testing.T) {
 		client := NewTroccoClient(token)
 		if client == nil {
 			t.Error("Expected a new TroccoClient, got nil")
+			return
 		}
 		if client.BaseURL != "https://trocco.io" {
 			t.Errorf("Expected BaseURL to be https://trocco.io, got %s", client.BaseURL)
@@ -36,9 +37,11 @@ func TestNewTroccoClientWithRegion(t *testing.T) {
 			client, err := NewTroccoClientWithRegion("1234567890", c.region)
 			if err != nil {
 				t.Errorf("Expected no error, got %s", err)
+				return
 			}
 			if client == nil {
 				t.Error("Expected a new TroccoClient, got nil")
+				return
 			}
 			if client.BaseURL != c.expectedBaseURL {
 				t.Errorf("Expected BaseURL to be %s, got %s", c.expectedBaseURL, client.BaseURL)
@@ -67,7 +70,10 @@ func TestDo(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{}`))
+		_, err := w.Write([]byte(`{}`))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 	client := NewDevTroccoClient("1234567890", server.URL)
@@ -80,13 +86,19 @@ func TestDo(t *testing.T) {
 func TestDoWithInput(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body := make([]byte, r.ContentLength)
-		r.Body.Read(body)
+		_, e := r.Body.Read(body)
+		if e != nil {
+			t.Errorf("Expected no error, got %s", e)
+		}
 		if string(body) != `{"name":"test"}` {
 			t.Errorf("Expected body to be {\"name\":\"test\"}, got %s", string(body))
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{}`))
+		_, err := w.Write([]byte(`{}`))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 	client := NewDevTroccoClient("1234567890", server.URL)
@@ -104,7 +116,10 @@ func TestDoWithOutput(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"name":"test"}`))
+		_, err := w.Write([]byte(`{"name":"test"}`))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 	client := NewDevTroccoClient("1234567890", server.URL)

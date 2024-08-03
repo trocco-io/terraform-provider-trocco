@@ -13,7 +13,7 @@ var _ validator.String = wrappingDollarValidator{}
 type wrappingDollarValidator struct{}
 
 func (v wrappingDollarValidator) Description(ctx context.Context) string {
-	return fmt.Sprintf("value must start and end with `$`")
+	return "value must start and end with `$`"
 }
 
 func (v wrappingDollarValidator) MarkdownDescription(ctx context.Context) string {

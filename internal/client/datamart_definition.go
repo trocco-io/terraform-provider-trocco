@@ -310,7 +310,7 @@ func (client *TroccoClient) CreateDatamartDefinition(input *CreateDatamartDefini
 
 type UpdateDatamartDefinitionInput struct {
 	Name                   *string                            `json:"name,omitempty"`
-	Description            *string                            `json:"description,omitempty,omitempty"`
+	Description            *string                            `json:"description,omitempty"`
 	IsRunnableConcurrently *bool                              `json:"is_runnable_concurrently,omitempty"`
 	ResourceGroupID        *int64                             `json:"resource_group_id,omitempty"`
 	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`

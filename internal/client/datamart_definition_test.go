@@ -61,7 +61,10 @@ func TestListDatamartDefinitions(t *testing.T) {
         ]
       }
     `
-		w.Write([]byte(resp))
+		_, err := w.Write([]byte(resp))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -106,7 +109,10 @@ func TestListDatamartDefinitionsLimitAndCursor(t *testing.T) {
         "next_cursor": "test_next_cursor"
       }
     `
-		w.Write([]byte(resp))
+		_, err := w.Write([]byte(resp))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -154,7 +160,10 @@ func TestGetDatamartDefinitionMinimum(t *testing.T) {
         "updated_at": "2024-07-29T20:00:00.000+09:00"
       }
     `
-		w.Write([]byte(resp))
+		_, err := w.Write([]byte(resp))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -246,7 +255,10 @@ func TestGetDatamartDefinitionFull(t *testing.T) {
         ]
       }
     `
-		w.Write([]byte(resp))
+		_, err := w.Write([]byte(resp))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -313,14 +325,20 @@ func TestCreateDatamartDefinitionMinimum(t *testing.T) {
 		}
 		testCases(t, cases)
 		body := make([]byte, r.ContentLength)
-		r.Body.Read(body)
+		_, e := r.Body.Read(body)
+		if e != nil {
+			t.Errorf("Expected no error, got %s", e)
+		}
 		if string(body) != `{"name":"Test Datamart 01","data_warehouse_type":"bigquery","is_runnable_concurrently":false,"datamart_bigquery_option":{"bigquery_connection_id":1,"query_mode":"query","query":"SELECT * FROM table","location":"asia-northeast1"}}` {
 			t.Errorf("Not expected request body: %s", string(body))
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(`{"id":1}`))
+		_, err := w.Write([]byte(`{"id":1}`))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -347,14 +365,20 @@ func TestCreateDatamartDefinitionMinimum(t *testing.T) {
 func TestCreateDatamartDefinitionFull(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body := make([]byte, r.ContentLength)
-		r.Body.Read(body)
+		_, e := r.Body.Read(body)
+		if e != nil {
+			t.Errorf("Expected no error, got %s", e)
+		}
 		if string(body) != `{"name":"Test Datamart 01","data_warehouse_type":"bigquery","description":"This is a first test datamart","is_runnable_concurrently":false,"resource_group_id":1,"custom_variable_settings":[{"name":"$string$","type":"string","value":"foo"},{"name":"$timestamp$","type":"timestamp","quantity":1,"unit":"hour","direction":"ago","format":"%Y-%m-%d %H:%M:%S","time_zone":"Asia/Tokyo"}],"datamart_bigquery_option":{"bigquery_connection_id":1,"query_mode":"insert","query":"SELECT * FROM table","destination_dataset":"test_dataset","destination_table":"test_table","write_disposition":"truncate","before_load":"DELETE FROM table WHERE id = 1","partitioning":"time_unit_column","partitioning_time":"HOUR","partitioning_field":"created_at","clustering_fields":["id","name"]}}` {
 			t.Errorf("Not expected request body: %s", string(body))
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(`{"id":1}`))
+		_, err := w.Write([]byte(`{"id":1}`))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -411,13 +435,19 @@ func TestUpdateDatamartDefinitionWithBasicValues(t *testing.T) {
 		}
 		testCases(t, cases)
 		body := make([]byte, r.ContentLength)
-		r.Body.Read(body)
+		_, e := r.Body.Read(body)
+		if e != nil {
+			t.Errorf("Expected no error, got %s", e)
+		}
 		if string(body) != `{"name":"Test Datamart 01","description":"This is a first test datamart","is_runnable_concurrently":false,"resource_group_id":1}` {
 			t.Errorf("Not expected request body: %s", string(body))
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("{}"))
+		_, err := w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -436,13 +466,19 @@ func TestUpdateDatamartDefinitionWithBasicValues(t *testing.T) {
 func TestUpdateDatamartDefinitionWithCustomVariableSettings(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body := make([]byte, r.ContentLength)
-		r.Body.Read(body)
+		_, e := r.Body.Read(body)
+		if e != nil {
+			t.Errorf("Expected no error, got %s", e)
+		}
 		if string(body) != `{"custom_variable_settings":[{"name":"$string$","type":"string","value":"foo"},{"name":"$timestamp$","type":"timestamp","quantity":1,"unit":"hour","direction":"ago","format":"%Y-%m-%d %H:%M:%S","time_zone":"Asia/Tokyo"}]}` {
 			t.Errorf("Not expected request body: %s", string(body))
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("{}"))
+		_, err := w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -472,13 +508,19 @@ func TestUpdateDatamartDefinitionWithCustomVariableSettings(t *testing.T) {
 func TestUpdateDatamartDefinitionWithDatamartBigqueryOptionQueryMode(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body := make([]byte, r.ContentLength)
-		r.Body.Read(body)
+		_, e := r.Body.Read(body)
+		if e != nil {
+			t.Errorf("Expected no error, got %s", e)
+		}
 		if string(body) != `{"datamart_bigquery_option":{"bigquery_connection_id":1,"query_mode":"query","query":"SELECT * FROM table","location":"asia-northeast1"}}` {
 			t.Errorf("Not expected request body: %s", string(body))
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("{}"))
+		_, err := w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -499,13 +541,19 @@ func TestUpdateDatamartDefinitionWithDatamartBigqueryOptionQueryMode(t *testing.
 func TestUpdateDatamartDefinitionWithDatamartBigqueryOptionInsertMode(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body := make([]byte, r.ContentLength)
-		r.Body.Read(body)
+		_, e := r.Body.Read(body)
+		if e != nil {
+			t.Errorf("Expected no error, got %s", e)
+		}
 		if string(body) != `{"datamart_bigquery_option":{"destination_dataset":"test_dataset","destination_table":"test_table","write_disposition":"truncate","before_load":"DELETE FROM table WHERE id = 1","partitioning":"time_unit_column","partitioning_time":"HOUR","partitioning_field":"created_at","clustering_fields":["id","name"]}}` {
 			t.Errorf("Not expected request body: %s", string(body))
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("{}"))
+		_, err := w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -530,13 +578,19 @@ func TestUpdateDatamartDefinitionWithDatamartBigqueryOptionInsertMode(t *testing
 func TestUpdateDatamartDefinitionWithSchedules(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body := make([]byte, r.ContentLength)
-		r.Body.Read(body)
+		_, e := r.Body.Read(body)
+		if e != nil {
+			t.Errorf("Expected no error, got %s", e)
+		}
 		if string(body) != `{"schedules":[{"frequency":"hourly","minute":1,"time_zone":"Asia/Tokyo"},{"frequency":"daily","minute":1,"hour":2,"time_zone":"Asia/Tokyo"},{"frequency":"weekly","minute":1,"hour":2,"day_of_week":3,"time_zone":"Asia/Tokyo"},{"frequency":"monthly","minute":1,"hour":2,"day":4,"time_zone":"Asia/Tokyo"}]}` {
 			t.Errorf("Not expected request body: %s", string(body))
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("{}"))
+		_, err := w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -557,13 +611,19 @@ func TestUpdateDatamartDefinitionWithSchedules(t *testing.T) {
 func TestUpdateDatamartDefinitionWithNotifications(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body := make([]byte, r.ContentLength)
-		r.Body.Read(body)
+		_, e := r.Body.Read(body)
+		if e != nil {
+			t.Errorf("Expected no error, got %s", e)
+		}
 		if string(body) != `{"notifications":[{"destination_type":"slack","slack_channel_id":1,"notification_type":"job","notify_when":"finished","message":"foo"},{"destination_type":"email","email_id":1,"notification_type":"record","record_count":100,"record_operator":"below","message":"bar"}]}` {
 			t.Errorf("Not expected request body: %s", string(body))
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("{}"))
+		_, err := w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -582,13 +642,19 @@ func TestUpdateDatamartDefinitionWithNotifications(t *testing.T) {
 func TestUpdateDatamartDefinitionWithLabels(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body := make([]byte, r.ContentLength)
-		r.Body.Read(body)
+		_, e := r.Body.Read(body)
+		if e != nil {
+			t.Errorf("Expected no error, got %s", e)
+		}
 		if string(body) != `{"labels":["test_label_1","test_label_2"]}` {
 			t.Errorf("Not expected request body: %s", string(body))
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("{}"))
+		_, err := w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
@@ -614,7 +680,10 @@ func TestDeleteDatamartDefinition(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("{}"))
+		_, err := w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
 	}))
 	defer server.Close()
 
