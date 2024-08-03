@@ -45,29 +45,40 @@ func (d *datamartBigqueryOptionPlanModifier) PlanModifyObject(ctx context.Contex
 		return
 	}
 
-	var location types.String
-	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("location"), &location)...)
+	var partitioning types.String
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("partitioning"), &partitioning)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	switch queryMode.ValueString() {
-	case "insert":
-		{
-			if destinationDataset.IsNull() {
-				addDatamartBigqueryOptionAttributeError(req, resp, "destination_dataset is required for insert query mode")
-			}
-			if destinationTable.IsNull() {
-				addDatamartBigqueryOptionAttributeError(req, resp, "destination_table is required for insert query mode")
-			}
-			if writeDisposition.IsNull() {
-				addDatamartBigqueryOptionAttributeError(req, resp, "write_disposition is required for insert query mode")
-			}
+	var partitioningTime types.String
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("partitioning_time"), &partitioningTime)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	var partitioningField types.String
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("partitioning_field"), &partitioningField)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if queryMode.ValueString() == "insert" {
+		if destinationDataset.IsNull() {
+			addDatamartBigqueryOptionAttributeError(req, resp, "destination_dataset is required for insert query mode")
 		}
-	case "query":
-		{
-			if location.IsNull() {
-				addDatamartBigqueryOptionAttributeError(req, resp, "location is required for query query mode")
+		if destinationTable.IsNull() {
+			addDatamartBigqueryOptionAttributeError(req, resp, "destination_table is required for insert query mode")
+		}
+		if writeDisposition.IsNull() {
+			addDatamartBigqueryOptionAttributeError(req, resp, "write_disposition is required for insert query mode")
+		}
+		if !partitioning.IsNull() {
+			if partitioningTime.IsNull() {
+				addDatamartBigqueryOptionAttributeError(req, resp, "partitioning_time is required when partitioning is set")
+			}
+			if partitioning.ValueString() == "time_unit_column" && partitioningField.IsNull() {
+				addDatamartBigqueryOptionAttributeError(req, resp, "partitioning_field is required when partitioning is set to time_unit_column")
 			}
 		}
 	}
