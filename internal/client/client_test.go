@@ -47,6 +47,9 @@ func TestNewTroccoClientWithRegion(t *testing.T) {
 			if client.BaseURL != c.expectedBaseURL {
 				t.Errorf("Expected BaseURL to be %s, got %s", c.expectedBaseURL, client.BaseURL)
 			}
+			if client.APIKey != "1234567890" {
+				t.Errorf("Expected APIKey to be 1234567890, got %s", client.APIKey)
+			}
 		})
 	}
 }
@@ -78,7 +81,7 @@ func TestDo(t *testing.T) {
 	}))
 	defer server.Close()
 	client := NewDevTroccoClient("1234567890", server.URL)
-	err := client.Do("GET", "/api", nil, nil)
+	err := client.do("GET", "/api", nil, nil)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -106,7 +109,7 @@ func TestDoWithInput(t *testing.T) {
 		Name string `json:"name"`
 	}
 	input := TestBody{Name: "test"}
-	err := client.Do("POST", "", &input, nil)
+	err := client.do("POST", "/api", &input, nil)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -127,7 +130,7 @@ func TestDoWithOutput(t *testing.T) {
 		Name string `json:"name"`
 	}
 	output := TestBody{}
-	err := client.Do("POST", "", nil, &output)
+	err := client.do("POST", "/api", nil, &output)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}

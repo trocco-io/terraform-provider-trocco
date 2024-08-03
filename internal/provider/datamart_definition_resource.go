@@ -8,6 +8,7 @@ import (
 	"terraform-provider-trocco/internal/client"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -147,7 +148,10 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 				MarkdownDescription: "Whether or not to run a job if another job with the same data mart definition is running at the time the job is run.",
 			},
 			"resource_group_id": schema.Int64Attribute{
-				Optional:            true,
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
+				},
 				MarkdownDescription: "Resource group ID to which the datamart definition belongs",
 			},
 			"custom_variable_settings": schema.ListNestedAttribute{
@@ -173,7 +177,10 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 							MarkdownDescription: "Required for `string` type.",
 						},
 						"quantity": schema.Int32Attribute{
-							Optional:            true,
+							Optional: true,
+							Validators: []validator.Int32{
+								int32validator.AtLeast(0),
+							},
 							MarkdownDescription: "Required for `timestamp` and `timestamp_runtime` types.",
 						},
 						"unit": schema.StringAttribute{
@@ -209,6 +216,9 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 				Attributes: map[string]schema.Attribute{
 					"bigquery_connection_id": schema.Int64Attribute{
 						Required: true,
+						Validators: []validator.Int64{
+							int64validator.AtLeast(1),
+						},
 					},
 					"query_mode": schema.StringAttribute{
 						Required: true,
@@ -336,11 +346,17 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 							MarkdownDescription: "The following destination types are supported: `slack`, `email`",
 						},
 						"slack_channel_id": schema.Int64Attribute{
-							Optional:            true,
+							Optional: true,
+							Validators: []validator.Int64{
+								int64validator.AtLeast(1),
+							},
 							MarkdownDescription: "Required when `destination_type` is `slack`",
 						},
 						"email_id": schema.Int64Attribute{
-							Optional:            true,
+							Optional: true,
+							Validators: []validator.Int64{
+								int64validator.AtLeast(1),
+							},
 							MarkdownDescription: "Required when `destination_type` is `email`",
 						},
 						"notification_type": schema.StringAttribute{
@@ -464,13 +480,14 @@ func (r *datamartDefinitionResource) Create(ctx context.Context, req resource.Cr
 			}
 			input.SetDatamartBigqueryOption(optionInput)
 		} else {
-			input.SetDatamartBigqueryOption(
-				client.NewQueryModeCreateDatamartBigqueryOptionInput(
-					plan.DatamartBigqueryOption.BigqueryConnectionID.ValueInt64(),
-					plan.DatamartBigqueryOption.Query.ValueString(),
-					plan.DatamartBigqueryOption.Location.ValueString(),
-				),
+			optionInput := client.NewQueryModeCreateDatamartBigqueryOptionInput(
+				plan.DatamartBigqueryOption.BigqueryConnectionID.ValueInt64(),
+				plan.DatamartBigqueryOption.Query.ValueString(),
 			)
+			if !plan.DatamartBigqueryOption.Location.IsNull() {
+				optionInput.SetLocation(plan.DatamartBigqueryOption.Location.ValueString())
+			}
+			input.SetDatamartBigqueryOption(optionInput)
 		}
 	}
 	res, err := r.client.CreateDatamartDefinition(&input)
@@ -987,9 +1004,9 @@ func (r *datamartDefinitionResource) fetchModel(id int64) (*datamartDefinitionMo
 		for i, v := range datamartDefinition.Schedules {
 			schedules[i] = scheduleModel{
 				Frequency: types.StringValue(v.Frequency),
+				Minute:    types.Int32Value(int32(v.Minute)),
 				TimeZone:  types.StringValue(v.TimeZone),
 			}
-			schedules[i].Minute = types.Int32Value(int32(v.Minute))
 			if v.Hour != nil {
 				schedules[i].Hour = types.Int32Value(int32(*v.Hour))
 			}

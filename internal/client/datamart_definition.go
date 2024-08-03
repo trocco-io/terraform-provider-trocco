@@ -10,16 +10,16 @@ import (
 // ref: https://documents.trocco.io/apidocs/get-datamart-definitions
 
 type ListDatamartDefinitionsInput struct {
-	Limit  *int
-	Cursor *string
+	limit  *int
+	cursor *string
 }
 
 func (input *ListDatamartDefinitionsInput) SetLimit(limit int) {
-	input.Limit = &limit
+	input.limit = &limit
 }
 
 func (input *ListDatamartDefinitionsInput) SetCursor(cursor string) {
-	input.Cursor = &cursor
+	input.cursor = &cursor
 }
 
 type ListDatamartDefinitionsOutput struct {
@@ -40,19 +40,19 @@ const MaxListDatamartDefinitionsLimit = 200
 
 func (client *TroccoClient) ListDatamartDefinitions(input *ListDatamartDefinitionsInput) (*ListDatamartDefinitionsOutput, error) {
 	params := url.Values{}
-	if input != nil && input.Limit != nil {
-		limit := *input.Limit
+	if input != nil && input.limit != nil {
+		limit := *input.limit
 		if limit > MaxListDatamartDefinitionsLimit || limit < 1 {
 			return nil, fmt.Errorf("limit must be between 1 and %d", MaxListDatamartDefinitionsLimit)
 		}
 		params.Add("limit", fmt.Sprintf("%d", limit))
 	}
-	if input != nil && input.Cursor != nil {
-		params.Add("cursor", *input.Cursor)
+	if input != nil && input.cursor != nil {
+		params.Add("cursor", *input.cursor)
 	}
 	path := fmt.Sprintf("/api/datamart_definitions?%s", params.Encode())
 	output := new(ListDatamartDefinitionsOutput)
-	err := client.Do(http.MethodGet, path, nil, output)
+	err := client.do(http.MethodGet, path, nil, output)
 	if err != nil {
 		return nil, err
 	}
@@ -148,17 +148,21 @@ type Label struct {
 func (client *TroccoClient) GetDatamartDefinition(id int64) (*GetDatamartDefinitionOutput, error) {
 	path := fmt.Sprintf("/api/datamart_definitions/%d", id)
 	output := new(GetDatamartDefinitionOutput)
-	err := client.Do(http.MethodGet, path, nil, output)
+	err := client.do(http.MethodGet, path, nil, output)
 	if err != nil {
 		return nil, err
 	}
+	output.sanitize()
+	return output, nil
+}
+
+func (output *DatamartDefinition) sanitize() {
 	if output.Description != nil && *output.Description == "" {
 		output.Description = nil
 	}
 	if output.DatamartBigqueryOption != nil && output.DatamartBigqueryOption.Partitioning != nil && *output.DatamartBigqueryOption.Partitioning == "" {
 		output.DatamartBigqueryOption.Partitioning = nil
 	}
-	return output, nil
 }
 
 // Create a datamart_definition
@@ -172,6 +176,18 @@ type CreateDatamartDefinitionInput struct {
 	ResourceGroupID        *int64                             `json:"resource_group_id,omitempty"`
 	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
 	DatamartBigqueryOption *CreateDatamartBigqueryOptionInput `json:"datamart_bigquery_option,omitempty"`
+}
+
+func NewCreateDatamartDefinitionInput(
+	name string,
+	datawarehouseType string,
+	isRunnableConcurrently bool,
+) CreateDatamartDefinitionInput {
+	return CreateDatamartDefinitionInput{
+		Name:                   name,
+		DatawarehouseType:      datawarehouseType,
+		IsRunnableConcurrently: isRunnableConcurrently,
+	}
 }
 
 func (input *CreateDatamartDefinitionInput) SetDescription(description string) {
@@ -267,13 +283,11 @@ func NewInsertModeCreateDatamartBigqueryOptionInput(
 func NewQueryModeCreateDatamartBigqueryOptionInput(
 	bigqueryConnectionID int64,
 	query string,
-	location string,
 ) CreateDatamartBigqueryOptionInput {
 	return CreateDatamartBigqueryOptionInput{
 		BigqueryConnectionID: bigqueryConnectionID,
 		QueryMode:            "query",
 		Query:                query,
-		Location:             &location,
 	}
 }
 
@@ -297,6 +311,10 @@ func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetClusteringFi
 	datamartBigqueryOption.ClusteringFields = &clusteringFields
 }
 
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetLocation(location string) {
+	datamartBigqueryOption.Location = &location
+}
+
 type CreateDatamartDefinitionOutput struct {
 	ID int64 `json:"id"`
 }
@@ -304,7 +322,7 @@ type CreateDatamartDefinitionOutput struct {
 func (client *TroccoClient) CreateDatamartDefinition(input *CreateDatamartDefinitionInput) (*CreateDatamartDefinitionOutput, error) {
 	path := "/api/datamart_definitions"
 	output := new(CreateDatamartDefinitionOutput)
-	err := client.Do(http.MethodPost, path, input, output)
+	err := client.do(http.MethodPost, path, input, output)
 	if err != nil {
 		return nil, err
 	}
@@ -582,7 +600,7 @@ func NewEmailRecordDatamartNotificationInput(
 
 func (client *TroccoClient) UpdateDatamartDefinition(id int64, input *UpdateDatamartDefinitionInput) error {
 	path := fmt.Sprintf("/api/datamart_definitions/%d", id)
-	err := client.Do(http.MethodPatch, path, input, nil)
+	err := client.do(http.MethodPatch, path, input, nil)
 	if err != nil {
 		return err
 	}
@@ -594,7 +612,7 @@ func (client *TroccoClient) UpdateDatamartDefinition(id int64, input *UpdateData
 
 func (client *TroccoClient) DeleteDatamartDefinition(id int64) error {
 	path := fmt.Sprintf("/api/datamart_definitions/%d", id)
-	err := client.Do(http.MethodDelete, path, nil, nil)
+	err := client.do(http.MethodDelete, path, nil, nil)
 	if err != nil {
 		return err
 	}

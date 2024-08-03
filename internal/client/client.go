@@ -18,7 +18,7 @@ const (
 	BaseURLKorea = "https://kr.trocco.io"
 )
 
-var RegionURLMap = map[string]string{
+var RegionBaseURLMap = map[string]string{
 	RegionJapan: BaseURLJapan,
 	RegionIndia: BaseURLIndia,
 	RegionKorea: BaseURLKorea,
@@ -39,7 +39,7 @@ func NewTroccoClient(apiKey string) *TroccoClient {
 }
 
 func NewTroccoClientWithRegion(apiKey, region string) (*TroccoClient, error) {
-	baseURL, ok := RegionURLMap[region]
+	baseURL, ok := RegionBaseURLMap[region]
 	if !ok {
 		return nil, fmt.Errorf("invalid region: %s", region)
 	}
@@ -65,7 +65,7 @@ func NewDevTroccoClient(apiKey, baseURL string) *TroccoClient {
 	}
 }
 
-func (client *TroccoClient) Do(
+func (client *TroccoClient) do(
 	method, path string, input interface{}, output interface{},
 ) error {
 	var reqBody io.Reader

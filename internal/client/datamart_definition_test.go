@@ -19,6 +19,12 @@ type Case struct {
 func testCases(t *testing.T, cases []Case) {
 	for _, c := range cases {
 		value := c.value
+		if c.expected == nil {
+			if !reflect.ValueOf(value).IsNil() {
+				t.Errorf("Expected %s to be nil, got %v", c.name, value)
+			}
+			continue
+		}
 		if reflect.ValueOf(value).Kind() == reflect.Ptr {
 			value = reflect.ValueOf(value).Elem().Interface()
 		}
@@ -118,12 +124,10 @@ func TestListDatamartDefinitionsLimitAndCursor(t *testing.T) {
 	defer server.Close()
 
 	client := NewDevTroccoClient("1234567890", server.URL)
-	limit := 1
-	cursor := "test_prev_cursor"
-	output, err := client.ListDatamartDefinitions(&ListDatamartDefinitionsInput{
-		Limit:  &limit,
-		Cursor: &cursor,
-	})
+	input := ListDatamartDefinitionsInput{}
+	input.SetLimit(1)
+	input.SetCursor("test_prev_cursor")
+	output, err := client.ListDatamartDefinitions(&input)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -149,7 +153,60 @@ func TestGetDatamartDefinitionMinimum(t *testing.T) {
       {
         "id": 1,
         "name": "Test Datamart 01",
-        "description": "This is a first test datamart",
+        "description": "",
+        "data_warehouse_type": "bigquery",
+        "datamart_bigquery_option": {
+          "bigquery_connection_id": 1,
+          "query_mode": "insert",
+          "query": "SELECT * FROM table",
+          "destination_dataset": "test_dataset",
+          "destination_table": "test_table",
+          "write_disposition": "truncate",
+          "partitioning": ""
+        },
+        "created_at": "2024-07-29T19:00:00.000+09:00",
+        "updated_at": "2024-07-29T20:00:00.000+09:00"
+      }
+    `
+		_, err := w.Write([]byte(resp))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+	}))
+	defer server.Close()
+
+	client := NewDevTroccoClient("1234567890", server.URL)
+	output, err := client.GetDatamartDefinition(1)
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+	cases := []Case{
+		{"id", output.ID, int64(1)},
+		{"name", output.Name, "Test Datamart 01"},
+		{"description", output.Description, nil},
+		{"data_warehouse_type", output.DataWarehouseType, "bigquery"},
+		{"datamart_bigquery_option.bigquery_connection_id", output.DatamartBigqueryOption.BigqueryConnectionID, int64(1)},
+		{"datamart_bigquery_option.query_mode", output.DatamartBigqueryOption.QueryMode, "insert"},
+		{"datamart_bigquery_option.query", output.DatamartBigqueryOption.Query, "SELECT * FROM table"},
+		{"datamart_bigquery_option.destination_dataset", *output.DatamartBigqueryOption.DestinationDataset, "test_dataset"},
+		{"datamart_bigquery_option.destination_table", *output.DatamartBigqueryOption.DestinationTable, "test_table"},
+		{"datamart_bigquery_option.write_disposition", *output.DatamartBigqueryOption.WriteDisposition, "truncate"},
+		{"datamart_bigquery_option.partitioning", output.DatamartBigqueryOption.Partitioning, nil},
+		{"created_at", output.CreatedAt, "2024-07-29T19:00:00.000+09:00"},
+		{"updated_at", output.UpdatedAt, "2024-07-29T20:00:00.000+09:00"},
+	}
+	testCases(t, cases)
+}
+
+func TestGetDatamartDefinitionQueryMode(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		resp := `
+      {
+        "id": 1,
+        "name": "Test Datamart 01",
+        "description": "",
         "data_warehouse_type": "bigquery",
         "datamart_bigquery_option": {
           "bigquery_connection_id": 1,
@@ -174,16 +231,8 @@ func TestGetDatamartDefinitionMinimum(t *testing.T) {
 		t.Errorf("Expected no error, got %s", err)
 	}
 	cases := []Case{
-		{"id", output.ID, int64(1)},
-		{"name", output.Name, "Test Datamart 01"},
-		{"description", output.Description, "This is a first test datamart"},
-		{"data_warehouse_type", output.DataWarehouseType, "bigquery"},
-		{"datamart_bigquery_option.bigquery_connection_id", output.DatamartBigqueryOption.BigqueryConnectionID, int64(1)},
 		{"datamart_bigquery_option.query_mode", output.DatamartBigqueryOption.QueryMode, "query"},
-		{"datamart_bigquery_option.query", output.DatamartBigqueryOption.Query, "SELECT * FROM table"},
 		{"datamart_bigquery_option.location", *output.DatamartBigqueryOption.Location, "asia-northeast1"},
-		{"created_at", output.CreatedAt, "2024-07-29T19:00:00.000+09:00"},
-		{"updated_at", output.UpdatedAt, "2024-07-29T20:00:00.000+09:00"},
 	}
 	testCases(t, cases)
 }
@@ -198,6 +247,29 @@ func TestGetDatamartDefinitionFull(t *testing.T) {
         "name": "Test Datamart 01",
         "description": "This is a first test datamart",
         "data_warehouse_type": "bigquery",
+        "resource_group": {
+          "id": 1,
+          "name": "test_resource_group",
+          "description": "This is a test resource group",
+          "created_at": "2024-07-29T19:00:00.000+09:00",
+          "updated_at": "2024-07-29T20:00:00.000+09:00"
+        },
+        "custom_variable_settings": [
+          {
+            "name": "$string$",
+            "type": "string",
+            "value": "foo"
+          },
+          {
+            "name": "$timestamp$",
+            "type": "timestamp",
+            "quantity": 1,
+            "unit": "hour",
+            "direction": "ago",
+            "format": "%Y-%m-%d %H:%M:%S",
+            "time_zone": "Asia/Tokyo"
+          }
+        ],
         "datamart_bigquery_option": {
           "bigquery_connection_id": 1,
           "query_mode": "insert",
@@ -233,15 +305,28 @@ func TestGetDatamartDefinitionFull(t *testing.T) {
         "schedules": [
           {
             "frequency": "hourly",
-            "minute": 10,
+            "minute": 1,
+            "time_zone": "Asia/Tokyo"
+          },
+          {
+            "frequency": "daily",
+            "minute": 1,
+            "hour": 2,
             "time_zone": "Asia/Tokyo"
           },
           {
             "frequency": "weekly",
-            "minute": 20,
-            "hour": 3,
-            "day_of_week": 4,
-            "time_zone": "Etc/UTC"
+            "minute": 1,
+            "hour": 2,
+            "day_of_week": 3,
+            "time_zone": "Asia/Tokyo"
+          },
+          {
+            "frequency": "monthly",
+            "minute": 1,
+            "hour": 2,
+            "day": 4,
+            "time_zone": "Asia/Tokyo"
           }
         ],
         "labels": [
@@ -250,8 +335,8 @@ func TestGetDatamartDefinitionFull(t *testing.T) {
             "name": "test_label",
             "description": "This is a test label",
             "color": "#FF3B1D",
-            "created_at": "2024-07-29T21:00:00.000+09:00",
-            "updated_at": "2024-07-29T22:00:00.000+09:00"
+            "created_at": "2024-07-29T19:00:00.000+09:00",
+            "updated_at": "2024-07-29T20:00:00.000+09:00"
           }
         ]
       }
@@ -269,24 +354,49 @@ func TestGetDatamartDefinitionFull(t *testing.T) {
 		t.Errorf("Expected no error, got %s", err)
 	}
 	cases := []Case{
-		{"id", output.ID, int64(1)},
-		{"name", output.Name, "Test Datamart 01"},
-		{"description", output.Description, "This is a first test datamart"},
-		{"data_warehouse_type", output.DataWarehouseType, "bigquery"},
-		{"datamart_bigquery_option.bigquery_connection_id", output.DatamartBigqueryOption.BigqueryConnectionID, int64(1)},
-		{"datamart_bigquery_option.query_mode", output.DatamartBigqueryOption.QueryMode, "insert"},
-		{"datamart_bigquery_option.query", output.DatamartBigqueryOption.Query, "SELECT * FROM table"},
-		{"datamart_bigquery_option.destination_dataset", *output.DatamartBigqueryOption.DestinationDataset, "test_dataset"},
-		{"datamart_bigquery_option.destination_table", *output.DatamartBigqueryOption.DestinationTable, "test_table"},
-		{"datamart_bigquery_option.write_disposition", *output.DatamartBigqueryOption.WriteDisposition, "truncate"},
+		{"description", *output.Description, "This is a first test datamart"},
 		{"datamart_bigquery_option.before_load", *output.DatamartBigqueryOption.BeforeLoad, "DELETE FROM table WHERE id = 1"},
 		{"datamart_bigquery_option.partitioning", *output.DatamartBigqueryOption.Partitioning, "time_unit_column"},
 		{"datamart_bigquery_option.partitioning_time", *output.DatamartBigqueryOption.PartitioningTime, "HOUR"},
 		{"datamart_bigquery_option.partitioning_field", *output.DatamartBigqueryOption.PartitioningField, "created_at"},
 		{"first datamart_bigquery_option's clustering_fields", output.DatamartBigqueryOption.ClusteringFields[0], "id"},
 		{"second datamart_bigquery_option's clustering_fields", output.DatamartBigqueryOption.ClusteringFields[1], "name"},
-		{"created_at", output.CreatedAt, "2024-07-29T19:00:00.000+09:00"},
-		{"updated_at", output.UpdatedAt, "2024-07-29T20:00:00.000+09:00"},
+
+		{"resource_group's id", output.ResourceGroup.ID, int64(1)},
+		{"resource_group's name", output.ResourceGroup.Name, "test_resource_group"},
+		{"resource_group's description", output.ResourceGroup.Description, "This is a test resource group"},
+		{"resource_group's created_at", output.ResourceGroup.CreatedAt, "2024-07-29T19:00:00.000+09:00"},
+		{"resource_group's updated_at", output.ResourceGroup.UpdatedAt, "2024-07-29T20:00:00.000+09:00"},
+
+		{"first custom_variable_settings's name", output.CustomVariableSettings[0].Name, "$string$"},
+		{"first custom_variable_settings's type", output.CustomVariableSettings[0].Type, "string"},
+		{"first custom_variable_settings's value", *output.CustomVariableSettings[0].Value, "foo"},
+		{"second custom_variable_settings's name", output.CustomVariableSettings[1].Name, "$timestamp$"},
+		{"second custom_variable_settings's type", output.CustomVariableSettings[1].Type, "timestamp"},
+		{"second custom_variable_settings's quantity", *output.CustomVariableSettings[1].Quantity, 1},
+		{"second custom_variable_settings's unit", *output.CustomVariableSettings[1].Unit, "hour"},
+		{"second custom_variable_settings's direction", *output.CustomVariableSettings[1].Direction, "ago"},
+		{"second custom_variable_settings's format", *output.CustomVariableSettings[1].Format, "%Y-%m-%d %H:%M:%S"},
+		{"second custom_variable_settings's time_zone", *output.CustomVariableSettings[1].TimeZone, "Asia/Tokyo"},
+
+		{"first schedules's frequency", output.Schedules[0].Frequency, "hourly"},
+		{"first schedules's minute", output.Schedules[0].Minute, 1},
+		{"first schedules's time_zone", output.Schedules[0].TimeZone, "Asia/Tokyo"},
+		{"second schedules's frequency", output.Schedules[1].Frequency, "daily"},
+		{"second schedules's minute", output.Schedules[1].Minute, 1},
+		{"second schedules's hour", output.Schedules[1].Hour, 2},
+		{"second schedules's time_zone", output.Schedules[1].TimeZone, "Asia/Tokyo"},
+		{"third schedules's frequency", output.Schedules[2].Frequency, "weekly"},
+		{"third schedules's minute", output.Schedules[2].Minute, 1},
+		{"third schedules's hour", output.Schedules[2].Hour, 2},
+		{"third schedules's day_of_week", output.Schedules[2].DayOfWeek, 3},
+		{"third schedules's time_zone", output.Schedules[2].TimeZone, "Asia/Tokyo"},
+		{"fourth schedules's frequency", output.Schedules[3].Frequency, "monthly"},
+		{"fourth schedules's minute", output.Schedules[3].Minute, 1},
+		{"fourth schedules's hour", output.Schedules[3].Hour, 2},
+		{"fourth schedules's day", output.Schedules[3].Day, 4},
+		{"fourth schedules's time_zone", output.Schedules[3].TimeZone, "Asia/Tokyo"},
+
 		{"first notifications's destination_type", output.Notifications[0].DestinationType, "slack"},
 		{"first notifications's slack_channel_id", output.Notifications[0].SlackChannelID, int64(1)},
 		{"first notifications's notification_type", output.Notifications[0].NotificationType, "job"},
@@ -298,20 +408,13 @@ func TestGetDatamartDefinitionFull(t *testing.T) {
 		{"second notifications's record_count", *output.Notifications[1].RecordCount, int64(100)},
 		{"second notifications's record_operator", *output.Notifications[1].RecordOperator, "below"},
 		{"second notifications's message", output.Notifications[1].Message, "bar"},
-		{"first schedules's frequency", output.Schedules[0].Frequency, "hourly"},
-		{"first schedules's minute", output.Schedules[0].Minute, 10},
-		{"first schedules's time_zone", output.Schedules[0].TimeZone, "Asia/Tokyo"},
-		{"second schedules's frequency", output.Schedules[1].Frequency, "weekly"},
-		{"second schedules's minute", output.Schedules[1].Minute, 20},
-		{"second schedules's hour", *output.Schedules[1].Hour, 3},
-		{"second schedules's day_of_week", *output.Schedules[1].DayOfWeek, 4},
-		{"second schedules's time_zone", output.Schedules[1].TimeZone, "Etc/UTC"},
+
 		{"first labels's id", output.Labels[0].ID, int64(1)},
 		{"first labels's name", output.Labels[0].Name, "test_label"},
 		{"first labels's description", output.Labels[0].Description, "This is a test label"},
 		{"first labels's color", output.Labels[0].Color, "#FF3B1D"},
-		{"first labels's created_at", output.Labels[0].CreatedAt, "2024-07-29T21:00:00.000+09:00"},
-		{"first labels's updated_at", output.Labels[0].UpdatedAt, "2024-07-29T22:00:00.000+09:00"},
+		{"first labels's created_at", output.Labels[0].CreatedAt, "2024-07-29T19:00:00.000+09:00"},
+		{"first labels's updated_at", output.Labels[0].UpdatedAt, "2024-07-29T20:00:00.000+09:00"},
 	}
 	testCases(t, cases)
 }
@@ -343,16 +446,17 @@ func TestCreateDatamartDefinitionMinimum(t *testing.T) {
 	defer server.Close()
 
 	client := NewDevTroccoClient("1234567890", server.URL)
-	input := CreateDatamartDefinitionInput{
-		Name:                   "Test Datamart 01",
-		DatawarehouseType:      "bigquery",
-		IsRunnableConcurrently: false,
-	}
-	input.SetDatamartBigqueryOption(NewQueryModeCreateDatamartBigqueryOptionInput(
+	input := NewCreateDatamartDefinitionInput(
+		"Test Datamart 01",
+		"bigquery",
+		false,
+	)
+	bigqueryOption := NewQueryModeCreateDatamartBigqueryOptionInput(
 		1,
 		"SELECT * FROM table",
-		"asia-northeast1",
-	))
+	)
+	bigqueryOption.SetLocation("asia-northeast1")
+	input.SetDatamartBigqueryOption(bigqueryOption)
 	output, err := client.CreateDatamartDefinition(&input)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
@@ -382,11 +486,11 @@ func TestCreateDatamartDefinitionFull(t *testing.T) {
 	defer server.Close()
 
 	client := NewDevTroccoClient("1234567890", server.URL)
-	input := CreateDatamartDefinitionInput{
-		Name:                   "Test Datamart 01",
-		DatawarehouseType:      "bigquery",
-		IsRunnableConcurrently: false,
-	}
+	input := NewCreateDatamartDefinitionInput(
+		"Test Datamart 01",
+		"bigquery",
+		false,
+	)
 	input.SetDescription("This is a first test datamart")
 	input.SetResourceGroupID(1)
 	input.SetCustomVariableSettings([]CustomVariableSettingInput{
@@ -662,6 +766,39 @@ func TestUpdateDatamartDefinitionWithLabels(t *testing.T) {
 	}
 }
 
+func TestUpdateDatamartDefinitionWithEmptyValues(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+		if string(body) != `{"description":"","resource_group_id":null,"datamart_bigquery_option":{"before_load":null,"partitioning":null,"location":null}}` {
+			t.Errorf("Not expected request body: %s", string(body))
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+	}))
+	defer server.Close()
+
+	client := NewDevTroccoClient("1234567890", server.URL)
+	input := UpdateDatamartDefinitionInput{}
+	input.SetDescriptionEmpty()
+	input.SetResourceGroupIDEmpty()
+	bigqueryOption := UpdateDatamartBigqueryOptionInput{}
+	bigqueryOption.SetBeforeLoadEmpty()
+	bigqueryOption.SetPartitioningEmpty()
+	bigqueryOption.SetLocationEmpty()
+	input.SetDatamartBigqueryOption(bigqueryOption)
+	err := client.UpdateDatamartDefinition(1, &input)
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+}
+
 func TestDeleteDatamartDefinition(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cases := []Case{
@@ -670,9 +807,8 @@ func TestDeleteDatamartDefinition(t *testing.T) {
 		}
 		testCases(t, cases)
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, err := w.Write([]byte("{}"))
+		w.WriteHeader(http.StatusNoContent)
+		_, err := w.Write([]byte(""))
 		if err != nil {
 			t.Errorf("Expected no error, got %s", err)
 		}
