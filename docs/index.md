@@ -37,6 +37,6 @@ provider "trocco" {
 
 ### Optional
 
-- `api_key` (String, Sensitive)
-- `dev_base_url` (String)
-- `region` (String)
+- `api_key` (String, Sensitive) Your TROCCO API key. This can also be set using the `TROCCO_API_KEY` environment variable.
+- `dev_base_url` (String) The base URL of API. This is used for only development purposes.
+- `region` (String) The region of TROCCO. This can also be set using the `TROCCO_REGION` environment variable.

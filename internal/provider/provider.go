@@ -1,6 +1,3 @@
-// Copyright (c) HashiCorp, Inc.
-// SPDX-License-Identifier: MPL-2.0
-
 package provider
 
 import (
@@ -41,14 +38,17 @@ func (p *TroccoProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"api_key": schema.StringAttribute{
-				Optional:  true,
-				Sensitive: true,
+				Optional:            true,
+				Sensitive:           true,
+				MarkdownDescription: "Your TROCCO API key. This can also be set using the `TROCCO_API_KEY` environment variable.",
 			},
 			"region": schema.StringAttribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "The region of TROCCO. This can also be set using the `TROCCO_REGION` environment variable.",
 			},
 			"dev_base_url": schema.StringAttribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "The base URL of API. This is used for only development purposes.",
 			},
 		},
 	}
@@ -56,8 +56,7 @@ func (p *TroccoProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 
 func (p *TroccoProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 	var config TroccoProviderModel
-	diags := req.Config.Get(ctx, &config)
-	resp.Diagnostics.Append(diags...)
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}

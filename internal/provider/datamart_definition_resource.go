@@ -7,6 +7,7 @@ import (
 
 	"terraform-provider-trocco/internal/client"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -124,6 +125,7 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtMost(255),
 				},
+				MarkdownDescription: "It must be less than 256 characters",
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
@@ -134,12 +136,15 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 				Validators: []validator.String{
 					stringvalidator.OneOf("bigquery"),
 				},
+				MarkdownDescription: "The following data warehouse types are supported: `bigquery`",
 			},
 			"is_runnable_concurrently": schema.BoolAttribute{
-				Required: true,
+				Required:            true,
+				MarkdownDescription: "Whether or not to run a job if another job with the same data mart definition is running at the time the job is run.",
 			},
 			"resource_group_id": schema.Int64Attribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "Resource group ID to which the datamart definition belongs",
 			},
 			"custom_variable_settings": schema.ListNestedAttribute{
 				Optional: true,
@@ -150,36 +155,44 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 							Validators: []validator.String{
 								wrappingDollarValidator{},
 							},
+							MarkdownDescription: "It must start and end with `$`",
 						},
 						"type": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("string", "timestamp", "timestamp_runtime"),
 							},
+							MarkdownDescription: "The following types are supported: `string`, `timestamp`, `timestamp_runtime`",
 						},
 						"value": schema.StringAttribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "Required for `string` type.",
 						},
 						"quantity": schema.Int32Attribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "Required for `timestamp` and `timestamp_runtime` types.",
 						},
 						"unit": schema.StringAttribute{
 							Optional: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("hour", "date", "month"),
 							},
+							MarkdownDescription: "The following units are supported: `hour`, `date`, `month`. Required for `timestamp` and `timestamp_runtime` types.",
 						},
 						"direction": schema.StringAttribute{
 							Optional: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("ago", "later"),
 							},
+							MarkdownDescription: "The following directions are supported: `ago`, `later`. Required for `timestamp` and `timestamp_runtime` types.",
 						},
 						"format": schema.StringAttribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "Required for `timestamp` and `timestamp_runtime` types.",
 						},
 						"time_zone": schema.StringAttribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "Required for `timestamp` and `timestamp_runtime` types.",
 						},
 					},
 					PlanModifiers: []planmodifier.Object{
@@ -198,51 +211,110 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 						Validators: []validator.String{
 							stringvalidator.OneOf("insert", "query"),
 						},
+						MarkdownDescription: "The following query modes are supported: `insert`, `query`",
 					},
 					"query": schema.StringAttribute{
 						Required:   true,
 						CustomType: trimmedStringType{},
 					},
 					"destination_dataset": schema.StringAttribute{
-						Optional: true,
+						Optional:            true,
+						MarkdownDescription: "Required for `insert` mode",
 					},
 					"destination_table": schema.StringAttribute{
-						Optional: true,
+						Optional:            true,
+						MarkdownDescription: "Required for `insert` mode",
 					},
 					"write_disposition": schema.StringAttribute{
 						Optional: true,
 						Validators: []validator.String{
 							stringvalidator.OneOf("append", "truncate"),
 						},
+						MarkdownDescription: "The following write dispositions are supported: `append`, `truncate`. Required for `insert` mode",
 					},
 					"before_load": schema.StringAttribute{
-						Optional: true,
+						Optional:            true,
+						MarkdownDescription: "Valid for `insert` mode",
 					},
 					"partitioning": schema.StringAttribute{
 						Optional: true,
 						Validators: []validator.String{
 							stringvalidator.OneOf("ingestion_time", "time_unit_column"),
 						},
+						MarkdownDescription: "The following partitioning types are supported: `ingestion_time`, `time_unit_column`. Valid for `insert` mode",
 					},
 					"partitioning_time": schema.StringAttribute{
 						Optional: true,
 						Validators: []validator.String{
 							stringvalidator.OneOf("DAY", "HOUR", "MONTH", "YEAR"),
 						},
+						MarkdownDescription: "The following partitioning time units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Valid for `insert` mode",
 					},
 					"partitioning_field": schema.StringAttribute{
-						Optional: true,
+						Optional:            true,
+						MarkdownDescription: "Valid for `insert` mode",
 					},
 					"clustering_fields": schema.ListAttribute{
-						Optional:    true,
-						ElementType: types.StringType,
+						Optional:            true,
+						ElementType:         types.StringType,
+						MarkdownDescription: "Valid for `insert` mode",
 					},
 					"location": schema.StringAttribute{
-						Optional: true,
+						Optional:            true,
+						MarkdownDescription: "Required for `query` mode",
 					},
 				},
 				PlanModifiers: []planmodifier.Object{
 					&datamartBigqueryOptionPlanModifier{},
+				},
+				MarkdownDescription: "Required for `bigquery` data warehouse type",
+			},
+			"schedules": schema.SetNestedAttribute{
+				Optional: true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"frequency": schema.StringAttribute{
+							Required: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("hourly", "daily", "weekly", "monthly"),
+							},
+							MarkdownDescription: "The following frequencies are supported: `hourly`, `daily`, `weekly`, `monthly`",
+						},
+						"minute": schema.Int32Attribute{
+							Required: true,
+							Validators: []validator.Int32{
+								int32validator.Between(0, 59),
+							},
+						},
+						"hour": schema.Int32Attribute{
+							Optional: true,
+							Validators: []validator.Int32{
+								int32validator.Between(0, 23),
+							},
+							MarkdownDescription: "Required for `daily`, `weekly`, and `monthly` schedules",
+						},
+						"day_of_week": schema.Int32Attribute{
+							Optional: true,
+							Validators: []validator.Int32{
+								int32validator.Between(0, 6),
+							},
+							MarkdownDescription: "Sunday - Saturday is represented as 0 - 6. Required for `weekly` schedule",
+						},
+						"day": schema.Int32Attribute{
+							Optional: true,
+							Validators: []validator.Int32{
+								int32validator.Between(1, 31),
+							},
+							MarkdownDescription: "Required for `monthly` schedule",
+						},
+						"time_zone": schema.StringAttribute{
+							Required:            true,
+							MarkdownDescription: "Time zone to calculate the schedule time",
+						},
+					},
+					PlanModifiers: []planmodifier.Object{
+						&schedulePlanModifier{},
+					},
 				},
 			},
 			"notifications": schema.SetNestedAttribute{
@@ -254,33 +326,40 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 							Validators: []validator.String{
 								stringvalidator.OneOf("slack", "email"),
 							},
+							MarkdownDescription: "The following destination types are supported: `slack`, `email`",
 						},
 						"slack_channel_id": schema.Int64Attribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "Required when `destination_type` is `slack`",
 						},
 						"email_id": schema.Int64Attribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "Required when `destination_type` is `email`",
 						},
 						"notification_type": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("job", "record"),
 							},
+							MarkdownDescription: "The following notification types are supported: `job`, `record`",
 						},
 						"notify_when": schema.StringAttribute{
 							Optional: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("finished", "failed"),
 							},
+							MarkdownDescription: "The following notify when types are supported: `finished`, `failed`. Required for `job` notification type",
 						},
 						"record_count": schema.Int64Attribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "Required for `record` notification type",
 						},
 						"record_operator": schema.StringAttribute{
 							Optional: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("above", "below"),
 							},
+							MarkdownDescription: "The following record operators are supported: `above`, `below`. Required for `record` notification type",
 						},
 						"message": schema.StringAttribute{
 							Optional: true,
@@ -288,37 +367,6 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 					},
 					PlanModifiers: []planmodifier.Object{
 						&datamartNotificationPlanModifier{},
-					},
-				},
-			},
-			"schedules": schema.SetNestedAttribute{
-				Optional: true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"frequency": schema.StringAttribute{
-							Required: true,
-							Validators: []validator.String{
-								stringvalidator.OneOf("hourly", "daily", "weekly", "monthly"),
-							},
-						},
-						"minute": schema.Int32Attribute{
-							Required: true,
-						},
-						"hour": schema.Int32Attribute{
-							Optional: true,
-						},
-						"day": schema.Int32Attribute{
-							Optional: true,
-						},
-						"day_of_week": schema.Int32Attribute{
-							Optional: true,
-						},
-						"time_zone": schema.StringAttribute{
-							Required: true,
-						},
-					},
-					PlanModifiers: []planmodifier.Object{
-						&schedulePlanModifier{},
 					},
 				},
 			},
