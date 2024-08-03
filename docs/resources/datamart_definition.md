@@ -274,12 +274,12 @@ Read-Only:
 Required:
 
 - `destination_type` (String) The following destination types are supported: `slack`, `email`
+- `message` (String)
 - `notification_type` (String) The following notification types are supported: `job`, `record`
 
 Optional:
 
 - `email_id` (Number) Required when `destination_type` is `email`
-- `message` (String)
 - `notify_when` (String) The following notify when types are supported: `finished`, `failed`. Required for `job` notification type
 - `record_count` (Number) Required for `record` notification type
 - `record_operator` (String) The following record operators are supported: `above`, `below`. Required for `record` notification type
