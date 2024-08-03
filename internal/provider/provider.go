@@ -36,6 +36,7 @@ func (p *TroccoProvider) Metadata(ctx context.Context, req provider.MetadataRequ
 
 func (p *TroccoProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		MarkdownDescription: "~> The API used by this Terraform Provider is currently in beta. The request and response data structures are subject to change. Consequently, the functionality and interface of the Terraform Provider may also change. Please use with caution.",
 		Attributes: map[string]schema.Attribute{
 			"api_key": schema.StringAttribute{
 				Optional:            true,
