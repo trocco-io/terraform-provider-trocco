@@ -1,6 +1,7 @@
 package client
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -85,17 +86,16 @@ func TestDo(t *testing.T) {
 
 func TestDoWithInput(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		body := make([]byte, r.ContentLength)
-		_, e := r.Body.Read(body)
-		if e != nil {
-			t.Errorf("Expected no error, got %s", e)
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
 		}
 		if string(body) != `{"name":"test"}` {
 			t.Errorf("Expected body to be {\"name\":\"test\"}, got %s", string(body))
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		_, err := w.Write([]byte(`{}`))
+		_, err = w.Write([]byte(`{}`))
 		if err != nil {
 			t.Errorf("Expected no error, got %s", err)
 		}
