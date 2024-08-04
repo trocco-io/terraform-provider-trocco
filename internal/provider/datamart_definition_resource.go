@@ -118,6 +118,7 @@ func (r *datamartDefinitionResource) Configure(ctx context.Context, req resource
 
 func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		MarkdownDescription: "The datamart definition resource allows you to create, read, update, and delete a datamart definition.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				Computed: true,

@@ -1,0 +1,49 @@
+---
+page_title: "{{.Name}} {{.Type}} - {{.ProviderShortName}}"
+subcategory: ""
+description: |-
+  {{.Description}}
+---
+
+# {{.Name}} ({{.Type}})
+
+{{.Description}}
+
+## Example Usage
+
+### Minimum
+
+{{codefile "terraform" "examples/resources/trocco_datamart_definition/minimum.tf"}}
+
+### With Optional Fields
+
+{{codefile "terraform" "examples/resources/trocco_datamart_definition/optional.tf"}}
+
+### Google BigQuery Insert Mode
+
+{{codefile "terraform" "examples/resources/trocco_datamart_definition/bigquery_insert_mode.tf"}}
+
+### Google BigQuery Query Mode
+
+{{codefile "terraform" "examples/resources/trocco_datamart_definition/bigquery_query_mode.tf"}}
+
+### With Schedules
+
+{{codefile "terraform" "examples/resources/trocco_datamart_definition/schedules.tf"}}
+
+### With Notifications
+
+{{codefile "terraform" "examples/resources/trocco_datamart_definition/notifications.tf"}}
+
+### With Labels
+
+{{codefile "terraform" "examples/resources/trocco_datamart_definition/labels.tf"}}
+
+{{.SchemaMarkdown}}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/trocco_datamart_definition/import.sh"}}
+
