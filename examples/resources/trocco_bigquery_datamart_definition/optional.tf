@@ -1,7 +1,6 @@
-resource "trocco_datamart_definition" "with_optionals" {
+resource "trocco_bigquery_datamart_definition" "with_optionals" {
   name                     = "example_with_optionals"
   description              = "This is an example with optional fields"
-  data_warehouse_type      = "bigquery"
   is_runnable_concurrently = false
   resource_group_id        = 1
   custom_variable_settings = [
@@ -20,12 +19,10 @@ resource "trocco_datamart_definition" "with_optionals" {
       time_zone = "Asia/Tokyo",
     }
   ]
-  datamart_bigquery_option = {
-    bigquery_connection_id = 1
-    query                  = "SELECT * FROM tables"
-    query_mode             = "insert"
-    destination_dataset    = "dist_datasets"
-    destination_table      = "dist_tables"
-    write_disposition      = "append"
-  }
+  bigquery_connection_id = 1
+  query                  = "SELECT * FROM tables"
+  query_mode             = "insert"
+  destination_dataset    = "dist_datasets"
+  destination_table      = "dist_tables"
+  write_disposition      = "append"
 }

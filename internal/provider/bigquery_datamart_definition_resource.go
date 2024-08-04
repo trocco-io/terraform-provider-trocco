@@ -19,26 +19,36 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ resource.Resource = &datamartDefinitionResource{}
-var _ resource.ResourceWithImportState = &datamartDefinitionResource{}
+var _ resource.Resource = &bigqueryDatamartDefinitionResource{}
+var _ resource.ResourceWithImportState = &bigqueryDatamartDefinitionResource{}
 
-func newDatamartDefinitionResource() resource.Resource {
-	return &datamartDefinitionResource{}
+func newBigqueryDatamartDefinitionResource() resource.Resource {
+	return &bigqueryDatamartDefinitionResource{}
 }
 
-type datamartDefinitionResource struct {
+type bigqueryDatamartDefinitionResource struct {
 	client *client.TroccoClient
 }
 
-type datamartDefinitionModel struct {
+type bigqueryDatamartDefinitionModel struct {
 	ID                     types.Int64                  `tfsdk:"id"`
 	Name                   types.String                 `tfsdk:"name"`
 	Description            types.String                 `tfsdk:"description"`
-	DataWarehouseType      types.String                 `tfsdk:"data_warehouse_type"`
 	IsRunnableConcurrently types.Bool                   `tfsdk:"is_runnable_concurrently"`
 	ResourceGroupID        types.Int64                  `tfsdk:"resource_group_id"`
 	CustomVariableSettings []customVariableSettingModel `tfsdk:"custom_variable_settings"`
-	DatamartBigqueryOption *datamartBigqueryOptionModel `tfsdk:"datamart_bigquery_option"`
+	BigqueryConnectionID   types.Int64                  `tfsdk:"bigquery_connection_id"`
+	QueryMode              types.String                 `tfsdk:"query_mode"`
+	Query                  trimmedStringValue           `tfsdk:"query"`
+	DestinationDataset     types.String                 `tfsdk:"destination_dataset"`
+	DestinationTable       types.String                 `tfsdk:"destination_table"`
+	WriteDisposition       types.String                 `tfsdk:"write_disposition"`
+	BeforeLoad             types.String                 `tfsdk:"before_load"`
+	Partitioning           types.String                 `tfsdk:"partitioning"`
+	PartitioningTime       types.String                 `tfsdk:"partitioning_time"`
+	PartitioningField      types.String                 `tfsdk:"partitioning_field"`
+	ClusteringFields       []types.String               `tfsdk:"clustering_fields"`
+	Location               types.String                 `tfsdk:"location"`
 	Notifications          []datamartNotificationModel  `tfsdk:"notifications"`
 	Schedules              []scheduleModel              `tfsdk:"schedules"`
 	Labels                 []labelModel                 `tfsdk:"labels"`
@@ -53,21 +63,6 @@ type customVariableSettingModel struct {
 	Direction types.String `tfsdk:"direction"`
 	Format    types.String `tfsdk:"format"`
 	TimeZone  types.String `tfsdk:"time_zone"`
-}
-
-type datamartBigqueryOptionModel struct {
-	BigqueryConnectionID types.Int64        `tfsdk:"bigquery_connection_id"`
-	QueryMode            types.String       `tfsdk:"query_mode"`
-	Query                trimmedStringValue `tfsdk:"query"`
-	DestinationDataset   types.String       `tfsdk:"destination_dataset"`
-	DestinationTable     types.String       `tfsdk:"destination_table"`
-	WriteDisposition     types.String       `tfsdk:"write_disposition"`
-	BeforeLoad           types.String       `tfsdk:"before_load"`
-	Partitioning         types.String       `tfsdk:"partitioning"`
-	PartitioningTime     types.String       `tfsdk:"partitioning_time"`
-	PartitioningField    types.String       `tfsdk:"partitioning_field"`
-	ClusteringFields     []types.String     `tfsdk:"clustering_fields"`
-	Location             types.String       `tfsdk:"location"`
 }
 
 type datamartNotificationModel struct {
@@ -95,11 +90,11 @@ type labelModel struct {
 	Name types.String `tfsdk:"name"`
 }
 
-func (r *datamartDefinitionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_datamart_definition"
+func (r *bigqueryDatamartDefinitionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_bigquery_datamart_definition"
 }
 
-func (r *datamartDefinitionResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *bigqueryDatamartDefinitionResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -116,7 +111,7 @@ func (r *datamartDefinitionResource) Configure(ctx context.Context, req resource
 	r.client = client
 }
 
-func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "The datamart definition resource allows you to create, read, update, and delete a datamart definition.",
 		Attributes: map[string]schema.Attribute{
@@ -136,13 +131,6 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 				MarkdownDescription: "It must be at least 1 character",
-			},
-			"data_warehouse_type": schema.StringAttribute{
-				Required: true,
-				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery"),
-				},
-				MarkdownDescription: "The following data warehouse types are supported: `bigquery`",
 			},
 			"is_runnable_concurrently": schema.BoolAttribute{
 				Required:            true,
@@ -212,80 +200,71 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 					},
 				},
 			},
-			"datamart_bigquery_option": schema.SingleNestedAttribute{
+			"bigquery_connection_id": schema.Int64Attribute{
+				Required: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
+				},
+			},
+			"query_mode": schema.StringAttribute{
+				Required: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("insert", "query"),
+				},
+				MarkdownDescription: "The following query modes are supported: `insert`, `query`",
+			},
+			"query": schema.StringAttribute{
+				Required:   true,
+				CustomType: trimmedStringType{},
+			},
+			"destination_dataset": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Required for `insert` mode",
+			},
+			"destination_table": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Required for `insert` mode",
+			},
+			"write_disposition": schema.StringAttribute{
 				Optional: true,
-				Attributes: map[string]schema.Attribute{
-					"bigquery_connection_id": schema.Int64Attribute{
-						Required: true,
-						Validators: []validator.Int64{
-							int64validator.AtLeast(1),
-						},
-					},
-					"query_mode": schema.StringAttribute{
-						Required: true,
-						Validators: []validator.String{
-							stringvalidator.OneOf("insert", "query"),
-						},
-						MarkdownDescription: "The following query modes are supported: `insert`, `query`",
-					},
-					"query": schema.StringAttribute{
-						Required:   true,
-						CustomType: trimmedStringType{},
-					},
-					"destination_dataset": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: "Required for `insert` mode",
-					},
-					"destination_table": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: "Required for `insert` mode",
-					},
-					"write_disposition": schema.StringAttribute{
-						Optional: true,
-						Validators: []validator.String{
-							stringvalidator.OneOf("append", "truncate"),
-						},
-						MarkdownDescription: "The following write dispositions are supported: `append`, `truncate`. Required for `insert` mode",
-					},
-					"before_load": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: "Valid for `insert` mode",
-					},
-					"partitioning": schema.StringAttribute{
-						Optional: true,
-						Validators: []validator.String{
-							stringvalidator.OneOf("ingestion_time", "time_unit_column"),
-						},
-						MarkdownDescription: "The following partitioning types are supported: `ingestion_time`, `time_unit_column`. Valid for `insert` mode",
-					},
-					"partitioning_time": schema.StringAttribute{
-						Optional: true,
-						Validators: []validator.String{
-							stringvalidator.OneOf("DAY", "HOUR", "MONTH", "YEAR"),
-						},
-						MarkdownDescription: "The following partitioning time units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Valid for `insert` mode. Required when `partitioning` is set",
-					},
-					"partitioning_field": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: "Required when `partitioning` is `time_unit_column`",
-					},
-					"clustering_fields": schema.ListAttribute{
-						Optional:    true,
-						ElementType: types.StringType,
-						Validators: []validator.List{
-							listvalidator.SizeAtMost(4),
-						},
-						MarkdownDescription: "Valid for `insert` mode. At most 4 fields can be specified.",
-					},
-					"location": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: "Valid for `query` mode",
-					},
+				Validators: []validator.String{
+					stringvalidator.OneOf("append", "truncate"),
 				},
-				PlanModifiers: []planmodifier.Object{
-					&datamartBigqueryOptionPlanModifier{},
+				MarkdownDescription: "The following write dispositions are supported: `append`, `truncate`. Required for `insert` mode",
+			},
+			"before_load": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Valid for `insert` mode",
+			},
+			"partitioning": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("ingestion_time", "time_unit_column"),
 				},
-				MarkdownDescription: "Required for `bigquery` data warehouse type",
+				MarkdownDescription: "The following partitioning types are supported: `ingestion_time`, `time_unit_column`. Valid for `insert` mode",
+			},
+			"partitioning_time": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("DAY", "HOUR", "MONTH", "YEAR"),
+				},
+				MarkdownDescription: "The following partitioning time units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Valid for `insert` mode. Required when `partitioning` is set",
+			},
+			"partitioning_field": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Required when `partitioning` is `time_unit_column`",
+			},
+			"clustering_fields": schema.ListAttribute{
+				Optional:    true,
+				ElementType: types.StringType,
+				Validators: []validator.List{
+					listvalidator.SizeAtMost(4),
+				},
+				MarkdownDescription: "Valid for `insert` mode. At most 4 fields can be specified.",
+			},
+			"location": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Valid for `query` mode",
 			},
 			"schedules": schema.SetNestedAttribute{
 				Optional: true,
@@ -411,8 +390,8 @@ func (r *datamartDefinitionResource) Schema(ctx context.Context, req resource.Sc
 	}
 }
 
-func (r *datamartDefinitionResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan datamartDefinitionModel
+func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan bigqueryDatamartDefinitionModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -420,7 +399,7 @@ func (r *datamartDefinitionResource) Create(ctx context.Context, req resource.Cr
 
 	input := client.CreateDatamartDefinitionInput{
 		Name:                   plan.Name.ValueString(),
-		DatawarehouseType:      plan.DataWarehouseType.ValueString(),
+		DatawarehouseType:      "bigquery",
 		IsRunnableConcurrently: plan.IsRunnableConcurrently.ValueBool(),
 	}
 	if !plan.Description.IsNull() {
@@ -451,45 +430,43 @@ func (r *datamartDefinitionResource) Create(ctx context.Context, req resource.Cr
 		}
 		input.SetCustomVariableSettings(customVariableSettingInputs)
 	}
-	if plan.DatamartBigqueryOption != nil {
-		if plan.DatamartBigqueryOption.QueryMode.ValueString() == "insert" {
-			optionInput := client.NewInsertModeCreateDatamartBigqueryOptionInput(
-				plan.DatamartBigqueryOption.BigqueryConnectionID.ValueInt64(),
-				plan.DatamartBigqueryOption.Query.ValueString(),
-				plan.DatamartBigqueryOption.DestinationDataset.ValueString(),
-				plan.DatamartBigqueryOption.DestinationTable.ValueString(),
-				plan.DatamartBigqueryOption.WriteDisposition.ValueString(),
-			)
-			if !plan.DatamartBigqueryOption.BeforeLoad.IsNull() {
-				optionInput.SetBeforeLoad(plan.DatamartBigqueryOption.BeforeLoad.ValueString())
-			}
-			if !plan.DatamartBigqueryOption.Partitioning.IsNull() {
-				optionInput.SetPartitioning(plan.DatamartBigqueryOption.Partitioning.ValueString())
-			}
-			if !plan.DatamartBigqueryOption.PartitioningTime.IsNull() {
-				optionInput.SetPartitioningTime(plan.DatamartBigqueryOption.PartitioningTime.ValueString())
-			}
-			if !plan.DatamartBigqueryOption.PartitioningField.IsNull() {
-				optionInput.SetPartitioningField(plan.DatamartBigqueryOption.PartitioningField.ValueString())
-			}
-			if plan.DatamartBigqueryOption.ClusteringFields != nil {
-				clusteringFields := make([]string, len(plan.DatamartBigqueryOption.ClusteringFields))
-				for i, v := range plan.DatamartBigqueryOption.ClusteringFields {
-					clusteringFields[i] = v.ValueString()
-				}
-				optionInput.SetClusteringFields(clusteringFields)
-			}
-			input.SetDatamartBigqueryOption(optionInput)
-		} else {
-			optionInput := client.NewQueryModeCreateDatamartBigqueryOptionInput(
-				plan.DatamartBigqueryOption.BigqueryConnectionID.ValueInt64(),
-				plan.DatamartBigqueryOption.Query.ValueString(),
-			)
-			if !plan.DatamartBigqueryOption.Location.IsNull() {
-				optionInput.SetLocation(plan.DatamartBigqueryOption.Location.ValueString())
-			}
-			input.SetDatamartBigqueryOption(optionInput)
+	if plan.QueryMode.ValueString() == "insert" {
+		optionInput := client.NewInsertModeCreateDatamartBigqueryOptionInput(
+			plan.BigqueryConnectionID.ValueInt64(),
+			plan.Query.ValueString(),
+			plan.DestinationDataset.ValueString(),
+			plan.DestinationTable.ValueString(),
+			plan.WriteDisposition.ValueString(),
+		)
+		if !plan.BeforeLoad.IsNull() {
+			optionInput.SetBeforeLoad(plan.BeforeLoad.ValueString())
 		}
+		if !plan.Partitioning.IsNull() {
+			optionInput.SetPartitioning(plan.Partitioning.ValueString())
+		}
+		if !plan.PartitioningTime.IsNull() {
+			optionInput.SetPartitioningTime(plan.PartitioningTime.ValueString())
+		}
+		if !plan.PartitioningField.IsNull() {
+			optionInput.SetPartitioningField(plan.PartitioningField.ValueString())
+		}
+		if plan.ClusteringFields != nil {
+			clusteringFields := make([]string, len(plan.ClusteringFields))
+			for i, v := range plan.ClusteringFields {
+				clusteringFields[i] = v.ValueString()
+			}
+			optionInput.SetClusteringFields(clusteringFields)
+		}
+		input.SetDatamartBigqueryOption(optionInput)
+	} else {
+		optionInput := client.NewQueryModeCreateDatamartBigqueryOptionInput(
+			plan.BigqueryConnectionID.ValueInt64(),
+			plan.Query.ValueString(),
+		)
+		if !plan.Location.IsNull() {
+			optionInput.SetLocation(plan.Location.ValueString())
+		}
+		input.SetDatamartBigqueryOption(optionInput)
 	}
 	res, err := r.client.CreateDatamartDefinition(&input)
 	if err != nil {
@@ -613,8 +590,8 @@ func (r *datamartDefinitionResource) Create(ctx context.Context, req resource.Cr
 	resp.Diagnostics.Append(resp.State.Set(ctx, data)...)
 }
 
-func (r *datamartDefinitionResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state datamartDefinitionModel
+func (r *bigqueryDatamartDefinitionResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	var state bigqueryDatamartDefinitionModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -633,8 +610,8 @@ func (r *datamartDefinitionResource) Read(ctx context.Context, req resource.Read
 	resp.Diagnostics.Append(resp.State.Set(ctx, data)...)
 }
 
-func (r *datamartDefinitionResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan, state datamartDefinitionModel
+func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var plan, state bigqueryDatamartDefinitionModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
@@ -678,52 +655,50 @@ func (r *datamartDefinitionResource) Update(ctx context.Context, req resource.Up
 	} else {
 		input.SetCustomVariableSettings([]client.CustomVariableSettingInput{})
 	}
-	if plan.DatamartBigqueryOption != nil {
-		optionInput := client.UpdateDatamartBigqueryOptionInput{}
-		optionInput.SetBigqueryConnectionID(plan.DatamartBigqueryOption.BigqueryConnectionID.ValueInt64())
-		optionInput.SetQueryMode(plan.DatamartBigqueryOption.QueryMode.ValueString())
-		optionInput.SetQuery(plan.DatamartBigqueryOption.Query.ValueString())
-		if !plan.DatamartBigqueryOption.DestinationDataset.IsNull() {
-			optionInput.SetDestinationDataset(plan.DatamartBigqueryOption.DestinationDataset.ValueString())
-		}
-		if !plan.DatamartBigqueryOption.DestinationTable.IsNull() {
-			optionInput.SetDestinationTable(plan.DatamartBigqueryOption.DestinationTable.ValueString())
-		}
-		if !plan.DatamartBigqueryOption.WriteDisposition.IsNull() {
-			optionInput.SetWriteDisposition(plan.DatamartBigqueryOption.WriteDisposition.ValueString())
-		}
-		if !plan.DatamartBigqueryOption.BeforeLoad.IsNull() {
-			optionInput.SetBeforeLoad(plan.DatamartBigqueryOption.BeforeLoad.ValueString())
-		} else {
-			optionInput.SetBeforeLoadEmpty()
-		}
-		if !plan.DatamartBigqueryOption.Partitioning.IsNull() {
-			optionInput.SetPartitioning(plan.DatamartBigqueryOption.Partitioning.ValueString())
-		} else {
-			optionInput.SetPartitioningEmpty()
-		}
-		if !plan.DatamartBigqueryOption.PartitioningTime.IsNull() {
-			optionInput.SetPartitioningTime(plan.DatamartBigqueryOption.PartitioningTime.ValueString())
-		}
-		if !plan.DatamartBigqueryOption.PartitioningField.IsNull() {
-			optionInput.SetPartitioningField(plan.DatamartBigqueryOption.PartitioningField.ValueString())
-		}
-		if plan.DatamartBigqueryOption.ClusteringFields != nil {
-			clusteringFields := make([]string, len(plan.DatamartBigqueryOption.ClusteringFields))
-			for i, v := range plan.DatamartBigqueryOption.ClusteringFields {
-				clusteringFields[i] = v.ValueString()
-			}
-			optionInput.SetClusteringFields(clusteringFields)
-		} else {
-			optionInput.SetClusteringFields([]string{})
-		}
-		if !plan.DatamartBigqueryOption.Location.IsNull() {
-			optionInput.SetLocation(plan.DatamartBigqueryOption.Location.ValueString())
-		} else {
-			optionInput.SetLocationEmpty()
-		}
-		input.SetDatamartBigqueryOption(optionInput)
+	optionInput := client.UpdateDatamartBigqueryOptionInput{}
+	optionInput.SetBigqueryConnectionID(plan.BigqueryConnectionID.ValueInt64())
+	optionInput.SetQueryMode(plan.QueryMode.ValueString())
+	optionInput.SetQuery(plan.Query.ValueString())
+	if !plan.DestinationDataset.IsNull() {
+		optionInput.SetDestinationDataset(plan.DestinationDataset.ValueString())
 	}
+	if !plan.DestinationTable.IsNull() {
+		optionInput.SetDestinationTable(plan.DestinationTable.ValueString())
+	}
+	if !plan.WriteDisposition.IsNull() {
+		optionInput.SetWriteDisposition(plan.WriteDisposition.ValueString())
+	}
+	if !plan.BeforeLoad.IsNull() {
+		optionInput.SetBeforeLoad(plan.BeforeLoad.ValueString())
+	} else {
+		optionInput.SetBeforeLoadEmpty()
+	}
+	if !plan.Partitioning.IsNull() {
+		optionInput.SetPartitioning(plan.Partitioning.ValueString())
+	} else {
+		optionInput.SetPartitioningEmpty()
+	}
+	if !plan.PartitioningTime.IsNull() {
+		optionInput.SetPartitioningTime(plan.PartitioningTime.ValueString())
+	}
+	if !plan.PartitioningField.IsNull() {
+		optionInput.SetPartitioningField(plan.PartitioningField.ValueString())
+	}
+	if plan.ClusteringFields != nil {
+		clusteringFields := make([]string, len(plan.ClusteringFields))
+		for i, v := range plan.ClusteringFields {
+			clusteringFields[i] = v.ValueString()
+		}
+		optionInput.SetClusteringFields(clusteringFields)
+	} else {
+		optionInput.SetClusteringFields([]string{})
+	}
+	if !plan.Location.IsNull() {
+		optionInput.SetLocation(plan.Location.ValueString())
+	} else {
+		optionInput.SetLocationEmpty()
+	}
+	input.SetDatamartBigqueryOption(optionInput)
 	if plan.Schedules != nil {
 		scheduleInputs := make([]client.ScheduleInput, len(plan.Schedules))
 		for i, v := range plan.Schedules {
@@ -837,8 +812,8 @@ func (r *datamartDefinitionResource) Update(ctx context.Context, req resource.Up
 	resp.Diagnostics.Append(resp.State.Set(ctx, data)...)
 }
 
-func (r *datamartDefinitionResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state datamartDefinitionModel
+func (r *bigqueryDatamartDefinitionResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state bigqueryDatamartDefinitionModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -855,7 +830,7 @@ func (r *datamartDefinitionResource) Delete(ctx context.Context, req resource.De
 	}
 }
 
-func (r *datamartDefinitionResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *bigqueryDatamartDefinitionResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	id, err := strconv.ParseInt(req.ID, 10, 64)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -868,37 +843,63 @@ func (r *datamartDefinitionResource) ImportState(ctx context.Context, req resour
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
-func (r datamartDefinitionResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
-	var data datamartDefinitionModel
+func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var data bigqueryDatamartDefinitionModel
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	switch data.DataWarehouseType.ValueString() {
-	case "bigquery":
-		{
-			if data.DatamartBigqueryOption == nil {
+	if data.QueryMode.ValueString() == "insert" {
+		if data.DestinationDataset.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("destination_dataset"),
+				"Missing Destination Dataset",
+				"destination_dataset is required for insert query mode",
+			)
+		}
+		if data.DestinationTable.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("destination_table"),
+				"Missing Destination Table",
+				"destination_table is required for insert query mode",
+			)
+		}
+		if data.WriteDisposition.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("write_disposition"),
+				"Missing Write Disposition",
+				"write_disposition is required for insert query mode",
+			)
+		}
+		if !data.Partitioning.IsNull() {
+			if data.PartitioningTime.IsNull() {
 				resp.Diagnostics.AddAttributeError(
-					path.Root("data_warehouse_type"),
-					"Missing Datamart Bigquery Option",
-					"Expected datamart_bigquery_option to be configured for bigquery data warehouse type.",
+					path.Root("partitioning_time"),
+					"Missing Partitioning Time",
+					"partitioning_time is required when partitioning is set",
+				)
+			}
+			if data.Partitioning.ValueString() == "time_unit_column" && data.PartitioningField.IsNull() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("partitioning_field"),
+					"Missing Partitioning Field",
+					"partitioning_field is required when partitioning is time_unit_column",
 				)
 			}
 		}
 	}
 }
 
-func (r *datamartDefinitionResource) fetchModel(id int64) (*datamartDefinitionModel, error) {
+func (r *bigqueryDatamartDefinitionResource) fetchModel(id int64) (*bigqueryDatamartDefinitionModel, error) {
 	datamartDefinition, err := r.client.GetDatamartDefinition(id)
 	if err != nil {
 		return nil, err
 	}
-	model := datamartDefinitionModel{
+	model := bigqueryDatamartDefinitionModel{
 		ID:                     types.Int64Value(datamartDefinition.ID),
 		Name:                   types.StringValue(datamartDefinition.Name),
-		DataWarehouseType:      types.StringValue(datamartDefinition.DataWarehouseType),
 		IsRunnableConcurrently: types.BoolValue(datamartDefinition.IsRunnableConcurrently),
 	}
 	if datamartDefinition.Description != nil {
@@ -936,43 +937,42 @@ func (r *datamartDefinitionResource) fetchModel(id int64) (*datamartDefinitionMo
 		model.CustomVariableSettings = customVariableSettings
 	}
 	if datamartDefinition.DatamartBigqueryOption != nil {
-		datamartBigqueryOption := &datamartBigqueryOptionModel{
-			BigqueryConnectionID: types.Int64Value(datamartDefinition.DatamartBigqueryOption.BigqueryConnectionID),
-			QueryMode:            types.StringValue(datamartDefinition.DatamartBigqueryOption.QueryMode),
-			Query:                trimmedStringValue{types.StringValue(datamartDefinition.DatamartBigqueryOption.Query)},
-		}
+		model.BigqueryConnectionID = types.Int64Value(datamartDefinition.DatamartBigqueryOption.BigqueryConnectionID)
+		model.QueryMode = types.StringValue(datamartDefinition.DatamartBigqueryOption.QueryMode)
+		model.Query = trimmedStringValue{types.StringValue(datamartDefinition.DatamartBigqueryOption.Query)}
 		if datamartDefinition.DatamartBigqueryOption.DestinationDataset != nil {
-			datamartBigqueryOption.DestinationDataset = types.StringValue(*datamartDefinition.DatamartBigqueryOption.DestinationDataset)
+			model.DestinationDataset = types.StringValue(*datamartDefinition.DatamartBigqueryOption.DestinationDataset)
 		}
 		if datamartDefinition.DatamartBigqueryOption.DestinationTable != nil {
-			datamartBigqueryOption.DestinationTable = types.StringValue(*datamartDefinition.DatamartBigqueryOption.DestinationTable)
+			model.DestinationTable = types.StringValue(*datamartDefinition.DatamartBigqueryOption.DestinationTable)
 		}
 		if datamartDefinition.DatamartBigqueryOption.WriteDisposition != nil {
-			datamartBigqueryOption.WriteDisposition = types.StringValue(*datamartDefinition.DatamartBigqueryOption.WriteDisposition)
+			model.WriteDisposition = types.StringValue(*datamartDefinition.DatamartBigqueryOption.WriteDisposition)
 		}
 		if datamartDefinition.DatamartBigqueryOption.BeforeLoad != nil {
-			datamartBigqueryOption.BeforeLoad = types.StringValue(*datamartDefinition.DatamartBigqueryOption.BeforeLoad)
+			model.BeforeLoad = types.StringValue(*datamartDefinition.DatamartBigqueryOption.BeforeLoad)
 		}
 		if datamartDefinition.DatamartBigqueryOption.Partitioning != nil {
-			datamartBigqueryOption.Partitioning = types.StringValue(*datamartDefinition.DatamartBigqueryOption.Partitioning)
+			model.Partitioning = types.StringValue(*datamartDefinition.DatamartBigqueryOption.Partitioning)
 		}
 		if datamartDefinition.DatamartBigqueryOption.PartitioningTime != nil {
-			datamartBigqueryOption.PartitioningTime = types.StringValue(*datamartDefinition.DatamartBigqueryOption.PartitioningTime)
+			model.PartitioningTime = types.StringValue(*datamartDefinition.DatamartBigqueryOption.PartitioningTime)
 		}
 		if datamartDefinition.DatamartBigqueryOption.PartitioningField != nil {
-			datamartBigqueryOption.PartitioningField = types.StringValue(*datamartDefinition.DatamartBigqueryOption.PartitioningField)
+			model.PartitioningField = types.StringValue(*datamartDefinition.DatamartBigqueryOption.PartitioningField)
 		}
 		if datamartDefinition.DatamartBigqueryOption.ClusteringFields != nil {
 			clusteringFields := make([]types.String, len(datamartDefinition.DatamartBigqueryOption.ClusteringFields))
 			for i, v := range datamartDefinition.DatamartBigqueryOption.ClusteringFields {
 				clusteringFields[i] = types.StringValue(v)
 			}
-			datamartBigqueryOption.ClusteringFields = clusteringFields
+			model.ClusteringFields = clusteringFields
 		}
 		if datamartDefinition.DatamartBigqueryOption.Location != nil {
-			datamartBigqueryOption.Location = types.StringValue(*datamartDefinition.DatamartBigqueryOption.Location)
+			model.Location = types.StringValue(*datamartDefinition.DatamartBigqueryOption.Location)
 		}
-		model.DatamartBigqueryOption = datamartBigqueryOption
+	} else {
+		return nil, fmt.Errorf("datamartBigqueryOption is nil")
 	}
 	if datamartDefinition.Notifications != nil {
 		notifications := make([]datamartNotificationModel, len(datamartDefinition.Notifications))

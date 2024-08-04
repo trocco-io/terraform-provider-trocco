@@ -1,11 +1,11 @@
 ---
-page_title: "trocco_datamart_definition Resource - trocco"
+page_title: "trocco_bigquery_datamart_definition Resource - trocco"
 subcategory: ""
 description: |-
   The datamart definition resource allows you to create, read, update, and delete a datamart definition.
 ---
 
-# trocco_datamart_definition (Resource)
+# trocco_bigquery_datamart_definition (Resource)
 
 The datamart definition resource allows you to create, read, update, and delete a datamart definition.
 
@@ -14,28 +14,24 @@ The datamart definition resource allows you to create, read, update, and delete 
 ### Minimum
 
 ```terraform
-resource "trocco_datamart_definition" "minimum" {
+resource "trocco_bigquery_datamart_definition" "minimum" {
   name                     = "example_minimum"
-  data_warehouse_type      = "bigquery"
   is_runnable_concurrently = false
-  datamart_bigquery_option = {
-    bigquery_connection_id = 1
-    query                  = "SELECT * FROM tables"
-    query_mode             = "insert"
-    destination_dataset    = "dist_datasets"
-    destination_table      = "dist_tables"
-    write_disposition      = "append"
-  }
+  bigquery_connection_id   = 1
+  query                    = "SELECT * FROM tables"
+  query_mode               = "insert"
+  destination_dataset      = "dist_datasets"
+  destination_table        = "dist_tables"
+  write_disposition        = "append"
 }
 ```
 
 ### With Optional Fields
 
 ```terraform
-resource "trocco_datamart_definition" "with_optionals" {
+resource "trocco_bigquery_datamart_definition" "with_optionals" {
   name                     = "example_with_optionals"
   description              = "This is an example with optional fields"
-  data_warehouse_type      = "bigquery"
   is_runnable_concurrently = false
   resource_group_id        = 1
   custom_variable_settings = [
@@ -54,71 +50,60 @@ resource "trocco_datamart_definition" "with_optionals" {
       time_zone = "Asia/Tokyo",
     }
   ]
-  datamart_bigquery_option = {
-    bigquery_connection_id = 1
-    query                  = "SELECT * FROM tables"
-    query_mode             = "insert"
-    destination_dataset    = "dist_datasets"
-    destination_table      = "dist_tables"
-    write_disposition      = "append"
-  }
+  bigquery_connection_id = 1
+  query                  = "SELECT * FROM tables"
+  query_mode             = "insert"
+  destination_dataset    = "dist_datasets"
+  destination_table      = "dist_tables"
+  write_disposition      = "append"
 }
 ```
 
-### Google BigQuery Insert Mode
+### Insert Mode
 
 ```terraform
-resource "trocco_datamart_definition" "bigquery_insert_mode" {
-  name                     = "example_bigquery_insert_mode"
-  data_warehouse_type      = "bigquery"
+resource "trocco_bigquery_datamart_definition" "insert_mode" {
+  name                     = "example_insert_mode"
   is_runnable_concurrently = false
-  datamart_bigquery_option = {
-    bigquery_connection_id = 1
-    query                  = "SELECT * FROM tables"
-    query_mode             = "insert"
-    destination_dataset    = "dist_datasets"
-    destination_table      = "dist_tables"
-    write_disposition      = "append"
-    before_load            = "DELETE FROM tables WHERE created_at < '2024-01-01'"
-    partitioning           = "time_unit_column"
-    partitioning_time      = "DAY"
-    partitioning_field     = "created_at"
-    clustering_fields      = ["id", "name"]
-  }
+  bigquery_connection_id   = 1
+  query                    = "SELECT * FROM tables"
+  query_mode               = "insert"
+  destination_dataset      = "dist_datasets"
+  destination_table        = "dist_tables"
+  write_disposition        = "append"
+  before_load              = "DELETE FROM tables WHERE created_at < '2024-01-01'"
+  partitioning             = "time_unit_column"
+  partitioning_time        = "DAY"
+  partitioning_field       = "created_at"
+  clustering_fields        = ["id", "name"]
 }
 ```
 
-### Google BigQuery Query Mode
+### Query Mode
 
 ```terraform
-resource "trocco_datamart_definition" "bigquery_query_mode" {
-  name                     = "example_bigquery_query_mode"
-  data_warehouse_type      = "bigquery"
+resource "trocco_bigquery_datamart_definition" "query_mode" {
+  name                     = "example_query_mode"
   is_runnable_concurrently = false
-  datamart_bigquery_option = {
-    bigquery_connection_id = 1
-    query                  = "SELECT * FROM tables"
-    query_mode             = "query"
-    location               = "asia-northeast1"
-  }
+  bigquery_connection_id   = 1
+  query                    = "SELECT * FROM tables"
+  query_mode               = "query"
+  location                 = "asia-northeast1"
 }
 ```
 
 ### With Schedules
 
 ```terraform
-resource "trocco_datamart_definition" "with_schedules" {
+resource "trocco_bigquery_datamart_definition" "with_schedules" {
   name                     = "example_with_schedules"
-  data_warehouse_type      = "bigquery"
   is_runnable_concurrently = false
-  datamart_bigquery_option = {
-    bigquery_connection_id = 1
-    query                  = "SELECT * FROM tables"
-    query_mode             = "insert"
-    destination_dataset    = "dist_datasets"
-    destination_table      = "dist_tables"
-    write_disposition      = "append"
-  }
+  bigquery_connection_id   = 1
+  query                    = "SELECT * FROM tables"
+  query_mode               = "insert"
+  destination_dataset      = "dist_datasets"
+  destination_table        = "dist_tables"
+  write_disposition        = "append"
   schedules = [
     {
       frequency = "hourly"
@@ -152,18 +137,15 @@ resource "trocco_datamart_definition" "with_schedules" {
 ### With Notifications
 
 ```terraform
-resource "trocco_datamart_definition" "with_notifications" {
+resource "trocco_bigquery_datamart_definition" "with_notifications" {
   name                     = "example_with_notifications"
-  data_warehouse_type      = "bigquery"
   is_runnable_concurrently = false
-  datamart_bigquery_option = {
-    bigquery_connection_id = 1
-    query                  = "SELECT * FROM tables"
-    query_mode             = "insert"
-    destination_dataset    = "dist_datasets"
-    destination_table      = "dist_tables"
-    write_disposition      = "append"
-  }
+  bigquery_connection_id   = 1
+  query                    = "SELECT * FROM tables"
+  query_mode               = "insert"
+  destination_dataset      = "dist_datasets"
+  destination_table        = "dist_tables"
+  write_disposition        = "append"
   notifications = [
     {
       destination_type  = "slack"
@@ -187,18 +169,15 @@ resource "trocco_datamart_definition" "with_notifications" {
 ### With Labels
 
 ```terraform
-resource "trocco_datamart_definition" "with_labels" {
+resource "trocco_bigquery_datamart_definition" "with_labels" {
   name                     = "example_with_labels"
-  data_warehouse_type      = "bigquery"
   is_runnable_concurrently = false
-  datamart_bigquery_option = {
-    bigquery_connection_id = 1
-    query                  = "SELECT * FROM tables"
-    query_mode             = "insert"
-    destination_dataset    = "dist_datasets"
-    destination_table      = "dist_tables"
-    write_disposition      = "append"
-  }
+  bigquery_connection_id   = 1
+  query                    = "SELECT * FROM tables"
+  query_mode               = "insert"
+  destination_dataset      = "dist_datasets"
+  destination_table        = "dist_tables"
+  write_disposition        = "append"
   labels = [
     {
       name = "test_label_1"
@@ -215,19 +194,29 @@ resource "trocco_datamart_definition" "with_labels" {
 
 ### Required
 
-- `data_warehouse_type` (String) The following data warehouse types are supported: `bigquery`
+- `bigquery_connection_id` (Number)
 - `is_runnable_concurrently` (Boolean) Whether or not to run a job if another job with the same data mart definition is running at the time the job is run.
 - `name` (String) It must be less than 256 characters
+- `query` (String)
+- `query_mode` (String) The following query modes are supported: `insert`, `query`
 
 ### Optional
 
+- `before_load` (String) Valid for `insert` mode
+- `clustering_fields` (List of String) Valid for `insert` mode. At most 4 fields can be specified.
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--custom_variable_settings))
-- `datamart_bigquery_option` (Attributes) Required for `bigquery` data warehouse type (see [below for nested schema](#nestedatt--datamart_bigquery_option))
 - `description` (String) It must be at least 1 character
+- `destination_dataset` (String) Required for `insert` mode
+- `destination_table` (String) Required for `insert` mode
 - `labels` (Attributes Set) (see [below for nested schema](#nestedatt--labels))
+- `location` (String) Valid for `query` mode
 - `notifications` (Attributes Set) (see [below for nested schema](#nestedatt--notifications))
+- `partitioning` (String) The following partitioning types are supported: `ingestion_time`, `time_unit_column`. Valid for `insert` mode
+- `partitioning_field` (String) Required when `partitioning` is `time_unit_column`
+- `partitioning_time` (String) The following partitioning time units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Valid for `insert` mode. Required when `partitioning` is set
 - `resource_group_id` (Number) Resource group ID to which the datamart definition belongs
 - `schedules` (Attributes Set) (see [below for nested schema](#nestedatt--schedules))
+- `write_disposition` (String) The following write dispositions are supported: `append`, `truncate`. Required for `insert` mode
 
 ### Read-Only
 
@@ -249,28 +238,6 @@ Optional:
 - `time_zone` (String) Required for `timestamp` and `timestamp_runtime` types.
 - `unit` (String) The following units are supported: `hour`, `date`, `month`. Required for `timestamp` and `timestamp_runtime` types.
 - `value` (String) Required for `string` type.
-
-
-<a id="nestedatt--datamart_bigquery_option"></a>
-### Nested Schema for `datamart_bigquery_option`
-
-Required:
-
-- `bigquery_connection_id` (Number)
-- `query` (String)
-- `query_mode` (String) The following query modes are supported: `insert`, `query`
-
-Optional:
-
-- `before_load` (String) Valid for `insert` mode
-- `clustering_fields` (List of String) Valid for `insert` mode. At most 4 fields can be specified.
-- `destination_dataset` (String) Required for `insert` mode
-- `destination_table` (String) Required for `insert` mode
-- `location` (String) Valid for `query` mode
-- `partitioning` (String) The following partitioning types are supported: `ingestion_time`, `time_unit_column`. Valid for `insert` mode
-- `partitioning_field` (String) Required when `partitioning` is `time_unit_column`
-- `partitioning_time` (String) The following partitioning time units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Valid for `insert` mode. Required when `partitioning` is set
-- `write_disposition` (String) The following write dispositions are supported: `append`, `truncate`. Required for `insert` mode
 
 
 <a id="nestedatt--labels"></a>
@@ -326,6 +293,6 @@ Optional:
 Import is supported using the following syntax:
 
 ```shell
-terraform import trocco_datamart_definition.example <id>
+terraform import trocco_bigquery_datamart_definition.example <id>
 ```
 

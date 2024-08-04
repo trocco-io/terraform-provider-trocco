@@ -1,15 +1,12 @@
-resource "trocco_datamart_definition" "with_notifications" {
+resource "trocco_bigquery_datamart_definition" "with_notifications" {
   name                     = "example_with_notifications"
-  data_warehouse_type      = "bigquery"
   is_runnable_concurrently = false
-  datamart_bigquery_option = {
-    bigquery_connection_id = 1
-    query                  = "SELECT * FROM tables"
-    query_mode             = "insert"
-    destination_dataset    = "dist_datasets"
-    destination_table      = "dist_tables"
-    write_disposition      = "append"
-  }
+  bigquery_connection_id   = 1
+  query                    = "SELECT * FROM tables"
+  query_mode               = "insert"
+  destination_dataset      = "dist_datasets"
+  destination_table        = "dist_tables"
+  write_disposition        = "append"
   notifications = [
     {
       destination_type  = "slack"
