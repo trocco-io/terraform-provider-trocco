@@ -164,36 +164,36 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						},
 						"value": schema.StringAttribute{
 							Optional:            true,
-							MarkdownDescription: "Fixed string which will replace variables at runtime. Required for `string` type",
+							MarkdownDescription: "Fixed string which will replace variables at runtime. Required in `string` type",
 						},
 						"quantity": schema.Int32Attribute{
 							Optional: true,
 							Validators: []validator.Int32{
 								int32validator.AtLeast(0),
 							},
-							MarkdownDescription: "Quantity used to calculate diff from context_time. Required for `timestamp` and `timestamp_runtime` types.",
+							MarkdownDescription: "Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types",
 						},
 						"unit": schema.StringAttribute{
 							Optional: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("hour", "date", "month"),
 							},
-							MarkdownDescription: "Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required for `timestamp` and `timestamp_runtime` types.",
+							MarkdownDescription: "Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types",
 						},
 						"direction": schema.StringAttribute{
 							Optional: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("ago", "later"),
 							},
-							MarkdownDescription: "Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required for `timestamp` and `timestamp_runtime` types.",
+							MarkdownDescription: "Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types",
 						},
 						"format": schema.StringAttribute{
 							Optional:            true,
-							MarkdownDescription: "Format used to replace variables. Required for `timestamp` and `timestamp_runtime` types.",
+							MarkdownDescription: "Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types",
 						},
 						"time_zone": schema.StringAttribute{
 							Optional:            true,
-							MarkdownDescription: "Time zone used to format the timestamp. Required for `timestamp` and `timestamp_runtime` types.",
+							MarkdownDescription: "Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types",
 						},
 					},
 					PlanModifiers: []planmodifier.Object{
@@ -206,7 +206,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
-				MarkdownDescription: "ID of the BigQuery connection which is used to communicate with BigQuery",
+				MarkdownDescription: "ID of the BigQuery connection which is used to communicate with Google BigQuery",
 			},
 			"query_mode": schema.StringAttribute{
 				Required: true,
@@ -222,36 +222,36 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 			},
 			"destination_dataset": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Destination dataset where the query result will be inserted. Required for `insert` mode",
+				MarkdownDescription: "Destination dataset where the query result will be inserted. Required in `insert` mode",
 			},
 			"destination_table": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Destination table where the query result will be inserted. Required for `insert` mode",
+				MarkdownDescription: "Destination table where the query result will be inserted. Required in `insert` mode",
 			},
 			"write_disposition": schema.StringAttribute{
 				Optional: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("append", "truncate"),
 				},
-				MarkdownDescription: "The following write dispositions are supported: `append`, `truncate`. In the case of `append`, the result of the query execution is appended after the records of the existing table. In the case of `truncate`, records in the existing table are deleted and replaced with the results of the query execution. Required for `insert` mode",
+				MarkdownDescription: "The following write dispositions are supported: `append`, `truncate`. In the case of `append`, the result of the query execution is appended after the records of the existing table. In the case of `truncate`, records in the existing table are deleted and replaced with the results of the query execution. Required in `insert` mode",
 			},
 			"before_load": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "The query to be executed before loading the data into the destination table. Valid for `insert` mode.",
+				MarkdownDescription: "The query to be executed before loading the data into the destination table. Available only in `insert` mode",
 			},
 			"partitioning": schema.StringAttribute{
 				Optional: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("ingestion_time", "time_unit_column"),
 				},
-				MarkdownDescription: "The following partitioning types are supported: `ingestion_time`, `time_unit_column`. In the case of `ingestion_time`, partitions are cut based on TROCCO's job execution time. In the case of `time_unit_column`, partitioning is done based on the reference column. Valid for `insert` mode",
+				MarkdownDescription: "The following partitioning types are supported: `ingestion_time`, `time_unit_column`. In the case of `ingestion_time`, partitions are cut based on TROCCO's job execution time. In the case of `time_unit_column`, partitioning is done based on the reference column. Available only in `insert` mode",
 			},
 			"partitioning_time": schema.StringAttribute{
 				Optional: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("DAY", "HOUR", "MONTH", "YEAR"),
 				},
-				MarkdownDescription: "The granularity of table partitioning. The following units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Valid for `insert` mode. Required when `partitioning` is set",
+				MarkdownDescription: "The granularity of table partitioning. The following units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Required when `partitioning` is set",
 			},
 			"partitioning_field": schema.StringAttribute{
 				Optional:            true,
@@ -263,11 +263,11 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 				Validators: []validator.List{
 					listvalidator.SizeAtMost(4),
 				},
-				MarkdownDescription: "Column names to be used for clustering. At most 4 fields can be specified. Valid for `insert` mode",
+				MarkdownDescription: "Column names to be used for clustering. At most 4 fields can be specified. Available only in `insert` mode",
 			},
 			"location": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "The location where the query will be executed. If not specified, the location is automatically determined by Google BigQuery. Valid for `query` mode",
+				MarkdownDescription: "The location where the query will be executed. If not specified, the location is automatically determined by Google BigQuery. Available only in `query` mode",
 			},
 			"schedules": schema.SetNestedAttribute{
 				Optional: true,
@@ -292,31 +292,32 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 							Validators: []validator.Int32{
 								int32validator.Between(0, 23),
 							},
-							MarkdownDescription: "Value of hour. Required for `daily`, `weekly`, and `monthly` schedules",
+							MarkdownDescription: "Value of hour. Required in `daily`, `weekly`, and `monthly` schedules",
 						},
 						"day_of_week": schema.Int32Attribute{
 							Optional: true,
 							Validators: []validator.Int32{
 								int32validator.Between(0, 6),
 							},
-							MarkdownDescription: "Value of day of week. Sunday - Saturday is represented as 0 - 6. Required for `weekly` schedule",
+							MarkdownDescription: "Value of day of week. Sunday - Saturday is represented as 0 - 6. Required in `weekly` schedule",
 						},
 						"day": schema.Int32Attribute{
 							Optional: true,
 							Validators: []validator.Int32{
 								int32validator.Between(1, 31),
 							},
-							MarkdownDescription: "Value of day. Required for `monthly` schedule",
+							MarkdownDescription: "Value of day. Required in `monthly` schedule",
 						},
 						"time_zone": schema.StringAttribute{
 							Required:            true,
-							MarkdownDescription: "Time zone to calculate the schedule time",
+							MarkdownDescription: "Time zone to be used for calculation",
 						},
 					},
 					PlanModifiers: []planmodifier.Object{
 						&schedulePlanModifier{},
 					},
 				},
+				MarkdownDescription: "Schedules to be attached to the datamart definition",
 			},
 			"notifications": schema.SetNestedAttribute{
 				Optional: true,
@@ -327,7 +328,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 							Validators: []validator.String{
 								stringvalidator.OneOf("slack", "email"),
 							},
-							MarkdownDescription: "Destination service where the notification will be sent. The following destination types are supported: `slack`, `email`",
+							MarkdownDescription: "Destination service where the notification will be sent. The following types are supported: `slack`, `email`",
 						},
 						"slack_channel_id": schema.Int64Attribute{
 							Optional: true,
@@ -348,25 +349,25 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 							Validators: []validator.String{
 								stringvalidator.OneOf("job", "record"),
 							},
-							MarkdownDescription: "Category of condition to notify. The following notification types are supported: `job`, `record`",
+							MarkdownDescription: "Category of condition. The following types are supported: `job`, `record`",
 						},
 						"notify_when": schema.StringAttribute{
 							Optional: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("finished", "failed"),
 							},
-							MarkdownDescription: "Specifies the job statuses that trigger a notification. The following notify when types are supported: `finished`, `failed`. Required for `job` notification type",
+							MarkdownDescription: "Specifies the job status that trigger a notification. The following types are supported: `finished`, `failed`. Required when `notification_type` is `job`",
 						},
 						"record_count": schema.Int64Attribute{
 							Optional:            true,
-							MarkdownDescription: "The number of records to be used for condition. Required for `record` notification type",
+							MarkdownDescription: "The number of records to be used for condition. Required when `notification_type` is `record`",
 						},
 						"record_operator": schema.StringAttribute{
 							Optional: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("above", "below"),
 							},
-							MarkdownDescription: "Operator to be used for condition. The following record operators are supported: `above`, `below`. Required for `record` notification type",
+							MarkdownDescription: "Operator to be used for condition. The following operators are supported: `above`, `below`. Required when `notification_type` is `record`",
 						},
 						"message": schema.StringAttribute{
 							Required:            true,
@@ -377,6 +378,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						&datamartNotificationPlanModifier{},
 					},
 				},
+				MarkdownDescription: "Notifications to be attached to the datamart definition",
 			},
 			"labels": schema.SetNestedAttribute{
 				Optional: true,
@@ -392,6 +394,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						},
 					},
 				},
+				MarkdownDescription: "Labels to be attached to the datamart definition",
 			},
 		},
 	}
