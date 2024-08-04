@@ -6,12 +6,14 @@ import (
 
 	"terraform-provider-trocco/internal/client"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -36,7 +38,11 @@ func (p *TroccoProvider) Metadata(ctx context.Context, req provider.MetadataRequ
 
 func (p *TroccoProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "~> The API used by this Terraform Provider is currently in beta. The request and response data structures are subject to change. Consequently, the functionality and interface of the Terraform Provider may also change. Please use with caution.",
+		MarkdownDescription: `
+The TROCCO Terraform Provider enables the management of TROCCO resources using the optional TROCCO API feature, which is available only with our paid plans.
+
+~> The API used by this Terraform Provider is currently in beta. The request and response data structures are subject to change. Consequently, the functionality and interface of the Terraform Provider may also change. Please use with caution.
+    `,
 		Attributes: map[string]schema.Attribute{
 			"api_key": schema.StringAttribute{
 				Optional:            true,
@@ -45,7 +51,10 @@ func (p *TroccoProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 			},
 			"region": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "The region of TROCCO. This can also be set using the `TROCCO_REGION` environment variable.",
+				MarkdownDescription: "The region of TROCCO. This can also be set using the `TROCCO_REGION` environment variable. The following regions are available: `japan`, `india`, `korea`.",
+				Validators: []validator.String{
+					stringvalidator.OneOf("japan", "india", "korea"),
+				},
 			},
 			"dev_base_url": schema.StringAttribute{
 				Optional:            true,

@@ -2,12 +2,12 @@
 page_title: "trocco_bigquery_datamart_definition Resource - trocco"
 subcategory: ""
 description: |-
-  The datamart definition resource allows you to create, read, update, and delete a datamart definition.
+  Provides a TROCCO datamart definitions for Google BigQuery resource.
 ---
 
 # trocco_bigquery_datamart_definition (Resource)
 
-The datamart definition resource allows you to create, read, update, and delete a datamart definition.
+Provides a TROCCO datamart definitions for Google BigQuery resource.
 
 ## Example Usage
 
@@ -194,50 +194,50 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 
 ### Required
 
-- `bigquery_connection_id` (Number)
-- `is_runnable_concurrently` (Boolean) Whether or not to run a job if another job with the same data mart definition is running at the time the job is run.
-- `name` (String) It must be less than 256 characters
-- `query` (String)
-- `query_mode` (String) The following query modes are supported: `insert`, `query`
+- `bigquery_connection_id` (Number) ID of the BigQuery connection which is used to communicate with BigQuery
+- `is_runnable_concurrently` (Boolean) Specifies whether or not to run a job if another job with the same datamart definition is running at the time the job is run
+- `name` (String) Name of the datamart definition. It must be less than 256 characters
+- `query` (String) Query to be executed.
+- `query_mode` (String) The following query modes are supported: `insert`, `query`. You can simply specify the query and the destination table in insert mode. In query mode, you can write and execute any DML/DDL statement
 
 ### Optional
 
-- `before_load` (String) Valid for `insert` mode
-- `clustering_fields` (List of String) Valid for `insert` mode. At most 4 fields can be specified.
+- `before_load` (String) The query to be executed before loading the data into the destination table. Valid for `insert` mode.
+- `clustering_fields` (List of String) Column names to be used for clustering. At most 4 fields can be specified. Valid for `insert` mode
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--custom_variable_settings))
-- `description` (String) It must be at least 1 character
-- `destination_dataset` (String) Required for `insert` mode
-- `destination_table` (String) Required for `insert` mode
+- `description` (String) Description of the datamart definition. It must be at least 1 character
+- `destination_dataset` (String) Destination dataset where the query result will be inserted. Required for `insert` mode
+- `destination_table` (String) Destination table where the query result will be inserted. Required for `insert` mode
 - `labels` (Attributes Set) (see [below for nested schema](#nestedatt--labels))
-- `location` (String) Valid for `query` mode
+- `location` (String) The location where the query will be executed. If not specified, the location is automatically determined by Google BigQuery. Valid for `query` mode
 - `notifications` (Attributes Set) (see [below for nested schema](#nestedatt--notifications))
-- `partitioning` (String) The following partitioning types are supported: `ingestion_time`, `time_unit_column`. Valid for `insert` mode
-- `partitioning_field` (String) Required when `partitioning` is `time_unit_column`
-- `partitioning_time` (String) The following partitioning time units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Valid for `insert` mode. Required when `partitioning` is set
-- `resource_group_id` (Number) Resource group ID to which the datamart definition belongs
+- `partitioning` (String) The following partitioning types are supported: `ingestion_time`, `time_unit_column`. In the case of `ingestion_time`, partitions are cut based on TROCCO's job execution time. In the case of `time_unit_column`, partitioning is done based on the reference column. Valid for `insert` mode
+- `partitioning_field` (String) Column name to be used for partitioning. Required when `partitioning` is `time_unit_column`
+- `partitioning_time` (String) The granularity of table partitioning. The following units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Valid for `insert` mode. Required when `partitioning` is set
+- `resource_group_id` (Number) ID of the resource group to which the datamart definition belongs
 - `schedules` (Attributes Set) (see [below for nested schema](#nestedatt--schedules))
-- `write_disposition` (String) The following write dispositions are supported: `append`, `truncate`. Required for `insert` mode
+- `write_disposition` (String) The following write dispositions are supported: `append`, `truncate`. In the case of `append`, the result of the query execution is appended after the records of the existing table. In the case of `truncate`, records in the existing table are deleted and replaced with the results of the query execution. Required for `insert` mode
 
 ### Read-Only
 
-- `id` (Number) The ID of this resource.
+- `id` (Number) The ID of the datamart definition
 
 <a id="nestedatt--custom_variable_settings"></a>
 ### Nested Schema for `custom_variable_settings`
 
 Required:
 
-- `name` (String) It must start and end with `$`
-- `type` (String) The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
 
 Optional:
 
-- `direction` (String) The following directions are supported: `ago`, `later`. Required for `timestamp` and `timestamp_runtime` types.
-- `format` (String) Required for `timestamp` and `timestamp_runtime` types.
-- `quantity` (Number) Required for `timestamp` and `timestamp_runtime` types.
-- `time_zone` (String) Required for `timestamp` and `timestamp_runtime` types.
-- `unit` (String) The following units are supported: `hour`, `date`, `month`. Required for `timestamp` and `timestamp_runtime` types.
-- `value` (String) Required for `string` type.
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required for `timestamp` and `timestamp_runtime` types.
+- `format` (String) Format used to replace variables. Required for `timestamp` and `timestamp_runtime` types.
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required for `timestamp` and `timestamp_runtime` types.
+- `time_zone` (String) Time zone used to format the timestamp. Required for `timestamp` and `timestamp_runtime` types.
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required for `timestamp` and `timestamp_runtime` types.
+- `value` (String) Fixed string which will replace variables at runtime. Required for `string` type
 
 
 <a id="nestedatt--labels"></a>
@@ -245,11 +245,11 @@ Optional:
 
 Required:
 
-- `name` (String)
+- `name` (String) The name of the label
 
 Read-Only:
 
-- `id` (Number)
+- `id` (Number) The ID of the label
 
 
 <a id="nestedatt--notifications"></a>
@@ -257,17 +257,17 @@ Read-Only:
 
 Required:
 
-- `destination_type` (String) The following destination types are supported: `slack`, `email`
-- `message` (String)
-- `notification_type` (String) The following notification types are supported: `job`, `record`
+- `destination_type` (String) Destination service where the notification will be sent. The following destination types are supported: `slack`, `email`
+- `message` (String) The message to be sent with the notification
+- `notification_type` (String) Category of condition to notify. The following notification types are supported: `job`, `record`
 
 Optional:
 
-- `email_id` (Number) Required when `destination_type` is `email`
-- `notify_when` (String) The following notify when types are supported: `finished`, `failed`. Required for `job` notification type
-- `record_count` (Number) Required for `record` notification type
-- `record_operator` (String) The following record operators are supported: `above`, `below`. Required for `record` notification type
-- `slack_channel_id` (Number) Required when `destination_type` is `slack`
+- `email_id` (Number) ID of the email used to send notifications. Required when `destination_type` is `email`
+- `notify_when` (String) Specifies the job statuses that trigger a notification. The following notify when types are supported: `finished`, `failed`. Required for `job` notification type
+- `record_count` (Number) The number of records to be used for condition. Required for `record` notification type
+- `record_operator` (String) Operator to be used for condition. The following record operators are supported: `above`, `below`. Required for `record` notification type
+- `slack_channel_id` (Number) ID of the slack channel used to send notifications. Required when `destination_type` is `slack`
 
 
 <a id="nestedatt--schedules"></a>
@@ -275,15 +275,15 @@ Optional:
 
 Required:
 
-- `frequency` (String) The following frequencies are supported: `hourly`, `daily`, `weekly`, `monthly`
-- `minute` (Number)
+- `frequency` (String) Frequency of automatic execution. The following frequencies are supported: `hourly`, `daily`, `weekly`, `monthly`
+- `minute` (Number) Value of minute. Required for all schedules
 - `time_zone` (String) Time zone to calculate the schedule time
 
 Optional:
 
-- `day` (Number) Required for `monthly` schedule
-- `day_of_week` (Number) Sunday - Saturday is represented as 0 - 6. Required for `weekly` schedule
-- `hour` (Number) Required for `daily`, `weekly`, and `monthly` schedules
+- `day` (Number) Value of day. Required for `monthly` schedule
+- `day_of_week` (Number) Value of day of week. Sunday - Saturday is represented as 0 - 6. Required for `weekly` schedule
+- `hour` (Number) Value of hour. Required for `daily`, `weekly`, and `monthly` schedules
 
 
 

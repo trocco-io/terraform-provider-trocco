@@ -3,10 +3,13 @@
 page_title: "trocco Provider"
 subcategory: ""
 description: |-
+  The TROCCO Terraform Provider enables the management of TROCCO resources using the optional TROCCO API feature, which is available only with our paid plans.
   ~> The API used by this Terraform Provider is currently in beta. The request and response data structures are subject to change. Consequently, the functionality and interface of the Terraform Provider may also change. Please use with caution.
 ---
 
 # trocco Provider
+
+The TROCCO Terraform Provider enables the management of TROCCO resources using the optional TROCCO API feature, which is available only with our paid plans.
 
 ~> The API used by this Terraform Provider is currently in beta. The request and response data structures are subject to change. Consequently, the functionality and interface of the Terraform Provider may also change. Please use with caution.
 
@@ -39,4 +42,4 @@ provider "trocco" {
 
 - `api_key` (String, Sensitive) Your TROCCO API key. This can also be set using the `TROCCO_API_KEY` environment variable.
 - `dev_base_url` (String) The base URL of API. This is used for only development purposes.
-- `region` (String) The region of TROCCO. This can also be set using the `TROCCO_REGION` environment variable.
+- `region` (String) The region of TROCCO. This can also be set using the `TROCCO_REGION` environment variable. The following regions are available: `japan`, `india`, `korea`.
