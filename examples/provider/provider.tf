@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     trocco = {
-      source = "registry.terraform.io/primenumber-dev/trocco"
+      source = "registry.terraform.io/trocco-io/trocco"
     }
   }
 }

@@ -138,3 +138,44 @@ func TestDoWithOutput(t *testing.T) {
 		t.Errorf("Expected output.Name to be test, got %s", output.Name)
 	}
 }
+
+func TestDoWithErrorEmptyOutput(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+		_, err := w.Write([]byte(""))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+	}))
+	defer server.Close()
+	client := NewDevTroccoClient("1234567890", server.URL)
+	type TestBody struct {
+		Name string `json:"name"`
+	}
+	output := TestBody{}
+	err := client.do("POST", "/api", nil, &output)
+	if err.Error() != "400 Bad Request" {
+		t.Errorf("Expected error to be Bad Request, got %s", err)
+	}
+}
+
+func TestDoWithErrorJSONOutput(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusForbidden)
+		_, err := w.Write([]byte(`{"error":"You are not authorized"}`))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+	}))
+	defer server.Close()
+	client := NewDevTroccoClient("1234567890", server.URL)
+	type TestBody struct {
+		Name string `json:"name"`
+	}
+	output := TestBody{}
+	err := client.do("POST", "/api", nil, &output)
+	if err.Error() != "You are not authorized" {
+		t.Errorf("Expected error to be You are not authorized, got %s", err)
+	}
+}
