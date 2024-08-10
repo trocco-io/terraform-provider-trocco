@@ -65,6 +65,10 @@ func NewDevTroccoClient(apiKey, baseURL string) *TroccoClient {
 	}
 }
 
+type ErrorOutput struct {
+	Error string `json:"error"`
+}
+
 func (client *TroccoClient) do(
 	method, path string, input interface{}, output interface{},
 ) error {
@@ -89,6 +93,18 @@ func (client *TroccoClient) do(
 		return err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode >= 400 {
+		var errorOutput ErrorOutput
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal(respBody, &errorOutput)
+		if err != nil {
+			return fmt.Errorf(resp.Status)
+		}
+		return fmt.Errorf(errorOutput.Error)
+	}
 	if output == nil {
 		return nil
 	}
