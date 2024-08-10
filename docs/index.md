@@ -19,7 +19,7 @@ The TROCCO Terraform Provider enables the management of TROCCO resources using t
 terraform {
   required_providers {
     trocco = {
-      source = "registry.terraform.io/primenumber-dev/trocco"
+      source = "registry.terraform.io/trocco-io/trocco"
     }
   }
 }
