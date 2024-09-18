@@ -176,6 +176,9 @@ type CreateDatamartDefinitionInput struct {
 	ResourceGroupID        *int64                             `json:"resource_group_id,omitempty"`
 	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
 	DatamartBigqueryOption *CreateDatamartBigqueryOptionInput `json:"datamart_bigquery_option,omitempty"`
+	Schedules              *[]ScheduleInput                   `json:"schedules,omitempty"`
+	Notifications          *[]DatamartNotificationInput       `json:"notifications,omitempty"`
+	Labels                 *[]string                          `json:"labels,omitempty"`
 }
 
 func NewCreateDatamartDefinitionInput(
@@ -204,6 +207,18 @@ func (input *CreateDatamartDefinitionInput) SetCustomVariableSettings(customVari
 
 func (input *CreateDatamartDefinitionInput) SetDatamartBigqueryOption(datamartBigqueryOption CreateDatamartBigqueryOptionInput) {
 	input.DatamartBigqueryOption = &datamartBigqueryOption
+}
+
+func (input *CreateDatamartDefinitionInput) SetSchedules(schedules []ScheduleInput) {
+	input.Schedules = &schedules
+}
+
+func (input *CreateDatamartDefinitionInput) SetNotifications(notifications []DatamartNotificationInput) {
+	input.Notifications = &notifications
+}
+
+func (input *CreateDatamartDefinitionInput) SetLabels(labels []string) {
+	input.Labels = &labels
 }
 
 type CustomVariableSettingInput struct {

@@ -418,6 +418,91 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 	if !plan.ResourceGroupID.IsNull() {
 		input.SetResourceGroupID(plan.ResourceGroupID.ValueInt64())
 	}
+	if plan.Labels != nil {
+		labelInputs := make([]string, len(plan.Labels))
+		for i, v := range plan.Labels {
+			labelInputs[i] = v.Name.ValueString()
+		}
+		input.SetLabels(labelInputs)
+	}
+	if plan.Schedules != nil {
+		scheduleInputs := make([]client.ScheduleInput, len(plan.Schedules))
+		for i, v := range plan.Schedules {
+			switch v.Frequency.ValueString() {
+			case "hourly":
+				{
+					scheduleInputs[i] = client.NewHourlyScheduleInput(
+						int(v.Minute.ValueInt32()),
+						v.TimeZone.ValueString(),
+					)
+				}
+			case "daily":
+				{
+					scheduleInputs[i] = client.NewDailyScheduleInput(
+						int(v.Hour.ValueInt32()),
+						int(v.Minute.ValueInt32()),
+						v.TimeZone.ValueString(),
+					)
+				}
+			case "weekly":
+				{
+					scheduleInputs[i] = client.NewWeeklyScheduleInput(
+						int(v.DayOfWeek.ValueInt32()),
+						int(v.Hour.ValueInt32()),
+						int(v.Minute.ValueInt32()),
+						v.TimeZone.ValueString(),
+					)
+				}
+			case "monthly":
+				{
+					scheduleInputs[i] = client.NewMonthlyScheduleInput(
+						int(v.Day.ValueInt32()),
+						int(v.Hour.ValueInt32()),
+						int(v.Minute.ValueInt32()),
+						v.TimeZone.ValueString(),
+					)
+				}
+			}
+		}
+		input.SetSchedules(scheduleInputs)
+	}
+	if plan.Notifications != nil {
+		notificationInputs := make([]client.DatamartNotificationInput, len(plan.Notifications))
+		for i, v := range plan.Notifications {
+			if v.DestinationType.ValueString() == "slack" {
+				if v.NotificationType.ValueString() == "job" {
+					notificationInputs[i] = client.NewSlackJobDatamartNotificationInput(
+						v.SlackChannelID.ValueInt64(),
+						v.NotifyWhen.ValueString(),
+						v.Message.ValueString(),
+					)
+				} else {
+					notificationInputs[i] = client.NewSlackRecordDatamartNotificationInput(
+						v.SlackChannelID.ValueInt64(),
+						v.RecordCount.ValueInt64(),
+						v.RecordOperator.ValueString(),
+						v.Message.ValueString(),
+					)
+				}
+			} else {
+				if v.NotificationType.ValueString() == "job" {
+					notificationInputs[i] = client.NewEmailJobDatamartNotificationInput(
+						v.EmailID.ValueInt64(),
+						v.NotifyWhen.ValueString(),
+						v.Message.ValueString(),
+					)
+				} else {
+					notificationInputs[i] = client.NewEmailRecordDatamartNotificationInput(
+						v.EmailID.ValueInt64(),
+						v.RecordCount.ValueInt64(),
+						v.RecordOperator.ValueString(),
+						v.Message.ValueString(),
+					)
+				}
+			}
+		}
+		input.SetNotifications(notificationInputs)
+	}
 	if plan.CustomVariableSettings != nil {
 		customVariableSettingInputs := make([]client.CustomVariableSettingInput, len(plan.CustomVariableSettings))
 		for i, v := range plan.CustomVariableSettings {
@@ -485,107 +570,6 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 			fmt.Sprintf("Unable to create datamart_definition, got error: %s", err),
 		)
 		return
-	}
-
-	updateInput := client.UpdateDatamartDefinitionInput{}
-	needUpdate := false
-	if plan.Schedules != nil {
-		needUpdate = true
-		scheduleInputs := make([]client.ScheduleInput, len(plan.Schedules))
-		for i, v := range plan.Schedules {
-			switch v.Frequency.ValueString() {
-			case "hourly":
-				{
-					scheduleInputs[i] = client.NewHourlyScheduleInput(
-						int(v.Minute.ValueInt32()),
-						v.TimeZone.ValueString(),
-					)
-				}
-			case "daily":
-				{
-					scheduleInputs[i] = client.NewDailyScheduleInput(
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
-						v.TimeZone.ValueString(),
-					)
-				}
-			case "weekly":
-				{
-					scheduleInputs[i] = client.NewWeeklyScheduleInput(
-						int(v.DayOfWeek.ValueInt32()),
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
-						v.TimeZone.ValueString(),
-					)
-				}
-			case "monthly":
-				{
-					scheduleInputs[i] = client.NewMonthlyScheduleInput(
-						int(v.Day.ValueInt32()),
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
-						v.TimeZone.ValueString(),
-					)
-				}
-			}
-		}
-		updateInput.SetSchedules(scheduleInputs)
-	}
-	if plan.Notifications != nil {
-		needUpdate = true
-		notificationInputs := make([]client.DatamartNotificationInput, len(plan.Notifications))
-		for i, v := range plan.Notifications {
-			if v.DestinationType.ValueString() == "slack" {
-				if v.NotificationType.ValueString() == "job" {
-					notificationInputs[i] = client.NewSlackJobDatamartNotificationInput(
-						v.SlackChannelID.ValueInt64(),
-						v.NotifyWhen.ValueString(),
-						v.Message.ValueString(),
-					)
-				} else {
-					notificationInputs[i] = client.NewSlackRecordDatamartNotificationInput(
-						v.SlackChannelID.ValueInt64(),
-						v.RecordCount.ValueInt64(),
-						v.RecordOperator.ValueString(),
-						v.Message.ValueString(),
-					)
-				}
-			} else {
-				if v.NotificationType.ValueString() == "job" {
-					notificationInputs[i] = client.NewEmailJobDatamartNotificationInput(
-						v.EmailID.ValueInt64(),
-						v.NotifyWhen.ValueString(),
-						v.Message.ValueString(),
-					)
-				} else {
-					notificationInputs[i] = client.NewEmailRecordDatamartNotificationInput(
-						v.EmailID.ValueInt64(),
-						v.RecordCount.ValueInt64(),
-						v.RecordOperator.ValueString(),
-						v.Message.ValueString(),
-					)
-				}
-			}
-		}
-		updateInput.SetNotifications(notificationInputs)
-	}
-	if plan.Labels != nil {
-		needUpdate = true
-		labelInputs := make([]string, len(plan.Labels))
-		for i, v := range plan.Labels {
-			labelInputs[i] = v.Name.ValueString()
-		}
-		updateInput.SetLabels(labelInputs)
-	}
-	if needUpdate {
-		err = r.client.UpdateDatamartDefinition(res.ID, &updateInput)
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Creating datamart_definition",
-				fmt.Sprintf("Unable to attach schedules/notifications/labels to datamart_definition (id: %d), got error: %s", res.ID, err),
-			)
-			return
-		}
 	}
 
 	data, err := r.fetchModel(res.ID)
