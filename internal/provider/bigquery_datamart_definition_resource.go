@@ -572,7 +572,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		return
 	}
 
-	data, err := r.fetchModel(res.ID)
+	data, err := parseToBigqueryDatamartDefinitionModel(res.DatamartDefinition)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Reading datamart_definition",
@@ -785,7 +785,8 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 		input.SetLabels([]string{})
 	}
 
-	err := r.client.UpdateDatamartDefinition(state.ID.ValueInt64(), &input)
+	data, err := r.client.UpdateDatamartDefinition(state.ID.ValueInt64(), &input)
+
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Updating datamart definition",
@@ -793,17 +794,16 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 		)
 		return
 	}
-
-	data, err := r.fetchModel(state.ID.ValueInt64())
+	model, err := parseToBigqueryDatamartDefinitionModel(data.DatamartDefinition)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Reading datamart_definition",
-			fmt.Sprintf("failed to get datamart definition: %v", err),
+			"Parseing datamart definition",
+			fmt.Sprintf("Unable to parse datamart definition (id: %d), got error: %s", state.ID.ValueInt64(), err),
 		)
 		return
 	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, data)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, model)...)
 }
 
 func (r *bigqueryDatamartDefinitionResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -886,25 +886,21 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 	}
 }
 
-func (r *bigqueryDatamartDefinitionResource) fetchModel(id int64) (*bigqueryDatamartDefinitionModel, error) {
-	datamartDefinition, err := r.client.GetDatamartDefinition(id)
-	if err != nil {
-		return nil, err
-	}
+func parseToBigqueryDatamartDefinitionModel(response client.DatamartDefinition) (*bigqueryDatamartDefinitionModel, error) {
 	model := bigqueryDatamartDefinitionModel{
-		ID:                     types.Int64Value(datamartDefinition.ID),
-		Name:                   types.StringValue(datamartDefinition.Name),
-		IsRunnableConcurrently: types.BoolValue(datamartDefinition.IsRunnableConcurrently),
+		ID:                     types.Int64Value(response.ID),
+		Name:                   types.StringValue(response.Name),
+		IsRunnableConcurrently: types.BoolValue(response.IsRunnableConcurrently),
 	}
-	if datamartDefinition.Description != nil {
-		model.Description = types.StringValue(*datamartDefinition.Description)
+	if response.Description != nil {
+		model.Description = types.StringValue(*response.Description)
 	}
-	if datamartDefinition.ResourceGroup != nil {
-		model.ResourceGroupID = types.Int64Value(datamartDefinition.ResourceGroup.ID)
+	if response.ResourceGroup != nil {
+		model.ResourceGroupID = types.Int64Value(response.ResourceGroup.ID)
 	}
-	if datamartDefinition.CustomVariableSettings != nil {
-		customVariableSettings := make([]customVariableSettingModel, len(datamartDefinition.CustomVariableSettings))
-		for i, v := range datamartDefinition.CustomVariableSettings {
+	if response.CustomVariableSettings != nil {
+		customVariableSettings := make([]customVariableSettingModel, len(response.CustomVariableSettings))
+		for i, v := range response.CustomVariableSettings {
 			customVariableSettings[i] = customVariableSettingModel{
 				Name: types.StringValue(v.Name),
 				Type: types.StringValue(v.Type),
@@ -930,47 +926,47 @@ func (r *bigqueryDatamartDefinitionResource) fetchModel(id int64) (*bigqueryData
 		}
 		model.CustomVariableSettings = customVariableSettings
 	}
-	if datamartDefinition.DatamartBigqueryOption != nil {
-		model.BigqueryConnectionID = types.Int64Value(datamartDefinition.DatamartBigqueryOption.BigqueryConnectionID)
-		model.QueryMode = types.StringValue(datamartDefinition.DatamartBigqueryOption.QueryMode)
-		model.Query = trimmedStringValue{types.StringValue(datamartDefinition.DatamartBigqueryOption.Query)}
-		if datamartDefinition.DatamartBigqueryOption.DestinationDataset != nil {
-			model.DestinationDataset = types.StringValue(*datamartDefinition.DatamartBigqueryOption.DestinationDataset)
+	if response.DatamartBigqueryOption != nil {
+		model.BigqueryConnectionID = types.Int64Value(response.DatamartBigqueryOption.BigqueryConnectionID)
+		model.QueryMode = types.StringValue(response.DatamartBigqueryOption.QueryMode)
+		model.Query = trimmedStringValue{types.StringValue(response.DatamartBigqueryOption.Query)}
+		if response.DatamartBigqueryOption.DestinationDataset != nil {
+			model.DestinationDataset = types.StringValue(*response.DatamartBigqueryOption.DestinationDataset)
 		}
-		if datamartDefinition.DatamartBigqueryOption.DestinationTable != nil {
-			model.DestinationTable = types.StringValue(*datamartDefinition.DatamartBigqueryOption.DestinationTable)
+		if response.DatamartBigqueryOption.DestinationTable != nil {
+			model.DestinationTable = types.StringValue(*response.DatamartBigqueryOption.DestinationTable)
 		}
-		if datamartDefinition.DatamartBigqueryOption.WriteDisposition != nil {
-			model.WriteDisposition = types.StringValue(*datamartDefinition.DatamartBigqueryOption.WriteDisposition)
+		if response.DatamartBigqueryOption.WriteDisposition != nil {
+			model.WriteDisposition = types.StringValue(*response.DatamartBigqueryOption.WriteDisposition)
 		}
-		if datamartDefinition.DatamartBigqueryOption.BeforeLoad != nil {
-			model.BeforeLoad = types.StringValue(*datamartDefinition.DatamartBigqueryOption.BeforeLoad)
+		if response.DatamartBigqueryOption.BeforeLoad != nil {
+			model.BeforeLoad = types.StringValue(*response.DatamartBigqueryOption.BeforeLoad)
 		}
-		if datamartDefinition.DatamartBigqueryOption.Partitioning != nil {
-			model.Partitioning = types.StringValue(*datamartDefinition.DatamartBigqueryOption.Partitioning)
+		if response.DatamartBigqueryOption.Partitioning != nil {
+			model.Partitioning = types.StringValue(*response.DatamartBigqueryOption.Partitioning)
 		}
-		if datamartDefinition.DatamartBigqueryOption.PartitioningTime != nil {
-			model.PartitioningTime = types.StringValue(*datamartDefinition.DatamartBigqueryOption.PartitioningTime)
+		if response.DatamartBigqueryOption.PartitioningTime != nil {
+			model.PartitioningTime = types.StringValue(*response.DatamartBigqueryOption.PartitioningTime)
 		}
-		if datamartDefinition.DatamartBigqueryOption.PartitioningField != nil {
-			model.PartitioningField = types.StringValue(*datamartDefinition.DatamartBigqueryOption.PartitioningField)
+		if response.DatamartBigqueryOption.PartitioningField != nil {
+			model.PartitioningField = types.StringValue(*response.DatamartBigqueryOption.PartitioningField)
 		}
-		if datamartDefinition.DatamartBigqueryOption.ClusteringFields != nil {
-			clusteringFields := make([]types.String, len(datamartDefinition.DatamartBigqueryOption.ClusteringFields))
-			for i, v := range datamartDefinition.DatamartBigqueryOption.ClusteringFields {
+		if response.DatamartBigqueryOption.ClusteringFields != nil {
+			clusteringFields := make([]types.String, len(response.DatamartBigqueryOption.ClusteringFields))
+			for i, v := range response.DatamartBigqueryOption.ClusteringFields {
 				clusteringFields[i] = types.StringValue(v)
 			}
 			model.ClusteringFields = clusteringFields
 		}
-		if datamartDefinition.DatamartBigqueryOption.Location != nil {
-			model.Location = types.StringValue(*datamartDefinition.DatamartBigqueryOption.Location)
+		if response.DatamartBigqueryOption.Location != nil {
+			model.Location = types.StringValue(*response.DatamartBigqueryOption.Location)
 		}
 	} else {
 		return nil, fmt.Errorf("datamartBigqueryOption is nil")
 	}
-	if datamartDefinition.Notifications != nil {
-		notifications := make([]datamartNotificationModel, len(datamartDefinition.Notifications))
-		for i, v := range datamartDefinition.Notifications {
+	if response.Notifications != nil {
+		notifications := make([]datamartNotificationModel, len(response.Notifications))
+		for i, v := range response.Notifications {
 			notifications[i] = datamartNotificationModel{
 				DestinationType:  types.StringValue(v.DestinationType),
 				NotificationType: types.StringValue(v.NotificationType),
@@ -994,9 +990,9 @@ func (r *bigqueryDatamartDefinitionResource) fetchModel(id int64) (*bigqueryData
 		}
 		model.Notifications = notifications
 	}
-	if datamartDefinition.Schedules != nil {
-		schedules := make([]scheduleModel, len(datamartDefinition.Schedules))
-		for i, v := range datamartDefinition.Schedules {
+	if response.Schedules != nil {
+		schedules := make([]scheduleModel, len(response.Schedules))
+		for i, v := range response.Schedules {
 			schedules[i] = scheduleModel{
 				Frequency: types.StringValue(v.Frequency),
 				Minute:    types.Int32Value(int32(v.Minute)),
@@ -1014,9 +1010,9 @@ func (r *bigqueryDatamartDefinitionResource) fetchModel(id int64) (*bigqueryData
 		}
 		model.Schedules = schedules
 	}
-	if datamartDefinition.Labels != nil {
-		labels := make([]labelModel, len(datamartDefinition.Labels))
-		for i, v := range datamartDefinition.Labels {
+	if response.Labels != nil {
+		labels := make([]labelModel, len(response.Labels))
+		for i, v := range response.Labels {
 			labels[i] = labelModel{
 				ID:   types.Int64Value(v.ID),
 				Name: types.StringValue(v.Name),
@@ -1026,4 +1022,13 @@ func (r *bigqueryDatamartDefinitionResource) fetchModel(id int64) (*bigqueryData
 	}
 
 	return &model, nil
+}
+
+func (r *bigqueryDatamartDefinitionResource) fetchModel(id int64) (*bigqueryDatamartDefinitionModel, error) {
+	datamartDefinition, err := r.client.GetDatamartDefinition(id)
+	if err != nil {
+		return nil, err
+	}
+	model, err := parseToBigqueryDatamartDefinitionModel(datamartDefinition.DatamartDefinition)
+	return model, nil
 }
