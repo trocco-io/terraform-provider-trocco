@@ -440,6 +440,44 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		input.SetCustomVariableSettings(customVariableSettingInputs)
 	}
+	if plan.QueryMode.ValueString() == "insert" {
+		optionInput := client.NewInsertModeCreateDatamartBigqueryOptionInput(
+			plan.BigqueryConnectionID.ValueInt64(),
+			plan.Query.ValueString(),
+			plan.DestinationDataset.ValueString(),
+			plan.DestinationTable.ValueString(),
+			plan.WriteDisposition.ValueString(),
+		)
+		if !plan.BeforeLoad.IsNull() {
+			optionInput.SetBeforeLoad(plan.BeforeLoad.ValueString())
+		}
+		if !plan.Partitioning.IsNull() {
+			optionInput.SetPartitioning(plan.Partitioning.ValueString())
+		}
+		if !plan.PartitioningTime.IsNull() {
+			optionInput.SetPartitioningTime(plan.PartitioningTime.ValueString())
+		}
+		if !plan.PartitioningField.IsNull() {
+			optionInput.SetPartitioningField(plan.PartitioningField.ValueString())
+		}
+		if plan.ClusteringFields != nil {
+			clusteringFields := make([]string, len(plan.ClusteringFields))
+			for i, v := range plan.ClusteringFields {
+				clusteringFields[i] = v.ValueString()
+			}
+			optionInput.SetClusteringFields(clusteringFields)
+		}
+		input.SetDatamartBigqueryOption(optionInput)
+	} else {
+		optionInput := client.NewQueryModeCreateDatamartBigqueryOptionInput(
+			plan.BigqueryConnectionID.ValueInt64(),
+			plan.Query.ValueString(),
+		)
+		if !plan.Location.IsNull() {
+			optionInput.SetLocation(plan.Location.ValueString())
+		}
+		input.SetDatamartBigqueryOption(optionInput)
+	}
 	if plan.Schedules != nil {
 		scheduleInputs := make([]client.ScheduleInput, len(plan.Schedules))
 		for i, v := range plan.Schedules {
@@ -524,44 +562,6 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 			labelInputs[i] = v.Name.ValueString()
 		}
 		input.SetLabels(labelInputs)
-	}
-	if plan.QueryMode.ValueString() == "insert" {
-		optionInput := client.NewInsertModeCreateDatamartBigqueryOptionInput(
-			plan.BigqueryConnectionID.ValueInt64(),
-			plan.Query.ValueString(),
-			plan.DestinationDataset.ValueString(),
-			plan.DestinationTable.ValueString(),
-			plan.WriteDisposition.ValueString(),
-		)
-		if !plan.BeforeLoad.IsNull() {
-			optionInput.SetBeforeLoad(plan.BeforeLoad.ValueString())
-		}
-		if !plan.Partitioning.IsNull() {
-			optionInput.SetPartitioning(plan.Partitioning.ValueString())
-		}
-		if !plan.PartitioningTime.IsNull() {
-			optionInput.SetPartitioningTime(plan.PartitioningTime.ValueString())
-		}
-		if !plan.PartitioningField.IsNull() {
-			optionInput.SetPartitioningField(plan.PartitioningField.ValueString())
-		}
-		if plan.ClusteringFields != nil {
-			clusteringFields := make([]string, len(plan.ClusteringFields))
-			for i, v := range plan.ClusteringFields {
-				clusteringFields[i] = v.ValueString()
-			}
-			optionInput.SetClusteringFields(clusteringFields)
-		}
-		input.SetDatamartBigqueryOption(optionInput)
-	} else {
-		optionInput := client.NewQueryModeCreateDatamartBigqueryOptionInput(
-			plan.BigqueryConnectionID.ValueInt64(),
-			plan.Query.ValueString(),
-		)
-		if !plan.Location.IsNull() {
-			optionInput.SetLocation(plan.Location.ValueString())
-		}
-		input.SetDatamartBigqueryOption(optionInput)
 	}
 	res, err := r.client.CreateDatamartDefinition(&input)
 	if err != nil {
