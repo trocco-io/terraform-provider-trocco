@@ -1029,6 +1029,6 @@ func (r *bigqueryDatamartDefinitionResource) fetchModel(id int64) (*bigqueryData
 	if err != nil {
 		return nil, err
 	}
-	model, err := parseToBigqueryDatamartDefinitionModel(datamartDefinition.DatamartDefinition)
+	model, _ := parseToBigqueryDatamartDefinitionModel(datamartDefinition.DatamartDefinition)
 	return model, nil
 }
