@@ -418,12 +418,27 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 	if !plan.ResourceGroupID.IsNull() {
 		input.SetResourceGroupID(plan.ResourceGroupID.ValueInt64())
 	}
-	if plan.Labels != nil {
-		labelInputs := make([]string, len(plan.Labels))
-		for i, v := range plan.Labels {
-			labelInputs[i] = v.Name.ValueString()
+	if plan.CustomVariableSettings != nil {
+		customVariableSettingInputs := make([]client.CustomVariableSettingInput, len(plan.CustomVariableSettings))
+		for i, v := range plan.CustomVariableSettings {
+			if v.Type.ValueString() == "string" {
+				customVariableSettingInputs[i] = client.NewStringTypeCustomVariableSettingInput(
+					v.Name.ValueString(),
+					v.Value.ValueString(),
+				)
+			} else {
+				customVariableSettingInputs[i] = client.NewTimestampTypeCustomVariableSettingInput(
+					v.Name.ValueString(),
+					v.Type.ValueString(),
+					int(v.Quantity.ValueInt32()),
+					v.Unit.ValueString(),
+					v.Direction.ValueString(),
+					v.Format.ValueString(),
+					v.TimeZone.ValueString(),
+				)
+			}
 		}
-		input.SetLabels(labelInputs)
+		input.SetCustomVariableSettings(customVariableSettingInputs)
 	}
 	if plan.Schedules != nil {
 		scheduleInputs := make([]client.ScheduleInput, len(plan.Schedules))
@@ -503,27 +518,12 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		input.SetNotifications(notificationInputs)
 	}
-	if plan.CustomVariableSettings != nil {
-		customVariableSettingInputs := make([]client.CustomVariableSettingInput, len(plan.CustomVariableSettings))
-		for i, v := range plan.CustomVariableSettings {
-			if v.Type.ValueString() == "string" {
-				customVariableSettingInputs[i] = client.NewStringTypeCustomVariableSettingInput(
-					v.Name.ValueString(),
-					v.Value.ValueString(),
-				)
-			} else {
-				customVariableSettingInputs[i] = client.NewTimestampTypeCustomVariableSettingInput(
-					v.Name.ValueString(),
-					v.Type.ValueString(),
-					int(v.Quantity.ValueInt32()),
-					v.Unit.ValueString(),
-					v.Direction.ValueString(),
-					v.Format.ValueString(),
-					v.TimeZone.ValueString(),
-				)
-			}
+	if plan.Labels != nil {
+		labelInputs := make([]string, len(plan.Labels))
+		for i, v := range plan.Labels {
+			labelInputs[i] = v.Name.ValueString()
 		}
-		input.SetCustomVariableSettings(customVariableSettingInputs)
+		input.SetLabels(labelInputs)
 	}
 	if plan.QueryMode.ValueString() == "insert" {
 		optionInput := client.NewInsertModeCreateDatamartBigqueryOptionInput(
