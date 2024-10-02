@@ -559,7 +559,7 @@ func TestUpdateDatamartDefinitionWithBasicValues(t *testing.T) {
 	input.SetDescription("This is a first test datamart")
 	input.SetIsRunnableConcurrently(false)
 	input.SetResourceGroupID(1)
-	err := client.UpdateDatamartDefinition(1, &input)
+	_, err := client.UpdateDatamartDefinition(1, &input)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -600,7 +600,7 @@ func TestUpdateDatamartDefinitionWithCustomVariableSettings(t *testing.T) {
 			"Asia/Tokyo",
 		),
 	})
-	err := client.UpdateDatamartDefinition(1, &input)
+	_, err := client.UpdateDatamartDefinition(1, &input)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -632,7 +632,7 @@ func TestUpdateDatamartDefinitionWithDatamartBigqueryOptionQueryMode(t *testing.
 	bigqueryOption.SetQuery("SELECT * FROM table")
 	bigqueryOption.SetLocation("asia-northeast1")
 	input.SetDatamartBigqueryOption(bigqueryOption)
-	err := client.UpdateDatamartDefinition(1, &input)
+	_, err := client.UpdateDatamartDefinition(1, &input)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -668,7 +668,7 @@ func TestUpdateDatamartDefinitionWithDatamartBigqueryOptionInsertMode(t *testing
 	bigqueryOption.SetPartitioningField("created_at")
 	bigqueryOption.SetClusteringFields([]string{"id", "name"})
 	input.SetDatamartBigqueryOption(bigqueryOption)
-	err := client.UpdateDatamartDefinition(1, &input)
+	_, err := client.UpdateDatamartDefinition(1, &input)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -700,7 +700,7 @@ func TestUpdateDatamartDefinitionWithSchedules(t *testing.T) {
 		NewWeeklyScheduleInput(3, 2, 1, "Asia/Tokyo"),
 		NewMonthlyScheduleInput(4, 2, 1, "Asia/Tokyo"),
 	})
-	err := client.UpdateDatamartDefinition(1, &input)
+	_, err := client.UpdateDatamartDefinition(1, &input)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -730,7 +730,7 @@ func TestUpdateDatamartDefinitionWithNotifications(t *testing.T) {
 		NewSlackJobDatamartNotificationInput(1, "finished", "foo"),
 		NewEmailRecordDatamartNotificationInput(1, 100, "below", "bar"),
 	})
-	err := client.UpdateDatamartDefinition(1, &input)
+	_, err := client.UpdateDatamartDefinition(1, &input)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -760,7 +760,7 @@ func TestUpdateDatamartDefinitionWithLabels(t *testing.T) {
 		"test_label_1",
 		"test_label_2",
 	})
-	err := client.UpdateDatamartDefinition(1, &input)
+	_, err := client.UpdateDatamartDefinition(1, &input)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
@@ -793,7 +793,7 @@ func TestUpdateDatamartDefinitionWithEmptyValues(t *testing.T) {
 	bigqueryOption.SetPartitioningEmpty()
 	bigqueryOption.SetLocationEmpty()
 	input.SetDatamartBigqueryOption(bigqueryOption)
-	err := client.UpdateDatamartDefinition(1, &input)
+	_, err := client.UpdateDatamartDefinition(1, &input)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}

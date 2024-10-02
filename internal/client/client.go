@@ -101,9 +101,9 @@ func (client *TroccoClient) do(
 		}
 		err = json.Unmarshal(respBody, &errorOutput)
 		if err != nil {
-			return fmt.Errorf(resp.Status)
+			return fmt.Errorf("%s", resp.Status)
 		}
-		return fmt.Errorf(errorOutput.Error)
+		return fmt.Errorf("%s", errorOutput.Error)
 	}
 	if output == nil {
 		return nil

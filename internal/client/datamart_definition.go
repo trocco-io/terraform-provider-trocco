@@ -66,6 +66,10 @@ type GetDatamartDefinitionOutput struct {
 	DatamartDefinition
 }
 
+type UpdateDatamartDefinitionOutput struct {
+	DatamartDefinition
+}
+
 type DatamartDefinition struct {
 	ID                     int64                   `json:"id"`
 	Name                   string                  `json:"name"`
@@ -176,6 +180,9 @@ type CreateDatamartDefinitionInput struct {
 	ResourceGroupID        *int64                             `json:"resource_group_id,omitempty"`
 	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
 	DatamartBigqueryOption *CreateDatamartBigqueryOptionInput `json:"datamart_bigquery_option,omitempty"`
+	Schedules              *[]ScheduleInput                   `json:"schedules,omitempty"`
+	Notifications          *[]DatamartNotificationInput       `json:"notifications,omitempty"`
+	Labels                 *[]string                          `json:"labels,omitempty"`
 }
 
 func NewCreateDatamartDefinitionInput(
@@ -204,6 +211,18 @@ func (input *CreateDatamartDefinitionInput) SetCustomVariableSettings(customVari
 
 func (input *CreateDatamartDefinitionInput) SetDatamartBigqueryOption(datamartBigqueryOption CreateDatamartBigqueryOptionInput) {
 	input.DatamartBigqueryOption = &datamartBigqueryOption
+}
+
+func (input *CreateDatamartDefinitionInput) SetSchedules(schedules []ScheduleInput) {
+	input.Schedules = &schedules
+}
+
+func (input *CreateDatamartDefinitionInput) SetNotifications(notifications []DatamartNotificationInput) {
+	input.Notifications = &notifications
+}
+
+func (input *CreateDatamartDefinitionInput) SetLabels(labels []string) {
+	input.Labels = &labels
 }
 
 type CustomVariableSettingInput struct {
@@ -316,7 +335,7 @@ func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetLocation(loc
 }
 
 type CreateDatamartDefinitionOutput struct {
-	ID int64 `json:"id"`
+	DatamartDefinition
 }
 
 func (client *TroccoClient) CreateDatamartDefinition(input *CreateDatamartDefinitionInput) (*CreateDatamartDefinitionOutput, error) {
@@ -598,13 +617,15 @@ func NewEmailRecordDatamartNotificationInput(
 	}
 }
 
-func (client *TroccoClient) UpdateDatamartDefinition(id int64, input *UpdateDatamartDefinitionInput) error {
+func (client *TroccoClient) UpdateDatamartDefinition(id int64, input *UpdateDatamartDefinitionInput) (*UpdateDatamartDefinitionOutput, error) {
 	path := fmt.Sprintf("/api/datamart_definitions/%d", id)
-	err := client.do(http.MethodPatch, path, input, nil)
+	output := new(UpdateDatamartDefinitionOutput)
+	err := client.do(http.MethodPatch, path, input, output)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	output.sanitize()
+	return output, nil
 }
 
 // Delete a datamart_definition
