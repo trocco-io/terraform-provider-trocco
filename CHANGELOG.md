@@ -1,3 +1,11 @@
+## 0.1.4
+CHORE:
+- Reduction in the number of TROCCO API calls
+
+## 0.1.3
+CHORE:
+- Updated terraform-plugin-framework to v1.11.0 from v1.10.0
+
 ## 0.1.2
 
 CHORE:
