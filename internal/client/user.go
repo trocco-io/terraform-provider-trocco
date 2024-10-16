@@ -36,8 +36,8 @@ func (input *ListUsersInput) SetCursor(cursor string) {
 }
 
 type ListUsersOutput struct {
-	Items      []User
-	NextCursor string
+	Items      []User  `json:"items"`
+	NextCursor *string `json:"next_cursor"`
 }
 
 const MaxListUsersLimit = 100
