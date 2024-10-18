@@ -65,7 +65,15 @@ func (client *TroccoClient) ListUsers(input *ListUsersInput) (*ListUsersOutput, 
 // Get a User
 
 type GetUserOutput struct {
-	User User
+	ID                           int64  `json:"id"`
+	Email                        string `json:"email"`
+	Role                         string `json:"role"`
+	CanUseBasicService           bool   `json:"can_use_basic_service"`
+	CanUseAuditLog               bool   `json:"can_use_audit_log"`
+	IsRestrictedConnectionModify bool   `json:"is_restricted_connection_modify"`
+	LastSignInAt                 string `json:"last_sign_in_at"`
+	CreatedAt                    string `json:"created_at"`
+	UpdatedAt                    string `json:"updated_at"`
 }
 
 func (client *TroccoClient) GetUser(id int64) (*GetUserOutput, error) {
@@ -90,7 +98,15 @@ type CreateUserInput struct {
 }
 
 type CreateUserOutput struct {
-	User User
+	ID                           int64  `json:"id"`
+	Email                        string `json:"email"`
+	Role                         string `json:"role"`
+	CanUseBasicService           bool   `json:"can_use_basic_service"`
+	CanUseAuditLog               bool   `json:"can_use_audit_log"`
+	IsRestrictedConnectionModify bool   `json:"is_restricted_connection_modify"`
+	LastSignInAt                 string `json:"last_sign_in_at"`
+	CreatedAt                    string `json:"created_at"`
+	UpdatedAt                    string `json:"updated_at"`
 }
 
 func (client *TroccoClient) CreateUser(input *CreateUserInput) (*CreateUserOutput, error) {
@@ -112,7 +128,15 @@ type UpdateUserInput struct {
 }
 
 type UpdateUserOutput struct {
-	User User
+	ID                           int64  `json:"id"`
+	Email                        string `json:"email"`
+	Role                         string `json:"role"`
+	CanUseBasicService           bool   `json:"can_use_basic_service"`
+	CanUseAuditLog               bool   `json:"can_use_audit_log"`
+	IsRestrictedConnectionModify bool   `json:"is_restricted_connection_modify"`
+	LastSignInAt                 string `json:"last_sign_in_at"`
+	CreatedAt                    string `json:"created_at"`
+	UpdatedAt                    string `json:"updated_at"`
 }
 
 func (client *TroccoClient) UpdateUser(id int64, input *UpdateUserInput) (*UpdateUserOutput, error) {
