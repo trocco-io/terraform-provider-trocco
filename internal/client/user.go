@@ -12,7 +12,6 @@ type User struct {
 	ID                           int64  `json:"id"`
 	Email                        string `json:"email"`
 	Role                         string `json:"role"`
-	CanUseBasicService           bool   `json:"can_use_basic_service"`
 	CanUseAuditLog               bool   `json:"can_use_audit_log"`
 	IsRestrictedConnectionModify bool   `json:"is_restricted_connection_modify"`
 	LastSignInAt                 string `json:"last_sign_in_at"`
@@ -68,7 +67,6 @@ type GetUserOutput struct {
 	ID                           int64  `json:"id"`
 	Email                        string `json:"email"`
 	Role                         string `json:"role"`
-	CanUseBasicService           bool   `json:"can_use_basic_service"`
 	CanUseAuditLog               bool   `json:"can_use_audit_log"`
 	IsRestrictedConnectionModify bool   `json:"is_restricted_connection_modify"`
 	LastSignInAt                 string `json:"last_sign_in_at"`
@@ -92,7 +90,6 @@ type CreateUserInput struct {
 	Email                        string `json:"email"`
 	Password                     string `json:"password"`
 	Role                         string `json:"role"`
-	CanUseBasicService           bool   `json:"can_use_basic_service"`
 	CanUseAuditLog               bool   `json:"can_use_audit_log"`
 	IsRestrictedConnectionModify bool   `json:"is_restricted_connection_modify"`
 }
@@ -101,7 +98,6 @@ type CreateUserOutput struct {
 	ID                           int64  `json:"id"`
 	Email                        string `json:"email"`
 	Role                         string `json:"role"`
-	CanUseBasicService           bool   `json:"can_use_basic_service"`
 	CanUseAuditLog               bool   `json:"can_use_audit_log"`
 	IsRestrictedConnectionModify bool   `json:"is_restricted_connection_modify"`
 	LastSignInAt                 string `json:"last_sign_in_at"`
@@ -122,7 +118,6 @@ func (client *TroccoClient) CreateUser(input *CreateUserInput) (*CreateUserOutpu
 
 type UpdateUserInput struct {
 	Role                         string `json:"role"`
-	CanUseBasicService           bool   `json:"can_use_basic_service"`
 	CanUseAuditLog               bool   `json:"can_use_audit_log"`
 	IsRestrictedConnectionModify bool   `json:"is_restricted_connection_modify"`
 }
@@ -131,7 +126,6 @@ type UpdateUserOutput struct {
 	ID                           int64  `json:"id"`
 	Email                        string `json:"email"`
 	Role                         string `json:"role"`
-	CanUseBasicService           bool   `json:"can_use_basic_service"`
 	CanUseAuditLog               bool   `json:"can_use_audit_log"`
 	IsRestrictedConnectionModify bool   `json:"is_restricted_connection_modify"`
 	LastSignInAt                 string `json:"last_sign_in_at"`

@@ -163,3 +163,57 @@ func TestGetUser(t *testing.T) {
 	}
 	testCases(t, cases)
 }
+
+// CreateUser
+
+func TestCreateUser(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		cases := []Case{
+			{"path", r.URL.Path, "/api/users"},
+			{"method", r.Method, http.MethodPost},
+		}
+		testCases(t, cases)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		resp := `
+			{
+				"id": 1,
+				"email": "test@example.com",
+				"role": "admin",
+				"can_use_audit_log": true,
+				"is_restricted_connection_modify": false
+				"last_sign_in_at": "2024-07-29T19:00:00.000+09:00",
+				"created_at": "2024-07-29T19:00:00.000+09:00",
+				"updated_at": "2024-07-29T20:00:00.000+09:00"
+			}
+		`
+		_, err := w.Write([]byte(resp))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+	}))
+	defer server.Close()
+
+	client := NewDevTroccoClient("1234567890", server.URL)
+	input := CreateUserInput{
+		Email:                        "test@example.com",
+		Role:                         "admin",
+		CanUseAuditLog:               true,
+		IsRestrictedConnectionModify: false,
+	}
+	output, err := client.CreateUser(&input)
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+	cases := []Case{
+		{"ID", output.ID, int64(1)},
+		{"email", output.Email, "test@exmaple.com"},
+		{"role", output.Role, "admin"},
+		{"can_use_audit_log", output.CanUseAuditLog, true},
+		{"is_restricted_connection_modify", output.IsRestrictedConnectionModify, false},
+		{"last_sign_in_at", output.LastSignInAt, "2024-07-29T19:00:00.000+09:00"},
+		{"created_at", output.CreatedAt, "2024-07-29T19:00:00.000+09:00"},
+		{"updated_at", output.UpdatedAt, "2024-07-29T20:00:00.000+09:00"},
+	}
+	testCases(t, cases)
+}
