@@ -178,7 +178,53 @@ func (r *userResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 }
 
 func (r *userResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var plan, state userResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	input := client.UpdateUserInput{
+		Role:                         plan.Role.ValueString(),
+		CanUseAuditLog:               plan.CanUseAuditLog.ValueBool(),
+		IsRestrictedConnectionModify: plan.IsRestrictedConnectionModify.ValueBool(),
+	}
+
+	user, err := r.client.UpdateUser(state.ID.ValueInt64(), &input)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Updating user",
+			fmt.Sprintf("Unable to update user, got error: %s", err),
+		)
+		return
+	}
+
+	data := userResourceModel{
+		ID:                           types.Int64Value(user.ID),
+		Password:                     types.StringValue(state.Password.ValueString()),
+		Email:                        types.StringValue(user.Email),
+		Role:                         types.StringValue(user.Role),
+		CanUseAuditLog:               types.BoolValue(user.CanUseAuditLog),
+		IsRestrictedConnectionModify: types.BoolValue(user.IsRestrictedConnectionModify),
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, data)...)
 }
 
 func (r *userResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state userResourceModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	err := r.client.DeleteUser(state.ID.ValueInt64())
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Deleting user",
+			fmt.Sprintf("Unable to delete user, got error: %s", err),
+		)
+		return
+	}
 }
