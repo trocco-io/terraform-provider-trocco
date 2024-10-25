@@ -5,14 +5,12 @@ import (
 	"fmt"
 	"terraform-provider-trocco/internal/client"
 
-	//"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	//"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -79,10 +77,12 @@ func (r *userResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 			},
 			"password": schema.StringAttribute{
 				Optional:  true,
+				Computed:  true,
 				Sensitive: true,
-				//Validators: []validator.String{
-				//	stringvalidator.RequiredDuringCreate(), // TODO: require if only creating
-				//},
+				PlanModifiers: []planmodifier.String{
+					&IgnoreChangesPlanModifier{},
+					&RequiredOnCreatePlanModifier{"password"},
+				},
 				MarkdownDescription: "The password of the user.",
 			},
 			"role": schema.StringAttribute{
