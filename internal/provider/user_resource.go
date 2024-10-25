@@ -5,8 +5,14 @@ import (
 	"fmt"
 	"terraform-provider-trocco/internal/client"
 
+	//"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	//"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -58,16 +64,25 @@ func (r *userResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 		MarkdownDescription: "Provides a TROCCO user resource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
-				Computed:            true,
+				Computed: true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
 				MarkdownDescription: "The ID of the user.",
 			},
 			"email": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: "The email of the user.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"password": schema.StringAttribute{
-				Required:            true,
-				Sensitive:           true,
+				Optional:  true,
+				Sensitive: true,
+				//Validators: []validator.String{
+				//	stringvalidator.RequiredDuringCreate(), // TODO: require if only creating
+				//},
 				MarkdownDescription: "The password of the user.",
 			},
 			"role": schema.StringAttribute{
@@ -75,11 +90,19 @@ func (r *userResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				MarkdownDescription: "The role of the user.",
 			},
 			"can_use_audit_log": schema.BoolAttribute{
-				Optional:            true,
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
 				MarkdownDescription: "Whether the user can use the audit log.",
 			},
 			"is_restricted_connection_modify": schema.BoolAttribute{
-				Optional:            true,
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
 				MarkdownDescription: "Whether the user is restricted to modify connections.",
 			},
 		},
@@ -116,6 +139,7 @@ func (r *userResource) Create(ctx context.Context, req resource.CreateRequest, r
 
 	data := userResourceModel{
 		ID:                           types.Int64Value(user.ID),
+		Password:                     types.StringValue(plan.Password.ValueString()),
 		Email:                        types.StringValue(user.Email),
 		Role:                         types.StringValue(user.Role),
 		CanUseAuditLog:               types.BoolValue(user.CanUseAuditLog),
@@ -143,6 +167,7 @@ func (r *userResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 
 	data := userResourceModel{
 		ID:                           types.Int64Value(user.ID),
+		Password:                     types.StringValue(state.Password.ValueString()),
 		Email:                        types.StringValue(user.Email),
 		Role:                         types.StringValue(user.Role),
 		CanUseAuditLog:               types.BoolValue(user.CanUseAuditLog),
