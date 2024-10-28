@@ -3,14 +3,17 @@ package provider
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"terraform-provider-trocco/internal/client"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -69,11 +72,17 @@ func (r *userResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				MarkdownDescription: "The ID of the user.",
 			},
 			"email": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The email of the user.",
+				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
+				Validators: []validator.String{
+					stringvalidator.RegexMatches(
+						regexp.MustCompile(`^[^@\s]+@[^@\s]+$`),
+						"invalid email address",
+					),
+				},
+				MarkdownDescription: "The email of the user.",
 			},
 			"password": schema.StringAttribute{
 				Optional:  true,
@@ -83,10 +92,21 @@ func (r *userResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 					&IgnoreChangesPlanModifier{},
 					&RequiredOnCreatePlanModifier{"password"},
 				},
+				Validators: []validator.String{
+					// see: https://documents.trocco.io/docs/password-policy
+					stringvalidator.LengthBetween(8, 128),
+					stringvalidator.All(
+						stringvalidator.RegexMatches(regexp.MustCompile(`[a-zA-Z]`), "must contain at least one letter"),
+						stringvalidator.RegexMatches(regexp.MustCompile(`[0-9]`), "must contain at least one number"),
+					),
+				},
 				MarkdownDescription: "The password of the user.",
 			},
 			"role": schema.StringAttribute{
-				Required:            true,
+				Required: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("admin", "member"),
+				},
 				MarkdownDescription: "The role of the user.",
 			},
 			"can_use_audit_log": schema.BoolAttribute{
