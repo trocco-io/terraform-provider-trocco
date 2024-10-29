@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strconv"
 	"terraform-provider-trocco/internal/client"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
@@ -18,8 +20,9 @@ import (
 )
 
 var (
-	_ resource.Resource              = &userResource{}
-	_ resource.ResourceWithConfigure = &userResource{}
+	_ resource.Resource                = &userResource{}
+	_ resource.ResourceWithConfigure   = &userResource{}
+	_ resource.ResourceWithImportState = &userResource{}
 )
 
 func NewUserResource() resource.Resource {
@@ -105,7 +108,7 @@ func (r *userResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 			"role": schema.StringAttribute{
 				Required: true,
 				Validators: []validator.String{
-					stringvalidator.OneOf("admin", "member"),
+					stringvalidator.OneOf("super_admin", "admin", "member"),
 				},
 				MarkdownDescription: "The role of the user.",
 			},
@@ -247,4 +250,17 @@ func (r *userResource) Delete(ctx context.Context, req resource.DeleteRequest, r
 		)
 		return
 	}
+}
+
+func (r *userResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	id, err := strconv.ParseInt(req.ID, 10, 64)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Importing user",
+			fmt.Sprintf("Unable to parse id, got error: %s", err),
+		)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
