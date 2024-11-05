@@ -103,14 +103,14 @@ func (r *userResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						stringvalidator.RegexMatches(regexp.MustCompile(`[0-9]`), "must contain at least one number"),
 					),
 				},
-				MarkdownDescription: "The password of the user.",
+				MarkdownDescription: "The password of the user. It must be at least 8 characters long and contain at least one letter and one number. It is required when creating a new user but optional during updates.",
 			},
 			"role": schema.StringAttribute{
 				Required: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("super_admin", "admin", "member"),
 				},
-				MarkdownDescription: "The role of the user.",
+				MarkdownDescription: "The role of the user. Valid value is `super_admin`, `admin`, or `member`.",
 			},
 			"can_use_audit_log": schema.BoolAttribute{
 				Optional: true,
