@@ -35,9 +35,3 @@ Provides a TROCCO connection resource.
 ### Read-Only
 
 - `id` (Number) The ID of the connection.
-
-## Import
-
-Import is supported using the following syntax:
-
-terraform import trocco_connection.example <connection_type>,<id>
