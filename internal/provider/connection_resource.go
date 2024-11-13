@@ -34,6 +34,7 @@ type connectionResourceModel struct {
 	ResourceGroupID types.Int64  `tfsdk:"resource_group_id"`
 
 	// BigQuery Fields
+	ProjectID             types.String `tfsdk:"project_id"`
 	ServiceAccountJSONKey types.String `tfsdk:"service_account_json_key"`
 
 	// Snowflake Fields
@@ -53,6 +54,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		ResourceGroupID: newNullableFromTerraformInt64(m.ResourceGroupID),
 
 		// BigQuery Fields
+		ProjectID:             newNullableFromTerraformString(m.ProjectID),
 		ServiceAccountJSONKey: newNullableFromTerraformString(m.ServiceAccountJSONKey),
 
 		// Snowflake Fields
@@ -73,6 +75,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		ResourceGroupID: newNullableFromTerraformInt64(m.ResourceGroupID),
 
 		// BigQuery Fields
+		ProjectID:             newNullableFromTerraformString(m.ProjectID),
 		ServiceAccountJSONKey: newNullableFromTerraformString(m.ServiceAccountJSONKey),
 
 		// Snowflake Fields
@@ -174,6 +177,14 @@ func (r *connectionResource) Schema(
 			},
 
 			// BigQuery Fields
+			"project_id": schema.StringAttribute{
+				MarkdownDescription: "BigQuery: A GCP project ID.",
+				Computed:            true,
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
 			"service_account_json_key": schema.StringAttribute{
 				MarkdownDescription: "BigQuery: A GCP service account key.",
 				Optional:            true,
@@ -264,6 +275,7 @@ func (r *connectionResource) Create(
 		ResourceGroupID: types.Int64PointerValue(connection.ResourceGroupID),
 
 		// BigQuery Fields
+		ProjectID:             types.StringPointerValue(connection.ProjectID),
 		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
 
 		// Snowflake Fields
@@ -316,6 +328,7 @@ func (r *connectionResource) Update(
 		ResourceGroupID: types.Int64PointerValue(connection.ResourceGroupID),
 
 		// BigQuery Fields
+		ProjectID:             types.StringPointerValue(connection.ProjectID),
 		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
 
 		// Snowflake Fields
@@ -361,6 +374,7 @@ func (r *connectionResource) Read(
 		ResourceGroupID: types.Int64PointerValue(connection.ResourceGroupID),
 
 		// BigQuery Fields
+		ProjectID:             types.StringPointerValue(connection.ProjectID),
 		ServiceAccountJSONKey: state.ServiceAccountJSONKey,
 
 		// Snowflake Fields

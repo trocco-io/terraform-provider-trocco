@@ -45,6 +45,7 @@ type CreateConnectionInput struct {
 	ResourceGroupID *NullableInt64  `json:"resource_group_id,omitempty"`
 
 	// BigQuery Fields
+	ProjectID             *NullableString `json:"project_id,omitempty"`
 	ServiceAccountJSONKey *NullableString `json:"service_account_json_key,omitempty"`
 
 	// Snowflake Fields
@@ -63,6 +64,7 @@ type UpdateConnectionInput struct {
 	ResourceGroupID *NullableInt64  `json:"resource_group_id,omitempty"`
 
 	// BigQuery Fields
+	ProjectID             *NullableString `json:"project_id,omitempty"`
 	ServiceAccountJSONKey *NullableString `json:"service_account_json_key"`
 
 	// Snowflake Fields
