@@ -27,6 +27,7 @@ Provides a TROCCO connection resource.
 - `host` (String) Snowflake: The host of a Snowflake account.
 - `password` (String, Sensitive) Snowflake: The password for the Snowflake user.
 - `private_key` (String, Sensitive) Snowflake: A private key for the Snowflake user.
+- `project_id` (String) BigQuery: A GCP project ID.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
 - `role` (String) Snowflake: A role attached to the Snowflake user.
 - `service_account_json_key` (String, Sensitive) BigQuery: A GCP service account key.
