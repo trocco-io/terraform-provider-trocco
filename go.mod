@@ -19,6 +19,7 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.34.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/samber/lo v1.47.0 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect

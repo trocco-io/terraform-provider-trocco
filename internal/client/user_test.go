@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/samber/lo"
 )
 
 // ListUsers
@@ -198,8 +200,8 @@ func TestCreateUser(t *testing.T) {
 	input := CreateUserInput{
 		Email:                        "test@example.com",
 		Role:                         "admin",
-		CanUseAuditLog:               true,
-		IsRestrictedConnectionModify: false,
+		CanUseAuditLog:               lo.ToPtr(NullableBool{Value: true, Valid: true}),
+		IsRestrictedConnectionModify: lo.ToPtr(NullableBool{Value: false, Valid: true}),
 	}
 	output, err := client.CreateUser(&input)
 	if err != nil {
@@ -250,9 +252,9 @@ func TestUpdateUser(t *testing.T) {
 
 	client := NewDevTroccoClient("1234567890", server.URL)
 	input := UpdateUserInput{
-		Role:                         "admin",
-		CanUseAuditLog:               true,
-		IsRestrictedConnectionModify: false,
+		Role:                         lo.ToPtr(NullableString{Value: "admin", Valid: true}),
+		CanUseAuditLog:               lo.ToPtr(NullableBool{Value: true, Valid: true}),
+		IsRestrictedConnectionModify: lo.ToPtr(NullableBool{Value: false, Valid: true}),
 	}
 	output, err := client.UpdateUser(1, &input)
 	if err != nil {
