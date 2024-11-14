@@ -140,15 +140,11 @@ func (r *userResource) Create(ctx context.Context, req resource.CreateRequest, r
 	}
 
 	input := client.CreateUserInput{
-		Email:    plan.Email.ValueString(),
-		Password: plan.Password.ValueString(),
-		Role:     plan.Role.ValueString(),
-	}
-	if !plan.CanUseAuditLog.IsNull() {
-		input.CanUseAuditLog = plan.CanUseAuditLog.ValueBool()
-	}
-	if !plan.IsRestrictedConnectionModify.IsNull() {
-		input.IsRestrictedConnectionModify = plan.IsRestrictedConnectionModify.ValueBool()
+		Email:                        plan.Email.ValueString(),
+		Password:                     plan.Password.ValueString(),
+		Role:                         plan.Role.ValueString(),
+		CanUseAuditLog:               newNullableFromTerraformBool(plan.CanUseAuditLog),
+		IsRestrictedConnectionModify: newNullableFromTerraformBool(plan.IsRestrictedConnectionModify),
 	}
 
 	user, err := r.client.CreateUser(&input)
@@ -209,9 +205,9 @@ func (r *userResource) Update(ctx context.Context, req resource.UpdateRequest, r
 	}
 
 	input := client.UpdateUserInput{
-		Role:                         plan.Role.ValueString(),
-		CanUseAuditLog:               plan.CanUseAuditLog.ValueBool(),
-		IsRestrictedConnectionModify: plan.IsRestrictedConnectionModify.ValueBool(),
+		Role:                         newNullableFromTerraformString(plan.Role),
+		CanUseAuditLog:               newNullableFromTerraformBool(plan.CanUseAuditLog),
+		IsRestrictedConnectionModify: newNullableFromTerraformBool(plan.IsRestrictedConnectionModify),
 	}
 
 	user, err := r.client.UpdateUser(state.ID.ValueInt64(), &input)
