@@ -22,7 +22,7 @@ import (
 var _ resource.Resource = &bigqueryDatamartDefinitionResource{}
 var _ resource.ResourceWithImportState = &bigqueryDatamartDefinitionResource{}
 
-func newBigqueryDatamartDefinitionResource() resource.Resource {
+func NewBigqueryDatamartDefinitionResource() resource.Resource {
 	return &bigqueryDatamartDefinitionResource{}
 }
 
@@ -797,7 +797,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 	model, err := parseToBigqueryDatamartDefinitionModel(data.DatamartDefinition)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Parseing datamart definition",
+			"Parsing datamart definition",
 			fmt.Sprintf("Unable to parse datamart definition (id: %d), got error: %s", state.ID.ValueInt64(), err),
 		)
 		return
