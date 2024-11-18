@@ -90,8 +90,8 @@ type CreateUserInput struct {
 	Email                        string `json:"email"`
 	Password                     string `json:"password"`
 	Role                         string `json:"role"`
-	CanUseAuditLog               *bool  `json:"can_use_audit_log"`
-	IsRestrictedConnectionModify *bool  `json:"is_restricted_connection_modify"`
+	CanUseAuditLog               *bool  `json:"can_use_audit_log,omitempty"`
+	IsRestrictedConnectionModify *bool  `json:"is_restricted_connection_modify,omitempty"`
 }
 
 type CreateUserOutput struct {
@@ -117,9 +117,9 @@ func (client *TroccoClient) CreateUser(input *CreateUserInput) (*CreateUserOutpu
 // Update a User
 
 type UpdateUserInput struct {
-	Role                         *string `json:"role"`
-	CanUseAuditLog               *bool   `json:"can_use_audit_log"`
-	IsRestrictedConnectionModify *bool   `json:"is_restricted_connection_modify"`
+	Role                         *string `json:"role,omitempty"`
+	CanUseAuditLog               *bool   `json:"can_use_audit_log,omitempty"`
+	IsRestrictedConnectionModify *bool   `json:"is_restricted_connection_modify,omitempty"`
 }
 
 type UpdateUserOutput struct {
