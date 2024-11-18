@@ -140,11 +140,15 @@ func (r *userResource) Create(ctx context.Context, req resource.CreateRequest, r
 	}
 
 	input := client.CreateUserInput{
-		Email:                        plan.Email.ValueString(),
-		Password:                     plan.Password.ValueString(),
-		Role:                         plan.Role.ValueString(),
-		CanUseAuditLog:               newNullableFromTerraformBool(plan.CanUseAuditLog),
-		IsRestrictedConnectionModify: newNullableFromTerraformBool(plan.IsRestrictedConnectionModify),
+		Email:    plan.Email.ValueString(),
+		Password: plan.Password.ValueString(),
+		Role:     plan.Role.ValueString(),
+	}
+	if !plan.CanUseAuditLog.IsNull() {
+		input.CanUseAuditLog = plan.CanUseAuditLog.ValueBoolPointer()
+	}
+	if !plan.IsRestrictedConnectionModify.IsNull() {
+		input.IsRestrictedConnectionModify = plan.IsRestrictedConnectionModify.ValueBoolPointer()
 	}
 
 	user, err := r.client.CreateUser(&input)
@@ -204,10 +208,15 @@ func (r *userResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		return
 	}
 
-	input := client.UpdateUserInput{
-		Role:                         newNullableFromTerraformString(plan.Role),
-		CanUseAuditLog:               newNullableFromTerraformBool(plan.CanUseAuditLog),
-		IsRestrictedConnectionModify: newNullableFromTerraformBool(plan.IsRestrictedConnectionModify),
+	input := client.UpdateUserInput{}
+	if !plan.Role.IsNull() {
+		input.Role = plan.Role.ValueStringPointer()
+	}
+	if !plan.CanUseAuditLog.IsNull() {
+		input.CanUseAuditLog = plan.CanUseAuditLog.ValueBoolPointer()
+	}
+	if !plan.IsRestrictedConnectionModify.IsNull() {
+		input.IsRestrictedConnectionModify = plan.IsRestrictedConnectionModify.ValueBoolPointer()
 	}
 
 	user, err := r.client.UpdateUser(state.ID.ValueInt64(), &input)

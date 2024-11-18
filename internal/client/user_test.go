@@ -200,8 +200,8 @@ func TestCreateUser(t *testing.T) {
 	input := CreateUserInput{
 		Email:                        "test@example.com",
 		Role:                         "admin",
-		CanUseAuditLog:               lo.ToPtr(NullableBool{Value: true, Valid: true}),
-		IsRestrictedConnectionModify: lo.ToPtr(NullableBool{Value: false, Valid: true}),
+		CanUseAuditLog:               lo.ToPtr(true),
+		IsRestrictedConnectionModify: lo.ToPtr(false),
 	}
 	output, err := client.CreateUser(&input)
 	if err != nil {
@@ -252,9 +252,9 @@ func TestUpdateUser(t *testing.T) {
 
 	client := NewDevTroccoClient("1234567890", server.URL)
 	input := UpdateUserInput{
-		Role:                         lo.ToPtr(NullableString{Value: "admin", Valid: true}),
-		CanUseAuditLog:               lo.ToPtr(NullableBool{Value: true, Valid: true}),
-		IsRestrictedConnectionModify: lo.ToPtr(NullableBool{Value: false, Valid: true}),
+		Role:                         lo.ToPtr("admin"),
+		CanUseAuditLog:               lo.ToPtr(true),
+		IsRestrictedConnectionModify: lo.ToPtr(false),
 	}
 	output, err := client.UpdateUser(1, &input)
 	if err != nil {
