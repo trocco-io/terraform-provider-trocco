@@ -145,10 +145,10 @@ func (r *userResource) Create(ctx context.Context, req resource.CreateRequest, r
 		Role:     plan.Role.ValueString(),
 	}
 	if !plan.CanUseAuditLog.IsNull() {
-		input.CanUseAuditLog = plan.CanUseAuditLog.ValueBool()
+		input.CanUseAuditLog = plan.CanUseAuditLog.ValueBoolPointer()
 	}
 	if !plan.IsRestrictedConnectionModify.IsNull() {
-		input.IsRestrictedConnectionModify = plan.IsRestrictedConnectionModify.ValueBool()
+		input.IsRestrictedConnectionModify = plan.IsRestrictedConnectionModify.ValueBoolPointer()
 	}
 
 	user, err := r.client.CreateUser(&input)
@@ -208,10 +208,15 @@ func (r *userResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		return
 	}
 
-	input := client.UpdateUserInput{
-		Role:                         plan.Role.ValueString(),
-		CanUseAuditLog:               plan.CanUseAuditLog.ValueBool(),
-		IsRestrictedConnectionModify: plan.IsRestrictedConnectionModify.ValueBool(),
+	input := client.UpdateUserInput{}
+	if !plan.Role.IsNull() {
+		input.Role = plan.Role.ValueStringPointer()
+	}
+	if !plan.CanUseAuditLog.IsNull() {
+		input.CanUseAuditLog = plan.CanUseAuditLog.ValueBoolPointer()
+	}
+	if !plan.IsRestrictedConnectionModify.IsNull() {
+		input.IsRestrictedConnectionModify = plan.IsRestrictedConnectionModify.ValueBoolPointer()
 	}
 
 	user, err := r.client.UpdateUser(state.ID.ValueInt64(), &input)
