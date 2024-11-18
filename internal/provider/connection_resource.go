@@ -50,41 +50,41 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 	return &client.CreateConnectionInput{
 		// Common Fields
 		Name:            m.Name.ValueString(),
-		Description:     newNullableFromTerraformString(m.Description),
+		Description:     m.Description.ValueStringPointer(),
 		ResourceGroupID: newNullableFromTerraformInt64(m.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             newNullableFromTerraformString(m.ProjectID),
-		ServiceAccountJSONKey: newNullableFromTerraformString(m.ServiceAccountJSONKey),
+		ProjectID:             m.ProjectID.ValueStringPointer(),
+		ServiceAccountJSONKey: m.ServiceAccountJSONKey.ValueStringPointer(),
 
 		// Snowflake Fields
-		Host:       newNullableFromTerraformString(m.Host),
-		UserName:   newNullableFromTerraformString(m.UserName),
-		Role:       newNullableFromTerraformString(m.Role),
-		AuthMethod: newNullableFromTerraformString(m.AuthMethod),
-		Password:   newNullableFromTerraformString(m.Password),
-		PrivateKey: newNullableFromTerraformString(m.PrivateKey),
+		Host:       m.Host.ValueStringPointer(),
+		UserName:   m.UserName.ValueStringPointer(),
+		Role:       m.Role.ValueStringPointer(),
+		AuthMethod: m.AuthMethod.ValueStringPointer(),
+		Password:   m.Password.ValueStringPointer(),
+		PrivateKey: m.PrivateKey.ValueStringPointer(),
 	}
 }
 
 func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnectionInput {
 	return &client.UpdateConnectionInput{
 		// Common Fields
-		Name:            newNullableFromTerraformString(m.Name),
-		Description:     newNullableFromTerraformString(m.Description),
+		Name:            m.Name.ValueStringPointer(),
+		Description:     m.Description.ValueStringPointer(),
 		ResourceGroupID: newNullableFromTerraformInt64(m.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             newNullableFromTerraformString(m.ProjectID),
-		ServiceAccountJSONKey: newNullableFromTerraformString(m.ServiceAccountJSONKey),
+		ProjectID:             m.ProjectID.ValueStringPointer(),
+		ServiceAccountJSONKey: m.ServiceAccountJSONKey.ValueStringPointer(),
 
 		// Snowflake Fields
-		Host:       newNullableFromTerraformString(m.Host),
-		UserName:   newNullableFromTerraformString(m.UserName),
-		Role:       newNullableFromTerraformString(m.Role),
-		AuthMethod: newNullableFromTerraformString(m.AuthMethod),
-		Password:   newNullableFromTerraformString(m.Password),
-		PrivateKey: newNullableFromTerraformString(m.PrivateKey),
+		Host:       m.Host.ValueStringPointer(),
+		UserName:   m.UserName.ValueStringPointer(),
+		Role:       m.Role.ValueStringPointer(),
+		AuthMethod: m.AuthMethod.ValueStringPointer(),
+		Password:   m.Password.ValueStringPointer(),
+		PrivateKey: m.PrivateKey.ValueStringPointer(),
 	}
 }
 
