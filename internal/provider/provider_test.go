@@ -14,6 +14,7 @@ var (
 		  dev_base_url = "%s"
 		}
 	`, os.Getenv("TROCCO_TEST_URL"))
+
 	testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
 		"trocco": providerserver.NewProtocol6WithError(New("test")()),
 	}
