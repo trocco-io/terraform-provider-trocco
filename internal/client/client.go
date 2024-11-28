@@ -88,6 +88,7 @@ func (client *TroccoClient) do(
 	req.Header.Set("Authorization", "Token "+client.APIKey)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", "terraform-provider-trocco")
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
 		return err
