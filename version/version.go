@@ -1,4 +1,4 @@
 package version
 
-// ldflagsで注入される変数
+// Variables injected by ldflags
 var ProviderVersion string
