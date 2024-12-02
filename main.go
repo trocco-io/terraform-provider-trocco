@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"log"
-	version2 "terraform-provider-trocco/version"
+	"terraform-provider-trocco/version"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"terraform-provider-trocco/internal/provider"
@@ -31,7 +31,7 @@ func main() {
 		Debug:   debug,
 	}
 
-	err := providerserver.Serve(context.Background(), provider.New(version2.ProviderVersion), opts)
+	err := providerserver.Serve(context.Background(), provider.New(version.ProviderVersion), opts)
 
 	if err != nil {
 		log.Fatal(err.Error())
