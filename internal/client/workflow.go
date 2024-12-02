@@ -27,7 +27,26 @@ type WorkflowTask struct {
 }
 
 type WorkflowTaskConfig struct {
-	ResourceID int64 `json:"resource_id"`
+	ResourceID      int64                              `json:"resource_id"`
+	Name            *string                            `json:"name"`
+	Message         *string                            `json:"message"`
+	Query           *string                            `json:"query"`
+	Operator        *string                            `json:"operator"`
+	QueryResult     *int64                             `json:"query_result"`
+	AcceptsNull     *bool                              `json:"accepts_null"`
+	Warehouse       *string                            `json:"warehouse"`
+	CustomVariables []WorkflowTaskCustomVariableConfig `json:"custom_variables"`
+}
+
+type WorkflowTaskCustomVariableConfig struct {
+	Name      *string `json:"name"`
+	Type      *string `json:"type"`
+	Value     *string `json:"value"`
+	Quantity  *int64  `json:"quantity"`
+	Unit      *string `json:"unit"`
+	Direction *string `json:"direction"`
+	Format    *string `json:"format"`
+	TimeZone  *string `json:"time_zone"`
 }
 
 type WorkflowTaskDependency struct {
@@ -62,12 +81,31 @@ type WorkflowTaskInput struct {
 }
 
 type WorkflowTaskConfigInput struct {
-	ResourceID int64 `json:"resource_id,omitempty"`
+	ResourceID      int64                                   `json:"resource_id,omitempty"`
+	Name            *string                                 `json:"name,omitempty"`
+	Message         *string                                 `json:"message,omitempty"`
+	Query           *string                                 `json:"query,omitempty"`
+	Operator        *string                                 `json:"operator,omitempty"`
+	QueryResult     *NullableInt64                          `json:"query_result,omitempty"`
+	AcceptsNull     *bool                                   `json:"accepts_null,omitempty"`
+	Warehouse       *string                                 `json:"warehouse,omitempty"`
+	CustomVarialbes []WorkflowTaskCustomVariableConfigInput `json:"custom_variables,omitempty"`
 }
 
 type WorkflowTaskDependencyInput struct {
 	Source      string `json:"source,omitempty"`
 	Destination string `json:"destination,omitempty"`
+}
+
+type WorkflowTaskCustomVariableConfigInput struct {
+	Name      *string        `json:"name,omitempty"`
+	Type      *string        `json:"type,omitempty"`
+	Value     *string        `json:"value,omitempty"`
+	Quantity  *NullableInt64 `json:"quantity,omitempty"`
+	Unit      *string        `json:"unit,omitempty"`
+	Direction *string        `json:"direction,omitempty"`
+	Format    *string        `json:"format,omitempty"`
+	TimeZone  *string        `json:"time_zone,omitempty"`
 }
 
 func (c *TroccoClient) GetWorkflows(in *GetWorkflowsInput) (*WorkflowList, error) {

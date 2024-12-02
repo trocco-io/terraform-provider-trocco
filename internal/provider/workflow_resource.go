@@ -39,7 +39,26 @@ type workflowResourceTaskModel struct {
 }
 
 type workflowResourceTaskConfigModel struct {
-	ResourceID types.Int64 `tfsdk:"resource_id"`
+	ResourceID      types.Int64                                     `tfsdk:"resource_id"`
+	Name            types.String                                    `tfsdk:"name"`
+	Message         types.String                                    `tfsdk:"message"`
+	Query           types.String                                    `tfsdk:"query"`
+	Operator        types.String                                    `tfsdk:"operator"`
+	QueryResult     types.Int64                                     `tfsdk:"query_result"`
+	AcceptsNull     types.Bool                                      `tfsdk:"accepts_null"`
+	Warehouse       types.String                                    `tfsdk:"warehouse"`
+	CustomVariables []workflowResourceTaskCustomVariableConfigModel `tfsdk:"custom_variables"`
+}
+
+type workflowResourceTaskCustomVariableConfigModel struct {
+	Name      types.String `tfsdk:"name"`
+	Type      types.String `tfsdk:"type"`
+	Value     types.String `tfsdk:"value"`
+	Quantity  types.Int64  `tfsdk:"quantity"`
+	Unit      types.String `tfsdk:"unit"`
+	Direction types.String `tfsdk:"direction"`
+	Format    types.String `tfsdk:"format"`
+	TimeZone  types.String `tfsdk:"time_zone"`
 }
 
 type workflowResourceTaskDependencyModel struct {
@@ -50,8 +69,30 @@ type workflowResourceTaskDependencyModel struct {
 func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
 	tasks := []client.WorkflowTaskInput{}
 	for _, t := range m.Tasks {
+		customVariables := []client.WorkflowTaskCustomVariableConfigInput{}
+		for _, v := range t.Config.CustomVariables {
+			customVariables = append(customVariables, client.WorkflowTaskCustomVariableConfigInput{
+				Name:      v.Name.ValueStringPointer(),
+				Type:      v.Type.ValueStringPointer(),
+				Value:     v.Value.ValueStringPointer(),
+				Quantity:  newNullableFromTerraformInt64(v.Quantity),
+				Unit:      v.Unit.ValueStringPointer(),
+				Direction: v.Direction.ValueStringPointer(),
+				Format:    v.Format.ValueStringPointer(),
+				TimeZone:  v.TimeZone.ValueStringPointer(),
+			})
+		}
+
 		config := client.WorkflowTaskConfigInput{
-			ResourceID: t.Config.ResourceID.ValueInt64(),
+			ResourceID:      t.Config.ResourceID.ValueInt64(),
+			Name:            t.Config.Name.ValueStringPointer(),
+			Message:         t.Config.Message.ValueStringPointer(),
+			Query:           t.Config.Query.ValueStringPointer(),
+			Operator:        t.Config.Operator.ValueStringPointer(),
+			QueryResult:     newNullableFromTerraformInt64(t.Config.QueryResult),
+			AcceptsNull:     t.Config.AcceptsNull.ValueBoolPointer(),
+			Warehouse:       t.Config.Warehouse.ValueStringPointer(),
+			CustomVarialbes: customVariables,
 		}
 
 		tasks = append(tasks, client.WorkflowTaskInput{
@@ -88,8 +129,30 @@ func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceMod
 	for _, t := range m.Tasks {
 		identifier := stateTaskIdentifiers[t.Key.ValueString()]
 
+		customVariables := []client.WorkflowTaskCustomVariableConfigInput{}
+		for _, v := range t.Config.CustomVariables {
+			customVariables = append(customVariables, client.WorkflowTaskCustomVariableConfigInput{
+				Name:      v.Name.ValueStringPointer(),
+				Type:      v.Type.ValueStringPointer(),
+				Value:     v.Value.ValueStringPointer(),
+				Quantity:  newNullableFromTerraformInt64(v.Quantity),
+				Unit:      v.Unit.ValueStringPointer(),
+				Direction: v.Direction.ValueStringPointer(),
+				Format:    v.Format.ValueStringPointer(),
+				TimeZone:  v.TimeZone.ValueStringPointer(),
+			})
+		}
+
 		config := client.WorkflowTaskConfigInput{
-			ResourceID: t.Config.ResourceID.ValueInt64(),
+			ResourceID:      t.Config.ResourceID.ValueInt64(),
+			Name:            t.Config.Name.ValueStringPointer(),
+			Message:         t.Config.Message.ValueStringPointer(),
+			Query:           t.Config.Query.ValueStringPointer(),
+			Operator:        t.Config.Operator.ValueStringPointer(),
+			QueryResult:     newNullableFromTerraformInt64(t.Config.QueryResult),
+			AcceptsNull:     t.Config.AcceptsNull.ValueBoolPointer(),
+			Warehouse:       t.Config.Warehouse.ValueStringPointer(),
+			CustomVarialbes: customVariables,
 		}
 
 		tasks = append(tasks, client.WorkflowTaskInput{
@@ -199,12 +262,73 @@ func (r *workflowResource) Schema(
 						},
 						"type": schema.StringAttribute{
 							Required: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf(
+									"trocco_transfer",
+									"slack_notify",
+									"bigquery_data_check",
+									"snowflake_data_check",
+									"redshift_data_check",
+								),
+							},
 						},
 						"config": schema.SingleNestedAttribute{
 							Required: true,
 							Attributes: map[string]schema.Attribute{
 								"resource_id": schema.Int64Attribute{
 									Required: true,
+								},
+								"name": schema.StringAttribute{
+									Optional: true,
+								},
+								"message": schema.StringAttribute{
+									Optional: true,
+								},
+								"query": schema.StringAttribute{
+									Optional: true,
+								},
+								"operator": schema.StringAttribute{
+									Optional: true,
+								},
+								"query_result": schema.Int64Attribute{
+									Optional: true,
+								},
+								"accepts_null": schema.BoolAttribute{
+									Optional: true,
+								},
+								"warehouse": schema.StringAttribute{
+									Optional: true,
+								},
+								"custom_variables": schema.ListNestedAttribute{
+									Optional: true,
+									NestedObject: schema.NestedAttributeObject{
+										Attributes: map[string]schema.Attribute{
+											"name": schema.StringAttribute{
+												Required: true,
+											},
+											"type": schema.StringAttribute{
+												Required: true,
+											},
+											"value": schema.StringAttribute{
+												Optional: true,
+											},
+											"quantity": schema.Int64Attribute{
+												Optional: true,
+											},
+											"unit": schema.StringAttribute{
+												Optional: true,
+											},
+											"direction": schema.StringAttribute{
+												Optional: true,
+											},
+											"format": schema.StringAttribute{
+												Optional: true,
+											},
+											"time_zone": schema.StringAttribute{
+												Optional: true,
+											},
+										},
+									},
 								},
 							},
 						},
@@ -253,12 +377,37 @@ func (r *workflowResource) Create(
 
 	tasks := []workflowResourceTaskModel{}
 	for _, t := range workflow.Tasks {
+		customVariables := []workflowResourceTaskCustomVariableConfigModel{}
+		for _, v := range t.Config.CustomVariables {
+			customVariables = append(customVariables, workflowResourceTaskCustomVariableConfigModel{
+				Name:      types.StringPointerValue(v.Name),
+				Type:      types.StringPointerValue(v.Type),
+				Value:     types.StringPointerValue(v.Value),
+				Quantity:  types.Int64PointerValue(v.Quantity),
+				Unit:      types.StringPointerValue(v.Unit),
+				Direction: types.StringPointerValue(v.Direction),
+				Format:    types.StringPointerValue(v.Format),
+				TimeZone:  types.StringPointerValue(v.TimeZone),
+			})
+		}
+		if len(customVariables) == 0 {
+			customVariables = nil
+		}
+
 		tasks = append(tasks, workflowResourceTaskModel{
 			Key:            types.StringValue(t.Key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
 			Config: workflowResourceTaskConfigModel{
-				ResourceID: types.Int64Value(t.Config.ResourceID),
+				ResourceID:      types.Int64Value(t.Config.ResourceID),
+				Name:            types.StringPointerValue(t.Config.Name),
+				Message:         types.StringPointerValue(t.Config.Message),
+				Query:           types.StringPointerValue(t.Config.Query),
+				Operator:        types.StringPointerValue(t.Config.Operator),
+				QueryResult:     types.Int64PointerValue(t.Config.QueryResult),
+				AcceptsNull:     types.BoolPointerValue(t.Config.AcceptsNull),
+				Warehouse:       types.StringPointerValue(t.Config.Warehouse),
+				CustomVariables: customVariables,
 			},
 		})
 	}
@@ -317,12 +466,37 @@ func (r *workflowResource) Update(
 
 	tasks := []workflowResourceTaskModel{}
 	for _, t := range workflow.Tasks {
+		customVariables := []workflowResourceTaskCustomVariableConfigModel{}
+		for _, v := range t.Config.CustomVariables {
+			customVariables = append(customVariables, workflowResourceTaskCustomVariableConfigModel{
+				Name:      types.StringPointerValue(v.Name),
+				Type:      types.StringPointerValue(v.Type),
+				Value:     types.StringPointerValue(v.Value),
+				Quantity:  types.Int64PointerValue(v.Quantity),
+				Unit:      types.StringPointerValue(v.Unit),
+				Direction: types.StringPointerValue(v.Direction),
+				Format:    types.StringPointerValue(v.Format),
+				TimeZone:  types.StringPointerValue(v.TimeZone),
+			})
+		}
+		if len(customVariables) == 0 {
+			customVariables = nil
+		}
+
 		tasks = append(tasks, workflowResourceTaskModel{
 			Key:            types.StringValue(t.Key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
 			Config: workflowResourceTaskConfigModel{
-				ResourceID: types.Int64Value(t.Config.ResourceID),
+				ResourceID:      types.Int64Value(t.Config.ResourceID),
+				Name:            types.StringPointerValue(t.Config.Name),
+				Message:         types.StringPointerValue(t.Config.Message),
+				Query:           types.StringPointerValue(t.Config.Query),
+				Operator:        types.StringPointerValue(t.Config.Operator),
+				QueryResult:     types.Int64PointerValue(t.Config.QueryResult),
+				AcceptsNull:     types.BoolPointerValue(t.Config.AcceptsNull),
+				Warehouse:       types.StringPointerValue(t.Config.Warehouse),
+				CustomVariables: customVariables,
 			},
 		})
 	}
@@ -381,12 +555,37 @@ func (r *workflowResource) Read(
 	for _, t := range workflow.Tasks {
 		key := stateKeys[t.TaskIdentifier]
 
+		customVariables := []workflowResourceTaskCustomVariableConfigModel{}
+		for _, v := range t.Config.CustomVariables {
+			customVariables = append(customVariables, workflowResourceTaskCustomVariableConfigModel{
+				Name:      types.StringPointerValue(v.Name),
+				Type:      types.StringPointerValue(v.Type),
+				Value:     types.StringPointerValue(v.Value),
+				Quantity:  types.Int64PointerValue(v.Quantity),
+				Unit:      types.StringPointerValue(v.Unit),
+				Direction: types.StringPointerValue(v.Direction),
+				Format:    types.StringPointerValue(v.Format),
+				TimeZone:  types.StringPointerValue(v.TimeZone),
+			})
+		}
+		if len(customVariables) == 0 {
+			customVariables = nil
+		}
+
 		tasks = append(tasks, workflowResourceTaskModel{
 			Key:            types.StringValue(key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
 			Config: workflowResourceTaskConfigModel{
-				ResourceID: types.Int64Value(t.Config.ResourceID),
+				ResourceID:      types.Int64Value(t.Config.ResourceID),
+				Name:            types.StringPointerValue(t.Config.Name),
+				Message:         types.StringPointerValue(t.Config.Message),
+				Query:           types.StringPointerValue(t.Config.Query),
+				Operator:        types.StringPointerValue(t.Config.Operator),
+				QueryResult:     types.Int64PointerValue(t.Config.QueryResult),
+				AcceptsNull:     types.BoolPointerValue(t.Config.AcceptsNull),
+				Warehouse:       types.StringPointerValue(t.Config.Warehouse),
+				CustomVariables: customVariables,
 			},
 		})
 	}
