@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	version2 "terraform-provider-trocco/version"
 )
 
 const (
@@ -88,6 +89,7 @@ func (client *TroccoClient) do(
 	req.Header.Set("Authorization", "Token "+client.APIKey)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", "terraform-provider-trocco "+version2.ProviderVersion)
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
 		return err
