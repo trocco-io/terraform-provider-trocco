@@ -35,6 +35,7 @@ type WorkflowTaskConfig struct {
 	QueryResult     *int64                             `json:"query_result"`
 	AcceptsNull     *bool                              `json:"accepts_null"`
 	Warehouse       *string                            `json:"warehouse"`
+	Database        *string                            `json:"database"`
 	CustomVariables []WorkflowTaskCustomVariableConfig `json:"custom_variables"`
 }
 
@@ -89,6 +90,7 @@ type WorkflowTaskConfigInput struct {
 	QueryResult     *NullableInt64                          `json:"query_result,omitempty"`
 	AcceptsNull     *bool                                   `json:"accepts_null,omitempty"`
 	Warehouse       *string                                 `json:"warehouse,omitempty"`
+	Database        *string                                 `json:"database,omitempty"`
 	CustomVarialbes []WorkflowTaskCustomVariableConfigInput `json:"custom_variables,omitempty"`
 }
 

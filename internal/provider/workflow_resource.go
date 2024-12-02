@@ -47,6 +47,7 @@ type workflowResourceTaskConfigModel struct {
 	QueryResult     types.Int64                                     `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                                      `tfsdk:"accepts_null"`
 	Warehouse       types.String                                    `tfsdk:"warehouse"`
+	Database        types.String                                    `tfsdk:"database"`
 	CustomVariables []workflowResourceTaskCustomVariableConfigModel `tfsdk:"custom_variables"`
 }
 
@@ -92,6 +93,7 @@ func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowIn
 			QueryResult:     newNullableFromTerraformInt64(t.Config.QueryResult),
 			AcceptsNull:     t.Config.AcceptsNull.ValueBoolPointer(),
 			Warehouse:       t.Config.Warehouse.ValueStringPointer(),
+			Database:        t.Config.Database.ValueStringPointer(),
 			CustomVarialbes: customVariables,
 		}
 
@@ -152,6 +154,7 @@ func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceMod
 			QueryResult:     newNullableFromTerraformInt64(t.Config.QueryResult),
 			AcceptsNull:     t.Config.AcceptsNull.ValueBoolPointer(),
 			Warehouse:       t.Config.Warehouse.ValueStringPointer(),
+			Database:        t.Config.Database.ValueStringPointer(),
 			CustomVarialbes: customVariables,
 		}
 
@@ -299,6 +302,9 @@ func (r *workflowResource) Schema(
 								"warehouse": schema.StringAttribute{
 									Optional: true,
 								},
+								"database": schema.StringAttribute{
+									Optional: true,
+								},
 								"custom_variables": schema.ListNestedAttribute{
 									Optional: true,
 									NestedObject: schema.NestedAttributeObject{
@@ -407,6 +413,7 @@ func (r *workflowResource) Create(
 				QueryResult:     types.Int64PointerValue(t.Config.QueryResult),
 				AcceptsNull:     types.BoolPointerValue(t.Config.AcceptsNull),
 				Warehouse:       types.StringPointerValue(t.Config.Warehouse),
+				Database:        types.StringPointerValue(t.Config.Database),
 				CustomVariables: customVariables,
 			},
 		})
@@ -496,6 +503,7 @@ func (r *workflowResource) Update(
 				QueryResult:     types.Int64PointerValue(t.Config.QueryResult),
 				AcceptsNull:     types.BoolPointerValue(t.Config.AcceptsNull),
 				Warehouse:       types.StringPointerValue(t.Config.Warehouse),
+				Database:        types.StringPointerValue(t.Config.Database),
 				CustomVariables: customVariables,
 			},
 		})
@@ -585,6 +593,7 @@ func (r *workflowResource) Read(
 				QueryResult:     types.Int64PointerValue(t.Config.QueryResult),
 				AcceptsNull:     types.BoolPointerValue(t.Config.AcceptsNull),
 				Warehouse:       types.StringPointerValue(t.Config.Warehouse),
+				Database:        types.StringPointerValue(t.Config.Database),
 				CustomVariables: customVariables,
 			},
 		})
