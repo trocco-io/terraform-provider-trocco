@@ -27,7 +27,7 @@ type WorkflowTask struct {
 }
 
 type WorkflowTaskConfig struct {
-	ResourceID      int64                              `json:"resource_id"`
+	ResourceID      *int64                             `json:"resource_id"`
 	Name            *string                            `json:"name"`
 	Message         *string                            `json:"message"`
 	Query           *string                            `json:"query"`
@@ -36,7 +36,26 @@ type WorkflowTaskConfig struct {
 	AcceptsNull     *bool                              `json:"accepts_null"`
 	Warehouse       *string                            `json:"warehouse"`
 	Database        *string                            `json:"database"`
+	TaskID          *string                            `json:"task_id"`
 	CustomVariables []WorkflowTaskCustomVariableConfig `json:"custom_variables"`
+
+	HTTPMethod        *string                              `json:"http_method"`
+	URL               *string                              `json:"url"`
+	RequestBody       *string                              `json:"request_body"`
+	RequestHeaders    []WorkflowTaskRequestHeaderConfig    `json:"request_headers"`
+	RequestParameters []WorkflowTaskRequestParameterConfig `json:"request_parameters"`
+}
+
+type WorkflowTaskRequestHeaderConfig struct {
+	Key     string `json:"key"`
+	Value   string `json:"value"`
+	Masking bool   `json:"masking"`
+}
+
+type WorkflowTaskRequestParameterConfig struct {
+	Key     string `json:"key"`
+	Value   string `json:"value"`
+	Masking bool   `json:"masking"`
 }
 
 type WorkflowTaskCustomVariableConfig struct {
@@ -82,7 +101,7 @@ type WorkflowTaskInput struct {
 }
 
 type WorkflowTaskConfigInput struct {
-	ResourceID      int64                                   `json:"resource_id,omitempty"`
+	ResourceID      *NullableInt64                          `json:"resource_id,omitempty"`
 	Name            *string                                 `json:"name,omitempty"`
 	Message         *string                                 `json:"message,omitempty"`
 	Query           *string                                 `json:"query,omitempty"`
@@ -91,7 +110,26 @@ type WorkflowTaskConfigInput struct {
 	AcceptsNull     *bool                                   `json:"accepts_null,omitempty"`
 	Warehouse       *string                                 `json:"warehouse,omitempty"`
 	Database        *string                                 `json:"database,omitempty"`
+	TaskID          *string                                 `json:"task_id,omitempty"`
 	CustomVarialbes []WorkflowTaskCustomVariableConfigInput `json:"custom_variables,omitempty"`
+
+	HTTPMethod        *string                                   `json:"http_method,omitempty"`
+	URL               *string                                   `json:"url,omitempty"`
+	RequestBody       *string                                   `json:"request_body,omitempty"`
+	RequestHeaders    []WorkflowTaskRequestHeaderConfigInput    `json:"request_headers,omitempty"`
+	RequestParameters []WorkflowTaskRequestParameterConfigInput `json:"request_parameters,omitempty"`
+}
+
+type WorkflowTaskRequestHeaderConfigInput struct {
+	Key     string        `json:"key,omitempty"`
+	Value   string        `json:"value,omitempty"`
+	Masking *NullableBool `json:"masking,omitempty"`
+}
+
+type WorkflowTaskRequestParameterConfigInput struct {
+	Key     string        `json:"key,omitempty"`
+	Value   string        `json:"value,omitempty"`
+	Masking *NullableBool `json:"masking,omitempty"`
 }
 
 type WorkflowTaskDependencyInput struct {

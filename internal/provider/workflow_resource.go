@@ -48,7 +48,14 @@ type workflowResourceTaskConfigModel struct {
 	AcceptsNull     types.Bool                                      `tfsdk:"accepts_null"`
 	Warehouse       types.String                                    `tfsdk:"warehouse"`
 	Database        types.String                                    `tfsdk:"database"`
+	TaskID          types.String                                    `tfsdk:"task_id"`
 	CustomVariables []workflowResourceTaskCustomVariableConfigModel `tfsdk:"custom_variables"`
+
+	HTTPMethod        types.String                                      `tfsdk:"http_method"`
+	URL               types.String                                      `tfsdk:"url"`
+	RequestBody       types.String                                      `tfsdk:"request_body"`
+	RequestHeaders    []workflowResourceTaskRequestHeaderConfigModel    `tfsdk:"request_headers"`
+	RequestParameters []workflowResourceTaskRequestParameterConfigModel `tfsdk:"request_parameters"`
 }
 
 type workflowResourceTaskCustomVariableConfigModel struct {
@@ -60,6 +67,18 @@ type workflowResourceTaskCustomVariableConfigModel struct {
 	Direction types.String `tfsdk:"direction"`
 	Format    types.String `tfsdk:"format"`
 	TimeZone  types.String `tfsdk:"time_zone"`
+}
+
+type workflowResourceTaskRequestHeaderConfigModel struct {
+	Key     types.String `tfsdk:"key"`
+	Value   types.String `tfsdk:"value"`
+	Masking types.Bool   `tfsdk:"masking"`
+}
+
+type workflowResourceTaskRequestParameterConfigModel struct {
+	Key     types.String `tfsdk:"key"`
+	Value   types.String `tfsdk:"value"`
+	Masking types.Bool   `tfsdk:"masking"`
 }
 
 type workflowResourceTaskDependencyModel struct {
@@ -84,8 +103,26 @@ func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowIn
 			})
 		}
 
+		requestHeaders := []client.WorkflowTaskRequestHeaderConfigInput{}
+		for _, h := range t.Config.RequestHeaders {
+			requestHeaders = append(requestHeaders, client.WorkflowTaskRequestHeaderConfigInput{
+				Key:     h.Key.ValueString(),
+				Value:   h.Value.ValueString(),
+				Masking: newNullableFromTerraformBool(h.Masking),
+			})
+		}
+
+		requestParameters := []client.WorkflowTaskRequestParameterConfigInput{}
+		for _, p := range t.Config.RequestParameters {
+			requestParameters = append(requestParameters, client.WorkflowTaskRequestParameterConfigInput{
+				Key:     p.Key.ValueString(),
+				Value:   p.Value.ValueString(),
+				Masking: newNullableFromTerraformBool(p.Masking),
+			})
+		}
+
 		config := client.WorkflowTaskConfigInput{
-			ResourceID:      t.Config.ResourceID.ValueInt64(),
+			ResourceID:      newNullableFromTerraformInt64(t.Config.ResourceID),
 			Name:            t.Config.Name.ValueStringPointer(),
 			Message:         t.Config.Message.ValueStringPointer(),
 			Query:           t.Config.Query.ValueStringPointer(),
@@ -94,7 +131,14 @@ func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowIn
 			AcceptsNull:     t.Config.AcceptsNull.ValueBoolPointer(),
 			Warehouse:       t.Config.Warehouse.ValueStringPointer(),
 			Database:        t.Config.Database.ValueStringPointer(),
+			TaskID:          t.Config.TaskID.ValueStringPointer(),
 			CustomVarialbes: customVariables,
+
+			HTTPMethod:        t.Config.HTTPMethod.ValueStringPointer(),
+			URL:               t.Config.URL.ValueStringPointer(),
+			RequestBody:       t.Config.RequestBody.ValueStringPointer(),
+			RequestHeaders:    requestHeaders,
+			RequestParameters: requestParameters,
 		}
 
 		tasks = append(tasks, client.WorkflowTaskInput{
@@ -145,8 +189,26 @@ func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceMod
 			})
 		}
 
+		requestHeaders := []client.WorkflowTaskRequestHeaderConfigInput{}
+		for _, h := range t.Config.RequestHeaders {
+			requestHeaders = append(requestHeaders, client.WorkflowTaskRequestHeaderConfigInput{
+				Key:     h.Key.ValueString(),
+				Value:   h.Value.ValueString(),
+				Masking: newNullableFromTerraformBool(h.Masking),
+			})
+		}
+
+		requestParameters := []client.WorkflowTaskRequestParameterConfigInput{}
+		for _, p := range t.Config.RequestParameters {
+			requestParameters = append(requestParameters, client.WorkflowTaskRequestParameterConfigInput{
+				Key:     p.Key.ValueString(),
+				Value:   p.Value.ValueString(),
+				Masking: newNullableFromTerraformBool(p.Masking),
+			})
+		}
+
 		config := client.WorkflowTaskConfigInput{
-			ResourceID:      t.Config.ResourceID.ValueInt64(),
+			ResourceID:      newNullableFromTerraformInt64(t.Config.ResourceID),
 			Name:            t.Config.Name.ValueStringPointer(),
 			Message:         t.Config.Message.ValueStringPointer(),
 			Query:           t.Config.Query.ValueStringPointer(),
@@ -155,7 +217,14 @@ func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceMod
 			AcceptsNull:     t.Config.AcceptsNull.ValueBoolPointer(),
 			Warehouse:       t.Config.Warehouse.ValueStringPointer(),
 			Database:        t.Config.Database.ValueStringPointer(),
+			TaskID:          t.Config.TaskID.ValueStringPointer(),
 			CustomVarialbes: customVariables,
+
+			HTTPMethod:        t.Config.HTTPMethod.ValueStringPointer(),
+			URL:               t.Config.URL.ValueStringPointer(),
+			RequestBody:       t.Config.RequestBody.ValueStringPointer(),
+			RequestHeaders:    requestHeaders,
+			RequestParameters: requestParameters,
 		}
 
 		tasks = append(tasks, client.WorkflowTaskInput{
@@ -272,6 +341,8 @@ func (r *workflowResource) Schema(
 									"bigquery_data_check",
 									"snowflake_data_check",
 									"redshift_data_check",
+									"tableau_extract",
+									"http_request",
 								),
 							},
 						},
@@ -279,7 +350,7 @@ func (r *workflowResource) Schema(
 							Required: true,
 							Attributes: map[string]schema.Attribute{
 								"resource_id": schema.Int64Attribute{
-									Required: true,
+									Optional: true,
 								},
 								"name": schema.StringAttribute{
 									Optional: true,
@@ -303,6 +374,9 @@ func (r *workflowResource) Schema(
 									Optional: true,
 								},
 								"database": schema.StringAttribute{
+									Optional: true,
+								},
+								"task_id": schema.StringAttribute{
 									Optional: true,
 								},
 								"custom_variables": schema.ListNestedAttribute{
@@ -332,6 +406,47 @@ func (r *workflowResource) Schema(
 											},
 											"time_zone": schema.StringAttribute{
 												Optional: true,
+											},
+										},
+									},
+								},
+								"http_method": schema.StringAttribute{
+									Optional: true,
+								},
+								"url": schema.StringAttribute{
+									Optional: true,
+								},
+								"request_body": schema.StringAttribute{
+									Optional: true,
+								},
+								"request_headers": schema.ListNestedAttribute{
+									Optional: true,
+									NestedObject: schema.NestedAttributeObject{
+										Attributes: map[string]schema.Attribute{
+											"key": schema.StringAttribute{
+												Required: true,
+											},
+											"value": schema.StringAttribute{
+												Required: true,
+											},
+											"masking": schema.BoolAttribute{
+												Required: true,
+											},
+										},
+									},
+								},
+								"request_parameters": schema.ListNestedAttribute{
+									Optional: true,
+									NestedObject: schema.NestedAttributeObject{
+										Attributes: map[string]schema.Attribute{
+											"key": schema.StringAttribute{
+												Required: true,
+											},
+											"value": schema.StringAttribute{
+												Required: true,
+											},
+											"masking": schema.BoolAttribute{
+												Required: true,
 											},
 										},
 									},
@@ -400,12 +515,36 @@ func (r *workflowResource) Create(
 			customVariables = nil
 		}
 
+		requestHeaders := []workflowResourceTaskRequestHeaderConfigModel{}
+		for _, h := range t.Config.RequestHeaders {
+			requestHeaders = append(requestHeaders, workflowResourceTaskRequestHeaderConfigModel{
+				Key:     types.StringValue(h.Key),
+				Value:   types.StringValue(h.Value),
+				Masking: types.BoolValue(h.Masking),
+			})
+		}
+		if len(requestHeaders) == 0 {
+			requestHeaders = nil
+		}
+
+		requestParameters := []workflowResourceTaskRequestParameterConfigModel{}
+		for _, p := range t.Config.RequestParameters {
+			requestParameters = append(requestParameters, workflowResourceTaskRequestParameterConfigModel{
+				Key:     types.StringValue(p.Key),
+				Value:   types.StringValue(p.Value),
+				Masking: types.BoolValue(p.Masking),
+			})
+		}
+		if len(requestParameters) == 0 {
+			requestParameters = nil
+		}
+
 		tasks = append(tasks, workflowResourceTaskModel{
 			Key:            types.StringValue(t.Key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
 			Config: workflowResourceTaskConfigModel{
-				ResourceID:      types.Int64Value(t.Config.ResourceID),
+				ResourceID:      types.Int64PointerValue(t.Config.ResourceID),
 				Name:            types.StringPointerValue(t.Config.Name),
 				Message:         types.StringPointerValue(t.Config.Message),
 				Query:           types.StringPointerValue(t.Config.Query),
@@ -414,7 +553,14 @@ func (r *workflowResource) Create(
 				AcceptsNull:     types.BoolPointerValue(t.Config.AcceptsNull),
 				Warehouse:       types.StringPointerValue(t.Config.Warehouse),
 				Database:        types.StringPointerValue(t.Config.Database),
+				TaskID:          types.StringPointerValue(t.Config.TaskID),
 				CustomVariables: customVariables,
+
+				HTTPMethod:        types.StringPointerValue(t.Config.HTTPMethod),
+				URL:               types.StringPointerValue(t.Config.URL),
+				RequestBody:       types.StringPointerValue(t.Config.RequestBody),
+				RequestHeaders:    requestHeaders,
+				RequestParameters: requestParameters,
 			},
 		})
 	}
@@ -490,12 +636,36 @@ func (r *workflowResource) Update(
 			customVariables = nil
 		}
 
+		requestHeaders := []workflowResourceTaskRequestHeaderConfigModel{}
+		for _, h := range t.Config.RequestHeaders {
+			requestHeaders = append(requestHeaders, workflowResourceTaskRequestHeaderConfigModel{
+				Key:     types.StringValue(h.Key),
+				Value:   types.StringValue(h.Value),
+				Masking: types.BoolValue(h.Masking),
+			})
+		}
+		if len(requestHeaders) == 0 {
+			requestHeaders = nil
+		}
+
+		requestParameters := []workflowResourceTaskRequestParameterConfigModel{}
+		for _, p := range t.Config.RequestParameters {
+			requestParameters = append(requestParameters, workflowResourceTaskRequestParameterConfigModel{
+				Key:     types.StringValue(p.Key),
+				Value:   types.StringValue(p.Value),
+				Masking: types.BoolValue(p.Masking),
+			})
+		}
+		if len(requestParameters) == 0 {
+			requestParameters = nil
+		}
+
 		tasks = append(tasks, workflowResourceTaskModel{
 			Key:            types.StringValue(t.Key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
 			Config: workflowResourceTaskConfigModel{
-				ResourceID:      types.Int64Value(t.Config.ResourceID),
+				ResourceID:      types.Int64PointerValue(t.Config.ResourceID),
 				Name:            types.StringPointerValue(t.Config.Name),
 				Message:         types.StringPointerValue(t.Config.Message),
 				Query:           types.StringPointerValue(t.Config.Query),
@@ -504,7 +674,14 @@ func (r *workflowResource) Update(
 				AcceptsNull:     types.BoolPointerValue(t.Config.AcceptsNull),
 				Warehouse:       types.StringPointerValue(t.Config.Warehouse),
 				Database:        types.StringPointerValue(t.Config.Database),
+				TaskID:          types.StringPointerValue(t.Config.TaskID),
 				CustomVariables: customVariables,
+
+				HTTPMethod:        types.StringPointerValue(t.Config.HTTPMethod),
+				URL:               types.StringPointerValue(t.Config.URL),
+				RequestBody:       types.StringPointerValue(t.Config.RequestBody),
+				RequestHeaders:    requestHeaders,
+				RequestParameters: requestParameters,
 			},
 		})
 	}
@@ -580,12 +757,36 @@ func (r *workflowResource) Read(
 			customVariables = nil
 		}
 
+		requestHeaders := []workflowResourceTaskRequestHeaderConfigModel{}
+		for _, h := range t.Config.RequestHeaders {
+			requestHeaders = append(requestHeaders, workflowResourceTaskRequestHeaderConfigModel{
+				Key:     types.StringValue(h.Key),
+				Value:   types.StringValue(h.Value),
+				Masking: types.BoolValue(h.Masking),
+			})
+		}
+		if len(requestHeaders) == 0 {
+			requestHeaders = nil
+		}
+
+		requestParameters := []workflowResourceTaskRequestParameterConfigModel{}
+		for _, p := range t.Config.RequestParameters {
+			requestParameters = append(requestParameters, workflowResourceTaskRequestParameterConfigModel{
+				Key:     types.StringValue(p.Key),
+				Value:   types.StringValue(p.Value),
+				Masking: types.BoolValue(p.Masking),
+			})
+		}
+		if len(requestParameters) == 0 {
+			requestParameters = nil
+		}
+
 		tasks = append(tasks, workflowResourceTaskModel{
 			Key:            types.StringValue(key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
 			Config: workflowResourceTaskConfigModel{
-				ResourceID:      types.Int64Value(t.Config.ResourceID),
+				ResourceID:      types.Int64PointerValue(t.Config.ResourceID),
 				Name:            types.StringPointerValue(t.Config.Name),
 				Message:         types.StringPointerValue(t.Config.Message),
 				Query:           types.StringPointerValue(t.Config.Query),
@@ -594,7 +795,14 @@ func (r *workflowResource) Read(
 				AcceptsNull:     types.BoolPointerValue(t.Config.AcceptsNull),
 				Warehouse:       types.StringPointerValue(t.Config.Warehouse),
 				Database:        types.StringPointerValue(t.Config.Database),
+				TaskID:          types.StringPointerValue(t.Config.TaskID),
 				CustomVariables: customVariables,
+
+				HTTPMethod:        types.StringPointerValue(t.Config.HTTPMethod),
+				URL:               types.StringPointerValue(t.Config.URL),
+				RequestBody:       types.StringPointerValue(t.Config.RequestBody),
+				RequestHeaders:    requestHeaders,
+				RequestParameters: requestParameters,
 			},
 		})
 	}
