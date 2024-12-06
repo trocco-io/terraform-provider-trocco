@@ -88,12 +88,14 @@ func (client *TroccoClient) GetTeam(id int64) (*Team, error) {
 // Create a Team
 
 type CreateTeamInput struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Membmers    []struct {
-		UserID int64  `json:"user_id"`
-		Role   string `json:"role"`
-	} `json:"members"`
+	Name        string        `json:"name"`
+	Description *string       `json:"description,omitempty"`
+	Members     []MemberInput `json:"members"`
+}
+
+type MemberInput struct {
+	UserID int64  `json:"user_id"`
+	Role   string `json:"role"`
 }
 
 func (client *TroccoClient) CreateTeam(input *CreateTeamInput) (*Team, error) {
@@ -108,12 +110,9 @@ func (client *TroccoClient) CreateTeam(input *CreateTeamInput) (*Team, error) {
 // Update a Team
 
 type UpdateTeamInput struct {
-	Name        *string `json:"name,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Members     []struct {
-		UserID int64  `json:"user_id"`
-		Role   string `json:"role"`
-	} `json:"members"`
+	Name        *string       `json:"name,omitempty"`
+	Description *string       `json:"description,omitempty"`
+	Members     []MemberInput `json:"members"`
 }
 
 func (client *TroccoClient) UpdateTeam(id int64, input *UpdateTeamInput) (*Team, error) {
