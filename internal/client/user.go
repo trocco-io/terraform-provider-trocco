@@ -6,7 +6,7 @@ import (
 	"net/url"
 )
 
-const BasePath = "/api/users"
+const userBasePath = "/api/users"
 
 type User struct {
 	ID                           int64  `json:"id"`
@@ -52,7 +52,7 @@ func (client *TroccoClient) ListUsers(input *ListUsersInput) (*ListUsersOutput, 
 	if input != nil && input.cursor != nil {
 		params.Add("cursor", *input.cursor)
 	}
-	path := fmt.Sprintf(BasePath+"?%s", params.Encode())
+	path := fmt.Sprintf(userBasePath+"?%s", params.Encode())
 	output := new(ListUsersOutput)
 	err := client.do(http.MethodGet, path, nil, output)
 	if err != nil {
@@ -75,7 +75,7 @@ type GetUserOutput struct {
 }
 
 func (client *TroccoClient) GetUser(id int64) (*GetUserOutput, error) {
-	path := fmt.Sprintf(BasePath+"/%d", id)
+	path := fmt.Sprintf(userBasePath+"/%d", id)
 	output := new(GetUserOutput)
 	err := client.do(http.MethodGet, path, nil, output)
 	if err != nil {
@@ -107,7 +107,7 @@ type CreateUserOutput struct {
 
 func (client *TroccoClient) CreateUser(input *CreateUserInput) (*CreateUserOutput, error) {
 	output := new(CreateUserOutput)
-	err := client.do(http.MethodPost, BasePath, input, output)
+	err := client.do(http.MethodPost, userBasePath, input, output)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +134,7 @@ type UpdateUserOutput struct {
 }
 
 func (client *TroccoClient) UpdateUser(id int64, input *UpdateUserInput) (*UpdateUserOutput, error) {
-	path := fmt.Sprintf(BasePath+"/%d", id)
+	path := fmt.Sprintf(userBasePath+"/%d", id)
 	output := new(UpdateUserOutput)
 	err := client.do(http.MethodPatch, path, input, output)
 	if err != nil {
@@ -146,6 +146,6 @@ func (client *TroccoClient) UpdateUser(id int64, input *UpdateUserInput) (*Updat
 // Delete a User
 
 func (client *TroccoClient) DeleteUser(id int64) error {
-	path := fmt.Sprintf(BasePath+"/%d", id)
+	path := fmt.Sprintf(userBasePath+"/%d", id)
 	return client.do(http.MethodDelete, path, nil, nil)
 }
