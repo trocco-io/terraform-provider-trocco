@@ -63,20 +63,9 @@ func (client *TroccoClient) ListUsers(input *ListUsersInput) (*ListUsersOutput, 
 
 // Get a User
 
-type GetUserOutput struct {
-	ID                           int64  `json:"id"`
-	Email                        string `json:"email"`
-	Role                         string `json:"role"`
-	CanUseAuditLog               bool   `json:"can_use_audit_log"`
-	IsRestrictedConnectionModify bool   `json:"is_restricted_connection_modify"`
-	LastSignInAt                 string `json:"last_sign_in_at"`
-	CreatedAt                    string `json:"created_at"`
-	UpdatedAt                    string `json:"updated_at"`
-}
-
-func (client *TroccoClient) GetUser(id int64) (*GetUserOutput, error) {
+func (client *TroccoClient) GetUser(id int64) (*User, error) {
 	path := fmt.Sprintf(userBasePath+"/%d", id)
-	output := new(GetUserOutput)
+	output := new(User)
 	err := client.do(http.MethodGet, path, nil, output)
 	if err != nil {
 		return nil, err
@@ -94,19 +83,8 @@ type CreateUserInput struct {
 	IsRestrictedConnectionModify *bool  `json:"is_restricted_connection_modify,omitempty"`
 }
 
-type CreateUserOutput struct {
-	ID                           int64  `json:"id"`
-	Email                        string `json:"email"`
-	Role                         string `json:"role"`
-	CanUseAuditLog               bool   `json:"can_use_audit_log"`
-	IsRestrictedConnectionModify bool   `json:"is_restricted_connection_modify"`
-	LastSignInAt                 string `json:"last_sign_in_at"`
-	CreatedAt                    string `json:"created_at"`
-	UpdatedAt                    string `json:"updated_at"`
-}
-
-func (client *TroccoClient) CreateUser(input *CreateUserInput) (*CreateUserOutput, error) {
-	output := new(CreateUserOutput)
+func (client *TroccoClient) CreateUser(input *CreateUserInput) (*User, error) {
+	output := new(User)
 	err := client.do(http.MethodPost, userBasePath, input, output)
 	if err != nil {
 		return nil, err
@@ -122,20 +100,9 @@ type UpdateUserInput struct {
 	IsRestrictedConnectionModify *bool   `json:"is_restricted_connection_modify,omitempty"`
 }
 
-type UpdateUserOutput struct {
-	ID                           int64  `json:"id"`
-	Email                        string `json:"email"`
-	Role                         string `json:"role"`
-	CanUseAuditLog               bool   `json:"can_use_audit_log"`
-	IsRestrictedConnectionModify bool   `json:"is_restricted_connection_modify"`
-	LastSignInAt                 string `json:"last_sign_in_at"`
-	CreatedAt                    string `json:"created_at"`
-	UpdatedAt                    string `json:"updated_at"`
-}
-
-func (client *TroccoClient) UpdateUser(id int64, input *UpdateUserInput) (*UpdateUserOutput, error) {
+func (client *TroccoClient) UpdateUser(id int64, input *UpdateUserInput) (*User, error) {
 	path := fmt.Sprintf(userBasePath+"/%d", id)
-	output := new(UpdateUserOutput)
+	output := new(User)
 	err := client.do(http.MethodPatch, path, input, output)
 	if err != nil {
 		return nil, err
