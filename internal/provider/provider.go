@@ -39,7 +39,7 @@ func (p *TroccoProvider) Metadata(ctx context.Context, req provider.MetadataRequ
 func (p *TroccoProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: `
-The TROCCO Terraform Provider enables the management of TROCCO resources using the TROCCO API feature, which is available only with our paid plans.
+The Terraform Provider for TROCCO enables the management of TROCCO resources using the TROCCO API feature, which is available only with our paid plans.
     `,
 		Attributes: map[string]schema.Attribute{
 			"api_key": schema.StringAttribute{
