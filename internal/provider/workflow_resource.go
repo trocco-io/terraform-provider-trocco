@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
+	wp "terraform-provider-trocco/internal/client/parameters/workflow"
+	wm "terraform-provider-trocco/internal/provider/models/workflow"
+	ws "terraform-provider-trocco/internal/provider/schemas/workflow"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -15,6 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/samber/lo"
 )
 
 var (
@@ -22,6 +26,10 @@ var (
 	_ resource.ResourceWithConfigure   = &workflowResource{}
 	_ resource.ResourceWithImportState = &workflowResource{}
 )
+
+// -----------------------------------------------------------------------------
+// Provider-side Data Types
+// -----------------------------------------------------------------------------
 
 type workflowResourceModel struct {
 	ID               types.Int64                           `tfsdk:"id"`
@@ -31,122 +39,38 @@ type workflowResourceModel struct {
 	TaskDependencies []workflowResourceTaskDependencyModel `tfsdk:"task_dependencies"`
 }
 
-type workflowResourceTaskModel struct {
-	Key            types.String                    `tfsdk:"key"`
-	TaskIdentifier types.Int64                     `tfsdk:"task_identifier"`
-	Type           types.String                    `tfsdk:"type"`
-	Config         workflowResourceTaskConfigModel `tfsdk:"config"`
-}
-
-type workflowResourceTaskConfigModel struct {
-	ResourceID      types.Int64                                     `tfsdk:"resource_id"`
-	Name            types.String                                    `tfsdk:"name"`
-	Message         types.String                                    `tfsdk:"message"`
-	Query           types.String                                    `tfsdk:"query"`
-	Operator        types.String                                    `tfsdk:"operator"`
-	QueryResult     types.Int64                                     `tfsdk:"query_result"`
-	AcceptsNull     types.Bool                                      `tfsdk:"accepts_null"`
-	Warehouse       types.String                                    `tfsdk:"warehouse"`
-	Database        types.String                                    `tfsdk:"database"`
-	TaskID          types.String                                    `tfsdk:"task_id"`
-	CustomVariables []workflowResourceTaskCustomVariableConfigModel `tfsdk:"custom_variables"`
-
-	HTTPMethod        types.String                                      `tfsdk:"http_method"`
-	URL               types.String                                      `tfsdk:"url"`
-	RequestBody       types.String                                      `tfsdk:"request_body"`
-	RequestHeaders    []workflowResourceTaskRequestHeaderConfigModel    `tfsdk:"request_headers"`
-	RequestParameters []workflowResourceTaskRequestParameterConfigModel `tfsdk:"request_parameters"`
-}
-
-type workflowResourceTaskCustomVariableConfigModel struct {
-	Name      types.String `tfsdk:"name"`
-	Type      types.String `tfsdk:"type"`
-	Value     types.String `tfsdk:"value"`
-	Quantity  types.Int64  `tfsdk:"quantity"`
-	Unit      types.String `tfsdk:"unit"`
-	Direction types.String `tfsdk:"direction"`
-	Format    types.String `tfsdk:"format"`
-	TimeZone  types.String `tfsdk:"time_zone"`
-}
-
-type workflowResourceTaskRequestHeaderConfigModel struct {
-	Key     types.String `tfsdk:"key"`
-	Value   types.String `tfsdk:"value"`
-	Masking types.Bool   `tfsdk:"masking"`
-}
-
-type workflowResourceTaskRequestParameterConfigModel struct {
-	Key     types.String `tfsdk:"key"`
-	Value   types.String `tfsdk:"value"`
-	Masking types.Bool   `tfsdk:"masking"`
-}
-
-type workflowResourceTaskDependencyModel struct {
-	Source      types.String `tfsdk:"source"`
-	Destination types.String `tfsdk:"destination"`
-}
-
 func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
 	tasks := []client.WorkflowTaskInput{}
-	for _, t := range m.Tasks {
-		customVariables := []client.WorkflowTaskCustomVariableConfigInput{}
-		for _, v := range t.Config.CustomVariables {
-			customVariables = append(customVariables, client.WorkflowTaskCustomVariableConfigInput{
-				Name:      v.Name.ValueStringPointer(),
-				Type:      v.Type.ValueStringPointer(),
-				Value:     v.Value.ValueStringPointer(),
-				Quantity:  newNullableFromTerraformInt64(v.Quantity),
-				Unit:      v.Unit.ValueStringPointer(),
-				Direction: v.Direction.ValueStringPointer(),
-				Format:    v.Format.ValueStringPointer(),
-				TimeZone:  v.TimeZone.ValueStringPointer(),
-			})
+	for _, r := range m.Tasks {
+		i := client.WorkflowTaskInput{
+			Key:            r.Key.ValueString(),
+			TaskIdentifier: r.TaskIdentifier.ValueInt64(),
+			Type:           r.Type.ValueString(),
 		}
 
-		requestHeaders := []client.WorkflowTaskRequestHeaderConfigInput{}
-		for _, h := range t.Config.RequestHeaders {
-			requestHeaders = append(requestHeaders, client.WorkflowTaskRequestHeaderConfigInput{
-				Key:     h.Key.ValueString(),
-				Value:   h.Value.ValueString(),
-				Masking: newNullableFromTerraformBool(h.Masking),
-			})
+		if r.TroccoTransferConfig != nil {
+			i.TroccoTransferConfig = r.TroccoTransferConfig.ToInput()
+		}
+		if r.SlackNotificationConfig != nil {
+			i.SlackNotificationConfig = r.SlackNotificationConfig.ToInput()
+		}
+		if r.TableauDataExtractionConfig != nil {
+			i.TableauDataExtractionConfig = r.TableauDataExtractionConfig.ToInput()
+		}
+		if r.BigqueryDataCheckConfig != nil {
+			i.BigqueryDataCheckConfig = r.BigqueryDataCheckConfig.ToInput()
+		}
+		if r.SnowflakeDataCheckConfig != nil {
+			i.SnowflakeDataCheckConfig = r.SnowflakeDataCheckConfig.ToInput()
+		}
+		if r.RedshiftDataCheckConfig != nil {
+			i.RedshiftDataCheckConfig = r.RedshiftDataCheckConfig.ToInput()
+		}
+		if r.HTTPRequestConfig != nil {
+			i.HTTPRequestConfig = r.HTTPRequestConfig.ToInput()
 		}
 
-		requestParameters := []client.WorkflowTaskRequestParameterConfigInput{}
-		for _, p := range t.Config.RequestParameters {
-			requestParameters = append(requestParameters, client.WorkflowTaskRequestParameterConfigInput{
-				Key:     p.Key.ValueString(),
-				Value:   p.Value.ValueString(),
-				Masking: newNullableFromTerraformBool(p.Masking),
-			})
-		}
-
-		config := client.WorkflowTaskConfigInput{
-			ResourceID:      newNullableFromTerraformInt64(t.Config.ResourceID),
-			Name:            t.Config.Name.ValueStringPointer(),
-			Message:         t.Config.Message.ValueStringPointer(),
-			Query:           t.Config.Query.ValueStringPointer(),
-			Operator:        t.Config.Operator.ValueStringPointer(),
-			QueryResult:     newNullableFromTerraformInt64(t.Config.QueryResult),
-			AcceptsNull:     t.Config.AcceptsNull.ValueBoolPointer(),
-			Warehouse:       t.Config.Warehouse.ValueStringPointer(),
-			Database:        t.Config.Database.ValueStringPointer(),
-			TaskID:          t.Config.TaskID.ValueStringPointer(),
-			CustomVarialbes: customVariables,
-
-			HTTPMethod:        t.Config.HTTPMethod.ValueStringPointer(),
-			URL:               t.Config.URL.ValueStringPointer(),
-			RequestBody:       t.Config.RequestBody.ValueStringPointer(),
-			RequestHeaders:    requestHeaders,
-			RequestParameters: requestParameters,
-		}
-
-		tasks = append(tasks, client.WorkflowTaskInput{
-			Key:            t.Key.ValueString(),
-			TaskIdentifier: t.TaskIdentifier.ValueInt64(),
-			Type:           t.Type.ValueString(),
-			Config:         config,
-		})
+		tasks = append(tasks, i)
 	}
 
 	taskDependencies := []client.WorkflowTaskDependencyInput{}
@@ -175,64 +99,35 @@ func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceMod
 	for _, t := range m.Tasks {
 		identifier := stateTaskIdentifiers[t.Key.ValueString()]
 
-		customVariables := []client.WorkflowTaskCustomVariableConfigInput{}
-		for _, v := range t.Config.CustomVariables {
-			customVariables = append(customVariables, client.WorkflowTaskCustomVariableConfigInput{
-				Name:      v.Name.ValueStringPointer(),
-				Type:      v.Type.ValueStringPointer(),
-				Value:     v.Value.ValueStringPointer(),
-				Quantity:  newNullableFromTerraformInt64(v.Quantity),
-				Unit:      v.Unit.ValueStringPointer(),
-				Direction: v.Direction.ValueStringPointer(),
-				Format:    v.Format.ValueStringPointer(),
-				TimeZone:  v.TimeZone.ValueStringPointer(),
-			})
-		}
-
-		requestHeaders := []client.WorkflowTaskRequestHeaderConfigInput{}
-		for _, h := range t.Config.RequestHeaders {
-			requestHeaders = append(requestHeaders, client.WorkflowTaskRequestHeaderConfigInput{
-				Key:     h.Key.ValueString(),
-				Value:   h.Value.ValueString(),
-				Masking: newNullableFromTerraformBool(h.Masking),
-			})
-		}
-
-		requestParameters := []client.WorkflowTaskRequestParameterConfigInput{}
-		for _, p := range t.Config.RequestParameters {
-			requestParameters = append(requestParameters, client.WorkflowTaskRequestParameterConfigInput{
-				Key:     p.Key.ValueString(),
-				Value:   p.Value.ValueString(),
-				Masking: newNullableFromTerraformBool(p.Masking),
-			})
-		}
-
-		config := client.WorkflowTaskConfigInput{
-			ResourceID:      newNullableFromTerraformInt64(t.Config.ResourceID),
-			Name:            t.Config.Name.ValueStringPointer(),
-			Message:         t.Config.Message.ValueStringPointer(),
-			Query:           t.Config.Query.ValueStringPointer(),
-			Operator:        t.Config.Operator.ValueStringPointer(),
-			QueryResult:     newNullableFromTerraformInt64(t.Config.QueryResult),
-			AcceptsNull:     t.Config.AcceptsNull.ValueBoolPointer(),
-			Warehouse:       t.Config.Warehouse.ValueStringPointer(),
-			Database:        t.Config.Database.ValueStringPointer(),
-			TaskID:          t.Config.TaskID.ValueStringPointer(),
-			CustomVarialbes: customVariables,
-
-			HTTPMethod:        t.Config.HTTPMethod.ValueStringPointer(),
-			URL:               t.Config.URL.ValueStringPointer(),
-			RequestBody:       t.Config.RequestBody.ValueStringPointer(),
-			RequestHeaders:    requestHeaders,
-			RequestParameters: requestParameters,
-		}
-
-		tasks = append(tasks, client.WorkflowTaskInput{
+		i := client.WorkflowTaskInput{
 			Key:            t.Key.ValueString(),
 			TaskIdentifier: identifier,
 			Type:           t.Type.ValueString(),
-			Config:         config,
-		})
+		}
+
+		if t.TroccoTransferConfig != nil {
+			i.TroccoTransferConfig = t.TroccoTransferConfig.ToInput()
+		}
+		if t.SlackNotificationConfig != nil {
+			i.SlackNotificationConfig = t.SlackNotificationConfig.ToInput()
+		}
+		if t.TableauDataExtractionConfig != nil {
+			i.TableauDataExtractionConfig = t.TableauDataExtractionConfig.ToInput()
+		}
+		if t.BigqueryDataCheckConfig != nil {
+			i.BigqueryDataCheckConfig = t.BigqueryDataCheckConfig.ToInput()
+		}
+		if t.SnowflakeDataCheckConfig != nil {
+			i.SnowflakeDataCheckConfig = t.SnowflakeDataCheckConfig.ToInput()
+		}
+		if t.RedshiftDataCheckConfig != nil {
+			i.RedshiftDataCheckConfig = t.RedshiftDataCheckConfig.ToInput()
+		}
+		if t.HTTPRequestConfig != nil {
+			i.HTTPRequestConfig = t.HTTPRequestConfig.ToInput()
+		}
+
+		tasks = append(tasks, i)
 	}
 
 	taskDependencies := []client.WorkflowTaskDependencyInput{}
@@ -250,6 +145,507 @@ func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceMod
 		TaskDependencies: taskDependencies,
 	}
 }
+
+//
+//
+//
+
+type workflowResourceTaskModel struct {
+	Key            types.String `tfsdk:"key"`
+	TaskIdentifier types.Int64  `tfsdk:"task_identifier"`
+	Type           types.String `tfsdk:"type"`
+
+	TroccoTransferConfig        *workflowResourceTroccoTransferTaskConfig        `tfsdk:"trocco_transfer_config"`
+	SlackNotificationConfig     *workflowResourceSlackNotificationTaskConfig     `tfsdk:"slack_notification_config"`
+	TableauDataExtractionConfig *workflowResourceTableauDataExtractionTaskConfig `tfsdk:"tableau_data_extraction_config"`
+	BigqueryDataCheckConfig     *workflowBigqueryDataCheckTaskConfigModel        `tfsdk:"bigquery_data_check_config"`
+	SnowflakeDataCheckConfig    *workflowSnowflakeDataCheckTaskConfigModel       `tfsdk:"snowflake_data_check_config"`
+	RedshiftDataCheckConfig     *workflowRedshiftDataCheckTaskConfigModel        `tfsdk:"redshift_data_check_config"`
+	HTTPRequestConfig           *workflowHTTPRequestTaskConfigModel              `tfsdk:"http_request_config"`
+}
+
+type workflowResourceTaskDependencyModel struct {
+	Source      types.String `tfsdk:"source"`
+	Destination types.String `tfsdk:"destination"`
+}
+
+//
+// Trocco Transfer
+//
+
+type workflowResourceTroccoTransferTaskConfig struct {
+	DefinitionID types.Int64 `tfsdk:"definition_id"`
+
+	CustomVariableLoop *wm.CustomVariableLoop `tfsdk:"custom_variable_loop"`
+}
+
+func newWorkflowResourceTroccoTransferTaskConfig(c *client.WorkflowTroccoTransferTaskConfig) *workflowResourceTroccoTransferTaskConfig {
+	if c == nil {
+		return nil
+	}
+
+	return &workflowResourceTroccoTransferTaskConfig{
+		DefinitionID: types.Int64Value(c.DefinitionID),
+
+		CustomVariableLoop: wm.NewCustomVariableLoop(c.CustomVariableLoop),
+	}
+}
+
+func (c *workflowResourceTroccoTransferTaskConfig) ToInput() *wp.TroccoTransferConfig {
+	in := &wp.TroccoTransferConfig{
+		DefinitionID: c.DefinitionID.ValueInt64(),
+	}
+
+	if c.CustomVariableLoop != nil {
+		in.CustomVariableLoop = lo.ToPtr(c.CustomVariableLoop.ToInput())
+	}
+
+	return in
+}
+
+//
+// Slack Notification
+//
+
+type workflowResourceSlackNotificationTaskConfig struct {
+	Name         types.String `tfsdk:"name"`
+	ConnectionID types.Int64  `tfsdk:"connection_id"`
+	Message      types.String `tfsdk:"message"`
+}
+
+func newWorkflowResourceSlackNotificationTaskConfig(c *client.WorkflowSlackNotificationTaskConfig) *workflowResourceSlackNotificationTaskConfig {
+	if c == nil {
+		return nil
+	}
+
+	return &workflowResourceSlackNotificationTaskConfig{
+		Name:         types.StringValue(c.Name),
+		ConnectionID: types.Int64Value(c.ConnectionID),
+		Message:      types.StringValue(c.Message),
+	}
+}
+
+func (c *workflowResourceSlackNotificationTaskConfig) ToInput() *client.WorkflowSlackNotificationTaskConfigInput {
+	return &client.WorkflowSlackNotificationTaskConfigInput{
+		Name:         c.Name.ValueString(),
+		ConnectionID: c.ConnectionID.ValueInt64(),
+		Message:      c.Message.ValueString(),
+	}
+}
+
+type workflowResourceTableauDataExtractionTaskConfig struct {
+	Name         types.String `tfsdk:"name"`
+	ConnectionID types.Int64  `tfsdk:"connection_id"`
+	TaskID       types.String `tfsdk:"task_id"`
+}
+
+//
+// Tableau Data Extraction
+//
+
+func newWorkflowResourceTableauDataExtractionTaskConfig(c *client.WorkflowTableauDataExtractionTaskConfig) *workflowResourceTableauDataExtractionTaskConfig {
+	if c == nil {
+		return nil
+	}
+
+	return &workflowResourceTableauDataExtractionTaskConfig{
+		Name:         types.StringValue(c.Name),
+		ConnectionID: types.Int64Value(c.ConnectionID),
+		TaskID:       types.StringValue(c.TaskID),
+	}
+}
+
+func (c *workflowResourceTableauDataExtractionTaskConfig) ToInput() *client.WorkflowTableauDataExtractionTaskConfigInput {
+	return &client.WorkflowTableauDataExtractionTaskConfigInput{
+		Name:         c.Name.ValueString(),
+		ConnectionID: c.ConnectionID.ValueInt64(),
+		TaskID:       c.TaskID.ValueString(),
+	}
+}
+
+//
+// Bigquery Data Check
+//
+
+type workflowBigqueryDataCheckTaskConfigModel struct {
+	Name            types.String                  `tfsdk:"name"`
+	ConnectionID    types.Int64                   `tfsdk:"connection_id"`
+	Query           types.String                  `tfsdk:"query"`
+	Operator        types.String                  `tfsdk:"operator"`
+	QueryResult     types.Int64                   `tfsdk:"query_result"`
+	AcceptsNull     types.Bool                    `tfsdk:"accepts_null"`
+	CustomVariables []workflowCustomVariableModel `tfsdk:"custom_variables"`
+}
+
+func newWorkflowResourceBigqueryDataCheckTaskConfig(c *client.WorkflowBigqueryDataCheckTaskConfig) *workflowBigqueryDataCheckTaskConfigModel {
+	if c == nil {
+		return nil
+	}
+
+	customVariables := []workflowCustomVariableModel{}
+	for _, v := range c.CustomVariables {
+		customVariables = append(customVariables, workflowCustomVariableModel{
+			Name:      types.StringPointerValue(v.Name),
+			Type:      types.StringPointerValue(v.Type),
+			Value:     types.StringPointerValue(v.Value),
+			Quantity:  types.Int64PointerValue(v.Quantity),
+			Unit:      types.StringPointerValue(v.Unit),
+			Direction: types.StringPointerValue(v.Direction),
+			Format:    types.StringPointerValue(v.Format),
+			TimeZone:  types.StringPointerValue(v.TimeZone),
+		})
+	}
+
+	// If no custom variables are present, the API returns an empty array but the provider should set `null`.
+	if len(customVariables) == 0 {
+		customVariables = nil
+	}
+
+	return &workflowBigqueryDataCheckTaskConfigModel{
+		Name:            types.StringValue(c.Name),
+		ConnectionID:    types.Int64Value(c.ConnectionID),
+		Query:           types.StringValue(c.Query),
+		Operator:        types.StringValue(c.Operator),
+		QueryResult:     types.Int64Value(c.QueryResult),
+		AcceptsNull:     types.BoolValue(c.AcceptsNull),
+		CustomVariables: customVariables,
+	}
+}
+
+func (c *workflowBigqueryDataCheckTaskConfigModel) ToInput() *client.WorkflowBigqueryDataCheckTaskConfigInput {
+	customVariables := []client.WorkflowTaskCustomVariableConfigInput{}
+	for _, v := range c.CustomVariables {
+		customVariables = append(customVariables, client.WorkflowTaskCustomVariableConfigInput{
+			Name:      v.Name.ValueStringPointer(),
+			Type:      v.Type.ValueStringPointer(),
+			Value:     v.Value.ValueStringPointer(),
+			Quantity:  newNullableFromTerraformInt64(v.Quantity),
+			Unit:      v.Unit.ValueStringPointer(),
+			Direction: v.Direction.ValueStringPointer(),
+			Format:    v.Format.ValueStringPointer(),
+			TimeZone:  v.TimeZone.ValueStringPointer(),
+		})
+	}
+
+	return &client.WorkflowBigqueryDataCheckTaskConfigInput{
+		Name:            c.Name.ValueString(),
+		ConnectionID:    c.ConnectionID.ValueInt64(),
+		Query:           c.Query.ValueString(),
+		Operator:        c.Operator.ValueString(),
+		QueryResult:     newNullableFromTerraformInt64(c.QueryResult),
+		AcceptsNull:     newNullableFromTerraformBool(c.AcceptsNull),
+		CustomVariables: customVariables,
+	}
+}
+
+//
+// Snowflake Data Check
+//
+
+type workflowSnowflakeDataCheckTaskConfigModel struct {
+	Name            types.String                  `tfsdk:"name"`
+	ConnectionID    types.Int64                   `tfsdk:"connection_id"`
+	Query           types.String                  `tfsdk:"query"`
+	Operator        types.String                  `tfsdk:"operator"`
+	QueryResult     types.Int64                   `tfsdk:"query_result"`
+	AcceptsNull     types.Bool                    `tfsdk:"accepts_null"`
+	Warehouse       types.String                  `tfsdk:"warehouse"`
+	CustomVariables []workflowCustomVariableModel `tfsdk:"custom_variables"`
+}
+
+func newWorkflowSnowflakeDataCheckTaskConfigModel(c *client.WorkflowSnowflakeDataCheckTaskConfig) *workflowSnowflakeDataCheckTaskConfigModel {
+	if c == nil {
+		return nil
+	}
+
+	customVariables := []workflowCustomVariableModel{}
+	for _, v := range c.CustomVariables {
+		customVariables = append(customVariables, workflowCustomVariableModel{
+			Name:      types.StringPointerValue(v.Name),
+			Type:      types.StringPointerValue(v.Type),
+			Value:     types.StringPointerValue(v.Value),
+			Quantity:  types.Int64PointerValue(v.Quantity),
+			Unit:      types.StringPointerValue(v.Unit),
+			Direction: types.StringPointerValue(v.Direction),
+			Format:    types.StringPointerValue(v.Format),
+			TimeZone:  types.StringPointerValue(v.TimeZone),
+		})
+	}
+
+	// If no custom variables are present, the API returns an empty array but the provider should set `null`.
+	if len(customVariables) == 0 {
+		customVariables = nil
+	}
+
+	return &workflowSnowflakeDataCheckTaskConfigModel{
+		Name:            types.StringValue(c.Name),
+		ConnectionID:    types.Int64Value(c.ConnectionID),
+		Query:           types.StringValue(c.Query),
+		Operator:        types.StringValue(c.Operator),
+		QueryResult:     types.Int64Value(c.QueryResult),
+		AcceptsNull:     types.BoolValue(c.AcceptsNull),
+		Warehouse:       types.StringValue(c.Warehouse),
+		CustomVariables: customVariables,
+	}
+}
+
+func (c *workflowSnowflakeDataCheckTaskConfigModel) ToInput() *client.WorkflowSnowflakeDataCheckTaskConfigInput {
+	customVariables := []client.WorkflowTaskCustomVariableConfigInput{}
+	for _, v := range c.CustomVariables {
+		customVariables = append(customVariables, client.WorkflowTaskCustomVariableConfigInput{
+			Name:      v.Name.ValueStringPointer(),
+			Type:      v.Type.ValueStringPointer(),
+			Value:     v.Value.ValueStringPointer(),
+			Quantity:  newNullableFromTerraformInt64(v.Quantity),
+			Unit:      v.Unit.ValueStringPointer(),
+			Direction: v.Direction.ValueStringPointer(),
+			Format:    v.Format.ValueStringPointer(),
+			TimeZone:  v.TimeZone.ValueStringPointer(),
+		})
+	}
+
+	return &client.WorkflowSnowflakeDataCheckTaskConfigInput{
+		Name:            c.Name.ValueString(),
+		ConnectionID:    c.ConnectionID.ValueInt64(),
+		Query:           c.Query.ValueString(),
+		Operator:        c.Operator.ValueString(),
+		QueryResult:     newNullableFromTerraformInt64(c.QueryResult),
+		AcceptsNull:     newNullableFromTerraformBool(c.AcceptsNull),
+		Warehouse:       c.Warehouse.ValueString(),
+		CustomVariables: customVariables,
+	}
+}
+
+//
+// Redshift Data Check
+//
+
+type workflowRedshiftDataCheckTaskConfigModel struct {
+	Name            types.String                  `tfsdk:"name"`
+	ConnectionID    types.Int64                   `tfsdk:"connection_id"`
+	Query           types.String                  `tfsdk:"query"`
+	Operator        types.String                  `tfsdk:"operator"`
+	QueryResult     types.Int64                   `tfsdk:"query_result"`
+	AcceptsNull     types.Bool                    `tfsdk:"accepts_null"`
+	Database        types.String                  `tfsdk:"database"`
+	CustomVariables []workflowCustomVariableModel `tfsdk:"custom_variables"`
+}
+
+func newWorkflowRedshiftDataCheckTaskConfigModel(c *client.WorkflowRedshiftDataCheckTaskConfig) *workflowRedshiftDataCheckTaskConfigModel {
+	if c == nil {
+		return nil
+	}
+
+	customVariables := []workflowCustomVariableModel{}
+	for _, v := range c.CustomVariables {
+		customVariables = append(customVariables, workflowCustomVariableModel{
+			Name:      types.StringPointerValue(v.Name),
+			Type:      types.StringPointerValue(v.Type),
+			Value:     types.StringPointerValue(v.Value),
+			Quantity:  types.Int64PointerValue(v.Quantity),
+			Unit:      types.StringPointerValue(v.Unit),
+			Direction: types.StringPointerValue(v.Direction),
+			Format:    types.StringPointerValue(v.Format),
+			TimeZone:  types.StringPointerValue(v.TimeZone),
+		})
+	}
+
+	// If no custom variables are present, the API returns an empty array but the provider should set `null`.
+	if len(customVariables) == 0 {
+		customVariables = nil
+	}
+
+	return &workflowRedshiftDataCheckTaskConfigModel{
+		Name:            types.StringValue(c.Name),
+		ConnectionID:    types.Int64Value(c.ConnectionID),
+		Query:           types.StringValue(c.Query),
+		Operator:        types.StringValue(c.Operator),
+		QueryResult:     types.Int64Value(c.QueryResult),
+		AcceptsNull:     types.BoolValue(c.AcceptsNull),
+		Database:        types.StringValue(c.Database),
+		CustomVariables: customVariables,
+	}
+}
+
+func (c *workflowRedshiftDataCheckTaskConfigModel) ToInput() *client.WorkflowRedshiftDataCheckTaskConfigInput {
+	customVariables := []client.WorkflowTaskCustomVariableConfigInput{}
+	for _, v := range c.CustomVariables {
+		customVariables = append(customVariables, client.WorkflowTaskCustomVariableConfigInput{
+			Name:      v.Name.ValueStringPointer(),
+			Type:      v.Type.ValueStringPointer(),
+			Value:     v.Value.ValueStringPointer(),
+			Quantity:  newNullableFromTerraformInt64(v.Quantity),
+			Unit:      v.Unit.ValueStringPointer(),
+			Direction: v.Direction.ValueStringPointer(),
+			Format:    v.Format.ValueStringPointer(),
+			TimeZone:  v.TimeZone.ValueStringPointer(),
+		})
+	}
+
+	return &client.WorkflowRedshiftDataCheckTaskConfigInput{
+		Name:            c.Name.ValueString(),
+		ConnectionID:    c.ConnectionID.ValueInt64(),
+		Query:           c.Query.ValueString(),
+		Operator:        c.Operator.ValueString(),
+		QueryResult:     newNullableFromTerraformInt64(c.QueryResult),
+		AcceptsNull:     newNullableFromTerraformBool(c.AcceptsNull),
+		Database:        c.Database.ValueString(),
+		CustomVariables: customVariables,
+	}
+}
+
+//
+// HTTP Request
+//
+
+type workflowHTTPRequestTaskConfigModel struct {
+	Name              types.String                        `tfsdk:"name"`
+	ConnectionID      types.Int64                         `tfsdk:"connection_id"`
+	Method            types.String                        `tfsdk:"http_method"`
+	URL               types.String                        `tfsdk:"url"`
+	RequestBody       types.String                        `tfsdk:"request_body"`
+	RequestHeaders    []workflowHTTPRequestHeaderModel    `tfsdk:"request_headers"`
+	RequestParameters []workflowHTTPRequestParameterModel `tfsdk:"request_parameters"`
+	CustomVariables   []workflowCustomVariableModel       `tfsdk:"custom_variables"`
+}
+
+func newWorkflowHTTPRequestTaskConfigModel(c *client.WorkflowHTTPRequestTaskConfig) *workflowHTTPRequestTaskConfigModel {
+	if c == nil {
+		return nil
+	}
+
+	requestHeaders := []workflowHTTPRequestHeaderModel{}
+	for _, h := range c.RequestHeaders {
+		requestHeaders = append(requestHeaders, workflowHTTPRequestHeaderModel{
+			Key:     types.StringValue(h.Key),
+			Value:   types.StringValue(h.Value),
+			Masking: types.BoolValue(h.Masking),
+		})
+	}
+
+	if len(requestHeaders) == 0 {
+		requestHeaders = nil
+	}
+
+	requestParameters := []workflowHTTPRequestParameterModel{}
+	for _, p := range c.RequestParameters {
+		requestParameters = append(requestParameters, workflowHTTPRequestParameterModel{
+			Key:     types.StringValue(p.Key),
+			Value:   types.StringValue(p.Value),
+			Masking: types.BoolValue(p.Masking),
+		})
+	}
+
+	if len(requestParameters) == 0 {
+		requestParameters = nil
+	}
+
+	customVariables := []workflowCustomVariableModel{}
+	for _, v := range c.CustomVariables {
+		customVariables = append(customVariables, workflowCustomVariableModel{
+			Name:      types.StringPointerValue(v.Name),
+			Type:      types.StringPointerValue(v.Type),
+			Value:     types.StringPointerValue(v.Value),
+			Quantity:  types.Int64PointerValue(v.Quantity),
+			Unit:      types.StringPointerValue(v.Unit),
+			Direction: types.StringPointerValue(v.Direction),
+			Format:    types.StringPointerValue(v.Format),
+			TimeZone:  types.StringPointerValue(v.TimeZone),
+		})
+	}
+
+	// If no custom variables are present, the API returns an empty array but the provider should set `null`.
+	if len(customVariables) == 0 {
+		customVariables = nil
+	}
+
+	return &workflowHTTPRequestTaskConfigModel{
+		Name:              types.StringValue(c.Name),
+		ConnectionID:      types.Int64PointerValue(c.ConnectionID),
+		Method:            types.StringValue(c.HTTPMethod),
+		URL:               types.StringValue(c.URL),
+		RequestBody:       types.StringPointerValue(c.RequestBody),
+		RequestHeaders:    requestHeaders,
+		RequestParameters: requestParameters,
+		CustomVariables:   customVariables,
+	}
+}
+
+func (c *workflowHTTPRequestTaskConfigModel) ToInput() *client.WorkflowHTTPRequestTaskConfigInput {
+	requestHeaders := []client.WorkflowTaskRequestHeaderConfigInput{}
+	for _, h := range c.RequestHeaders {
+		requestHeaders = append(requestHeaders, client.WorkflowTaskRequestHeaderConfigInput{
+			Key:     h.Key.ValueString(),
+			Value:   h.Value.ValueString(),
+			Masking: newNullableFromTerraformBool(h.Masking),
+		})
+	}
+
+	requestParameters := []client.WorkflowTaskRequestParameterConfigInput{}
+	for _, p := range c.RequestParameters {
+		requestParameters = append(requestParameters, client.WorkflowTaskRequestParameterConfigInput{
+			Key:     p.Key.ValueString(),
+			Value:   p.Value.ValueString(),
+			Masking: newNullableFromTerraformBool(p.Masking),
+		})
+	}
+
+	customVariables := []client.WorkflowTaskCustomVariableConfigInput{}
+	for _, v := range c.CustomVariables {
+		customVariables = append(customVariables, client.WorkflowTaskCustomVariableConfigInput{
+			Name:      v.Name.ValueStringPointer(),
+			Type:      v.Type.ValueStringPointer(),
+			Value:     v.Value.ValueStringPointer(),
+			Quantity:  newNullableFromTerraformInt64(v.Quantity),
+			Unit:      v.Unit.ValueStringPointer(),
+			Direction: v.Direction.ValueStringPointer(),
+			Format:    v.Format.ValueStringPointer(),
+			TimeZone:  v.TimeZone.ValueStringPointer(),
+		})
+	}
+
+	return &client.WorkflowHTTPRequestTaskConfigInput{
+		Name:              c.Name.ValueString(),
+		ConnectionID:      newNullableFromTerraformInt64(c.ConnectionID),
+		HTTPMethod:        c.Method.ValueString(),
+		URL:               c.URL.ValueString(),
+		RequestBody:       c.RequestBody.ValueStringPointer(),
+		RequestHeaders:    requestHeaders,
+		RequestParameters: requestParameters,
+		CustomVariables:   customVariables,
+	}
+}
+
+type workflowHTTPRequestHeaderModel struct {
+	Key     types.String `tfsdk:"key"`
+	Value   types.String `tfsdk:"value"`
+	Masking types.Bool   `tfsdk:"masking"`
+}
+
+type workflowHTTPRequestParameterModel struct {
+	Key     types.String `tfsdk:"key"`
+	Value   types.String `tfsdk:"value"`
+	Masking types.Bool   `tfsdk:"masking"`
+}
+
+//
+// Common
+//
+
+type workflowCustomVariableModel struct {
+	Name      types.String `tfsdk:"name"`
+	Type      types.String `tfsdk:"type"`
+	Value     types.String `tfsdk:"value"`
+	Quantity  types.Int64  `tfsdk:"quantity"`
+	Unit      types.String `tfsdk:"unit"`
+	Direction types.String `tfsdk:"direction"`
+	Format    types.String `tfsdk:"format"`
+	TimeZone  types.String `tfsdk:"time_zone"`
+}
+
+// -----------------------------------------------------------------------------
+// Resource
+// -----------------------------------------------------------------------------
 
 type workflowResource struct {
 	client *client.TroccoClient
@@ -293,6 +689,38 @@ func (r *workflowResource) Schema(
 	req resource.SchemaRequest,
 	resp *resource.SchemaResponse,
 ) {
+	customVariables := schema.ListNestedAttribute{
+		Optional: true,
+		NestedObject: schema.NestedAttributeObject{
+			Attributes: map[string]schema.Attribute{
+				"name": schema.StringAttribute{
+					Required: true,
+				},
+				"type": schema.StringAttribute{
+					Required: true,
+				},
+				"value": schema.StringAttribute{
+					Optional: true,
+				},
+				"quantity": schema.Int64Attribute{
+					Optional: true,
+				},
+				"unit": schema.StringAttribute{
+					Optional: true,
+				},
+				"direction": schema.StringAttribute{
+					Optional: true,
+				},
+				"format": schema.StringAttribute{
+					Optional: true,
+				},
+				"time_zone": schema.StringAttribute{
+					Optional: true,
+				},
+			},
+		},
+	}
+
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Provides a TROCCO workflow resource.",
 		Attributes: map[string]schema.Attribute{
@@ -346,17 +774,128 @@ func (r *workflowResource) Schema(
 								),
 							},
 						},
-						"config": schema.SingleNestedAttribute{
-							Required: true,
+						"trocco_transfer_config": schema.SingleNestedAttribute{
+							Optional: true,
 							Attributes: map[string]schema.Attribute{
-								"resource_id": schema.Int64Attribute{
-									Optional: true,
+								"definition_id": schema.Int64Attribute{
+									Required: true,
 								},
+								"custom_variable_loop": ws.NewCustomVariableLoopAttribute(),
+							},
+						},
+						"slack_notification_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
 								"name": schema.StringAttribute{
-									Optional: true,
+									Required: true,
+								},
+								"connection_id": schema.Int64Attribute{
+									Required: true,
 								},
 								"message": schema.StringAttribute{
+									Required: true,
+								},
+							},
+						},
+						"tableau_data_extraction_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"name": schema.StringAttribute{
+									Required: true,
+								},
+								"connection_id": schema.Int64Attribute{
+									Required: true,
+								},
+								"task_id": schema.StringAttribute{
+									Required: true,
+								},
+							},
+						},
+						"http_request_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"name": schema.StringAttribute{
+									Required: true,
+								},
+								"connection_id": schema.Int64Attribute{
 									Optional: true,
+								},
+								"http_method": schema.StringAttribute{
+									Required: true,
+								},
+								"url": schema.StringAttribute{
+									Required: true,
+								},
+								"request_body": schema.StringAttribute{
+									Optional: true,
+								},
+								"request_headers": schema.ListNestedAttribute{
+									Optional: true,
+									NestedObject: schema.NestedAttributeObject{
+										Attributes: map[string]schema.Attribute{
+											"key": schema.StringAttribute{
+												Required: true,
+											},
+											"value": schema.StringAttribute{
+												Required: true,
+											},
+											"masking": schema.BoolAttribute{
+												Optional: true,
+											},
+										},
+									},
+								},
+								"request_parameters": schema.ListNestedAttribute{
+									Optional: true,
+									NestedObject: schema.NestedAttributeObject{
+										Attributes: map[string]schema.Attribute{
+											"key": schema.StringAttribute{
+												Required: true,
+											},
+											"value": schema.StringAttribute{
+												Required: true,
+											},
+											"masking": schema.BoolAttribute{
+												Optional: true,
+											},
+										},
+									},
+								},
+								"custom_variables": customVariables,
+							},
+						},
+						"bigquery_data_check_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"name": schema.StringAttribute{
+									Required: true,
+								},
+								"connection_id": schema.Int64Attribute{
+									Required: true,
+								},
+								"query": schema.StringAttribute{
+									Optional: true,
+								},
+								"operator": schema.StringAttribute{
+									Optional: true,
+								},
+								"query_result": schema.Int64Attribute{
+									Optional: true,
+								},
+								"accepts_null": schema.BoolAttribute{
+									Optional: true,
+								},
+								"custom_variables": customVariables,
+							},
+						},
+						"snowflake_data_check_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"name": schema.StringAttribute{
+									Required: true,
+								},
+								"connection_id": schema.Int64Attribute{
+									Required: true,
 								},
 								"query": schema.StringAttribute{
 									Optional: true,
@@ -373,84 +912,34 @@ func (r *workflowResource) Schema(
 								"warehouse": schema.StringAttribute{
 									Optional: true,
 								},
+								"custom_variables": customVariables,
+							},
+						},
+						"redshift_data_check_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"name": schema.StringAttribute{
+									Required: true,
+								},
+								"connection_id": schema.Int64Attribute{
+									Required: true,
+								},
+								"query": schema.StringAttribute{
+									Optional: true,
+								},
+								"operator": schema.StringAttribute{
+									Optional: true,
+								},
+								"query_result": schema.Int64Attribute{
+									Optional: true,
+								},
+								"accepts_null": schema.BoolAttribute{
+									Optional: true,
+								},
 								"database": schema.StringAttribute{
 									Optional: true,
 								},
-								"task_id": schema.StringAttribute{
-									Optional: true,
-								},
-								"custom_variables": schema.ListNestedAttribute{
-									Optional: true,
-									NestedObject: schema.NestedAttributeObject{
-										Attributes: map[string]schema.Attribute{
-											"name": schema.StringAttribute{
-												Required: true,
-											},
-											"type": schema.StringAttribute{
-												Required: true,
-											},
-											"value": schema.StringAttribute{
-												Optional: true,
-											},
-											"quantity": schema.Int64Attribute{
-												Optional: true,
-											},
-											"unit": schema.StringAttribute{
-												Optional: true,
-											},
-											"direction": schema.StringAttribute{
-												Optional: true,
-											},
-											"format": schema.StringAttribute{
-												Optional: true,
-											},
-											"time_zone": schema.StringAttribute{
-												Optional: true,
-											},
-										},
-									},
-								},
-								"http_method": schema.StringAttribute{
-									Optional: true,
-								},
-								"url": schema.StringAttribute{
-									Optional: true,
-								},
-								"request_body": schema.StringAttribute{
-									Optional: true,
-								},
-								"request_headers": schema.ListNestedAttribute{
-									Optional: true,
-									NestedObject: schema.NestedAttributeObject{
-										Attributes: map[string]schema.Attribute{
-											"key": schema.StringAttribute{
-												Required: true,
-											},
-											"value": schema.StringAttribute{
-												Required: true,
-											},
-											"masking": schema.BoolAttribute{
-												Required: true,
-											},
-										},
-									},
-								},
-								"request_parameters": schema.ListNestedAttribute{
-									Optional: true,
-									NestedObject: schema.NestedAttributeObject{
-										Attributes: map[string]schema.Attribute{
-											"key": schema.StringAttribute{
-												Required: true,
-											},
-											"value": schema.StringAttribute{
-												Required: true,
-											},
-											"masking": schema.BoolAttribute{
-												Required: true,
-											},
-										},
-									},
-								},
+								"custom_variables": customVariables,
 							},
 						},
 					},
@@ -498,71 +987,21 @@ func (r *workflowResource) Create(
 
 	tasks := []workflowResourceTaskModel{}
 	for _, t := range workflow.Tasks {
-		customVariables := []workflowResourceTaskCustomVariableConfigModel{}
-		for _, v := range t.Config.CustomVariables {
-			customVariables = append(customVariables, workflowResourceTaskCustomVariableConfigModel{
-				Name:      types.StringPointerValue(v.Name),
-				Type:      types.StringPointerValue(v.Type),
-				Value:     types.StringPointerValue(v.Value),
-				Quantity:  types.Int64PointerValue(v.Quantity),
-				Unit:      types.StringPointerValue(v.Unit),
-				Direction: types.StringPointerValue(v.Direction),
-				Format:    types.StringPointerValue(v.Format),
-				TimeZone:  types.StringPointerValue(v.TimeZone),
-			})
-		}
-		if len(customVariables) == 0 {
-			customVariables = nil
-		}
-
-		requestHeaders := []workflowResourceTaskRequestHeaderConfigModel{}
-		for _, h := range t.Config.RequestHeaders {
-			requestHeaders = append(requestHeaders, workflowResourceTaskRequestHeaderConfigModel{
-				Key:     types.StringValue(h.Key),
-				Value:   types.StringValue(h.Value),
-				Masking: types.BoolValue(h.Masking),
-			})
-		}
-		if len(requestHeaders) == 0 {
-			requestHeaders = nil
-		}
-
-		requestParameters := []workflowResourceTaskRequestParameterConfigModel{}
-		for _, p := range t.Config.RequestParameters {
-			requestParameters = append(requestParameters, workflowResourceTaskRequestParameterConfigModel{
-				Key:     types.StringValue(p.Key),
-				Value:   types.StringValue(p.Value),
-				Masking: types.BoolValue(p.Masking),
-			})
-		}
-		if len(requestParameters) == 0 {
-			requestParameters = nil
-		}
-
-		tasks = append(tasks, workflowResourceTaskModel{
+		task := workflowResourceTaskModel{
 			Key:            types.StringValue(t.Key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
-			Config: workflowResourceTaskConfigModel{
-				ResourceID:      types.Int64PointerValue(t.Config.ResourceID),
-				Name:            types.StringPointerValue(t.Config.Name),
-				Message:         types.StringPointerValue(t.Config.Message),
-				Query:           types.StringPointerValue(t.Config.Query),
-				Operator:        types.StringPointerValue(t.Config.Operator),
-				QueryResult:     types.Int64PointerValue(t.Config.QueryResult),
-				AcceptsNull:     types.BoolPointerValue(t.Config.AcceptsNull),
-				Warehouse:       types.StringPointerValue(t.Config.Warehouse),
-				Database:        types.StringPointerValue(t.Config.Database),
-				TaskID:          types.StringPointerValue(t.Config.TaskID),
-				CustomVariables: customVariables,
+		}
 
-				HTTPMethod:        types.StringPointerValue(t.Config.HTTPMethod),
-				URL:               types.StringPointerValue(t.Config.URL),
-				RequestBody:       types.StringPointerValue(t.Config.RequestBody),
-				RequestHeaders:    requestHeaders,
-				RequestParameters: requestParameters,
-			},
-		})
+		task.TroccoTransferConfig = newWorkflowResourceTroccoTransferTaskConfig(t.TroccoTransferConfig)
+		task.SlackNotificationConfig = newWorkflowResourceSlackNotificationTaskConfig(t.SlackNotificationConfig)
+		task.TableauDataExtractionConfig = newWorkflowResourceTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig)
+		task.BigqueryDataCheckConfig = newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig)
+		task.SnowflakeDataCheckConfig = newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig)
+		task.RedshiftDataCheckConfig = newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig)
+		task.HTTPRequestConfig = newWorkflowHTTPRequestTaskConfigModel(t.HTTPRequestConfig)
+
+		tasks = append(tasks, task)
 	}
 
 	keys := map[int64]types.String{}
@@ -619,71 +1058,21 @@ func (r *workflowResource) Update(
 
 	tasks := []workflowResourceTaskModel{}
 	for _, t := range workflow.Tasks {
-		customVariables := []workflowResourceTaskCustomVariableConfigModel{}
-		for _, v := range t.Config.CustomVariables {
-			customVariables = append(customVariables, workflowResourceTaskCustomVariableConfigModel{
-				Name:      types.StringPointerValue(v.Name),
-				Type:      types.StringPointerValue(v.Type),
-				Value:     types.StringPointerValue(v.Value),
-				Quantity:  types.Int64PointerValue(v.Quantity),
-				Unit:      types.StringPointerValue(v.Unit),
-				Direction: types.StringPointerValue(v.Direction),
-				Format:    types.StringPointerValue(v.Format),
-				TimeZone:  types.StringPointerValue(v.TimeZone),
-			})
-		}
-		if len(customVariables) == 0 {
-			customVariables = nil
-		}
-
-		requestHeaders := []workflowResourceTaskRequestHeaderConfigModel{}
-		for _, h := range t.Config.RequestHeaders {
-			requestHeaders = append(requestHeaders, workflowResourceTaskRequestHeaderConfigModel{
-				Key:     types.StringValue(h.Key),
-				Value:   types.StringValue(h.Value),
-				Masking: types.BoolValue(h.Masking),
-			})
-		}
-		if len(requestHeaders) == 0 {
-			requestHeaders = nil
-		}
-
-		requestParameters := []workflowResourceTaskRequestParameterConfigModel{}
-		for _, p := range t.Config.RequestParameters {
-			requestParameters = append(requestParameters, workflowResourceTaskRequestParameterConfigModel{
-				Key:     types.StringValue(p.Key),
-				Value:   types.StringValue(p.Value),
-				Masking: types.BoolValue(p.Masking),
-			})
-		}
-		if len(requestParameters) == 0 {
-			requestParameters = nil
-		}
-
-		tasks = append(tasks, workflowResourceTaskModel{
+		task := workflowResourceTaskModel{
 			Key:            types.StringValue(t.Key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
-			Config: workflowResourceTaskConfigModel{
-				ResourceID:      types.Int64PointerValue(t.Config.ResourceID),
-				Name:            types.StringPointerValue(t.Config.Name),
-				Message:         types.StringPointerValue(t.Config.Message),
-				Query:           types.StringPointerValue(t.Config.Query),
-				Operator:        types.StringPointerValue(t.Config.Operator),
-				QueryResult:     types.Int64PointerValue(t.Config.QueryResult),
-				AcceptsNull:     types.BoolPointerValue(t.Config.AcceptsNull),
-				Warehouse:       types.StringPointerValue(t.Config.Warehouse),
-				Database:        types.StringPointerValue(t.Config.Database),
-				TaskID:          types.StringPointerValue(t.Config.TaskID),
-				CustomVariables: customVariables,
+		}
 
-				HTTPMethod:        types.StringPointerValue(t.Config.HTTPMethod),
-				URL:               types.StringPointerValue(t.Config.URL),
-				RequestBody:       types.StringPointerValue(t.Config.RequestBody),
-				RequestHeaders:    requestHeaders,
-				RequestParameters: requestParameters,
-			},
-		})
+		task.TroccoTransferConfig = newWorkflowResourceTroccoTransferTaskConfig(t.TroccoTransferConfig)
+		task.SlackNotificationConfig = newWorkflowResourceSlackNotificationTaskConfig(t.SlackNotificationConfig)
+		task.TableauDataExtractionConfig = newWorkflowResourceTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig)
+		task.BigqueryDataCheckConfig = newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig)
+		task.SnowflakeDataCheckConfig = newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig)
+		task.RedshiftDataCheckConfig = newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig)
+		task.HTTPRequestConfig = newWorkflowHTTPRequestTaskConfigModel(t.HTTPRequestConfig)
+
+		tasks = append(tasks, task)
 	}
 
 	keys := map[int64]types.String{}
@@ -740,71 +1129,21 @@ func (r *workflowResource) Read(
 	for _, t := range workflow.Tasks {
 		key := stateKeys[t.TaskIdentifier]
 
-		customVariables := []workflowResourceTaskCustomVariableConfigModel{}
-		for _, v := range t.Config.CustomVariables {
-			customVariables = append(customVariables, workflowResourceTaskCustomVariableConfigModel{
-				Name:      types.StringPointerValue(v.Name),
-				Type:      types.StringPointerValue(v.Type),
-				Value:     types.StringPointerValue(v.Value),
-				Quantity:  types.Int64PointerValue(v.Quantity),
-				Unit:      types.StringPointerValue(v.Unit),
-				Direction: types.StringPointerValue(v.Direction),
-				Format:    types.StringPointerValue(v.Format),
-				TimeZone:  types.StringPointerValue(v.TimeZone),
-			})
-		}
-		if len(customVariables) == 0 {
-			customVariables = nil
-		}
-
-		requestHeaders := []workflowResourceTaskRequestHeaderConfigModel{}
-		for _, h := range t.Config.RequestHeaders {
-			requestHeaders = append(requestHeaders, workflowResourceTaskRequestHeaderConfigModel{
-				Key:     types.StringValue(h.Key),
-				Value:   types.StringValue(h.Value),
-				Masking: types.BoolValue(h.Masking),
-			})
-		}
-		if len(requestHeaders) == 0 {
-			requestHeaders = nil
-		}
-
-		requestParameters := []workflowResourceTaskRequestParameterConfigModel{}
-		for _, p := range t.Config.RequestParameters {
-			requestParameters = append(requestParameters, workflowResourceTaskRequestParameterConfigModel{
-				Key:     types.StringValue(p.Key),
-				Value:   types.StringValue(p.Value),
-				Masking: types.BoolValue(p.Masking),
-			})
-		}
-		if len(requestParameters) == 0 {
-			requestParameters = nil
-		}
-
-		tasks = append(tasks, workflowResourceTaskModel{
+		task := workflowResourceTaskModel{
 			Key:            types.StringValue(key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
-			Config: workflowResourceTaskConfigModel{
-				ResourceID:      types.Int64PointerValue(t.Config.ResourceID),
-				Name:            types.StringPointerValue(t.Config.Name),
-				Message:         types.StringPointerValue(t.Config.Message),
-				Query:           types.StringPointerValue(t.Config.Query),
-				Operator:        types.StringPointerValue(t.Config.Operator),
-				QueryResult:     types.Int64PointerValue(t.Config.QueryResult),
-				AcceptsNull:     types.BoolPointerValue(t.Config.AcceptsNull),
-				Warehouse:       types.StringPointerValue(t.Config.Warehouse),
-				Database:        types.StringPointerValue(t.Config.Database),
-				TaskID:          types.StringPointerValue(t.Config.TaskID),
-				CustomVariables: customVariables,
+		}
 
-				HTTPMethod:        types.StringPointerValue(t.Config.HTTPMethod),
-				URL:               types.StringPointerValue(t.Config.URL),
-				RequestBody:       types.StringPointerValue(t.Config.RequestBody),
-				RequestHeaders:    requestHeaders,
-				RequestParameters: requestParameters,
-			},
-		})
+		task.TroccoTransferConfig = newWorkflowResourceTroccoTransferTaskConfig(t.TroccoTransferConfig)
+		task.SlackNotificationConfig = newWorkflowResourceSlackNotificationTaskConfig(t.SlackNotificationConfig)
+		task.TableauDataExtractionConfig = newWorkflowResourceTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig)
+		task.BigqueryDataCheckConfig = newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig)
+		task.SnowflakeDataCheckConfig = newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig)
+		task.RedshiftDataCheckConfig = newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig)
+		task.HTTPRequestConfig = newWorkflowHTTPRequestTaskConfigModel(t.HTTPRequestConfig)
+
+		tasks = append(tasks, task)
 	}
 
 	newState := workflowResourceModel{

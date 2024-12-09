@@ -4,7 +4,14 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+
+	we "terraform-provider-trocco/internal/client/entities/workflow"
+	wp "terraform-provider-trocco/internal/client/parameters/workflow"
 )
+
+// -----------------------------------------------------------------------------
+// Client-side data types
+// -----------------------------------------------------------------------------
 
 type WorkflowList struct {
 	Workflows  []*Workflow `json:"workflows"`
@@ -20,30 +27,46 @@ type Workflow struct {
 }
 
 type WorkflowTask struct {
-	Key            string             `json:"key"`
-	TaskIdentifier int64              `json:"task_identifier"`
-	Type           string             `json:"type"`
-	Config         WorkflowTaskConfig `json:"config"`
+	Key            string `json:"key"`
+	TaskIdentifier int64  `json:"task_identifier"`
+	Type           string `json:"type"`
+
+	TroccoTransferConfig        *WorkflowTroccoTransferTaskConfig        `json:"trocco_transfer_config"`
+	SlackNotificationConfig     *WorkflowSlackNotificationTaskConfig     `json:"slack_notification_config"`
+	TableauDataExtractionConfig *WorkflowTableauDataExtractionTaskConfig `json:"tableau_data_extraction_config"`
+	BigqueryDataCheckConfig     *WorkflowBigqueryDataCheckTaskConfig     `json:"bigquery_data_check_config"`
+	SnowflakeDataCheckConfig    *WorkflowSnowflakeDataCheckTaskConfig    `json:"snowflake_data_check_config"`
+	RedshiftDataCheckConfig     *WorkflowRedshiftDataCheckTaskConfig     `json:"redshift_data_check_config"`
+	HTTPRequestConfig           *WorkflowHTTPRequestTaskConfig           `json:"http_request_config"`
 }
 
-type WorkflowTaskConfig struct {
-	ResourceID      *int64                             `json:"resource_id"`
-	Name            *string                            `json:"name"`
-	Message         *string                            `json:"message"`
-	Query           *string                            `json:"query"`
-	Operator        *string                            `json:"operator"`
-	QueryResult     *int64                             `json:"query_result"`
-	AcceptsNull     *bool                              `json:"accepts_null"`
-	Warehouse       *string                            `json:"warehouse"`
-	Database        *string                            `json:"database"`
-	TaskID          *string                            `json:"task_id"`
-	CustomVariables []WorkflowTaskCustomVariableConfig `json:"custom_variables"`
+type WorkflowTroccoTransferTaskConfig struct {
+	DefinitionID int64 `json:"definition_id"`
 
-	HTTPMethod        *string                              `json:"http_method"`
-	URL               *string                              `json:"url"`
+	CustomVariableLoop *we.CustomVariableLoop `json:"custom_variable_loop"`
+}
+
+type WorkflowSlackNotificationTaskConfig struct {
+	Name         string `json:"name"`
+	ConnectionID int64  `json:"connection_id"`
+	Message      string `json:"message"`
+}
+
+type WorkflowTableauDataExtractionTaskConfig struct {
+	Name         string `json:"name"`
+	ConnectionID int64  `json:"connection_id"`
+	TaskID       string `json:"task_id"`
+}
+
+type WorkflowHTTPRequestTaskConfig struct {
+	Name              string                               `json:"name"`
+	ConnectionID      *int64                               `json:"connection_id"`
+	HTTPMethod        string                               `json:"http_method"`
+	URL               string                               `json:"url"`
 	RequestBody       *string                              `json:"request_body"`
 	RequestHeaders    []WorkflowTaskRequestHeaderConfig    `json:"request_headers"`
 	RequestParameters []WorkflowTaskRequestParameterConfig `json:"request_parameters"`
+	CustomVariables   []WorkflowTaskCustomVariableConfig   `json:"custom_variables"`
 }
 
 type WorkflowTaskRequestHeaderConfig struct {
@@ -56,6 +79,38 @@ type WorkflowTaskRequestParameterConfig struct {
 	Key     string `json:"key"`
 	Value   string `json:"value"`
 	Masking bool   `json:"masking"`
+}
+
+type WorkflowBigqueryDataCheckTaskConfig struct {
+	Name            string                             `json:"name"`
+	ConnectionID    int64                              `json:"connection_id"`
+	Query           string                             `json:"query"`
+	Operator        string                             `json:"operator"`
+	QueryResult     int64                              `json:"query_result"`
+	AcceptsNull     bool                               `json:"accepts_null"`
+	CustomVariables []WorkflowTaskCustomVariableConfig `json:"custom_variables"`
+}
+
+type WorkflowSnowflakeDataCheckTaskConfig struct {
+	Name            string                             `json:"name"`
+	ConnectionID    int64                              `json:"connection_id"`
+	Query           string                             `json:"query"`
+	Operator        string                             `json:"operator"`
+	QueryResult     int64                              `json:"query_result"`
+	AcceptsNull     bool                               `json:"accepts_null"`
+	Warehouse       string                             `json:"warehouse"`
+	CustomVariables []WorkflowTaskCustomVariableConfig `json:"custom_variables"`
+}
+
+type WorkflowRedshiftDataCheckTaskConfig struct {
+	Name            string                             `json:"name"`
+	ConnectionID    int64                              `json:"connection_id"`
+	Query           string                             `json:"query"`
+	Operator        string                             `json:"operator"`
+	QueryResult     int64                              `json:"query_result"`
+	AcceptsNull     bool                               `json:"accepts_null"`
+	Database        string                             `json:"database"`
+	CustomVariables []WorkflowTaskCustomVariableConfig `json:"custom_variables"`
 }
 
 type WorkflowTaskCustomVariableConfig struct {
@@ -73,6 +128,10 @@ type WorkflowTaskDependency struct {
 	Source      int64 `json:"source"`
 	Destination int64 `json:"destination"`
 }
+
+// -----------------------------------------------------------------------------
+// Parameters
+// -----------------------------------------------------------------------------
 
 type GetWorkflowsInput struct {
 	Limit  int    `json:"limit"`
@@ -94,30 +153,72 @@ type UpdateWorkflowInput struct {
 }
 
 type WorkflowTaskInput struct {
-	Key            string                  `json:"key,omitempty"`
-	TaskIdentifier int64                   `json:"task_identifier,omitempty"`
-	Type           string                  `json:"type,omitempty"`
-	Config         WorkflowTaskConfigInput `json:"config,omitempty"`
+	Key            string `json:"key,omitempty"`
+	TaskIdentifier int64  `json:"task_identifier,omitempty"`
+	Type           string `json:"type,omitempty"`
+
+	TroccoTransferConfig        *wp.TroccoTransferConfig                      `json:"trocco_transfer_config,omitempty"`
+	SlackNotificationConfig     *WorkflowSlackNotificationTaskConfigInput     `json:"slack_notification_config,omitempty"`
+	TableauDataExtractionConfig *WorkflowTableauDataExtractionTaskConfigInput `json:"tableau_data_extraction_config,omitempty"`
+	BigqueryDataCheckConfig     *WorkflowBigqueryDataCheckTaskConfigInput     `json:"bigquery_data_check_config,omitempty"`
+	SnowflakeDataCheckConfig    *WorkflowSnowflakeDataCheckTaskConfigInput    `json:"snowflake_data_check_config,omitempty"`
+	RedshiftDataCheckConfig     *WorkflowRedshiftDataCheckTaskConfigInput     `json:"redshift_data_check_config,omitempty"`
+	HTTPRequestConfig           *WorkflowHTTPRequestTaskConfigInput           `json:"http_request_config,omitempty"`
 }
 
-type WorkflowTaskConfigInput struct {
-	ResourceID      *NullableInt64                          `json:"resource_id,omitempty"`
-	Name            *string                                 `json:"name,omitempty"`
-	Message         *string                                 `json:"message,omitempty"`
-	Query           *string                                 `json:"query,omitempty"`
-	Operator        *string                                 `json:"operator,omitempty"`
-	QueryResult     *NullableInt64                          `json:"query_result,omitempty"`
-	AcceptsNull     *bool                                   `json:"accepts_null,omitempty"`
-	Warehouse       *string                                 `json:"warehouse,omitempty"`
-	Database        *string                                 `json:"database,omitempty"`
-	TaskID          *string                                 `json:"task_id,omitempty"`
-	CustomVarialbes []WorkflowTaskCustomVariableConfigInput `json:"custom_variables,omitempty"`
+type WorkflowSlackNotificationTaskConfigInput struct {
+	Name         string `json:"name,omitempty"`
+	ConnectionID int64  `json:"connection_id,omitempty"`
+	Message      string `json:"message,omitempty"`
+}
 
-	HTTPMethod        *string                                   `json:"http_method,omitempty"`
-	URL               *string                                   `json:"url,omitempty"`
+type WorkflowTableauDataExtractionTaskConfigInput struct {
+	Name         string `json:"name,omitempty"`
+	ConnectionID int64  `json:"connection_id,omitempty"`
+	TaskID       string `json:"task_id,omitempty"`
+}
+
+type WorkflowBigqueryDataCheckTaskConfigInput struct {
+	Name            string                                  `json:"name,omitempty"`
+	ConnectionID    int64                                   `json:"connection_id,omitempty"`
+	Query           string                                  `json:"query,omitempty"`
+	Operator        string                                  `json:"operator,omitempty"`
+	QueryResult     *NullableInt64                          `json:"query_result,omitempty"`
+	AcceptsNull     *NullableBool                           `json:"accepts_null,omitempty"`
+	CustomVariables []WorkflowTaskCustomVariableConfigInput `json:"custom_variables,omitempty"`
+}
+
+type WorkflowSnowflakeDataCheckTaskConfigInput struct {
+	Name            string                                  `json:"name,omitempty"`
+	ConnectionID    int64                                   `json:"connection_id,omitempty"`
+	Query           string                                  `json:"query,omitempty"`
+	Operator        string                                  `json:"operator,omitempty"`
+	QueryResult     *NullableInt64                          `json:"query_result,omitempty"`
+	AcceptsNull     *NullableBool                           `json:"accepts_null,omitempty"`
+	Warehouse       string                                  `json:"warehouse,omitempty"`
+	CustomVariables []WorkflowTaskCustomVariableConfigInput `json:"custom_variables,omitempty"`
+}
+
+type WorkflowRedshiftDataCheckTaskConfigInput struct {
+	Name            string                                  `json:"name,omitempty"`
+	ConnectionID    int64                                   `json:"connection_id,omitempty"`
+	Query           string                                  `json:"query,omitempty"`
+	Operator        string                                  `json:"operator,omitempty"`
+	QueryResult     *NullableInt64                          `json:"query_result,omitempty"`
+	AcceptsNull     *NullableBool                           `json:"accepts_null,omitempty"`
+	Database        string                                  `json:"database,omitempty"`
+	CustomVariables []WorkflowTaskCustomVariableConfigInput `json:"custom_variables,omitempty"`
+}
+
+type WorkflowHTTPRequestTaskConfigInput struct {
+	Name              string                                    `json:"name,omitempty"`
+	ConnectionID      *NullableInt64                            `json:"connection_id,omitempty"`
+	HTTPMethod        string                                    `json:"http_method,omitempty"`
+	URL               string                                    `json:"url,omitempty"`
 	RequestBody       *string                                   `json:"request_body,omitempty"`
 	RequestHeaders    []WorkflowTaskRequestHeaderConfigInput    `json:"request_headers,omitempty"`
 	RequestParameters []WorkflowTaskRequestParameterConfigInput `json:"request_parameters,omitempty"`
+	CustomVariables   []WorkflowTaskCustomVariableConfigInput   `json:"custom_variables,omitempty"`
 }
 
 type WorkflowTaskRequestHeaderConfigInput struct {
@@ -132,11 +233,6 @@ type WorkflowTaskRequestParameterConfigInput struct {
 	Masking *NullableBool `json:"masking,omitempty"`
 }
 
-type WorkflowTaskDependencyInput struct {
-	Source      string `json:"source,omitempty"`
-	Destination string `json:"destination,omitempty"`
-}
-
 type WorkflowTaskCustomVariableConfigInput struct {
 	Name      *string        `json:"name,omitempty"`
 	Type      *string        `json:"type,omitempty"`
@@ -147,6 +243,15 @@ type WorkflowTaskCustomVariableConfigInput struct {
 	Format    *string        `json:"format,omitempty"`
 	TimeZone  *string        `json:"time_zone,omitempty"`
 }
+
+type WorkflowTaskDependencyInput struct {
+	Source      string `json:"source,omitempty"`
+	Destination string `json:"destination,omitempty"`
+}
+
+// -----------------------------------------------------------------------------
+// Operations
+// -----------------------------------------------------------------------------
 
 func (c *TroccoClient) GetWorkflows(in *GetWorkflowsInput) (*WorkflowList, error) {
 	params := url.Values{}
@@ -160,62 +265,47 @@ func (c *TroccoClient) GetWorkflows(in *GetWorkflowsInput) (*WorkflowList, error
 		}
 	}
 
+	url := fmt.Sprintf("/api/workflows?%s", params.Encode())
+
 	out := &WorkflowList{}
-	if err := c.do(
-		http.MethodGet,
-		fmt.Sprintf("/api/workflows?%s", params.Encode()),
-		nil,
-		out,
-	); err != nil {
+	if err := c.do(http.MethodGet, url, nil, out); err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
 func (c *TroccoClient) GetWorkflow(id int64) (*Workflow, error) {
+	url := fmt.Sprintf("/api/workflows/%d", id)
+
 	out := &Workflow{}
-	if err := c.do(
-		http.MethodGet,
-		fmt.Sprintf("/api/workflows/%d", id),
-		nil,
-		out,
-	); err != nil {
+	if err := c.do(http.MethodGet, url, nil, out); err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
 func (c *TroccoClient) CreateWorkflow(in *CreateWorkflowInput) (*Workflow, error) {
+	url := "/api/workflows"
+
 	out := &Workflow{}
-	if err := c.do(
-		http.MethodPost,
-		"/api/workflows",
-		in,
-		out,
-	); err != nil {
+	if err := c.do(http.MethodPost, url, in, out); err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
 func (c *TroccoClient) UpdateWorkflow(id int64, in *UpdateWorkflowInput) (*Workflow, error) {
+	url := fmt.Sprintf("/api/workflows/%d", id)
+
 	out := &Workflow{}
-	if err := c.do(
-		http.MethodPatch,
-		fmt.Sprintf("/api/workflows/%d", id),
-		in,
-		out,
-	); err != nil {
+	if err := c.do(http.MethodPatch, url, in, out); err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
 func (c *TroccoClient) DeleteWorkflow(id int64) error {
-	return c.do(
-		http.MethodDelete,
-		fmt.Sprintf("/api/workflows/%d", id),
-		nil,
-		nil,
-	)
+	url := fmt.Sprintf("/api/workflows/%d", id)
+
+	return c.do(http.MethodDelete, url, nil, nil)
 }
