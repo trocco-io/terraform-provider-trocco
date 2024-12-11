@@ -1116,53 +1116,6 @@ func (r *workflowResource) Create(
 		return
 	}
 
-	labels := []types.Int64{}
-	for _, e := range workflow.Labels {
-		labels = append(labels, types.Int64Value(e))
-	}
-	if len(labels) == 0 {
-		// If no labels are present, the API returns an empty array but the provider should set `null`.
-		labels = nil
-	}
-
-	notifications := []wm.Notification{}
-	for _, n := range workflow.Notifications {
-		notification := wm.Notification{
-			Type: types.StringValue(n.Type),
-		}
-
-		if n.EmailConfig != nil {
-			notification.EmailConfig = wm.NewEmailNotificationConfig(n.EmailConfig)
-		}
-		if n.SlackConfig != nil {
-			notification.SlackConfig = wm.NewSlackNotificationConfig(n.SlackConfig)
-		}
-
-		notifications = append(notifications, notification)
-	}
-
-	schedules := []wm.Schedule{}
-	for _, s := range workflow.Schedules {
-		schedule := wm.Schedule{
-			Type: types.StringValue(s.Type),
-		}
-
-		if s.DailyConfig != nil {
-			schedule.DailyConfig = wm.NewDailyScheduleConfig(s.DailyConfig)
-		}
-		if s.HourlyConfig != nil {
-			schedule.HourlyConfig = wm.NewHourlyScheduleConfig(s.HourlyConfig)
-		}
-		if s.MonthlyConfig != nil {
-			schedule.MonthlyConfig = wm.NewMonthlyScheduleConfig(s.MonthlyConfig)
-		}
-		if s.WeeklyConfig != nil {
-			schedule.WeeklyConfig = wm.NewWeeklyScheduleConfig(s.WeeklyConfig)
-		}
-
-		schedules = append(schedules, schedule)
-	}
-
 	tasks := []workflowResourceTaskModel{}
 	for _, t := range workflow.Tasks {
 		task := workflowResourceTaskModel{
@@ -1199,9 +1152,9 @@ func (r *workflowResource) Create(
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
-		Labels:           labels,
-		Notifications:    notifications,
-		Schedules:        schedules,
+		Labels:           wm.NewLabels(workflow.Labels),
+		Notifications:    wm.NewNotifications(workflow.Notifications),
+		Schedules:        wm.NewSchedules(workflow.Schedules),
 		Tasks:            tasks,
 		TaskDependencies: taskDependencies,
 	}
@@ -1237,15 +1190,6 @@ func (r *workflowResource) Update(
 		return
 	}
 
-	labels := []types.Int64{}
-	for _, e := range workflow.Labels {
-		labels = append(labels, types.Int64Value(e))
-	}
-	if len(labels) == 0 {
-		// If no labels are present, the API returns an empty array but the provider should set `null`.
-		labels = nil
-	}
-
 	tasks := []workflowResourceTaskModel{}
 	for _, t := range workflow.Tasks {
 		task := workflowResourceTaskModel{
@@ -1282,7 +1226,9 @@ func (r *workflowResource) Update(
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
-		Labels:           labels,
+		Labels:           wm.NewLabels(workflow.Labels),
+		Notifications:    wm.NewNotifications(workflow.Notifications),
+		Schedules:        wm.NewSchedules(workflow.Schedules),
 		Tasks:            tasks,
 		TaskDependencies: taskDependencies,
 	}
@@ -1338,10 +1284,13 @@ func (r *workflowResource) Read(
 	}
 
 	newState := workflowResourceModel{
-		ID:          types.Int64Value(workflow.ID),
-		Name:        types.StringPointerValue(workflow.Name),
-		Description: types.StringPointerValue(workflow.Description),
-		Tasks:       tasks,
+		ID:            types.Int64Value(workflow.ID),
+		Name:          types.StringPointerValue(workflow.Name),
+		Description:   types.StringPointerValue(workflow.Description),
+		Tasks:         tasks,
+		Labels:        wm.NewLabels(workflow.Labels),
+		Notifications: wm.NewNotifications(workflow.Notifications),
+		Schedules:     wm.NewSchedules(workflow.Schedules),
 		// create/update のときは string
 		// read のときは int64
 		TaskDependencies: state.TaskDependencies,

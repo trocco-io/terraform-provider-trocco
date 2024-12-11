@@ -20,12 +20,26 @@ type Schedule struct {
 	WeeklyConfig  *WeeklyScheduleConfig  `tfsdk:"weekly_config"`
 }
 
-func NewSchedule(en *we.Schedule) *Schedule {
-	if en == nil {
+func NewSchedules(ens []we.Schedule) []Schedule {
+	if ens == nil {
 		return nil
 	}
 
-	return &Schedule{
+	var mds []Schedule
+	for _, en := range ens {
+		mds = append(mds, NewSchedule(en))
+	}
+
+	// If no schedules are present, the API returns an empty array but the provider should set `null`.
+	if len(mds) == 0 {
+		return nil
+	}
+
+	return mds
+}
+
+func NewSchedule(en we.Schedule) Schedule {
+	return Schedule{
 		Type:          types.StringValue(en.Type),
 		DailyConfig:   NewDailyScheduleConfig(en.DailyConfig),
 		HourlyConfig:  NewHourlyScheduleConfig(en.HourlyConfig),
