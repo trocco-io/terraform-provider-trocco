@@ -22,6 +22,9 @@ type Workflow struct {
 	ID               int64                    `json:"id"`
 	Name             *string                  `json:"name"`
 	Description      *string                  `json:"description"`
+	Labels           []int64                  `json:"labels"`
+	Notifications    []we.Notification        `json:"notifications"`
+	Schedules        []we.Schedule            `json:"schedules"`
 	Tasks            []WorkflowTask           `json:"tasks"`
 	TaskDependencies []WorkflowTaskDependency `json:"task_dependencies"`
 }
@@ -141,6 +144,9 @@ type GetWorkflowsInput struct {
 type CreateWorkflowInput struct {
 	Name             string                        `json:"name"`
 	Description      *string                       `json:"description,omitempty"`
+	Labels           []int64                       `json:"labels,omitempty"`
+	Notifications    []wp.Notification             `json:"notifications,omitempty"`
+	Schedules        []wp.Schedule                 `json:"schedules,omitempty"`
 	Tasks            []WorkflowTaskInput           `json:"tasks,omitempty"`
 	TaskDependencies []WorkflowTaskDependencyInput `json:"task_dependencies,omitempty"`
 }
@@ -148,6 +154,9 @@ type CreateWorkflowInput struct {
 type UpdateWorkflowInput struct {
 	Name             *string                       `json:"name,omitempty"`
 	Description      *string                       `json:"description,omitempty"`
+	Labels           []int64                       `json:"labels,omitempty"`
+	Notifications    []wp.Notification             `json:"notifications,omitempty"`
+	Schedules        []wp.Schedule                 `json:"schedules,omitempty"`
 	Tasks            []WorkflowTaskInput           `json:"tasks,omitempty"`
 	TaskDependencies []WorkflowTaskDependencyInput `json:"task_dependencies,omitempty"`
 }
@@ -157,19 +166,13 @@ type WorkflowTaskInput struct {
 	TaskIdentifier int64  `json:"task_identifier,omitempty"`
 	Type           string `json:"type,omitempty"`
 
-	TroccoTransferConfig        *wp.TroccoTransferConfig                      `json:"trocco_transfer_config,omitempty"`
-	SlackNotificationConfig     *WorkflowSlackNotificationTaskConfigInput     `json:"slack_notification_config,omitempty"`
+	TroccoTransferConfig        *wp.TroccoTransferTaskConfig                  `json:"trocco_transfer_config,omitempty"`
+	SlackNotificationConfig     *wp.SlackNotificationTaskConfig               `json:"slack_notification_config,omitempty"`
 	TableauDataExtractionConfig *WorkflowTableauDataExtractionTaskConfigInput `json:"tableau_data_extraction_config,omitempty"`
 	BigqueryDataCheckConfig     *WorkflowBigqueryDataCheckTaskConfigInput     `json:"bigquery_data_check_config,omitempty"`
 	SnowflakeDataCheckConfig    *WorkflowSnowflakeDataCheckTaskConfigInput    `json:"snowflake_data_check_config,omitempty"`
 	RedshiftDataCheckConfig     *WorkflowRedshiftDataCheckTaskConfigInput     `json:"redshift_data_check_config,omitempty"`
 	HTTPRequestConfig           *WorkflowHTTPRequestTaskConfigInput           `json:"http_request_config,omitempty"`
-}
-
-type WorkflowSlackNotificationTaskConfigInput struct {
-	Name         string `json:"name,omitempty"`
-	ConnectionID int64  `json:"connection_id,omitempty"`
-	Message      string `json:"message,omitempty"`
 }
 
 type WorkflowTableauDataExtractionTaskConfigInput struct {

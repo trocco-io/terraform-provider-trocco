@@ -35,11 +35,29 @@ type workflowResourceModel struct {
 	ID               types.Int64                           `tfsdk:"id"`
 	Name             types.String                          `tfsdk:"name"`
 	Description      types.String                          `tfsdk:"description"`
+	Labels           []types.Int64                         `tfsdk:"labels"`
+	Notifications    []wm.Notification                     `tfsdk:"notifications"`
+	Schedules        []wm.Schedule                         `tfsdk:"schedules"`
 	Tasks            []workflowResourceTaskModel           `tfsdk:"tasks"`
 	TaskDependencies []workflowResourceTaskDependencyModel `tfsdk:"task_dependencies"`
 }
 
 func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
+	labels := []int64{}
+	for _, l := range m.Labels {
+		labels = append(labels, l.ValueInt64())
+	}
+
+	notifications := []wp.Notification{}
+	for _, n := range m.Notifications {
+		notifications = append(notifications, n.ToInput())
+	}
+
+	schedules := []wp.Schedule{}
+	for _, s := range m.Schedules {
+		schedules = append(schedules, s.ToInput())
+	}
+
 	tasks := []client.WorkflowTaskInput{}
 	for _, r := range m.Tasks {
 		i := client.WorkflowTaskInput{
@@ -84,12 +102,20 @@ func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowIn
 	return &client.CreateWorkflowInput{
 		Name:             m.Name.ValueString(),
 		Description:      m.Description.ValueStringPointer(),
+		Labels:           labels,
+		Notifications:    notifications,
+		Schedules:        schedules,
 		Tasks:            tasks,
 		TaskDependencies: taskDependencies,
 	}
 }
 
 func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceModel) *client.UpdateWorkflowInput {
+	labels := []int64{}
+	for _, l := range m.Labels {
+		labels = append(labels, l.ValueInt64())
+	}
+
 	stateTaskIdentifiers := map[string]int64{}
 	for _, s := range state.Tasks {
 		stateTaskIdentifiers[s.Key.ValueString()] = s.TaskIdentifier.ValueInt64()
@@ -141,14 +167,11 @@ func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceMod
 	return &client.UpdateWorkflowInput{
 		Name:             m.Name.ValueStringPointer(),
 		Description:      m.Description.ValueStringPointer(),
+		Labels:           labels,
 		Tasks:            tasks,
 		TaskDependencies: taskDependencies,
 	}
 }
-
-//
-//
-//
 
 type workflowResourceTaskModel struct {
 	Key            types.String `tfsdk:"key"`
@@ -191,8 +214,8 @@ func newWorkflowResourceTroccoTransferTaskConfig(c *client.WorkflowTroccoTransfe
 	}
 }
 
-func (c *workflowResourceTroccoTransferTaskConfig) ToInput() *wp.TroccoTransferConfig {
-	in := &wp.TroccoTransferConfig{
+func (c *workflowResourceTroccoTransferTaskConfig) ToInput() *wp.TroccoTransferTaskConfig {
+	in := &wp.TroccoTransferTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
 	}
 
@@ -225,8 +248,8 @@ func newWorkflowResourceSlackNotificationTaskConfig(c *client.WorkflowSlackNotif
 	}
 }
 
-func (c *workflowResourceSlackNotificationTaskConfig) ToInput() *client.WorkflowSlackNotificationTaskConfigInput {
-	return &client.WorkflowSlackNotificationTaskConfigInput{
+func (c *workflowResourceSlackNotificationTaskConfig) ToInput() *wp.SlackNotificationTaskConfig {
+	return &wp.SlackNotificationTaskConfig{
 		Name:         c.Name.ValueString(),
 		ConnectionID: c.ConnectionID.ValueInt64(),
 		Message:      c.Message.ValueString(),
@@ -725,8 +748,7 @@ func (r *workflowResource) Schema(
 		MarkdownDescription: "Provides a TROCCO workflow resource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
-				MarkdownDescription: "The ID of the workflow.",
-				Computed:            true,
+				Computed: true,
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},
@@ -735,17 +757,126 @@ func (r *workflowResource) Schema(
 				},
 			},
 			"name": schema.StringAttribute{
-				MarkdownDescription: "The name of the workflow.",
-				Required:            true,
+				Required: true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtMost(255),
 				},
 			},
 			"description": schema.StringAttribute{
-				MarkdownDescription: "The description of the workflow.",
-				Optional:            true,
+				Optional: true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"labels": schema.ListAttribute{
+				Optional:    true,
+				ElementType: types.Int64Type,
+			},
+			"notifications": schema.ListNestedAttribute{
+				Optional: true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"type": schema.StringAttribute{
+							Optional: true,
+						},
+						"email_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"notification_id": schema.Int64Attribute{
+									Required: true,
+								},
+								"notify_when": schema.StringAttribute{
+									Required: true,
+								},
+								"message": schema.StringAttribute{
+									Required: true,
+								},
+							},
+						},
+						"slack_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"notification_id": schema.Int64Attribute{
+									Required: true,
+								},
+								"notify_when": schema.StringAttribute{
+									Required: true,
+								},
+								"message": schema.StringAttribute{
+									Required: true,
+								},
+							},
+						},
+					},
+				},
+			},
+			"schedules": schema.ListNestedAttribute{
+				Optional: true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"type": schema.StringAttribute{
+							Optional: true,
+						},
+						"daily_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"time_zone": schema.StringAttribute{
+									Required: true,
+								},
+								"hour": schema.Int64Attribute{
+									Required: true,
+								},
+								"minute": schema.Int64Attribute{
+									Required: true,
+								},
+							},
+						},
+						"hourly_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"time_zone": schema.StringAttribute{
+									Required: true,
+								},
+								"minute": schema.Int64Attribute{
+									Required: true,
+								},
+							},
+						},
+						"monthly_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"time_zone": schema.StringAttribute{
+									Required: true,
+								},
+								"day": schema.Int64Attribute{
+									Required: true,
+								},
+								"hour": schema.Int64Attribute{
+									Required: true,
+								},
+								"minute": schema.Int64Attribute{
+									Required: true,
+								},
+							},
+						},
+						"weekly_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"time_zone": schema.StringAttribute{
+									Required: true,
+								},
+								"day_of_week": schema.Int64Attribute{
+									Required: true,
+								},
+								"hour": schema.Int64Attribute{
+									Required: true,
+								},
+								"minute": schema.Int64Attribute{
+									Required: true,
+								},
+							},
+						},
+					},
 				},
 			},
 			"tasks": schema.SetNestedAttribute{
@@ -985,6 +1116,53 @@ func (r *workflowResource) Create(
 		return
 	}
 
+	labels := []types.Int64{}
+	for _, e := range workflow.Labels {
+		labels = append(labels, types.Int64Value(e))
+	}
+	if len(labels) == 0 {
+		// If no labels are present, the API returns an empty array but the provider should set `null`.
+		labels = nil
+	}
+
+	notifications := []wm.Notification{}
+	for _, n := range workflow.Notifications {
+		notification := wm.Notification{
+			Type: types.StringValue(n.Type),
+		}
+
+		if n.EmailConfig != nil {
+			notification.EmailConfig = wm.NewEmailNotificationConfig(n.EmailConfig)
+		}
+		if n.SlackConfig != nil {
+			notification.SlackConfig = wm.NewSlackNotificationConfig(n.SlackConfig)
+		}
+
+		notifications = append(notifications, notification)
+	}
+
+	schedules := []wm.Schedule{}
+	for _, s := range workflow.Schedules {
+		schedule := wm.Schedule{
+			Type: types.StringValue(s.Type),
+		}
+
+		if s.DailyConfig != nil {
+			schedule.DailyConfig = wm.NewDailyScheduleConfig(s.DailyConfig)
+		}
+		if s.HourlyConfig != nil {
+			schedule.HourlyConfig = wm.NewHourlyScheduleConfig(s.HourlyConfig)
+		}
+		if s.MonthlyConfig != nil {
+			schedule.MonthlyConfig = wm.NewMonthlyScheduleConfig(s.MonthlyConfig)
+		}
+		if s.WeeklyConfig != nil {
+			schedule.WeeklyConfig = wm.NewWeeklyScheduleConfig(s.WeeklyConfig)
+		}
+
+		schedules = append(schedules, schedule)
+	}
+
 	tasks := []workflowResourceTaskModel{}
 	for _, t := range workflow.Tasks {
 		task := workflowResourceTaskModel{
@@ -1021,6 +1199,9 @@ func (r *workflowResource) Create(
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
+		Labels:           labels,
+		Notifications:    notifications,
+		Schedules:        schedules,
 		Tasks:            tasks,
 		TaskDependencies: taskDependencies,
 	}
@@ -1056,6 +1237,15 @@ func (r *workflowResource) Update(
 		return
 	}
 
+	labels := []types.Int64{}
+	for _, e := range workflow.Labels {
+		labels = append(labels, types.Int64Value(e))
+	}
+	if len(labels) == 0 {
+		// If no labels are present, the API returns an empty array but the provider should set `null`.
+		labels = nil
+	}
+
 	tasks := []workflowResourceTaskModel{}
 	for _, t := range workflow.Tasks {
 		task := workflowResourceTaskModel{
@@ -1092,6 +1282,7 @@ func (r *workflowResource) Update(
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
+		Labels:           labels,
 		Tasks:            tasks,
 		TaskDependencies: taskDependencies,
 	}
