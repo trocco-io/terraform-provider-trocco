@@ -22,7 +22,7 @@ type Workflow struct {
 	ID               int64                    `json:"id"`
 	Name             *string                  `json:"name"`
 	Description      *string                  `json:"description"`
-	Labels           []int64                  `json:"labels"`
+	Labels           []string                 `json:"labels"`
 	Notifications    []we.Notification        `json:"notifications"`
 	Schedules        []we.Schedule            `json:"schedules"`
 	Tasks            []WorkflowTask           `json:"tasks"`
@@ -144,9 +144,9 @@ type GetWorkflowsInput struct {
 type CreateWorkflowInput struct {
 	Name             string                        `json:"name"`
 	Description      *string                       `json:"description,omitempty"`
-	Labels           []int64                       `json:"labels,omitempty"`
-	Notifications    []wp.Notification             `json:"notifications,omitempty"`
-	Schedules        []wp.Schedule                 `json:"schedules,omitempty"`
+	Labels           *[]string                     `json:"labels,omitempty"`
+	Notifications    *[]wp.Notification            `json:"notifications,omitempty"`
+	Schedules        *[]wp.Schedule                `json:"schedules,omitempty"`
 	Tasks            []WorkflowTaskInput           `json:"tasks,omitempty"`
 	TaskDependencies []WorkflowTaskDependencyInput `json:"task_dependencies,omitempty"`
 }
@@ -154,9 +154,9 @@ type CreateWorkflowInput struct {
 type UpdateWorkflowInput struct {
 	Name             *string                       `json:"name,omitempty"`
 	Description      *string                       `json:"description,omitempty"`
-	Labels           []int64                       `json:"labels,omitempty"`
-	Notifications    []wp.Notification             `json:"notifications,omitempty"`
-	Schedules        []wp.Schedule                 `json:"schedules,omitempty"`
+	Labels           *[]string                     `json:"labels,omitempty"`
+	Notifications    *[]wp.Notification            `json:"notifications,omitempty"`
+	Schedules        *[]wp.Schedule                `json:"schedules,omitempty"`
 	Tasks            []WorkflowTaskInput           `json:"tasks,omitempty"`
 	TaskDependencies []WorkflowTaskDependencyInput `json:"task_dependencies,omitempty"`
 }

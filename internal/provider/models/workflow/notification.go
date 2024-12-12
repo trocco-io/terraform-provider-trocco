@@ -18,19 +18,18 @@ type Notification struct {
 	SlackConfig *SlackNotificationConfig `tfsdk:"slack_config"`
 }
 
-func NewNotifications(ens []we.Notification) []Notification {
+func NewNotifications(ens []we.Notification, returnsNilIfEmpty bool) []Notification {
 	if ens == nil {
 		return nil
 	}
 
-	var mds []Notification
-	for _, en := range ens {
-		mds = append(mds, NewNotification(en))
+	if returnsNilIfEmpty && len(ens) == 0 {
+		return nil
 	}
 
-	// If no notifications are present, the API returns an empty array but the provider should set `null`.
-	if len(mds) == 0 {
-		return nil
+	mds := []Notification{}
+	for _, en := range ens {
+		mds = append(mds, NewNotification(en))
 	}
 
 	return mds

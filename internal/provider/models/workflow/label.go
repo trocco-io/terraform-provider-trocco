@@ -4,19 +4,18 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func NewLabels(ens []int64) []types.Int64 {
+func NewLabels(ens []string, returnsNilIfEmpty bool) []types.String {
 	if ens == nil {
 		return nil
 	}
 
-	var mds []types.Int64
-	for _, en := range ens {
-		mds = append(mds, types.Int64Value(en))
+	if returnsNilIfEmpty && len(ens) == 0 {
+		return nil
 	}
 
-	// If no labels are present, the API returns an empty array but the provider should set `null`.
-	if len(mds) == 0 {
-		return nil
+	mds := []types.String{}
+	for _, en := range ens {
+		mds = append(mds, types.StringValue(en))
 	}
 
 	return mds

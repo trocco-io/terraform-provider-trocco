@@ -9,13 +9,10 @@ import (
 	wm "terraform-provider-trocco/internal/provider/models/workflow"
 	ws "terraform-provider-trocco/internal/provider/schemas/workflow"
 
-	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
@@ -35,7 +32,7 @@ type workflowResourceModel struct {
 	ID               types.Int64                           `tfsdk:"id"`
 	Name             types.String                          `tfsdk:"name"`
 	Description      types.String                          `tfsdk:"description"`
-	Labels           []types.Int64                         `tfsdk:"labels"`
+	Labels           []types.String                        `tfsdk:"labels"`
 	Notifications    []wm.Notification                     `tfsdk:"notifications"`
 	Schedules        []wm.Schedule                         `tfsdk:"schedules"`
 	Tasks            []workflowResourceTaskModel           `tfsdk:"tasks"`
@@ -43,9 +40,9 @@ type workflowResourceModel struct {
 }
 
 func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
-	labels := []int64{}
+	labels := []string{}
 	for _, l := range m.Labels {
-		labels = append(labels, l.ValueInt64())
+		labels = append(labels, l.ValueString())
 	}
 
 	notifications := []wp.Notification{}
@@ -102,18 +99,28 @@ func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowIn
 	return &client.CreateWorkflowInput{
 		Name:             m.Name.ValueString(),
 		Description:      m.Description.ValueStringPointer(),
-		Labels:           labels,
-		Notifications:    notifications,
-		Schedules:        schedules,
+		Labels:           lo.ToPtr(labels),
+		Notifications:    lo.ToPtr(notifications),
+		Schedules:        lo.ToPtr(schedules),
 		Tasks:            tasks,
 		TaskDependencies: taskDependencies,
 	}
 }
 
 func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceModel) *client.UpdateWorkflowInput {
-	labels := []int64{}
+	labels := []string{}
 	for _, l := range m.Labels {
-		labels = append(labels, l.ValueInt64())
+		labels = append(labels, l.ValueString())
+	}
+
+	notifications := []wp.Notification{}
+	for _, n := range m.Notifications {
+		notifications = append(notifications, n.ToInput())
+	}
+
+	schedules := []wp.Schedule{}
+	for _, s := range m.Schedules {
+		schedules = append(schedules, s.ToInput())
 	}
 
 	stateTaskIdentifiers := map[string]int64{}
@@ -167,7 +174,9 @@ func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceMod
 	return &client.UpdateWorkflowInput{
 		Name:             m.Name.ValueStringPointer(),
 		Description:      m.Description.ValueStringPointer(),
-		Labels:           labels,
+		Labels:           lo.ToPtr(labels),
+		Notifications:    lo.ToPtr(notifications),
+		Schedules:        lo.ToPtr(schedules),
 		Tasks:            tasks,
 		TaskDependencies: taskDependencies,
 	}
@@ -712,7 +721,7 @@ func (r *workflowResource) Schema(
 	req resource.SchemaRequest,
 	resp *resource.SchemaResponse,
 ) {
-	customVariables := schema.ListNestedAttribute{
+	customVariables := schema.SetNestedAttribute{
 		Optional: true,
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
@@ -747,15 +756,7 @@ func (r *workflowResource) Schema(
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Provides a TROCCO workflow resource.",
 		Attributes: map[string]schema.Attribute{
-			"id": schema.Int64Attribute{
-				Computed: true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
-				},
-				Validators: []validator.Int64{
-					int64validator.AtLeast(1),
-				},
-			},
+			"id": ws.NewID(),
 			"name": schema.StringAttribute{
 				Required: true,
 				Validators: []validator.String{
@@ -768,9 +769,9 @@ func (r *workflowResource) Schema(
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
-			"labels": schema.ListAttribute{
+			"labels": schema.SetAttribute{
 				Optional:    true,
-				ElementType: types.Int64Type,
+				ElementType: types.StringType,
 			},
 			"notifications": schema.ListNestedAttribute{
 				Optional: true,
@@ -810,7 +811,7 @@ func (r *workflowResource) Schema(
 					},
 				},
 			},
-			"schedules": schema.ListNestedAttribute{
+			"schedules": schema.SetNestedAttribute{
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -960,7 +961,7 @@ func (r *workflowResource) Schema(
 								"request_body": schema.StringAttribute{
 									Optional: true,
 								},
-								"request_headers": schema.ListNestedAttribute{
+								"request_headers": schema.SetNestedAttribute{
 									Optional: true,
 									NestedObject: schema.NestedAttributeObject{
 										Attributes: map[string]schema.Attribute{
@@ -976,7 +977,7 @@ func (r *workflowResource) Schema(
 										},
 									},
 								},
-								"request_parameters": schema.ListNestedAttribute{
+								"request_parameters": schema.SetNestedAttribute{
 									Optional: true,
 									NestedObject: schema.NestedAttributeObject{
 										Attributes: map[string]schema.Attribute{
@@ -1152,9 +1153,9 @@ func (r *workflowResource) Create(
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
-		Labels:           wm.NewLabels(workflow.Labels),
-		Notifications:    wm.NewNotifications(workflow.Notifications),
-		Schedules:        wm.NewSchedules(workflow.Schedules),
+		Labels:           wm.NewLabels(workflow.Labels, plan.Labels == nil),
+		Notifications:    wm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
+		Schedules:        wm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
 		Tasks:            tasks,
 		TaskDependencies: taskDependencies,
 	}
@@ -1226,9 +1227,9 @@ func (r *workflowResource) Update(
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
-		Labels:           wm.NewLabels(workflow.Labels),
-		Notifications:    wm.NewNotifications(workflow.Notifications),
-		Schedules:        wm.NewSchedules(workflow.Schedules),
+		Labels:           wm.NewLabels(workflow.Labels, plan.Labels == nil),
+		Notifications:    wm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
+		Schedules:        wm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
 		Tasks:            tasks,
 		TaskDependencies: taskDependencies,
 	}
@@ -1284,18 +1285,15 @@ func (r *workflowResource) Read(
 	}
 
 	newState := workflowResourceModel{
-		ID:            types.Int64Value(workflow.ID),
-		Name:          types.StringPointerValue(workflow.Name),
-		Description:   types.StringPointerValue(workflow.Description),
-		Tasks:         tasks,
-		Labels:        wm.NewLabels(workflow.Labels),
-		Notifications: wm.NewNotifications(workflow.Notifications),
-		Schedules:     wm.NewSchedules(workflow.Schedules),
-		// create/update のときは string
-		// read のときは int64
+		ID:               types.Int64Value(workflow.ID),
+		Name:             types.StringPointerValue(workflow.Name),
+		Description:      types.StringPointerValue(workflow.Description),
+		Tasks:            tasks,
+		Labels:           wm.NewLabels(workflow.Labels, state.Labels == nil),
+		Notifications:    wm.NewNotifications(workflow.Notifications, state.Notifications == nil),
+		Schedules:        wm.NewSchedules(workflow.Schedules, state.Schedules == nil),
 		TaskDependencies: state.TaskDependencies,
 	}
-
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 
