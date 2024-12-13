@@ -6,6 +6,42 @@ type TroccoTransferTaskConfig struct {
 	CustomVariableLoop *CustomVariableLoop `json:"custom_variable_loop,omitempty"`
 }
 
+type TroccoTransferBulkTaskConfig struct {
+	DefinitionID int64 `json:"definition_id,omitempty"`
+}
+
+type DBTTaskConfig struct {
+	DefinitionID int64 `json:"definition_id,omitempty"`
+}
+
+type TroccoAgentTaskConfig struct {
+	DefinitionID int64 `json:"definition_id,omitempty"`
+}
+
+type TroccoBigQueryDatamartTaskConfig struct {
+	DefinitionID int64 `json:"definition_id,omitempty"`
+
+	CustomVariableLoop *CustomVariableLoop `json:"custom_variable_loop,omitempty"`
+}
+
+type TroccoRedshiftDatamartTaskConfig struct {
+	DefinitionID int64 `json:"definition_id,omitempty"`
+
+	CustomVariableLoop *CustomVariableLoop `json:"custom_variable_loop,omitempty"`
+}
+
+type TroccoSnowflakeDatamartTaskConfig struct {
+	DefinitionID int64 `json:"definition_id,omitempty"`
+
+	CustomVariableLoop *CustomVariableLoop `json:"custom_variable_loop,omitempty"`
+}
+
+type WorkflowTaskConfig struct {
+	DefinitionID int64 `json:"definition_id,omitempty"`
+
+	CustomVariableLoop *CustomVariableLoop `json:"custom_variable_loop,omitempty"`
+}
+
 type SlackNotificationTaskConfig struct {
 	Name         string `json:"name,omitempty"`
 	ConnectionID int64  `json:"connection_id,omitempty"`

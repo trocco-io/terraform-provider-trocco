@@ -66,6 +66,27 @@ func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowIn
 		if r.TroccoTransferConfig != nil {
 			i.TroccoTransferConfig = r.TroccoTransferConfig.ToInput()
 		}
+		if r.TroccoTransferBulkConfig != nil {
+			i.TroccoTransferBulkConfig = r.TroccoTransferBulkConfig.ToInput()
+		}
+		if r.DBTConfig != nil {
+			i.DBTConfig = r.DBTConfig.ToInput()
+		}
+		if r.TroccoAgentConfig != nil {
+			i.TroccoAgentConfig = r.TroccoAgentConfig.ToInput()
+		}
+		if r.TroccoBigQueryDatamartConfig != nil {
+			i.TroccoBigQueryDatamartConfig = r.TroccoBigQueryDatamartConfig.ToInput()
+		}
+		if r.TroccoRedshiftDatamartConfig != nil {
+			i.TroccoRedshiftDatamartConfig = r.TroccoRedshiftDatamartConfig.ToInput()
+		}
+		if r.TroccoSnowflakeDatamartConfig != nil {
+			i.TroccoSnowflakeDatamartConfig = r.TroccoSnowflakeDatamartConfig.ToInput()
+		}
+		if r.WorkflowConfig != nil {
+			i.WorkflowConfig = r.WorkflowConfig.ToInput()
+		}
 		if r.SlackNotificationConfig != nil {
 			i.SlackNotificationConfig = r.SlackNotificationConfig.ToInput()
 		}
@@ -141,6 +162,27 @@ func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceMod
 		if t.TroccoTransferConfig != nil {
 			i.TroccoTransferConfig = t.TroccoTransferConfig.ToInput()
 		}
+		if t.TroccoTransferBulkConfig != nil {
+			i.TroccoTransferBulkConfig = t.TroccoTransferBulkConfig.ToInput()
+		}
+		if t.DBTConfig != nil {
+			i.DBTConfig = t.DBTConfig.ToInput()
+		}
+		if t.TroccoAgentConfig != nil {
+			i.TroccoAgentConfig = t.TroccoAgentConfig.ToInput()
+		}
+		if t.TroccoBigQueryDatamartConfig != nil {
+			i.TroccoBigQueryDatamartConfig = t.TroccoBigQueryDatamartConfig.ToInput()
+		}
+		if t.TroccoRedshiftDatamartConfig != nil {
+			i.TroccoRedshiftDatamartConfig = t.TroccoRedshiftDatamartConfig.ToInput()
+		}
+		if t.TroccoSnowflakeDatamartConfig != nil {
+			i.TroccoSnowflakeDatamartConfig = t.TroccoSnowflakeDatamartConfig.ToInput()
+		}
+		if t.WorkflowConfig != nil {
+			i.WorkflowConfig = t.WorkflowConfig.ToInput()
+		}
 		if t.SlackNotificationConfig != nil {
 			i.SlackNotificationConfig = t.SlackNotificationConfig.ToInput()
 		}
@@ -187,13 +229,20 @@ type workflowResourceTaskModel struct {
 	TaskIdentifier types.Int64  `tfsdk:"task_identifier"`
 	Type           types.String `tfsdk:"type"`
 
-	TroccoTransferConfig        *workflowResourceTroccoTransferTaskConfig        `tfsdk:"trocco_transfer_config"`
-	SlackNotificationConfig     *workflowResourceSlackNotificationTaskConfig     `tfsdk:"slack_notification_config"`
-	TableauDataExtractionConfig *workflowResourceTableauDataExtractionTaskConfig `tfsdk:"tableau_data_extraction_config"`
-	BigqueryDataCheckConfig     *workflowBigqueryDataCheckTaskConfigModel        `tfsdk:"bigquery_data_check_config"`
-	SnowflakeDataCheckConfig    *workflowSnowflakeDataCheckTaskConfigModel       `tfsdk:"snowflake_data_check_config"`
-	RedshiftDataCheckConfig     *workflowRedshiftDataCheckTaskConfigModel        `tfsdk:"redshift_data_check_config"`
-	HTTPRequestConfig           *workflowHTTPRequestTaskConfigModel              `tfsdk:"http_request_config"`
+	TroccoTransferConfig          *workflowResourceTroccoTransferTaskConfig        `tfsdk:"trocco_transfer_config"`
+	TroccoTransferBulkConfig      *wm.TroccoTransferBulkTaskConfig                 `tfsdk:"trocco_transfer_bulk_config"`
+	DBTConfig                     *wm.DBTTaskConfig                                `tfsdk:"dbt_config"`
+	TroccoAgentConfig             *wm.TroccoAgentTaskConfig                        `tfsdk:"trocco_agent_config"`
+	TroccoBigQueryDatamartConfig  *wm.TroccoBigQueryDatamartTaskConfig             `tfsdk:"trocco_bigquery_datamart_config"`
+	TroccoRedshiftDatamartConfig  *wm.TroccoRedshiftDatamartTaskConfig             `tfsdk:"trocco_redshift_datamart_config"`
+	TroccoSnowflakeDatamartConfig *wm.TroccoSnowflakeDatamartTaskConfig            `tfsdk:"trocco_snowflake_datamart_config"`
+	WorkflowConfig                *wm.WorkflowTaskConfig                           `tfsdk:"workflow_config"`
+	SlackNotificationConfig       *workflowResourceSlackNotificationTaskConfig     `tfsdk:"slack_notification_config"`
+	TableauDataExtractionConfig   *workflowResourceTableauDataExtractionTaskConfig `tfsdk:"tableau_data_extraction_config"`
+	BigqueryDataCheckConfig       *workflowBigqueryDataCheckTaskConfigModel        `tfsdk:"bigquery_data_check_config"`
+	SnowflakeDataCheckConfig      *workflowSnowflakeDataCheckTaskConfigModel       `tfsdk:"snowflake_data_check_config"`
+	RedshiftDataCheckConfig       *workflowRedshiftDataCheckTaskConfigModel        `tfsdk:"redshift_data_check_config"`
+	HTTPRequestConfig             *workflowHTTPRequestTaskConfigModel              `tfsdk:"http_request_config"`
 }
 
 type workflowResourceTaskDependencyModel struct {
@@ -897,16 +946,54 @@ func (r *workflowResource) Schema(
 							Validators: []validator.String{
 								stringvalidator.OneOf(
 									"trocco_transfer",
+									"trocco_transfer_bulk",
+									"trocco_bigquery_datamart",
+									"trocco_redshift_datamart",
+									"trocco_snowflake_datamart",
+									"dbt",
+									"trocco_agent",
+									"trocco_pipeline",
 									"slack_notify",
+									"tableau_extract",
 									"bigquery_data_check",
 									"snowflake_data_check",
 									"redshift_data_check",
-									"tableau_extract",
 									"http_request",
 								),
 							},
 						},
-						"trocco_transfer_config": schema.SingleNestedAttribute{
+						"trocco_transfer_config":      ws.NewTroccoTransferTaskConfigAttribute(),
+						"trocco_transfer_bulk_config": ws.NewTroccoTransferBulkTaskConfigAttribute(),
+						"dbt_config":                  ws.NewDBTTaskConfigAttribute(),
+						"trocco_agent_config":         ws.NewTroccoAgentTaskConfigAttribute(),
+						"trocco_bigquery_datamart_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"definition_id": schema.Int64Attribute{
+									Required: true,
+								},
+								"custom_variable_loop": ws.NewCustomVariableLoopAttribute(),
+							},
+						},
+						"trocco_redshift_datamart_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"definition_id": schema.Int64Attribute{
+									Required: true,
+								},
+								"custom_variable_loop": ws.NewCustomVariableLoopAttribute(),
+							},
+						},
+						"trocco_snowflake_datamart_config": schema.SingleNestedAttribute{
+							Optional: true,
+							Attributes: map[string]schema.Attribute{
+								"definition_id": schema.Int64Attribute{
+									Required: true,
+								},
+								"custom_variable_loop": ws.NewCustomVariableLoopAttribute(),
+							},
+						},
+						"workflow_config": schema.SingleNestedAttribute{
 							Optional: true,
 							Attributes: map[string]schema.Attribute{
 								"definition_id": schema.Int64Attribute{
@@ -1119,21 +1206,26 @@ func (r *workflowResource) Create(
 
 	tasks := []workflowResourceTaskModel{}
 	for _, t := range workflow.Tasks {
-		task := workflowResourceTaskModel{
+		tasks = append(tasks, workflowResourceTaskModel{
 			Key:            types.StringValue(t.Key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
-		}
 
-		task.TroccoTransferConfig = newWorkflowResourceTroccoTransferTaskConfig(t.TroccoTransferConfig)
-		task.SlackNotificationConfig = newWorkflowResourceSlackNotificationTaskConfig(t.SlackNotificationConfig)
-		task.TableauDataExtractionConfig = newWorkflowResourceTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig)
-		task.BigqueryDataCheckConfig = newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig)
-		task.SnowflakeDataCheckConfig = newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig)
-		task.RedshiftDataCheckConfig = newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig)
-		task.HTTPRequestConfig = newWorkflowHTTPRequestTaskConfigModel(t.HTTPRequestConfig)
-
-		tasks = append(tasks, task)
+			TroccoTransferConfig:          newWorkflowResourceTroccoTransferTaskConfig(t.TroccoTransferConfig),
+			TroccoTransferBulkConfig:      wm.NewTroccoTransferBulkTaskConfig(t.TroccoTransferBulkConfig),
+			DBTConfig:                     wm.NewDBTTaskConfig(t.DBTConfig),
+			TroccoAgentConfig:             wm.NewTroccoAgentTaskConfig(t.TroccoAgentConfig),
+			TroccoBigQueryDatamartConfig:  wm.NewTroccoBigQueryDatamartTaskConfig(t.TroccoBigQueryDatamartConfig),
+			TroccoRedshiftDatamartConfig:  wm.NewTroccoRedshiftDatamartTaskConfig(t.TroccoRedshiftDatamartConfig),
+			TroccoSnowflakeDatamartConfig: wm.NewTroccoSnowflakeDatamartTaskConfig(t.TroccoSnowflakeDatamartConfig),
+			WorkflowConfig:                wm.NewWorkflowTaskConfig(t.WorkflowConfig),
+			SlackNotificationConfig:       newWorkflowResourceSlackNotificationTaskConfig(t.SlackNotificationConfig),
+			TableauDataExtractionConfig:   newWorkflowResourceTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig),
+			BigqueryDataCheckConfig:       newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig),
+			SnowflakeDataCheckConfig:      newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig),
+			RedshiftDataCheckConfig:       newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig),
+			HTTPRequestConfig:             newWorkflowHTTPRequestTaskConfigModel(t.HTTPRequestConfig),
+		})
 	}
 
 	keys := map[int64]types.String{}
@@ -1197,15 +1289,22 @@ func (r *workflowResource) Update(
 			Key:            types.StringValue(t.Key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
-		}
 
-		task.TroccoTransferConfig = newWorkflowResourceTroccoTransferTaskConfig(t.TroccoTransferConfig)
-		task.SlackNotificationConfig = newWorkflowResourceSlackNotificationTaskConfig(t.SlackNotificationConfig)
-		task.TableauDataExtractionConfig = newWorkflowResourceTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig)
-		task.BigqueryDataCheckConfig = newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig)
-		task.SnowflakeDataCheckConfig = newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig)
-		task.RedshiftDataCheckConfig = newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig)
-		task.HTTPRequestConfig = newWorkflowHTTPRequestTaskConfigModel(t.HTTPRequestConfig)
+			TroccoTransferConfig:          newWorkflowResourceTroccoTransferTaskConfig(t.TroccoTransferConfig),
+			TroccoTransferBulkConfig:      wm.NewTroccoTransferBulkTaskConfig(t.TroccoTransferBulkConfig),
+			DBTConfig:                     wm.NewDBTTaskConfig(t.DBTConfig),
+			TroccoAgentConfig:             wm.NewTroccoAgentTaskConfig(t.TroccoAgentConfig),
+			TroccoBigQueryDatamartConfig:  wm.NewTroccoBigQueryDatamartTaskConfig(t.TroccoBigQueryDatamartConfig),
+			TroccoRedshiftDatamartConfig:  wm.NewTroccoRedshiftDatamartTaskConfig(t.TroccoRedshiftDatamartConfig),
+			TroccoSnowflakeDatamartConfig: wm.NewTroccoSnowflakeDatamartTaskConfig(t.TroccoSnowflakeDatamartConfig),
+			WorkflowConfig:                wm.NewWorkflowTaskConfig(t.WorkflowConfig),
+			SlackNotificationConfig:       newWorkflowResourceSlackNotificationTaskConfig(t.SlackNotificationConfig),
+			TableauDataExtractionConfig:   newWorkflowResourceTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig),
+			BigqueryDataCheckConfig:       newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig),
+			SnowflakeDataCheckConfig:      newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig),
+			RedshiftDataCheckConfig:       newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig),
+			HTTPRequestConfig:             newWorkflowHTTPRequestTaskConfigModel(t.HTTPRequestConfig),
+		}
 
 		tasks = append(tasks, task)
 	}
@@ -1271,15 +1370,22 @@ func (r *workflowResource) Read(
 			Key:            types.StringValue(key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
-		}
 
-		task.TroccoTransferConfig = newWorkflowResourceTroccoTransferTaskConfig(t.TroccoTransferConfig)
-		task.SlackNotificationConfig = newWorkflowResourceSlackNotificationTaskConfig(t.SlackNotificationConfig)
-		task.TableauDataExtractionConfig = newWorkflowResourceTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig)
-		task.BigqueryDataCheckConfig = newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig)
-		task.SnowflakeDataCheckConfig = newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig)
-		task.RedshiftDataCheckConfig = newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig)
-		task.HTTPRequestConfig = newWorkflowHTTPRequestTaskConfigModel(t.HTTPRequestConfig)
+			TroccoTransferConfig:          newWorkflowResourceTroccoTransferTaskConfig(t.TroccoTransferConfig),
+			TroccoTransferBulkConfig:      wm.NewTroccoTransferBulkTaskConfig(t.TroccoTransferBulkConfig),
+			DBTConfig:                     wm.NewDBTTaskConfig(t.DBTConfig),
+			TroccoAgentConfig:             wm.NewTroccoAgentTaskConfig(t.TroccoAgentConfig),
+			TroccoBigQueryDatamartConfig:  wm.NewTroccoBigQueryDatamartTaskConfig(t.TroccoBigQueryDatamartConfig),
+			TroccoRedshiftDatamartConfig:  wm.NewTroccoRedshiftDatamartTaskConfig(t.TroccoRedshiftDatamartConfig),
+			TroccoSnowflakeDatamartConfig: wm.NewTroccoSnowflakeDatamartTaskConfig(t.TroccoSnowflakeDatamartConfig),
+			WorkflowConfig:                wm.NewWorkflowTaskConfig(t.WorkflowConfig),
+			SlackNotificationConfig:       newWorkflowResourceSlackNotificationTaskConfig(t.SlackNotificationConfig),
+			TableauDataExtractionConfig:   newWorkflowResourceTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig),
+			BigqueryDataCheckConfig:       newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig),
+			SnowflakeDataCheckConfig:      newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig),
+			RedshiftDataCheckConfig:       newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig),
+			HTTPRequestConfig:             newWorkflowHTTPRequestTaskConfigModel(t.HTTPRequestConfig),
+		}
 
 		tasks = append(tasks, task)
 	}

@@ -34,13 +34,20 @@ type WorkflowTask struct {
 	TaskIdentifier int64  `json:"task_identifier"`
 	Type           string `json:"type"`
 
-	TroccoTransferConfig        *WorkflowTroccoTransferTaskConfig        `json:"trocco_transfer_config"`
-	SlackNotificationConfig     *WorkflowSlackNotificationTaskConfig     `json:"slack_notification_config"`
-	TableauDataExtractionConfig *WorkflowTableauDataExtractionTaskConfig `json:"tableau_data_extraction_config"`
-	BigqueryDataCheckConfig     *WorkflowBigqueryDataCheckTaskConfig     `json:"bigquery_data_check_config"`
-	SnowflakeDataCheckConfig    *WorkflowSnowflakeDataCheckTaskConfig    `json:"snowflake_data_check_config"`
-	RedshiftDataCheckConfig     *WorkflowRedshiftDataCheckTaskConfig     `json:"redshift_data_check_config"`
-	HTTPRequestConfig           *WorkflowHTTPRequestTaskConfig           `json:"http_request_config"`
+	TroccoTransferConfig          *WorkflowTroccoTransferTaskConfig        `json:"trocco_transfer_config"`
+	TroccoTransferBulkConfig      *we.TroccoTransferBulkTaskConfig         `json:"trocco_transfer_bulk_config"`
+	DBTConfig                     *we.DBTTaskConfig                        `json:"dbt_config"`
+	TroccoAgentConfig             *we.TroccoAgentTaskConfig                `json:"trocco_agent_config"`
+	WorkflowConfig                *we.WorkflowTaskConfig                   `json:"workflow_config"`
+	TroccoBigQueryDatamartConfig  *we.TroccoBigQueryDatamartTaskConfig     `json:"trocco_bigquery_datamart_config"`
+	TroccoRedshiftDatamartConfig  *we.TroccoRedshiftDatamartTaskConfig     `json:"trocco_redshift_datamart_config"`
+	TroccoSnowflakeDatamartConfig *we.TroccoSnowflakeDatamartTaskConfig    `json:"trocco_snowflake_datamart_config"`
+	SlackNotificationConfig       *WorkflowSlackNotificationTaskConfig     `json:"slack_notification_config"`
+	TableauDataExtractionConfig   *WorkflowTableauDataExtractionTaskConfig `json:"tableau_data_extraction_config"`
+	BigqueryDataCheckConfig       *WorkflowBigqueryDataCheckTaskConfig     `json:"bigquery_data_check_config"`
+	SnowflakeDataCheckConfig      *WorkflowSnowflakeDataCheckTaskConfig    `json:"snowflake_data_check_config"`
+	RedshiftDataCheckConfig       *WorkflowRedshiftDataCheckTaskConfig     `json:"redshift_data_check_config"`
+	HTTPRequestConfig             *WorkflowHTTPRequestTaskConfig           `json:"http_request_config"`
 }
 
 type WorkflowTroccoTransferTaskConfig struct {
@@ -166,13 +173,20 @@ type WorkflowTaskInput struct {
 	TaskIdentifier int64  `json:"task_identifier,omitempty"`
 	Type           string `json:"type,omitempty"`
 
-	TroccoTransferConfig        *wp.TroccoTransferTaskConfig                  `json:"trocco_transfer_config,omitempty"`
-	SlackNotificationConfig     *wp.SlackNotificationTaskConfig               `json:"slack_notification_config,omitempty"`
-	TableauDataExtractionConfig *WorkflowTableauDataExtractionTaskConfigInput `json:"tableau_data_extraction_config,omitempty"`
-	BigqueryDataCheckConfig     *WorkflowBigqueryDataCheckTaskConfigInput     `json:"bigquery_data_check_config,omitempty"`
-	SnowflakeDataCheckConfig    *WorkflowSnowflakeDataCheckTaskConfigInput    `json:"snowflake_data_check_config,omitempty"`
-	RedshiftDataCheckConfig     *WorkflowRedshiftDataCheckTaskConfigInput     `json:"redshift_data_check_config,omitempty"`
-	HTTPRequestConfig           *WorkflowHTTPRequestTaskConfigInput           `json:"http_request_config,omitempty"`
+	TroccoTransferConfig          *wp.TroccoTransferTaskConfig                  `json:"trocco_transfer_config,omitempty"`
+	TroccoTransferBulkConfig      *wp.TroccoTransferBulkTaskConfig              `json:"trocco_transfer_bulk_config,omitempty"`
+	DBTConfig                     *wp.DBTTaskConfig                             `json:"dbt_config,omitempty"`
+	TroccoAgentConfig             *wp.TroccoAgentTaskConfig                     `json:"trocco_agent_config,omitempty"`
+	TroccoBigQueryDatamartConfig  *wp.TroccoBigQueryDatamartTaskConfig          `json:"trocco_bigquery_datamart_config,omitempty"`
+	TroccoRedshiftDatamartConfig  *wp.TroccoRedshiftDatamartTaskConfig          `json:"trocco_redshift_datamart_config,omitempty"`
+	TroccoSnowflakeDatamartConfig *wp.TroccoSnowflakeDatamartTaskConfig         `json:"trocco_snowflake_datamart_config,omitempty"`
+	WorkflowConfig                *wp.WorkflowTaskConfig                        `json:"workflow_config,omitempty"`
+	SlackNotificationConfig       *wp.SlackNotificationTaskConfig               `json:"slack_notification_config,omitempty"`
+	TableauDataExtractionConfig   *WorkflowTableauDataExtractionTaskConfigInput `json:"tableau_data_extraction_config,omitempty"`
+	BigqueryDataCheckConfig       *WorkflowBigqueryDataCheckTaskConfigInput     `json:"bigquery_data_check_config,omitempty"`
+	SnowflakeDataCheckConfig      *WorkflowSnowflakeDataCheckTaskConfigInput    `json:"snowflake_data_check_config,omitempty"`
+	RedshiftDataCheckConfig       *WorkflowRedshiftDataCheckTaskConfigInput     `json:"redshift_data_check_config,omitempty"`
+	HTTPRequestConfig             *WorkflowHTTPRequestTaskConfigInput           `json:"http_request_config,omitempty"`
 }
 
 type WorkflowTableauDataExtractionTaskConfigInput struct {
