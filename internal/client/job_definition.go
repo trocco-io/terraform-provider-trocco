@@ -97,6 +97,32 @@ type UpdateOutputOptionInput struct {
 	BigQueryOutputOption *output_options.UpdateBigQueryOutputOptionInput `json:"bigquery_output_option,omitempty"`
 }
 
+func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {
+	out := &JobDefinition{}
+	if err := c.do(
+		http.MethodPost,
+		"/api/job_definitions",
+		in,
+		out,
+	); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *TroccoClient) UpdateJobDefinition(id int64, in *UpdateJobDefinitionInput) (*JobDefinition, error) {
+	out := &JobDefinition{}
+	if err := c.do(
+		http.MethodPatch,
+		fmt.Sprintf("/api/job_definitions/%d", id),
+		in,
+		out,
+	); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *TroccoClient) DeleteJobDefinition(id int64) error {
 	return c.do(
 		http.MethodDelete,
