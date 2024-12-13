@@ -1,8 +1,8 @@
 package filter
 
-type FilterAddTime struct {
+type FilterAddTimeInput struct {
 	ColumnName      string  `json:"column_name"`
 	Type            string  `json:"type"`
-	TimestampFormat *string `json:"timestamp_format"`
-	TimeZone        *string `json:"time_zone"`
+	TimestampFormat *string `json:"timestamp_format,omitempty"`
+	TimeZone        *string `json:"time_zone,omitempty"`
 }

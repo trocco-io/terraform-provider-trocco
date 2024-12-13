@@ -1,6 +1,6 @@
 package filter
 
-type FilterMaskInput struct {
+type FilterMask struct {
 	Name       string  `json:"name"`
 	MaskType   int     `json:"mask_type"`
 	Length     *int64  `json:"length,omitempty"`

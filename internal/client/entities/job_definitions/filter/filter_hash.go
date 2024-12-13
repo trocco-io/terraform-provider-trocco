@@ -1,5 +1,5 @@
 package filter
 
-type FilterHashInput struct {
+type FilterHash struct {
 	Name string `json:"name"`
 }

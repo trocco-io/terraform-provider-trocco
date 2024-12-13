@@ -1,6 +1,6 @@
 package filter
 
-type FilterUnixTimeConversionInput struct {
+type FilterUnixTimeConversion struct {
 	ColumnName       string `json:"column_name"`
 	Kind             string `json:"kind"`
 	UnixtimeUnit     string `json:"unixtime_unit"`
