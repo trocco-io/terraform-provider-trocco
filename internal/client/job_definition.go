@@ -3,32 +3,39 @@ package client
 import (
 	"fmt"
 	"net/http"
-	"terraform-provider-trocco/internal/client/entities/job_definitions/filter"
+	entities "terraform-provider-trocco/internal/client/entities"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entities/job_definitions"
+	filterEntities "terraform-provider-trocco/internal/client/entities/job_definitions/filter"
+	inputOptionEntitites "terraform-provider-trocco/internal/client/entities/job_definitions/input_options"
+	outputOptionEntitites "terraform-provider-trocco/internal/client/entities/job_definitions/output_options"
 	parameters "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
 	"terraform-provider-trocco/internal/client/parameters/job_definitions/input_options"
 	"terraform-provider-trocco/internal/client/parameters/job_definitions/output_options"
 )
 
 type JobDefinition struct {
-	ID                        int64                             `json:"id"`
-	Name                      string                            `json:"name"`
-	Description               *string                           `json:"description"`
-	ResourceGroupId           *bool                             `json:"resource_group_id"`
-	IsRunnableConcurrently    *bool                             `json:"is_runnable_concurrently"`
-	RetryLimit                int64                             `json:"retry_limit"`
-	ResourceEnhancement       *string                           `json:"resource_enhancement"`
-	FilterColumns             []filter.FilterColumn             `json:"filter_columns"`
-	FilterRows                *filter.FilterRows                `json:"filter_rows"`
-	FilterMasks               []filter.FilterMask               `json:"filter_masks"`
-	FilterAddTime             *filter.FilterAddTime             `json:"filter_add_time"`
-	FilterGsub                []filter.FilterGsub               `json:"filter_gsub"`
-	FilterStringTransforms    []filter.FilterStringTransform    `json:"filter_string_transforms"`
-	FilterHashes              []filter.FilterHash               `json:"filter_hashes"`
-	FilterUnixTimeConversions []filter.FilterUnixTimeConversion `json:"filter_unixtime_conversions"`
-	InputOptionType           string                            `json:"input_option_type"`
-	InputOption               InputOptionInput                  `json:"input_option"`
-	OutputOptionType          string                            `json:"output_option_type"`
-	OutputOption              OutputOptionInput                 `json:"output_option"`
+	ID                        int64                                             `json:"id"`
+	Name                      string                                            `json:"name"`
+	Description               *string                                           `json:"description"`
+	ResourceGroupId           *bool                                             `json:"resource_group_id"`
+	IsRunnableConcurrently    *bool                                             `json:"is_runnable_concurrently"`
+	RetryLimit                int64                                             `json:"retry_limit"`
+	ResourceEnhancement       *string                                           `json:"resource_enhancement"`
+	FilterColumns             []filterEntities.FilterColumn                     `json:"filter_columns"`
+	FilterRows                *filterEntities.FilterRows                        `json:"filter_rows"`
+	FilterMasks               []filterEntities.FilterMask                       `json:"filter_masks"`
+	FilterAddTime             *filterEntities.FilterAddTime                     `json:"filter_add_time"`
+	FilterGsub                []filterEntities.FilterGsub                       `json:"filter_gsub"`
+	FilterStringTransforms    []filterEntities.FilterStringTransform            `json:"filter_string_transforms"`
+	FilterHashes              []filterEntities.FilterHash                       `json:"filter_hashes"`
+	FilterUnixTimeConversions []filterEntities.FilterUnixTimeConversion         `json:"filter_unixtime_conversions"`
+	InputOptionType           string                                            `json:"input_option_type"`
+	InputOption               InputOption                                       `json:"input_option"`
+	OutputOptionType          string                                            `json:"output_option_type"`
+	OutputOption              OutputOption                                      `json:"output_option"`
+	Labels                    []entities.Label                                  `json:"labels"`
+	Schedules                 []entities.Schedule                               `json:"schedules"`
+	Notifications             []jobDefinitionEntities.JobDefinitionNotification `json:"notifications"`
 }
 
 type CreateJobDefinitionInput struct {
@@ -72,8 +79,8 @@ type UpdateJobDefinitionInput struct {
 }
 
 type InputOption struct {
-	MySQLInputOption *input_options.MySQLInputOption `json:"mysql_input_option"`
-	GcsInputOption   *input_options.GcsInputOption   `json:"gcs_input_option"`
+	MySQLInputOption *inputOptionEntitites.MySQLInputOption `json:"mysql_input_option"`
+	GcsInputOption   *inputOptionEntitites.GcsInputOption   `json:"gcs_input_option"`
 }
 
 type InputOptionInput struct {
@@ -87,7 +94,7 @@ type UpdateInputOptionInput struct {
 }
 
 type OutputOption struct {
-	BigQueryOutputOption *output_options.BigQueryOutputOption `json:"bigquery_output_option"`
+	BigQueryOutputOption *outputOptionEntitites.BigQueryOutputOption `json:"bigquery_output_option"`
 }
 
 type OutputOptionInput struct {

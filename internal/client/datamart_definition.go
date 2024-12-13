@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"terraform-provider-trocco/internal/client/entities"
 	"terraform-provider-trocco/internal/client/parameters"
 )
 
@@ -83,8 +84,8 @@ type DatamartDefinition struct {
 	CreatedAt              string                             `json:"created_at"`
 	UpdatedAt              string                             `json:"updated_at"`
 	Notifications          []DatamartNotification             `json:"notifications"`
-	Schedules              []Schedule                         `json:"schedules"`
-	Labels                 []Label                            `json:"labels"`
+	Schedules              []entities.Schedule                `json:"schedules"`
+	Labels                 []entities.Label                   `json:"labels"`
 }
 
 type DatamartBigqueryOption struct {
@@ -119,24 +120,6 @@ type DatamartNotification struct {
 	RecordCount      *int64  `json:"record_count"`
 	RecordOperator   *string `json:"record_operator"`
 	Message          string  `json:"message"`
-}
-
-type Schedule struct {
-	Frequency string `json:"frequency"`
-	Minute    int    `json:"minute"`
-	Hour      *int   `json:"hour"`
-	Day       *int   `json:"day"`
-	DayOfWeek *int   `json:"day_of_week"`
-	TimeZone  string `json:"time_zone"`
-}
-
-type Label struct {
-	ID          int64  `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Color       string `json:"color"`
-	CreatedAt   string `json:"created_at"`
-	UpdatedAt   string `json:"updated_at"`
 }
 
 func (client *TroccoClient) GetDatamartDefinition(id int64) (*GetDatamartDefinitionOutput, error) {

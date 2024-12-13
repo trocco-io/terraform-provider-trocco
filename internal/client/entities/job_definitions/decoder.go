@@ -1,5 +1,5 @@
 package job_definitions
 
-type DecoderInput struct {
+type Decoder struct {
 	MatchName string `json:"match_name"`
 }
