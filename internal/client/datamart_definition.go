@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"terraform-provider-trocco/internal/client/common"
 )
 
 // List of datamart_definitions
@@ -71,19 +72,19 @@ type UpdateDatamartDefinitionOutput struct {
 }
 
 type DatamartDefinition struct {
-	ID                     int64                   `json:"id"`
-	Name                   string                  `json:"name"`
-	Description            *string                 `json:"description"`
-	DataWarehouseType      string                  `json:"data_warehouse_type"`
-	IsRunnableConcurrently bool                    `json:"is_runnable_concurrently"`
-	ResourceGroup          *ResourceGroup          `json:"resource_group"`
-	CustomVariableSettings []CustomVariableSetting `json:"custom_variable_settings"`
-	DatamartBigqueryOption *DatamartBigqueryOption `json:"datamart_bigquery_option"`
-	CreatedAt              string                  `json:"created_at"`
-	UpdatedAt              string                  `json:"updated_at"`
-	Notifications          []DatamartNotification  `json:"notifications"`
-	Schedules              []Schedule              `json:"schedules"`
-	Labels                 []Label                 `json:"labels"`
+	ID                     int64                          `json:"id"`
+	Name                   string                         `json:"name"`
+	Description            *string                        `json:"description"`
+	DataWarehouseType      string                         `json:"data_warehouse_type"`
+	IsRunnableConcurrently bool                           `json:"is_runnable_concurrently"`
+	ResourceGroup          *ResourceGroup                 `json:"resource_group"`
+	CustomVariableSettings []common.CustomVariableSetting `json:"custom_variable_settings"`
+	DatamartBigqueryOption *DatamartBigqueryOption        `json:"datamart_bigquery_option"`
+	CreatedAt              string                         `json:"created_at"`
+	UpdatedAt              string                         `json:"updated_at"`
+	Notifications          []DatamartNotification         `json:"notifications"`
+	Schedules              []Schedule                     `json:"schedules"`
+	Labels                 []Label                        `json:"labels"`
 }
 
 type DatamartBigqueryOption struct {
@@ -107,17 +108,6 @@ type ResourceGroup struct {
 	Description string `json:"description"`
 	CreatedAt   string `json:"created_at"`
 	UpdatedAt   string `json:"updated_at"`
-}
-
-type CustomVariableSetting struct {
-	Name      string  `json:"name"`
-	Type      string  `json:"type"`
-	Value     *string `json:"value"`
-	Quantity  *int    `json:"quantity"`
-	Unit      *string `json:"unit"`
-	Direction *string `json:"direction"`
-	Format    *string `json:"format"`
-	TimeZone  *string `json:"time_zone"`
 }
 
 type DatamartNotification struct {
