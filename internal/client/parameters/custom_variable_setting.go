@@ -1,4 +1,4 @@
-package common
+package parameters
 
 type CustomVariableSetting struct {
 	Name      string  `json:"name"`

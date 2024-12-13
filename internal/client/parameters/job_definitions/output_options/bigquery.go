@@ -1,9 +1,11 @@
 package output_options
 
-import "terraform-provider-trocco/internal/client/common"
+import (
+	"terraform-provider-trocco/internal/client/parameters"
+)
 
 type BigQueryOutputOption struct {
-	CustomVariableSettings                 *[]common.CustomVariableSetting     `json:"custom_variable_settings"`
+	CustomVariableSettings                 *[]parameters.CustomVariableSetting `json:"custom_variable_settings"`
 	Dataset                                string                              `json:"dataset"`
 	Table                                  string                              `json:"table"`
 	AutoCreateDataset                      bool                                `json:"auto_create_dataset"`
@@ -29,7 +31,7 @@ type BigQueryOutputOption struct {
 }
 
 type BigQueryOutputOptionInput struct {
-	CustomVariableSettings                 *[]common.CustomVariableSetting          `json:"custom_variable_settings,omitempty"`
+	CustomVariableSettings                 *[]parameters.CustomVariableSetting      `json:"custom_variable_settings,omitempty"`
 	Dataset                                string                                   `json:"dataset"`
 	Table                                  string                                   `json:"table"`
 	AutoCreateDataset                      bool                                     `json:"auto_create_dataset"`
@@ -55,7 +57,7 @@ type BigQueryOutputOptionInput struct {
 }
 
 type UpdateBigQueryOutputOptionInput struct {
-	CustomVariableSettings                 *[]common.CustomVariableSetting          `json:"custom_variable_settings,omitempty"`
+	CustomVariableSettings                 *[]parameters.CustomVariableSetting      `json:"custom_variable_settings,omitempty"`
 	Dataset                                *string                                  `json:"dataset,omitempty"`
 	Table                                  *string                                  `json:"table,omitempty"`
 	AutoCreateDataset                      *bool                                    `json:"auto_create_dataset,omitempty"`

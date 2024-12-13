@@ -3,9 +3,9 @@ package client
 import (
 	"fmt"
 	"net/http"
-	"terraform-provider-trocco/internal/client/filter"
-	"terraform-provider-trocco/internal/client/input_options"
-	"terraform-provider-trocco/internal/client/output_options"
+	"terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
+	"terraform-provider-trocco/internal/client/parameters/job_definitions/input_options"
+	"terraform-provider-trocco/internal/client/parameters/job_definitions/output_options"
 )
 
 type JobDefinition struct {

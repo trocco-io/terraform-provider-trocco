@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"terraform-provider-trocco/internal/client/common"
+	"terraform-provider-trocco/internal/client/parameters"
 )
 
 // List of datamart_definitions
@@ -72,19 +72,19 @@ type UpdateDatamartDefinitionOutput struct {
 }
 
 type DatamartDefinition struct {
-	ID                     int64                          `json:"id"`
-	Name                   string                         `json:"name"`
-	Description            *string                        `json:"description"`
-	DataWarehouseType      string                         `json:"data_warehouse_type"`
-	IsRunnableConcurrently bool                           `json:"is_runnable_concurrently"`
-	ResourceGroup          *ResourceGroup                 `json:"resource_group"`
-	CustomVariableSettings []common.CustomVariableSetting `json:"custom_variable_settings"`
-	DatamartBigqueryOption *DatamartBigqueryOption        `json:"datamart_bigquery_option"`
-	CreatedAt              string                         `json:"created_at"`
-	UpdatedAt              string                         `json:"updated_at"`
-	Notifications          []DatamartNotification         `json:"notifications"`
-	Schedules              []Schedule                     `json:"schedules"`
-	Labels                 []Label                        `json:"labels"`
+	ID                     int64                              `json:"id"`
+	Name                   string                             `json:"name"`
+	Description            *string                            `json:"description"`
+	DataWarehouseType      string                             `json:"data_warehouse_type"`
+	IsRunnableConcurrently bool                               `json:"is_runnable_concurrently"`
+	ResourceGroup          *ResourceGroup                     `json:"resource_group"`
+	CustomVariableSettings []parameters.CustomVariableSetting `json:"custom_variable_settings"`
+	DatamartBigqueryOption *DatamartBigqueryOption            `json:"datamart_bigquery_option"`
+	CreatedAt              string                             `json:"created_at"`
+	UpdatedAt              string                             `json:"updated_at"`
+	Notifications          []DatamartNotification             `json:"notifications"`
+	Schedules              []Schedule                         `json:"schedules"`
+	Labels                 []Label                            `json:"labels"`
 }
 
 type DatamartBigqueryOption struct {

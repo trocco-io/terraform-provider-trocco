@@ -1,4 +1,4 @@
-package common
+package job_definitions
 
 type CsvParser struct {
 	Delimiter            string            `json:"delimiter"`
