@@ -39,3 +39,22 @@ type GcsInputOptionInput struct {
 	CustomVariableSettings    *[]common.CustomVariableSetting `json:"custom_variable_settings,omitempty"`
 	Decoder                   *common.Decoder                 `json:"decoder,omitempty"`
 }
+
+type UpdateGcsInputOptionInput struct {
+	GcsConnectionID           *int64                          `json:"gcs_connection_id,omitempty"`
+	Bucket                    *string                         `json:"bucket,omitempty"`
+	PathPrefix                *string                         `json:"path_prefix,omitempty"`
+	IncrementalLoadingEnabled *bool                           `json:"incremental_loading_enabled,omitempty"`
+	LastPath                  *string                         `json:"last_path,omitempty"`
+	StopWhenFileNotFound      *bool                           `json:"stop_when_file_not_found,omitempty"`
+	DecompressionType         *string                         `json:"decompression_type,omitempty"`
+	CsvParsers                *common.CsvParserInput          `json:"csv_parsers,omitempty"`
+	JsonlParsers              *common.JsonlParserInput        `json:"jsonl_parsers,omitempty"`
+	JsonpathParsers           *common.JsonpathParserInput     `json:"jsonpath_parsers,omitempty"`
+	LtsvParsers               *common.LtsvParserInput         `json:"ltsv_parsers,omitempty"`
+	ExcelParsers              *common.ExcelParserInput        `json:"excel_parsers,omitempty"`
+	XmlParsers                *common.XmlParserInput          `json:"xml_parsers,omitempty"`
+	ParquetParsers            *common.ParquetParserInput      `json:"parquet_parsers,omitempty"`
+	CustomVariableSettings    *[]common.CustomVariableSetting `json:"custom_variable_settings,omitempty"`
+	Decoder                   *common.Decoder                 `json:"decoder,omitempty"`
+}
