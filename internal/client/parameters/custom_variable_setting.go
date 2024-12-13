@@ -3,10 +3,10 @@ package parameters
 type CustomVariableSetting struct {
 	Name      string  `json:"name"`
 	Type      string  `json:"type"`
-	Value     *string `json:"value"`
-	Quantity  *int    `json:"quantity"`
-	Unit      *string `json:"unit"`
-	Direction *string `json:"direction"`
-	Format    *string `json:"format"`
-	TimeZone  *string `json:"time_zone"`
+	Value     *string `json:"value,omitempty"`
+	Quantity  *int    `json:"quantity,omitempty"`
+	Unit      *string `json:"unit,omitempty"`
+	Direction *string `json:"direction,omitempty"`
+	Format    *string `json:"format,omitempty"`
+	TimeZone  *string `json:"time_zone,omitempty"`
 }
