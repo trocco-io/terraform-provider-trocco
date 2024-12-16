@@ -32,14 +32,14 @@ var (
 // -----------------------------------------------------------------------------
 
 type pipelineDefinitionResourceModel struct {
-	ID               types.Int64                           `tfsdk:"id"`
-	Name             types.String                          `tfsdk:"name"`
-	Description      types.String                          `tfsdk:"description"`
-	Labels           []types.String                        `tfsdk:"labels"`
-	Notifications    []wm.Notification                     `tfsdk:"notifications"`
-	Schedules        []wm.Schedule                         `tfsdk:"schedules"`
-	Tasks            []workflowResourceTaskModel           `tfsdk:"tasks"`
-	TaskDependencies []workflowResourceTaskDependencyModel `tfsdk:"task_dependencies"`
+	ID               types.Int64         `tfsdk:"id"`
+	Name             types.String        `tfsdk:"name"`
+	Description      types.String        `tfsdk:"description"`
+	Labels           []types.String      `tfsdk:"labels"`
+	Notifications    []wm.Notification   `tfsdk:"notifications"`
+	Schedules        []wm.Schedule       `tfsdk:"schedules"`
+	Tasks            []wm.Task           `tfsdk:"tasks"`
+	TaskDependencies []wm.TaskDependency `tfsdk:"task_dependencies"`
 }
 
 func (m *pipelineDefinitionResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
@@ -225,32 +225,6 @@ func (m *pipelineDefinitionResourceModel) ToUpdateWorkflowInput(state *pipelineD
 		Tasks:            tasks,
 		TaskDependencies: taskDependencies,
 	}
-}
-
-type workflowResourceTaskModel struct {
-	Key            types.String `tfsdk:"key"`
-	TaskIdentifier types.Int64  `tfsdk:"task_identifier"`
-	Type           types.String `tfsdk:"type"`
-
-	TroccoTransferConfig          *wm.TroccoTransferTaskConfig          `tfsdk:"trocco_transfer_config"`
-	TroccoTransferBulkConfig      *wm.TroccoTransferBulkTaskConfig      `tfsdk:"trocco_transfer_bulk_config"`
-	DBTConfig                     *wm.DBTTaskConfig                     `tfsdk:"dbt_config"`
-	TroccoAgentConfig             *wm.TroccoAgentTaskConfig             `tfsdk:"trocco_agent_config"`
-	TroccoBigQueryDatamartConfig  *wm.TroccoBigQueryDatamartTaskConfig  `tfsdk:"trocco_bigquery_datamart_config"`
-	TroccoRedshiftDatamartConfig  *wm.TroccoRedshiftDatamartTaskConfig  `tfsdk:"trocco_redshift_datamart_config"`
-	TroccoSnowflakeDatamartConfig *wm.TroccoSnowflakeDatamartTaskConfig `tfsdk:"trocco_snowflake_datamart_config"`
-	WorkflowConfig                *wm.WorkflowTaskConfig                `tfsdk:"workflow_config"`
-	SlackNotificationConfig       *wm.SlackNotificationTaskConfig       `tfsdk:"slack_notification_config"`
-	TableauDataExtractionConfig   *wm.TableauDataExtractionTaskConfig   `tfsdk:"tableau_data_extraction_config"`
-	BigqueryDataCheckConfig       *wm.BigqueryDataCheckTaskConfig       `tfsdk:"bigquery_data_check_config"`
-	RedshiftDataCheckConfig       *wm.RedshiftDataCheckTaskConfig       `tfsdk:"redshift_data_check_config"`
-	SnowflakeDataCheckConfig      *wm.SnowflakeDataCheckTaskConfig      `tfsdk:"snowflake_data_check_config"`
-	HTTPRequestConfig             *wm.HTTPRequestTaskConfig             `tfsdk:"http_request_config"`
-}
-
-type workflowResourceTaskDependencyModel struct {
-	Source      types.String `tfsdk:"source"`
-	Destination types.String `tfsdk:"destination"`
 }
 
 // -----------------------------------------------------------------------------
@@ -718,9 +692,11 @@ func (r *workflowResource) Create(
 		return
 	}
 
-	tasks := []workflowResourceTaskModel{}
+	// tasks := wm.NewTasks(workflow.Tasks)
+
+	tasks := []wm.Task{}
 	for _, t := range workflow.Tasks {
-		tasks = append(tasks, workflowResourceTaskModel{
+		tasks = append(tasks, wm.Task{
 			Key:            types.StringValue(t.Key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
@@ -747,9 +723,9 @@ func (r *workflowResource) Create(
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	taskDependencies := []workflowResourceTaskDependencyModel{}
+	taskDependencies := []wm.TaskDependency{}
 	for _, d := range workflow.TaskDependencies {
-		taskDependencies = append(taskDependencies, workflowResourceTaskDependencyModel{
+		taskDependencies = append(taskDependencies, wm.TaskDependency{
 			Source:      keys[d.Source],
 			Destination: keys[d.Destination],
 		})
@@ -797,9 +773,9 @@ func (r *workflowResource) Update(
 		return
 	}
 
-	tasks := []workflowResourceTaskModel{}
+	tasks := []wm.Task{}
 	for _, t := range workflow.Tasks {
-		task := workflowResourceTaskModel{
+		task := wm.Task{
 			Key:            types.StringValue(t.Key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
@@ -828,9 +804,9 @@ func (r *workflowResource) Update(
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	taskDependencies := []workflowResourceTaskDependencyModel{}
+	taskDependencies := []wm.TaskDependency{}
 	for _, d := range workflow.TaskDependencies {
-		taskDependencies = append(taskDependencies, workflowResourceTaskDependencyModel{
+		taskDependencies = append(taskDependencies, wm.TaskDependency{
 			Source:      keys[d.Source],
 			Destination: keys[d.Destination],
 		})
@@ -876,11 +852,11 @@ func (r *workflowResource) Read(
 		stateKeys[s.TaskIdentifier.ValueInt64()] = s.Key.ValueString()
 	}
 
-	tasks := []workflowResourceTaskModel{}
+	tasks := []wm.Task{}
 	for _, t := range workflow.Tasks {
 		key := stateKeys[t.TaskIdentifier]
 
-		task := workflowResourceTaskModel{
+		task := wm.Task{
 			Key:            types.StringValue(key),
 			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
 			Type:           types.StringValue(t.Type),
