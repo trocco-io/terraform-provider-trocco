@@ -554,45 +554,19 @@ func (c *workflowRedshiftDataCheckTaskConfigModel) ToInput() *client.WorkflowRed
 //
 
 type workflowHTTPRequestTaskConfigModel struct {
-	Name              types.String                        `tfsdk:"name"`
-	ConnectionID      types.Int64                         `tfsdk:"connection_id"`
-	Method            types.String                        `tfsdk:"http_method"`
-	URL               types.String                        `tfsdk:"url"`
-	RequestBody       types.String                        `tfsdk:"request_body"`
-	RequestHeaders    []workflowHTTPRequestHeaderModel    `tfsdk:"request_headers"`
-	RequestParameters []workflowHTTPRequestParameterModel `tfsdk:"request_parameters"`
-	CustomVariables   []wm.CustomVariable                 `tfsdk:"custom_variables"`
+	Name              types.String              `tfsdk:"name"`
+	ConnectionID      types.Int64               `tfsdk:"connection_id"`
+	Method            types.String              `tfsdk:"http_method"`
+	URL               types.String              `tfsdk:"url"`
+	RequestBody       types.String              `tfsdk:"request_body"`
+	RequestHeaders    []wm.HTTPRequestHeader    `tfsdk:"request_headers"`
+	RequestParameters []wm.HTTPRequestParameter `tfsdk:"request_parameters"`
+	CustomVariables   []wm.CustomVariable       `tfsdk:"custom_variables"`
 }
 
 func newWorkflowHTTPRequestTaskConfigModel(c *we.HTTPRequestTaskConfig) *workflowHTTPRequestTaskConfigModel {
 	if c == nil {
 		return nil
-	}
-
-	requestHeaders := []workflowHTTPRequestHeaderModel{}
-	for _, h := range c.RequestHeaders {
-		requestHeaders = append(requestHeaders, workflowHTTPRequestHeaderModel{
-			Key:     types.StringValue(h.Key),
-			Value:   types.StringValue(h.Value),
-			Masking: types.BoolValue(h.Masking),
-		})
-	}
-
-	if len(requestHeaders) == 0 {
-		requestHeaders = nil
-	}
-
-	requestParameters := []workflowHTTPRequestParameterModel{}
-	for _, p := range c.RequestParameters {
-		requestParameters = append(requestParameters, workflowHTTPRequestParameterModel{
-			Key:     types.StringValue(p.Key),
-			Value:   types.StringValue(p.Value),
-			Masking: types.BoolValue(p.Masking),
-		})
-	}
-
-	if len(requestParameters) == 0 {
-		requestParameters = nil
 	}
 
 	customVariables := []wm.CustomVariable{}
@@ -620,8 +594,8 @@ func newWorkflowHTTPRequestTaskConfigModel(c *we.HTTPRequestTaskConfig) *workflo
 		Method:            types.StringValue(c.HTTPMethod),
 		URL:               types.StringValue(c.URL),
 		RequestBody:       types.StringPointerValue(c.RequestBody),
-		RequestHeaders:    requestHeaders,
-		RequestParameters: requestParameters,
+		RequestHeaders:    wm.NewHTTPRequestHeaders(c.RequestHeaders),
+		RequestParameters: wm.NewHTTPRequestParameters(c.RequestParameters),
 		CustomVariables:   customVariables,
 	}
 }
@@ -669,18 +643,6 @@ func (c *workflowHTTPRequestTaskConfigModel) ToInput() *client.WorkflowHTTPReque
 		RequestParameters: requestParameters,
 		CustomVariables:   customVariables,
 	}
-}
-
-type workflowHTTPRequestHeaderModel struct {
-	Key     types.String `tfsdk:"key"`
-	Value   types.String `tfsdk:"value"`
-	Masking types.Bool   `tfsdk:"masking"`
-}
-
-type workflowHTTPRequestParameterModel struct {
-	Key     types.String `tfsdk:"key"`
-	Value   types.String `tfsdk:"value"`
-	Masking types.Bool   `tfsdk:"masking"`
 }
 
 // -----------------------------------------------------------------------------
