@@ -67,7 +67,7 @@ type CreateJobDefinitionInput struct {
 type UpdateJobDefinitionInput struct {
 	Name                      *string                                           `json:"name,omitempty"`
 	Description               *string                                           `json:"description,omitempty"`
-	ResourceGroupID           *int64                                            `json:"resource_group_id,omitempty"`
+	ResourceGroupID           *parameters.NullableInt64                         `json:"resource_group_id,omitempty"`
 	IsRunnableConcurrently    *bool                                             `json:"is_runnable_concurrently,omitempty"`
 	RetryLimit                *int64                                            `json:"retry_limit,omitempty"`
 	ResourceEnhancement       *string                                           `json:"resource_enhancement,omitempty"`

@@ -8,6 +8,7 @@ import (
 	"terraform-provider-trocco/internal/client/entities"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
 	"terraform-provider-trocco/internal/client/entities/job_definitions/filter"
+	"terraform-provider-trocco/internal/client/parameters"
 	filter2 "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
 	"testing"
 
@@ -70,7 +71,7 @@ func TestCreateJobDefinition(t *testing.T) {
 	out, err := c.CreateJobDefinition(&CreateJobDefinitionInput{
 		Name:                      "name",
 		Description:               lo.ToPtr("description"),
-		ResourceGroupID:           lo.ToPtr(int64(9)),
+		ResourceGroupID:           lo.ToPtr(parameters.NullableInt64{Value: 9, Valid: true}),
 		IsRunnableConcurrently:    lo.ToPtr(true),
 		RetryLimit:                10,
 		ResourceEnhancement:       lo.ToPtr("medium"),
@@ -158,7 +159,7 @@ func TestUpdateJobDefinition(t *testing.T) {
 	out, err := c.UpdateJobDefinition(8, &UpdateJobDefinitionInput{
 		Name:                   lo.ToPtr("edit"),
 		Description:            lo.ToPtr("description edit"),
-		ResourceGroupID:        lo.ToPtr(int64(10)),
+		ResourceGroupID:        lo.ToPtr(parameters.NullableInt64{Value: 10, Valid: true}),
 		IsRunnableConcurrently: lo.ToPtr(true),
 		RetryLimit:             lo.ToPtr(int64(11)),
 		ResourceEnhancement:    lo.ToPtr("medium"),
