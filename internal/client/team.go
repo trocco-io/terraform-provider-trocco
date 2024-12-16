@@ -11,18 +11,18 @@ const teamBasePath = "/api/teams"
 type Team struct {
 	ID          int64        `json:"id"`
 	Name        string       `json:"name"`
-	Description string       `json:"description"`
+	Description *string      `json:"description"`
 	Members     []TeamMember `json:"members"`
 	CreatedAt   string       `json:"created_at"`
 	UpdatedAt   string       `json:"updated_at"`
 }
 
 type TeamWithoutMembers struct {
-	ID          int64  `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	CreatedAt   string `json:"created_at"`
-	UpdatedAt   string `json:"updated_at"`
+	ID          int64   `json:"id"`
+	Name        string  `json:"name"`
+	Description *string `json:"description"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
 }
 
 type TeamMember struct {
