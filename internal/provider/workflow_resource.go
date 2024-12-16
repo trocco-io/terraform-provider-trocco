@@ -110,9 +110,9 @@ func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowIn
 		tasks = append(tasks, i)
 	}
 
-	taskDependencies := []client.WorkflowTaskDependencyInput{}
+	taskDependencies := []wp.TaskDependency{}
 	for _, d := range m.TaskDependencies {
-		taskDependencies = append(taskDependencies, client.WorkflowTaskDependencyInput{
+		taskDependencies = append(taskDependencies, wp.TaskDependency{
 			Source:      d.Source.ValueString(),
 			Destination: d.Destination.ValueString(),
 		})
@@ -206,9 +206,9 @@ func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceMod
 		tasks = append(tasks, i)
 	}
 
-	taskDependencies := []client.WorkflowTaskDependencyInput{}
+	taskDependencies := []wp.TaskDependency{}
 	for _, d := range m.TaskDependencies {
-		taskDependencies = append(taskDependencies, client.WorkflowTaskDependencyInput{
+		taskDependencies = append(taskDependencies, wp.TaskDependency{
 			Source:      d.Source.ValueString(),
 			Destination: d.Destination.ValueString(),
 		})
@@ -337,8 +337,8 @@ func newWorkflowResourceTableauDataExtractionTaskConfig(c *we.TableauDataExtract
 	}
 }
 
-func (c *workflowResourceTableauDataExtractionTaskConfig) ToInput() *client.WorkflowTableauDataExtractionTaskConfigInput {
-	return &client.WorkflowTableauDataExtractionTaskConfigInput{
+func (c *workflowResourceTableauDataExtractionTaskConfig) ToInput() *wp.TableauDataExtractionTaskConfig {
+	return &wp.TableauDataExtractionTaskConfig{
 		Name:         c.Name.ValueString(),
 		ConnectionID: c.ConnectionID.ValueInt64(),
 		TaskID:       c.TaskID.ValueString(),
@@ -359,7 +359,7 @@ type workflowBigqueryDataCheckTaskConfigModel struct {
 	CustomVariables []workflowCustomVariableModel `tfsdk:"custom_variables"`
 }
 
-func newWorkflowResourceBigqueryDataCheckTaskConfig(c *client.WorkflowBigqueryDataCheckTaskConfig) *workflowBigqueryDataCheckTaskConfigModel {
+func newWorkflowResourceBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig) *workflowBigqueryDataCheckTaskConfigModel {
 	if c == nil {
 		return nil
 	}
@@ -435,7 +435,7 @@ type workflowSnowflakeDataCheckTaskConfigModel struct {
 	CustomVariables []workflowCustomVariableModel `tfsdk:"custom_variables"`
 }
 
-func newWorkflowSnowflakeDataCheckTaskConfigModel(c *client.WorkflowSnowflakeDataCheckTaskConfig) *workflowSnowflakeDataCheckTaskConfigModel {
+func newWorkflowSnowflakeDataCheckTaskConfigModel(c *we.SnowflakeDataCheckTaskConfig) *workflowSnowflakeDataCheckTaskConfigModel {
 	if c == nil {
 		return nil
 	}
@@ -513,7 +513,7 @@ type workflowRedshiftDataCheckTaskConfigModel struct {
 	CustomVariables []workflowCustomVariableModel `tfsdk:"custom_variables"`
 }
 
-func newWorkflowRedshiftDataCheckTaskConfigModel(c *client.WorkflowRedshiftDataCheckTaskConfig) *workflowRedshiftDataCheckTaskConfigModel {
+func newWorkflowRedshiftDataCheckTaskConfigModel(c *we.RedshiftDataCheckTaskConfig) *workflowRedshiftDataCheckTaskConfigModel {
 	if c == nil {
 		return nil
 	}
@@ -591,7 +591,7 @@ type workflowHTTPRequestTaskConfigModel struct {
 	CustomVariables   []workflowCustomVariableModel       `tfsdk:"custom_variables"`
 }
 
-func newWorkflowHTTPRequestTaskConfigModel(c *client.WorkflowHTTPRequestTaskConfig) *workflowHTTPRequestTaskConfigModel {
+func newWorkflowHTTPRequestTaskConfigModel(c *we.HTTPRequestTaskConfig) *workflowHTTPRequestTaskConfigModel {
 	if c == nil {
 		return nil
 	}
