@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
-	wp "terraform-provider-trocco/internal/client/parameters/workflow"
-	wm "terraform-provider-trocco/internal/provider/models/workflow"
-	ws "terraform-provider-trocco/internal/provider/schemas/workflow"
+	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
+	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
+	wm "terraform-provider-trocco/internal/provider/models/pipeline_definition"
+	ws "terraform-provider-trocco/internal/provider/schemas/pipeline_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -260,7 +261,7 @@ type workflowResourceTroccoTransferTaskConfig struct {
 	CustomVariableLoop *wm.CustomVariableLoop `tfsdk:"custom_variable_loop"`
 }
 
-func newWorkflowResourceTroccoTransferTaskConfig(c *client.WorkflowTroccoTransferTaskConfig) *workflowResourceTroccoTransferTaskConfig {
+func newWorkflowResourceTroccoTransferTaskConfig(c *we.TroccoTransferTaskConfig) *workflowResourceTroccoTransferTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -294,7 +295,7 @@ type workflowResourceSlackNotificationTaskConfig struct {
 	Message      types.String `tfsdk:"message"`
 }
 
-func newWorkflowResourceSlackNotificationTaskConfig(c *client.WorkflowSlackNotificationTaskConfig) *workflowResourceSlackNotificationTaskConfig {
+func newWorkflowResourceSlackNotificationTaskConfig(c *we.SlackNotificationTaskConfig) *workflowResourceSlackNotificationTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -324,7 +325,7 @@ type workflowResourceTableauDataExtractionTaskConfig struct {
 // Tableau Data Extraction
 //
 
-func newWorkflowResourceTableauDataExtractionTaskConfig(c *client.WorkflowTableauDataExtractionTaskConfig) *workflowResourceTableauDataExtractionTaskConfig {
+func newWorkflowResourceTableauDataExtractionTaskConfig(c *we.TableauDataExtractionTaskConfig) *workflowResourceTableauDataExtractionTaskConfig {
 	if c == nil {
 		return nil
 	}

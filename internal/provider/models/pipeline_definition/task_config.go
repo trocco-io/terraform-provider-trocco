@@ -4,9 +4,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
 
-	we "terraform-provider-trocco/internal/client/entities/workflow"
-	wp "terraform-provider-trocco/internal/client/parameters/workflow"
+	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
+	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
 )
+
+//
+// TroccoTransferConfig
+//
 
 //
 // TroccoTransferBulkTaskConfig
