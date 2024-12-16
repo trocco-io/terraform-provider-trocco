@@ -15,19 +15,8 @@ import (
 // -----------------------------------------------------------------------------
 
 type WorkflowList struct {
-	Workflows  []*Workflow `json:"workflows"`
-	NextCursor string      `json:"next_cursor"`
-}
-
-type Workflow struct {
-	ID               int64               `json:"id"`
-	Name             *string             `json:"name"`
-	Description      *string             `json:"description"`
-	Labels           []string            `json:"labels"`
-	Notifications    []we.Notification   `json:"notifications"`
-	Schedules        []we.Schedule       `json:"schedules"`
-	Tasks            []we.Task           `json:"tasks"`
-	TaskDependencies []we.TaskDependency `json:"task_dependencies"`
+	Workflows  []*we.Workflow `json:"workflows"`
+	NextCursor string         `json:"next_cursor"`
 }
 
 // -----------------------------------------------------------------------------
@@ -137,30 +126,30 @@ func (c *TroccoClient) GetWorkflows(in *GetWorkflowsInput) (*WorkflowList, error
 	return out, nil
 }
 
-func (c *TroccoClient) GetWorkflow(id int64) (*Workflow, error) {
+func (c *TroccoClient) GetWorkflow(id int64) (*we.Workflow, error) {
 	url := fmt.Sprintf("/api/pipeline_definitions/%d", id)
 
-	out := &Workflow{}
+	out := &we.Workflow{}
 	if err := c.do(http.MethodGet, url, nil, out); err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *TroccoClient) CreateWorkflow(in *CreateWorkflowInput) (*Workflow, error) {
+func (c *TroccoClient) CreateWorkflow(in *CreateWorkflowInput) (*we.Workflow, error) {
 	url := "/api/pipeline_definitions"
 
-	out := &Workflow{}
+	out := &we.Workflow{}
 	if err := c.do(http.MethodPost, url, in, out); err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *TroccoClient) UpdateWorkflow(id int64, in *UpdateWorkflowInput) (*Workflow, error) {
+func (c *TroccoClient) UpdateWorkflow(id int64, in *UpdateWorkflowInput) (*we.Workflow, error) {
 	url := fmt.Sprintf("/api/pipeline_definitions/%d", id)
 
-	out := &Workflow{}
+	out := &we.Workflow{}
 	if err := c.do(http.MethodPatch, url, in, out); err != nil {
 		return nil, err
 	}

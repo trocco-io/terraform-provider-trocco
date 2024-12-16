@@ -32,14 +32,14 @@ var (
 // -----------------------------------------------------------------------------
 
 type pipelineDefinitionResourceModel struct {
-	ID               types.Int64         `tfsdk:"id"`
-	Name             types.String        `tfsdk:"name"`
-	Description      types.String        `tfsdk:"description"`
-	Labels           []types.String      `tfsdk:"labels"`
-	Notifications    []wm.Notification   `tfsdk:"notifications"`
-	Schedules        []wm.Schedule       `tfsdk:"schedules"`
-	Tasks            []wm.Task           `tfsdk:"tasks"`
-	TaskDependencies []wm.TaskDependency `tfsdk:"task_dependencies"`
+	ID               types.Int64          `tfsdk:"id"`
+	Name             types.String         `tfsdk:"name"`
+	Description      types.String         `tfsdk:"description"`
+	Labels           []types.String       `tfsdk:"labels"`
+	Notifications    []wm.Notification    `tfsdk:"notifications"`
+	Schedules        []wm.Schedule        `tfsdk:"schedules"`
+	Tasks            []*wm.Task           `tfsdk:"tasks"`
+	TaskDependencies []*wm.TaskDependency `tfsdk:"task_dependencies"`
 }
 
 func (m *pipelineDefinitionResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
@@ -692,43 +692,9 @@ func (r *workflowResource) Create(
 		return
 	}
 
-	// tasks := wm.NewTasks(workflow.Tasks)
-
-	tasks := []wm.Task{}
-	for _, t := range workflow.Tasks {
-		tasks = append(tasks, wm.Task{
-			Key:            types.StringValue(t.Key),
-			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
-			Type:           types.StringValue(t.Type),
-
-			TroccoTransferConfig:          wm.NewTroccoTransferTaskConfig(t.TroccoTransferConfig),
-			TroccoTransferBulkConfig:      wm.NewTroccoTransferBulkTaskConfig(t.TroccoTransferBulkConfig),
-			DBTConfig:                     wm.NewDBTTaskConfig(t.DBTConfig),
-			TroccoAgentConfig:             wm.NewTroccoAgentTaskConfig(t.TroccoAgentConfig),
-			TroccoBigQueryDatamartConfig:  wm.NewTroccoBigQueryDatamartTaskConfig(t.TroccoBigQueryDatamartConfig),
-			TroccoRedshiftDatamartConfig:  wm.NewTroccoRedshiftDatamartTaskConfig(t.TroccoRedshiftDatamartConfig),
-			TroccoSnowflakeDatamartConfig: wm.NewTroccoSnowflakeDatamartTaskConfig(t.TroccoSnowflakeDatamartConfig),
-			WorkflowConfig:                wm.NewWorkflowTaskConfig(t.WorkflowConfig),
-			SlackNotificationConfig:       wm.NewSlackNotificationTaskConfig(t.SlackNotificationConfig),
-			TableauDataExtractionConfig:   wm.NewTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig),
-			BigqueryDataCheckConfig:       wm.NewBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig),
-			SnowflakeDataCheckConfig:      wm.NewSnowflakeDataCheckTaskConfig(t.SnowflakeDataCheckConfig),
-			RedshiftDataCheckConfig:       wm.NewRedshiftDataCheckTaskConfig(t.RedshiftDataCheckConfig),
-			HTTPRequestConfig:             wm.NewHTTPRequestTaskConfig(t.HTTPRequestConfig),
-		})
-	}
-
 	keys := map[int64]types.String{}
 	for _, t := range workflow.Tasks {
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
-	}
-
-	taskDependencies := []wm.TaskDependency{}
-	for _, d := range workflow.TaskDependencies {
-		taskDependencies = append(taskDependencies, wm.TaskDependency{
-			Source:      keys[d.Source],
-			Destination: keys[d.Destination],
-		})
 	}
 
 	newState := pipelineDefinitionResourceModel{
@@ -738,8 +704,8 @@ func (r *workflowResource) Create(
 		Labels:           wm.NewLabels(workflow.Labels, plan.Labels == nil),
 		Notifications:    wm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
 		Schedules:        wm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
-		Tasks:            tasks,
-		TaskDependencies: taskDependencies,
+		Tasks:            wm.NewTasks(workflow.Tasks),
+		TaskDependencies: wm.NewTaskDependencies(workflow.TaskDependencies, keys),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -773,43 +739,9 @@ func (r *workflowResource) Update(
 		return
 	}
 
-	tasks := []wm.Task{}
-	for _, t := range workflow.Tasks {
-		task := wm.Task{
-			Key:            types.StringValue(t.Key),
-			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
-			Type:           types.StringValue(t.Type),
-
-			TroccoTransferConfig:          wm.NewTroccoTransferTaskConfig(t.TroccoTransferConfig),
-			TroccoTransferBulkConfig:      wm.NewTroccoTransferBulkTaskConfig(t.TroccoTransferBulkConfig),
-			DBTConfig:                     wm.NewDBTTaskConfig(t.DBTConfig),
-			TroccoAgentConfig:             wm.NewTroccoAgentTaskConfig(t.TroccoAgentConfig),
-			TroccoBigQueryDatamartConfig:  wm.NewTroccoBigQueryDatamartTaskConfig(t.TroccoBigQueryDatamartConfig),
-			TroccoRedshiftDatamartConfig:  wm.NewTroccoRedshiftDatamartTaskConfig(t.TroccoRedshiftDatamartConfig),
-			TroccoSnowflakeDatamartConfig: wm.NewTroccoSnowflakeDatamartTaskConfig(t.TroccoSnowflakeDatamartConfig),
-			WorkflowConfig:                wm.NewWorkflowTaskConfig(t.WorkflowConfig),
-			SlackNotificationConfig:       wm.NewSlackNotificationTaskConfig(t.SlackNotificationConfig),
-			TableauDataExtractionConfig:   wm.NewTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig),
-			BigqueryDataCheckConfig:       wm.NewBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig),
-			SnowflakeDataCheckConfig:      wm.NewSnowflakeDataCheckTaskConfig(t.SnowflakeDataCheckConfig),
-			RedshiftDataCheckConfig:       wm.NewRedshiftDataCheckTaskConfig(t.RedshiftDataCheckConfig),
-			HTTPRequestConfig:             wm.NewHTTPRequestTaskConfig(t.HTTPRequestConfig),
-		}
-
-		tasks = append(tasks, task)
-	}
-
 	keys := map[int64]types.String{}
 	for _, t := range workflow.Tasks {
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
-	}
-
-	taskDependencies := []wm.TaskDependency{}
-	for _, d := range workflow.TaskDependencies {
-		taskDependencies = append(taskDependencies, wm.TaskDependency{
-			Source:      keys[d.Source],
-			Destination: keys[d.Destination],
-		})
 	}
 
 	newState := pipelineDefinitionResourceModel{
@@ -819,8 +751,8 @@ func (r *workflowResource) Update(
 		Labels:           wm.NewLabels(workflow.Labels, plan.Labels == nil),
 		Notifications:    wm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
 		Schedules:        wm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
-		Tasks:            tasks,
-		TaskDependencies: taskDependencies,
+		Tasks:            wm.NewTasks(workflow.Tasks),
+		TaskDependencies: wm.NewTaskDependencies(workflow.TaskDependencies, keys),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -847,44 +779,18 @@ func (r *workflowResource) Read(
 		return
 	}
 
+	// panic(fmt.Sprintf("AAAA %s", workflow.TaskDependencies))
+
 	stateKeys := map[int64]string{}
 	for _, s := range state.Tasks {
 		stateKeys[s.TaskIdentifier.ValueInt64()] = s.Key.ValueString()
-	}
-
-	tasks := []wm.Task{}
-	for _, t := range workflow.Tasks {
-		key := stateKeys[t.TaskIdentifier]
-
-		task := wm.Task{
-			Key:            types.StringValue(key),
-			TaskIdentifier: types.Int64Value(t.TaskIdentifier),
-			Type:           types.StringValue(t.Type),
-
-			BigqueryDataCheckConfig:       wm.NewBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig),
-			DBTConfig:                     wm.NewDBTTaskConfig(t.DBTConfig),
-			HTTPRequestConfig:             wm.NewHTTPRequestTaskConfig(t.HTTPRequestConfig),
-			RedshiftDataCheckConfig:       wm.NewRedshiftDataCheckTaskConfig(t.RedshiftDataCheckConfig),
-			SlackNotificationConfig:       wm.NewSlackNotificationTaskConfig(t.SlackNotificationConfig),
-			SnowflakeDataCheckConfig:      wm.NewSnowflakeDataCheckTaskConfig(t.SnowflakeDataCheckConfig),
-			TableauDataExtractionConfig:   wm.NewTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig),
-			TroccoAgentConfig:             wm.NewTroccoAgentTaskConfig(t.TroccoAgentConfig),
-			TroccoBigQueryDatamartConfig:  wm.NewTroccoBigQueryDatamartTaskConfig(t.TroccoBigQueryDatamartConfig),
-			TroccoRedshiftDatamartConfig:  wm.NewTroccoRedshiftDatamartTaskConfig(t.TroccoRedshiftDatamartConfig),
-			TroccoSnowflakeDatamartConfig: wm.NewTroccoSnowflakeDatamartTaskConfig(t.TroccoSnowflakeDatamartConfig),
-			TroccoTransferBulkConfig:      wm.NewTroccoTransferBulkTaskConfig(t.TroccoTransferBulkConfig),
-			TroccoTransferConfig:          wm.NewTroccoTransferTaskConfig(t.TroccoTransferConfig),
-			WorkflowConfig:                wm.NewWorkflowTaskConfig(t.WorkflowConfig),
-		}
-
-		tasks = append(tasks, task)
 	}
 
 	newState := pipelineDefinitionResourceModel{
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
-		Tasks:            tasks,
+		Tasks:            wm.NewTasks(workflow.Tasks),
 		Labels:           wm.NewLabels(workflow.Labels, state.Labels == nil),
 		Notifications:    wm.NewNotifications(workflow.Notifications, state.Notifications == nil),
 		Schedules:        wm.NewSchedules(workflow.Schedules, state.Schedules == nil),
