@@ -1,21 +1,24 @@
 package client
 
-import "testing"
+import (
+	"terraform-provider-trocco/internal/client/parameters"
+	"testing"
+)
 
 func TestNullableInt64MarshalJSON(t *testing.T) {
 	cases := []struct {
 		name     string
-		value    NullableInt64
+		value    parameters.NullableInt64
 		expected string
 	}{
 		{
 			name:     "valid",
-			value:    NullableInt64{Value: 123, Valid: true},
+			value:    parameters.NullableInt64{Value: 123, Valid: true},
 			expected: "123",
 		},
 		{
 			name:     "invalid",
-			value:    NullableInt64{Valid: false},
+			value:    parameters.NullableInt64{Valid: false},
 			expected: "null",
 		},
 	}
@@ -36,17 +39,17 @@ func TestNullableInt64MarshalJSON(t *testing.T) {
 func TestNullableStringMarshalJSON(t *testing.T) {
 	cases := []struct {
 		name     string
-		value    NullableString
+		value    parameters.NullableString
 		expected string
 	}{
 		{
 			name:     "valid",
-			value:    NullableString{Value: "foo", Valid: true},
+			value:    parameters.NullableString{Value: "foo", Valid: true},
 			expected: `"foo"`,
 		},
 		{
 			name:     "invalid",
-			value:    NullableString{Valid: false},
+			value:    parameters.NullableString{Valid: false},
 			expected: "null",
 		},
 	}

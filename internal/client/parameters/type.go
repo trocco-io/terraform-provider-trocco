@@ -1,4 +1,4 @@
-package client
+package parameters
 
 import "encoding/json"
 
