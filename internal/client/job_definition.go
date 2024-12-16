@@ -3,12 +3,13 @@ package client
 import (
 	"fmt"
 	"net/http"
-	entities "terraform-provider-trocco/internal/client/entities"
+	"terraform-provider-trocco/internal/client/entities"
 	jobDefinitionEntities "terraform-provider-trocco/internal/client/entities/job_definitions"
 	filterEntities "terraform-provider-trocco/internal/client/entities/job_definitions/filter"
 	inputOptionEntitites "terraform-provider-trocco/internal/client/entities/job_definitions/input_options"
 	outputOptionEntitites "terraform-provider-trocco/internal/client/entities/job_definitions/output_options"
-	parameters "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
+	"terraform-provider-trocco/internal/client/parameters/job_definitions"
+	filterParameters "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
 	"terraform-provider-trocco/internal/client/parameters/job_definitions/input_options"
 	"terraform-provider-trocco/internal/client/parameters/job_definitions/output_options"
 )
@@ -17,7 +18,7 @@ type JobDefinition struct {
 	ID                        int64                                             `json:"id"`
 	Name                      string                                            `json:"name"`
 	Description               *string                                           `json:"description"`
-	ResourceGroupId           *bool                                             `json:"resource_group_id"`
+	ResourceGroupID           *int64                                            `json:"resource_group_id"`
 	IsRunnableConcurrently    *bool                                             `json:"is_runnable_concurrently"`
 	RetryLimit                int64                                             `json:"retry_limit"`
 	ResourceEnhancement       *string                                           `json:"resource_enhancement"`
@@ -39,43 +40,46 @@ type JobDefinition struct {
 }
 
 type CreateJobDefinitionInput struct {
-	Name                      string                                     `json:"name"`
-	Description               *string                                    `json:"description,omitempty"`
-	ResourceGroupId           *bool                                      `json:"resource_group_id,omitempty"`
-	IsRunnableConcurrently    *bool                                      `json:"is_runnable_concurrently"`
-	RetryLimit                int64                                      `json:"retry_limit"`
-	ResourceEnhancement       *string                                    `json:"resource_enhancement,omitempty"`
-	FilterColumns             []parameters.FilterColumnInput             `json:"filter_columns"`
-	FilterRows                *parameters.FilterRowsInput                `json:"filter_rows,omitempty"`
-	FilterMasks               []parameters.FilterMaskInput               `json:"filter_masks"`
-	FilterAddTime             *parameters.FilterAddTimeInput             `json:"filter_add_time,omitempty"`
-	FilterGsub                []parameters.FilterGsubInput               `json:"filter_gsub"`
-	FilterStringTransforms    []parameters.FilterStringTransformInput    `json:"filter_string_transforms"`
-	FilterHashes              []parameters.FilterHashInput               `json:"filter_hashes"`
-	FilterUnixTimeConversions []parameters.FilterUnixTimeConversionInput `json:"filter_unixtime_conversions"`
-	InputOptionType           string                                     `json:"input_option_type"`
-	InputOption               InputOptionInput                           `json:"input_option"`
-	OutputOptionType          string                                     `json:"output_option_type"`
-	OutputOption              OutputOptionInput                          `json:"output_option"`
+	Name                      string                                           `json:"name"`
+	Description               *string                                          `json:"description,omitempty"`
+	ResourceGroupID           *int64                                           `json:"resource_group_id,omitempty"`
+	IsRunnableConcurrently    *bool                                            `json:"is_runnable_concurrently"`
+	RetryLimit                int64                                            `json:"retry_limit"`
+	ResourceEnhancement       *string                                          `json:"resource_enhancement,omitempty"`
+	FilterColumns             []filterParameters.FilterColumnInput             `json:"filter_columns"`
+	FilterRows                *filterParameters.FilterRowsInput                `json:"filter_rows,omitempty"`
+	FilterMasks               []filterParameters.FilterMaskInput               `json:"filter_masks"`
+	FilterAddTime             *filterParameters.FilterAddTimeInput             `json:"filter_add_time,omitempty"`
+	FilterGsub                []filterParameters.FilterGsubInput               `json:"filter_gsub"`
+	FilterStringTransforms    []filterParameters.FilterStringTransformInput    `json:"filter_string_transforms"`
+	FilterHashes              []filterParameters.FilterHashInput               `json:"filter_hashes"`
+	FilterUnixTimeConversions []filterParameters.FilterUnixTimeConversionInput `json:"filter_unixtime_conversions"`
+	InputOptionType           string                                           `json:"input_option_type"`
+	InputOption               InputOptionInput                                 `json:"input_option"`
+	OutputOptionType          string                                           `json:"output_option_type"`
+	OutputOption              OutputOptionInput                                `json:"output_option"`
+	Labels                    []string                                         `json:"labels"`
+	Schedules                 []ScheduleInput                                  `json:"schedules"`
+	Notifications             []job_definitions.JobDefinitionNotificationInput `json:"notifications"`
 }
 
 type UpdateJobDefinitionInput struct {
-	Name                      *string                                     `json:"name,omitempty"`
-	Description               *string                                     `json:"description,omitempty"`
-	ResourceGroupId           *bool                                       `json:"resource_group_id,omitempty"`
-	IsRunnableConcurrently    *bool                                       `json:"is_runnable_concurrently,omitempty"`
-	RetryLimit                *int64                                      `json:"retry_limit,omitempty"`
-	ResourceEnhancement       *string                                     `json:"resource_enhancement,omitempty"`
-	FilterColumns             *[]parameters.FilterColumnInput             `json:"filter_columns,omitempty"`
-	FilterRows                *parameters.FilterRowsInput                 `json:"filter_rows,omitempty"`
-	FilterMasks               *[]parameters.FilterMaskInput               `json:"filter_masks,omitempty"`
-	FilterAddTime             *parameters.FilterAddTimeInput              `json:"filter_add_time,omitempty"`
-	FilterGsub                *[]parameters.FilterGsubInput               `json:"filter_gsub,omitempty"`
-	FilterStringTransforms    *[]parameters.FilterStringTransformInput    `json:"filter_string_transforms,omitempty"`
-	FilterHashes              *[]parameters.FilterHashInput               `json:"filter_hashes,omitempty"`
-	FilterUnixTimeConversions *[]parameters.FilterUnixTimeConversionInput `json:"filter_unixtime_conversions,omitempty"`
-	InputOption               *UpdateInputOptionInput                     `json:"input_option,omitempty"`
-	OutputOption              *UpdateOutputOptionInput                    `json:"output_option,omitempty"`
+	Name                      *string                                           `json:"name,omitempty"`
+	Description               *string                                           `json:"description,omitempty"`
+	ResourceGroupID           *int64                                            `json:"resource_group_id,omitempty"`
+	IsRunnableConcurrently    *bool                                             `json:"is_runnable_concurrently,omitempty"`
+	RetryLimit                *int64                                            `json:"retry_limit,omitempty"`
+	ResourceEnhancement       *string                                           `json:"resource_enhancement,omitempty"`
+	FilterColumns             *[]filterParameters.FilterColumnInput             `json:"filter_columns,omitempty"`
+	FilterRows                *filterParameters.FilterRowsInput                 `json:"filter_rows,omitempty"`
+	FilterMasks               *[]filterParameters.FilterMaskInput               `json:"filter_masks,omitempty"`
+	FilterAddTime             *filterParameters.FilterAddTimeInput              `json:"filter_add_time,omitempty"`
+	FilterGsub                *[]filterParameters.FilterGsubInput               `json:"filter_gsub,omitempty"`
+	FilterStringTransforms    *[]filterParameters.FilterStringTransformInput    `json:"filter_string_transforms,omitempty"`
+	FilterHashes              *[]filterParameters.FilterHashInput               `json:"filter_hashes,omitempty"`
+	FilterUnixTimeConversions *[]filterParameters.FilterUnixTimeConversionInput `json:"filter_unixtime_conversions,omitempty"`
+	InputOption               *UpdateInputOptionInput                           `json:"input_option,omitempty"`
+	OutputOption              *UpdateOutputOptionInput                          `json:"output_option,omitempty"`
 }
 
 type InputOption struct {
