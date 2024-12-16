@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"terraform-provider-trocco/internal/client/parameters"
 )
 
 type ConnectionList struct {
@@ -40,40 +41,40 @@ type GetConnectionsInput struct {
 
 type CreateConnectionInput struct {
 	// Common Fields
-	Name            string          `json:"name"`
-	Description     *NullableString `json:"description,omitempty"`
-	ResourceGroupID *NullableInt64  `json:"resource_group_id,omitempty"`
+	Name            string                    `json:"name"`
+	Description     *string                   `json:"description,omitempty"`
+	ResourceGroupID *parameters.NullableInt64 `json:"resource_group_id,omitempty"`
 
 	// BigQuery Fields
-	ProjectID             *NullableString `json:"project_id,omitempty"`
-	ServiceAccountJSONKey *NullableString `json:"service_account_json_key,omitempty"`
+	ProjectID             *string `json:"project_id,omitempty"`
+	ServiceAccountJSONKey *string `json:"service_account_json_key,omitempty"`
 
 	// Snowflake Fields
-	Host       *NullableString `json:"host,omitempty"`
-	UserName   *NullableString `json:"user_name,omitempty"`
-	Role       *NullableString `json:"role,omitempty"`
-	AuthMethod *NullableString `json:"auth_method,omitempty"`
-	Password   *NullableString `json:"password,omitempty"`
-	PrivateKey *NullableString `json:"private_key,omitempty"`
+	Host       *string `json:"host,omitempty"`
+	UserName   *string `json:"user_name,omitempty"`
+	Role       *string `json:"role,omitempty"`
+	AuthMethod *string `json:"auth_method,omitempty"`
+	Password   *string `json:"password,omitempty"`
+	PrivateKey *string `json:"private_key,omitempty"`
 }
 
 type UpdateConnectionInput struct {
 	// Common Fields
-	Name            *NullableString `json:"name,omitempty"`
-	Description     *NullableString `json:"description,omitempty"`
-	ResourceGroupID *NullableInt64  `json:"resource_group_id,omitempty"`
+	Name            *string                   `json:"name,omitempty"`
+	Description     *string                   `json:"description,omitempty"`
+	ResourceGroupID *parameters.NullableInt64 `json:"resource_group_id,omitempty"`
 
 	// BigQuery Fields
-	ProjectID             *NullableString `json:"project_id,omitempty"`
-	ServiceAccountJSONKey *NullableString `json:"service_account_json_key"`
+	ProjectID             *string `json:"project_id,omitempty"`
+	ServiceAccountJSONKey *string `json:"service_account_json_key"`
 
 	// Snowflake Fields
-	Host       *NullableString `json:"host,omitempty"`
-	UserName   *NullableString `json:"user_name,omitempty"`
-	Role       *NullableString `json:"role,omitempty"`
-	AuthMethod *NullableString `json:"auth_method,omitempty"`
-	Password   *NullableString `json:"password,omitempty"`
-	PrivateKey *NullableString `json:"private_key,omitempty"`
+	Host       *string `json:"host,omitempty"`
+	UserName   *string `json:"user_name,omitempty"`
+	Role       *string `json:"role,omitempty"`
+	AuthMethod *string `json:"auth_method,omitempty"`
+	Password   *string `json:"password,omitempty"`
+	PrivateKey *string `json:"private_key,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"terraform-provider-trocco/internal/client/parameters"
 	"testing"
 
 	"github.com/samber/lo"
@@ -106,12 +107,9 @@ func TestCreateConnection(t *testing.T) {
 	c := NewDevTroccoClient("1234567890", s.URL)
 
 	out, err := c.CreateConnection("bigquery", &CreateConnectionInput{
-		Name: "Foo",
-		Description: lo.ToPtr(NullableString{
-			Valid: true,
-			Value: "The quick brown fox jumps over the lazy dog.",
-		}),
-		ResourceGroupID: lo.ToPtr(NullableInt64{
+		Name:        "Foo",
+		Description: lo.ToPtr("The quick brown fox jumps over the lazy dog."),
+		ResourceGroupID: lo.ToPtr(parameters.NullableInt64{
 			Valid: true,
 			Value: int64(42),
 		}),
@@ -147,15 +145,9 @@ func TestUpdateConnection(t *testing.T) {
 	c := NewDevTroccoClient("1234567890", s.URL)
 
 	out, err := c.UpdateConnection("bigquery", 8, &UpdateConnectionInput{
-		Name: lo.ToPtr(NullableString{
-			Valid: true,
-			Value: "Foo",
-		}),
-		Description: lo.ToPtr(NullableString{
-			Valid: true,
-			Value: "The quick brown fox jumps over the lazy dog.",
-		}),
-		ResourceGroupID: lo.ToPtr(NullableInt64{
+		Name:        lo.ToPtr("Foo"),
+		Description: lo.ToPtr("The quick brown fox jumps over the lazy dog."),
+		ResourceGroupID: lo.ToPtr(parameters.NullableInt64{
 			Valid: true,
 			Value: int64(42),
 		}),

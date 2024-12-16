@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
+	p "terraform-provider-trocco/internal/client/parameters"
 	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
 )
 
@@ -84,8 +85,8 @@ type WorkflowBigqueryDataCheckTaskConfigInput struct {
 	ConnectionID    int64                                   `json:"connection_id,omitempty"`
 	Query           string                                  `json:"query,omitempty"`
 	Operator        string                                  `json:"operator,omitempty"`
-	QueryResult     *NullableInt64                          `json:"query_result,omitempty"`
-	AcceptsNull     *NullableBool                           `json:"accepts_null,omitempty"`
+	QueryResult     *p.NullableInt64                        `json:"query_result,omitempty"`
+	AcceptsNull     *p.NullableBool                         `json:"accepts_null,omitempty"`
 	CustomVariables []WorkflowTaskCustomVariableConfigInput `json:"custom_variables,omitempty"`
 }
 
@@ -94,8 +95,8 @@ type WorkflowSnowflakeDataCheckTaskConfigInput struct {
 	ConnectionID    int64                                   `json:"connection_id,omitempty"`
 	Query           string                                  `json:"query,omitempty"`
 	Operator        string                                  `json:"operator,omitempty"`
-	QueryResult     *NullableInt64                          `json:"query_result,omitempty"`
-	AcceptsNull     *NullableBool                           `json:"accepts_null,omitempty"`
+	QueryResult     *p.NullableInt64                        `json:"query_result,omitempty"`
+	AcceptsNull     *p.NullableBool                         `json:"accepts_null,omitempty"`
 	Warehouse       string                                  `json:"warehouse,omitempty"`
 	CustomVariables []WorkflowTaskCustomVariableConfigInput `json:"custom_variables,omitempty"`
 }
@@ -105,15 +106,15 @@ type WorkflowRedshiftDataCheckTaskConfigInput struct {
 	ConnectionID    int64                                   `json:"connection_id,omitempty"`
 	Query           string                                  `json:"query,omitempty"`
 	Operator        string                                  `json:"operator,omitempty"`
-	QueryResult     *NullableInt64                          `json:"query_result,omitempty"`
-	AcceptsNull     *NullableBool                           `json:"accepts_null,omitempty"`
+	QueryResult     *p.NullableInt64                        `json:"query_result,omitempty"`
+	AcceptsNull     *p.NullableBool                         `json:"accepts_null,omitempty"`
 	Database        string                                  `json:"database,omitempty"`
 	CustomVariables []WorkflowTaskCustomVariableConfigInput `json:"custom_variables,omitempty"`
 }
 
 type WorkflowHTTPRequestTaskConfigInput struct {
 	Name              string                                    `json:"name,omitempty"`
-	ConnectionID      *NullableInt64                            `json:"connection_id,omitempty"`
+	ConnectionID      *p.NullableInt64                          `json:"connection_id,omitempty"`
 	HTTPMethod        string                                    `json:"http_method,omitempty"`
 	URL               string                                    `json:"url,omitempty"`
 	RequestBody       *string                                   `json:"request_body,omitempty"`
@@ -123,26 +124,26 @@ type WorkflowHTTPRequestTaskConfigInput struct {
 }
 
 type WorkflowTaskRequestHeaderConfigInput struct {
-	Key     string        `json:"key,omitempty"`
-	Value   string        `json:"value,omitempty"`
-	Masking *NullableBool `json:"masking,omitempty"`
+	Key     string          `json:"key,omitempty"`
+	Value   string          `json:"value,omitempty"`
+	Masking *p.NullableBool `json:"masking,omitempty"`
 }
 
 type WorkflowTaskRequestParameterConfigInput struct {
-	Key     string        `json:"key,omitempty"`
-	Value   string        `json:"value,omitempty"`
-	Masking *NullableBool `json:"masking,omitempty"`
+	Key     string          `json:"key,omitempty"`
+	Value   string          `json:"value,omitempty"`
+	Masking *p.NullableBool `json:"masking,omitempty"`
 }
 
 type WorkflowTaskCustomVariableConfigInput struct {
-	Name      *string        `json:"name,omitempty"`
-	Type      *string        `json:"type,omitempty"`
-	Value     *string        `json:"value,omitempty"`
-	Quantity  *NullableInt64 `json:"quantity,omitempty"`
-	Unit      *string        `json:"unit,omitempty"`
-	Direction *string        `json:"direction,omitempty"`
-	Format    *string        `json:"format,omitempty"`
-	TimeZone  *string        `json:"time_zone,omitempty"`
+	Name      *string          `json:"name,omitempty"`
+	Type      *string          `json:"type,omitempty"`
+	Value     *string          `json:"value,omitempty"`
+	Quantity  *p.NullableInt64 `json:"quantity,omitempty"`
+	Unit      *string          `json:"unit,omitempty"`
+	Direction *string          `json:"direction,omitempty"`
+	Format    *string          `json:"format,omitempty"`
+	TimeZone  *string          `json:"time_zone,omitempty"`
 }
 
 // type WorkflowTaskDependencyInput struct {
