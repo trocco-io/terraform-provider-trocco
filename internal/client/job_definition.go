@@ -8,6 +8,7 @@ import (
 	filterEntities "terraform-provider-trocco/internal/client/entities/job_definitions/filter"
 	inputOptionEntitites "terraform-provider-trocco/internal/client/entities/job_definitions/input_options"
 	outputOptionEntitites "terraform-provider-trocco/internal/client/entities/job_definitions/output_options"
+	"terraform-provider-trocco/internal/client/parameters"
 	"terraform-provider-trocco/internal/client/parameters/job_definitions"
 	filterParameters "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
 	"terraform-provider-trocco/internal/client/parameters/job_definitions/input_options"
@@ -42,7 +43,7 @@ type JobDefinition struct {
 type CreateJobDefinitionInput struct {
 	Name                      string                                           `json:"name"`
 	Description               *string                                          `json:"description,omitempty"`
-	ResourceGroupID           *int64                                           `json:"resource_group_id,omitempty"`
+	ResourceGroupID           *parameters.NullableInt64                        `json:"resource_group_id,omitempty"`
 	IsRunnableConcurrently    *bool                                            `json:"is_runnable_concurrently"`
 	RetryLimit                int64                                            `json:"retry_limit"`
 	ResourceEnhancement       *string                                          `json:"resource_enhancement,omitempty"`
@@ -59,7 +60,7 @@ type CreateJobDefinitionInput struct {
 	OutputOptionType          string                                           `json:"output_option_type"`
 	OutputOption              OutputOptionInput                                `json:"output_option"`
 	Labels                    []string                                         `json:"labels"`
-	Schedules                 []ScheduleInput                                  `json:"schedules"`
+	Schedules                 []parameters.ScheduleInput                       `json:"schedules"`
 	Notifications             []job_definitions.JobDefinitionNotificationInput `json:"notifications"`
 }
 
@@ -80,6 +81,9 @@ type UpdateJobDefinitionInput struct {
 	FilterUnixTimeConversions *[]filterParameters.FilterUnixTimeConversionInput `json:"filter_unixtime_conversions,omitempty"`
 	InputOption               *UpdateInputOptionInput                           `json:"input_option,omitempty"`
 	OutputOption              *UpdateOutputOptionInput                          `json:"output_option,omitempty"`
+	Labels                    *[]string                                         `json:"labels"`
+	Schedules                 *[]parameters.ScheduleInput                       `json:"schedules"`
+	Notifications             *[]job_definitions.JobDefinitionNotificationInput `json:"notifications"`
 }
 
 type InputOption struct {

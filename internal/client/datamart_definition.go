@@ -153,7 +153,7 @@ type CreateDatamartDefinitionInput struct {
 	ResourceGroupID        *int64                             `json:"resource_group_id,omitempty"`
 	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
 	DatamartBigqueryOption *CreateDatamartBigqueryOptionInput `json:"datamart_bigquery_option,omitempty"`
-	Schedules              *[]ScheduleInput                   `json:"schedules,omitempty"`
+	Schedules              *[]parameters.ScheduleInput        `json:"schedules,omitempty"`
 	Notifications          *[]DatamartNotificationInput       `json:"notifications,omitempty"`
 	Labels                 *[]string                          `json:"labels,omitempty"`
 }
@@ -186,7 +186,7 @@ func (input *CreateDatamartDefinitionInput) SetDatamartBigqueryOption(datamartBi
 	input.DatamartBigqueryOption = &datamartBigqueryOption
 }
 
-func (input *CreateDatamartDefinitionInput) SetSchedules(schedules []ScheduleInput) {
+func (input *CreateDatamartDefinitionInput) SetSchedules(schedules []parameters.ScheduleInput) {
 	input.Schedules = &schedules
 }
 
@@ -331,7 +331,7 @@ type UpdateDatamartDefinitionInput struct {
 	ResourceGroupID        *parameters.NullableInt64          `json:"resource_group_id,omitempty"`
 	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
 	DatamartBigqueryOption *UpdateDatamartBigqueryOptionInput `json:"datamart_bigquery_option,omitempty"`
-	Schedules              *[]ScheduleInput                   `json:"schedules,omitempty"`
+	Schedules              *[]parameters.ScheduleInput        `json:"schedules,omitempty"`
 	Notifications          *[]DatamartNotificationInput       `json:"notifications,omitempty"`
 	Labels                 *[]string                          `json:"labels,omitempty"`
 }
@@ -369,7 +369,7 @@ func (input *UpdateDatamartDefinitionInput) SetDatamartBigqueryOption(datamartBi
 	input.DatamartBigqueryOption = &datamartBigqueryOption
 }
 
-func (input *UpdateDatamartDefinitionInput) SetSchedules(schedules []ScheduleInput) {
+func (input *UpdateDatamartDefinitionInput) SetSchedules(schedules []parameters.ScheduleInput) {
 	input.Schedules = &schedules
 }
 
@@ -456,20 +456,11 @@ func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLocationEmpt
 	datamartBigqueryOption.Location = &parameters.NullableString{Valid: false}
 }
 
-type ScheduleInput struct {
-	Frequency string `json:"frequency"`
-	Minute    int    `json:"minute"`
-	Hour      *int   `json:"hour,omitempty"`
-	Day       *int   `json:"day,omitempty"`
-	DayOfWeek *int   `json:"day_of_week,omitempty"`
-	TimeZone  string `json:"time_zone"`
-}
-
 func NewHourlyScheduleInput(
 	minute int,
 	timeZone string,
-) ScheduleInput {
-	return ScheduleInput{
+) parameters.ScheduleInput {
+	return parameters.ScheduleInput{
 		Frequency: "hourly",
 		Minute:    minute,
 		TimeZone:  timeZone,
@@ -480,8 +471,8 @@ func NewDailyScheduleInput(
 	hour int,
 	minute int,
 	timeZone string,
-) ScheduleInput {
-	return ScheduleInput{
+) parameters.ScheduleInput {
+	return parameters.ScheduleInput{
 		Frequency: "daily",
 		Hour:      &hour,
 		Minute:    minute,
@@ -494,8 +485,8 @@ func NewWeeklyScheduleInput(
 	hour int,
 	minute int,
 	timeZone string,
-) ScheduleInput {
-	return ScheduleInput{
+) parameters.ScheduleInput {
+	return parameters.ScheduleInput{
 		Frequency: "weekly",
 		DayOfWeek: &dayOfWeek,
 		Hour:      &hour,
@@ -509,8 +500,8 @@ func NewMonthlyScheduleInput(
 	hour int,
 	minute int,
 	timeZone string,
-) ScheduleInput {
-	return ScheduleInput{
+) parameters.ScheduleInput {
+	return parameters.ScheduleInput{
 		Frequency: "monthly",
 		Day:       &day,
 		Hour:      &hour,
