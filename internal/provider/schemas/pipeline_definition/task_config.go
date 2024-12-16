@@ -48,3 +48,39 @@ func NewTroccoAgentTaskConfigAttribute() schema.Attribute {
 		},
 	}
 }
+
+func NewBigQueryDatamartTaskConfigAttribute() schema.Attribute {
+	return schema.SingleNestedAttribute{
+		Optional: true,
+		Attributes: map[string]schema.Attribute{
+			"definition_id": schema.Int64Attribute{
+				Required: true,
+			},
+			"custom_variable_loop": NewCustomVariableLoopAttribute(),
+		},
+	}
+}
+
+func NewRedshiftDatamartTaskConfigAttribute() schema.Attribute {
+	return schema.SingleNestedAttribute{
+		Optional: true,
+		Attributes: map[string]schema.Attribute{
+			"definition_id": schema.Int64Attribute{
+				Required: true,
+			},
+			"custom_variable_loop": NewCustomVariableLoopAttribute(),
+		},
+	}
+}
+
+func NewSnowflakeDatamartTaskConfigAttribute() schema.Attribute {
+	return schema.SingleNestedAttribute{
+		Optional: true,
+		Attributes: map[string]schema.Attribute{
+			"definition_id": schema.Int64Attribute{
+				Required: true,
+			},
+			"custom_variable_loop": NewCustomVariableLoopAttribute(),
+		},
+	}
+}

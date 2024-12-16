@@ -10,10 +10,13 @@ import (
 	wm "terraform-provider-trocco/internal/provider/models/pipeline_definition"
 	ws "terraform-provider-trocco/internal/provider/schemas/pipeline_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
@@ -29,7 +32,7 @@ var (
 // Provider-side Data Types
 // -----------------------------------------------------------------------------
 
-type workflowResourceModel struct {
+type pipelineDefinitionResourceModel struct {
 	ID               types.Int64                           `tfsdk:"id"`
 	Name             types.String                          `tfsdk:"name"`
 	Description      types.String                          `tfsdk:"description"`
@@ -40,7 +43,7 @@ type workflowResourceModel struct {
 	TaskDependencies []workflowResourceTaskDependencyModel `tfsdk:"task_dependencies"`
 }
 
-func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
+func (m *pipelineDefinitionResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
 	labels := []string{}
 	for _, l := range m.Labels {
 		labels = append(labels, l.ValueString())
@@ -129,7 +132,7 @@ func (m *workflowResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowIn
 	}
 }
 
-func (m *workflowResourceModel) ToUpdateWorkflowInput(state *workflowResourceModel) *client.UpdateWorkflowInput {
+func (m *pipelineDefinitionResourceModel) ToUpdateWorkflowInput(state *pipelineDefinitionResourceModel) *client.UpdateWorkflowInput {
 	labels := []string{}
 	for _, l := range m.Labels {
 		labels = append(labels, l.ValueString())
@@ -230,20 +233,20 @@ type workflowResourceTaskModel struct {
 	TaskIdentifier types.Int64  `tfsdk:"task_identifier"`
 	Type           types.String `tfsdk:"type"`
 
-	TroccoTransferConfig          *workflowResourceTroccoTransferTaskConfig        `tfsdk:"trocco_transfer_config"`
-	TroccoTransferBulkConfig      *wm.TroccoTransferBulkTaskConfig                 `tfsdk:"trocco_transfer_bulk_config"`
-	DBTConfig                     *wm.DBTTaskConfig                                `tfsdk:"dbt_config"`
-	TroccoAgentConfig             *wm.TroccoAgentTaskConfig                        `tfsdk:"trocco_agent_config"`
-	TroccoBigQueryDatamartConfig  *wm.TroccoBigQueryDatamartTaskConfig             `tfsdk:"trocco_bigquery_datamart_config"`
-	TroccoRedshiftDatamartConfig  *wm.TroccoRedshiftDatamartTaskConfig             `tfsdk:"trocco_redshift_datamart_config"`
-	TroccoSnowflakeDatamartConfig *wm.TroccoSnowflakeDatamartTaskConfig            `tfsdk:"trocco_snowflake_datamart_config"`
-	WorkflowConfig                *wm.WorkflowTaskConfig                           `tfsdk:"workflow_config"`
-	SlackNotificationConfig       *workflowResourceSlackNotificationTaskConfig     `tfsdk:"slack_notification_config"`
-	TableauDataExtractionConfig   *workflowResourceTableauDataExtractionTaskConfig `tfsdk:"tableau_data_extraction_config"`
-	BigqueryDataCheckConfig       *workflowBigqueryDataCheckTaskConfigModel        `tfsdk:"bigquery_data_check_config"`
-	SnowflakeDataCheckConfig      *workflowSnowflakeDataCheckTaskConfigModel       `tfsdk:"snowflake_data_check_config"`
-	RedshiftDataCheckConfig       *workflowRedshiftDataCheckTaskConfigModel        `tfsdk:"redshift_data_check_config"`
-	HTTPRequestConfig             *workflowHTTPRequestTaskConfigModel              `tfsdk:"http_request_config"`
+	TroccoTransferConfig          *workflowResourceTroccoTransferTaskConfig    `tfsdk:"trocco_transfer_config"`
+	TroccoTransferBulkConfig      *wm.TroccoTransferBulkTaskConfig             `tfsdk:"trocco_transfer_bulk_config"`
+	DBTConfig                     *wm.DBTTaskConfig                            `tfsdk:"dbt_config"`
+	TroccoAgentConfig             *wm.TroccoAgentTaskConfig                    `tfsdk:"trocco_agent_config"`
+	TroccoBigQueryDatamartConfig  *wm.TroccoBigQueryDatamartTaskConfig         `tfsdk:"trocco_bigquery_datamart_config"`
+	TroccoRedshiftDatamartConfig  *wm.TroccoRedshiftDatamartTaskConfig         `tfsdk:"trocco_redshift_datamart_config"`
+	TroccoSnowflakeDatamartConfig *wm.TroccoSnowflakeDatamartTaskConfig        `tfsdk:"trocco_snowflake_datamart_config"`
+	WorkflowConfig                *wm.WorkflowTaskConfig                       `tfsdk:"workflow_config"`
+	SlackNotificationConfig       *workflowResourceSlackNotificationTaskConfig `tfsdk:"slack_notification_config"`
+	TableauDataExtractionConfig   *wm.TableauDataExtractionTaskConfig          `tfsdk:"tableau_data_extraction_config"`
+	BigqueryDataCheckConfig       *workflowBigqueryDataCheckTaskConfigModel    `tfsdk:"bigquery_data_check_config"`
+	SnowflakeDataCheckConfig      *workflowSnowflakeDataCheckTaskConfigModel   `tfsdk:"snowflake_data_check_config"`
+	RedshiftDataCheckConfig       *workflowRedshiftDataCheckTaskConfigModel    `tfsdk:"redshift_data_check_config"`
+	HTTPRequestConfig             *workflowHTTPRequestTaskConfigModel          `tfsdk:"http_request_config"`
 }
 
 type workflowResourceTaskDependencyModel struct {
@@ -315,48 +318,18 @@ func (c *workflowResourceSlackNotificationTaskConfig) ToInput() *wp.SlackNotific
 	}
 }
 
-type workflowResourceTableauDataExtractionTaskConfig struct {
-	Name         types.String `tfsdk:"name"`
-	ConnectionID types.Int64  `tfsdk:"connection_id"`
-	TaskID       types.String `tfsdk:"task_id"`
-}
-
-//
-// Tableau Data Extraction
-//
-
-func newWorkflowResourceTableauDataExtractionTaskConfig(c *we.TableauDataExtractionTaskConfig) *workflowResourceTableauDataExtractionTaskConfig {
-	if c == nil {
-		return nil
-	}
-
-	return &workflowResourceTableauDataExtractionTaskConfig{
-		Name:         types.StringValue(c.Name),
-		ConnectionID: types.Int64Value(c.ConnectionID),
-		TaskID:       types.StringValue(c.TaskID),
-	}
-}
-
-func (c *workflowResourceTableauDataExtractionTaskConfig) ToInput() *wp.TableauDataExtractionTaskConfig {
-	return &wp.TableauDataExtractionTaskConfig{
-		Name:         c.Name.ValueString(),
-		ConnectionID: c.ConnectionID.ValueInt64(),
-		TaskID:       c.TaskID.ValueString(),
-	}
-}
-
 //
 // Bigquery Data Check
 //
 
 type workflowBigqueryDataCheckTaskConfigModel struct {
-	Name            types.String                  `tfsdk:"name"`
-	ConnectionID    types.Int64                   `tfsdk:"connection_id"`
-	Query           types.String                  `tfsdk:"query"`
-	Operator        types.String                  `tfsdk:"operator"`
-	QueryResult     types.Int64                   `tfsdk:"query_result"`
-	AcceptsNull     types.Bool                    `tfsdk:"accepts_null"`
-	CustomVariables []workflowCustomVariableModel `tfsdk:"custom_variables"`
+	Name            types.String        `tfsdk:"name"`
+	ConnectionID    types.Int64         `tfsdk:"connection_id"`
+	Query           types.String        `tfsdk:"query"`
+	Operator        types.String        `tfsdk:"operator"`
+	QueryResult     types.Int64         `tfsdk:"query_result"`
+	AcceptsNull     types.Bool          `tfsdk:"accepts_null"`
+	CustomVariables []wm.CustomVariable `tfsdk:"custom_variables"`
 }
 
 func newWorkflowResourceBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig) *workflowBigqueryDataCheckTaskConfigModel {
@@ -364,9 +337,9 @@ func newWorkflowResourceBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskC
 		return nil
 	}
 
-	customVariables := []workflowCustomVariableModel{}
+	customVariables := []wm.CustomVariable{}
 	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, workflowCustomVariableModel{
+		customVariables = append(customVariables, wm.CustomVariable{
 			Name:      types.StringPointerValue(v.Name),
 			Type:      types.StringPointerValue(v.Type),
 			Value:     types.StringPointerValue(v.Value),
@@ -425,14 +398,14 @@ func (c *workflowBigqueryDataCheckTaskConfigModel) ToInput() *client.WorkflowBig
 //
 
 type workflowSnowflakeDataCheckTaskConfigModel struct {
-	Name            types.String                  `tfsdk:"name"`
-	ConnectionID    types.Int64                   `tfsdk:"connection_id"`
-	Query           types.String                  `tfsdk:"query"`
-	Operator        types.String                  `tfsdk:"operator"`
-	QueryResult     types.Int64                   `tfsdk:"query_result"`
-	AcceptsNull     types.Bool                    `tfsdk:"accepts_null"`
-	Warehouse       types.String                  `tfsdk:"warehouse"`
-	CustomVariables []workflowCustomVariableModel `tfsdk:"custom_variables"`
+	Name            types.String        `tfsdk:"name"`
+	ConnectionID    types.Int64         `tfsdk:"connection_id"`
+	Query           types.String        `tfsdk:"query"`
+	Operator        types.String        `tfsdk:"operator"`
+	QueryResult     types.Int64         `tfsdk:"query_result"`
+	AcceptsNull     types.Bool          `tfsdk:"accepts_null"`
+	Warehouse       types.String        `tfsdk:"warehouse"`
+	CustomVariables []wm.CustomVariable `tfsdk:"custom_variables"`
 }
 
 func newWorkflowSnowflakeDataCheckTaskConfigModel(c *we.SnowflakeDataCheckTaskConfig) *workflowSnowflakeDataCheckTaskConfigModel {
@@ -440,9 +413,9 @@ func newWorkflowSnowflakeDataCheckTaskConfigModel(c *we.SnowflakeDataCheckTaskCo
 		return nil
 	}
 
-	customVariables := []workflowCustomVariableModel{}
+	customVariables := []wm.CustomVariable{}
 	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, workflowCustomVariableModel{
+		customVariables = append(customVariables, wm.CustomVariable{
 			Name:      types.StringPointerValue(v.Name),
 			Type:      types.StringPointerValue(v.Type),
 			Value:     types.StringPointerValue(v.Value),
@@ -503,14 +476,14 @@ func (c *workflowSnowflakeDataCheckTaskConfigModel) ToInput() *client.WorkflowSn
 //
 
 type workflowRedshiftDataCheckTaskConfigModel struct {
-	Name            types.String                  `tfsdk:"name"`
-	ConnectionID    types.Int64                   `tfsdk:"connection_id"`
-	Query           types.String                  `tfsdk:"query"`
-	Operator        types.String                  `tfsdk:"operator"`
-	QueryResult     types.Int64                   `tfsdk:"query_result"`
-	AcceptsNull     types.Bool                    `tfsdk:"accepts_null"`
-	Database        types.String                  `tfsdk:"database"`
-	CustomVariables []workflowCustomVariableModel `tfsdk:"custom_variables"`
+	Name            types.String        `tfsdk:"name"`
+	ConnectionID    types.Int64         `tfsdk:"connection_id"`
+	Query           types.String        `tfsdk:"query"`
+	Operator        types.String        `tfsdk:"operator"`
+	QueryResult     types.Int64         `tfsdk:"query_result"`
+	AcceptsNull     types.Bool          `tfsdk:"accepts_null"`
+	Database        types.String        `tfsdk:"database"`
+	CustomVariables []wm.CustomVariable `tfsdk:"custom_variables"`
 }
 
 func newWorkflowRedshiftDataCheckTaskConfigModel(c *we.RedshiftDataCheckTaskConfig) *workflowRedshiftDataCheckTaskConfigModel {
@@ -518,9 +491,9 @@ func newWorkflowRedshiftDataCheckTaskConfigModel(c *we.RedshiftDataCheckTaskConf
 		return nil
 	}
 
-	customVariables := []workflowCustomVariableModel{}
+	customVariables := []wm.CustomVariable{}
 	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, workflowCustomVariableModel{
+		customVariables = append(customVariables, wm.CustomVariable{
 			Name:      types.StringPointerValue(v.Name),
 			Type:      types.StringPointerValue(v.Type),
 			Value:     types.StringPointerValue(v.Value),
@@ -588,7 +561,7 @@ type workflowHTTPRequestTaskConfigModel struct {
 	RequestBody       types.String                        `tfsdk:"request_body"`
 	RequestHeaders    []workflowHTTPRequestHeaderModel    `tfsdk:"request_headers"`
 	RequestParameters []workflowHTTPRequestParameterModel `tfsdk:"request_parameters"`
-	CustomVariables   []workflowCustomVariableModel       `tfsdk:"custom_variables"`
+	CustomVariables   []wm.CustomVariable                 `tfsdk:"custom_variables"`
 }
 
 func newWorkflowHTTPRequestTaskConfigModel(c *we.HTTPRequestTaskConfig) *workflowHTTPRequestTaskConfigModel {
@@ -622,9 +595,9 @@ func newWorkflowHTTPRequestTaskConfigModel(c *we.HTTPRequestTaskConfig) *workflo
 		requestParameters = nil
 	}
 
-	customVariables := []workflowCustomVariableModel{}
+	customVariables := []wm.CustomVariable{}
 	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, workflowCustomVariableModel{
+		customVariables = append(customVariables, wm.CustomVariable{
 			Name:      types.StringPointerValue(v.Name),
 			Type:      types.StringPointerValue(v.Type),
 			Value:     types.StringPointerValue(v.Value),
@@ -710,21 +683,6 @@ type workflowHTTPRequestParameterModel struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-//
-// Common
-//
-
-type workflowCustomVariableModel struct {
-	Name      types.String `tfsdk:"name"`
-	Type      types.String `tfsdk:"type"`
-	Value     types.String `tfsdk:"value"`
-	Quantity  types.Int64  `tfsdk:"quantity"`
-	Unit      types.String `tfsdk:"unit"`
-	Direction types.String `tfsdk:"direction"`
-	Format    types.String `tfsdk:"format"`
-	TimeZone  types.String `tfsdk:"time_zone"`
-}
-
 // -----------------------------------------------------------------------------
 // Resource
 // -----------------------------------------------------------------------------
@@ -806,7 +764,16 @@ func (r *workflowResource) Schema(
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Provides a TROCCO workflow resource.",
 		Attributes: map[string]schema.Attribute{
-			"id": ws.NewID(),
+			"id": schema.Int64Attribute{
+				MarkdownDescription: "The ID of the workflow",
+				Computed:            true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
+				},
+			},
 			"name": schema.StringAttribute{
 				Required: true,
 				Validators: []validator.String{
@@ -963,37 +930,13 @@ func (r *workflowResource) Schema(
 								),
 							},
 						},
-						"trocco_transfer_config":      ws.NewTroccoTransferTaskConfigAttribute(),
-						"trocco_transfer_bulk_config": ws.NewTroccoTransferBulkTaskConfigAttribute(),
-						"dbt_config":                  ws.NewDBTTaskConfigAttribute(),
-						"trocco_agent_config":         ws.NewTroccoAgentTaskConfigAttribute(),
-						"trocco_bigquery_datamart_config": schema.SingleNestedAttribute{
-							Optional: true,
-							Attributes: map[string]schema.Attribute{
-								"definition_id": schema.Int64Attribute{
-									Required: true,
-								},
-								"custom_variable_loop": ws.NewCustomVariableLoopAttribute(),
-							},
-						},
-						"trocco_redshift_datamart_config": schema.SingleNestedAttribute{
-							Optional: true,
-							Attributes: map[string]schema.Attribute{
-								"definition_id": schema.Int64Attribute{
-									Required: true,
-								},
-								"custom_variable_loop": ws.NewCustomVariableLoopAttribute(),
-							},
-						},
-						"trocco_snowflake_datamart_config": schema.SingleNestedAttribute{
-							Optional: true,
-							Attributes: map[string]schema.Attribute{
-								"definition_id": schema.Int64Attribute{
-									Required: true,
-								},
-								"custom_variable_loop": ws.NewCustomVariableLoopAttribute(),
-							},
-						},
+						"trocco_transfer_config":           ws.NewTroccoTransferTaskConfigAttribute(),
+						"trocco_transfer_bulk_config":      ws.NewTroccoTransferBulkTaskConfigAttribute(),
+						"dbt_config":                       ws.NewDBTTaskConfigAttribute(),
+						"trocco_agent_config":              ws.NewTroccoAgentTaskConfigAttribute(),
+						"trocco_bigquery_datamart_config":  ws.NewBigQueryDatamartTaskConfigAttribute(),
+						"trocco_redshift_datamart_config":  ws.NewRedshiftDatamartTaskConfigAttribute(),
+						"trocco_snowflake_datamart_config": ws.NewSnowflakeDatamartTaskConfigAttribute(),
 						"workflow_config": schema.SingleNestedAttribute{
 							Optional: true,
 							Attributes: map[string]schema.Attribute{
@@ -1188,7 +1131,7 @@ func (r *workflowResource) Create(
 	req resource.CreateRequest,
 	resp *resource.CreateResponse,
 ) {
-	plan := &workflowResourceModel{}
+	plan := &pipelineDefinitionResourceModel{}
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -1221,7 +1164,7 @@ func (r *workflowResource) Create(
 			TroccoSnowflakeDatamartConfig: wm.NewTroccoSnowflakeDatamartTaskConfig(t.TroccoSnowflakeDatamartConfig),
 			WorkflowConfig:                wm.NewWorkflowTaskConfig(t.WorkflowConfig),
 			SlackNotificationConfig:       newWorkflowResourceSlackNotificationTaskConfig(t.SlackNotificationConfig),
-			TableauDataExtractionConfig:   newWorkflowResourceTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig),
+			TableauDataExtractionConfig:   wm.NewTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig),
 			BigqueryDataCheckConfig:       newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig),
 			SnowflakeDataCheckConfig:      newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig),
 			RedshiftDataCheckConfig:       newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig),
@@ -1242,7 +1185,7 @@ func (r *workflowResource) Create(
 		})
 	}
 
-	newState := workflowResourceModel{
+	newState := pipelineDefinitionResourceModel{
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
@@ -1260,13 +1203,13 @@ func (r *workflowResource) Update(
 	req resource.UpdateRequest,
 	resp *resource.UpdateResponse,
 ) {
-	state := &workflowResourceModel{}
+	state := &pipelineDefinitionResourceModel{}
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	plan := &workflowResourceModel{}
+	plan := &pipelineDefinitionResourceModel{}
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -1300,7 +1243,7 @@ func (r *workflowResource) Update(
 			TroccoSnowflakeDatamartConfig: wm.NewTroccoSnowflakeDatamartTaskConfig(t.TroccoSnowflakeDatamartConfig),
 			WorkflowConfig:                wm.NewWorkflowTaskConfig(t.WorkflowConfig),
 			SlackNotificationConfig:       newWorkflowResourceSlackNotificationTaskConfig(t.SlackNotificationConfig),
-			TableauDataExtractionConfig:   newWorkflowResourceTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig),
+			TableauDataExtractionConfig:   wm.NewTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig),
 			BigqueryDataCheckConfig:       newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig),
 			SnowflakeDataCheckConfig:      newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig),
 			RedshiftDataCheckConfig:       newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig),
@@ -1323,7 +1266,7 @@ func (r *workflowResource) Update(
 		})
 	}
 
-	newState := workflowResourceModel{
+	newState := pipelineDefinitionResourceModel{
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
@@ -1341,7 +1284,7 @@ func (r *workflowResource) Read(
 	req resource.ReadRequest,
 	resp *resource.ReadResponse,
 ) {
-	state := &workflowResourceModel{}
+	state := &pipelineDefinitionResourceModel{}
 	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -1352,8 +1295,8 @@ func (r *workflowResource) Read(
 	)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Reading workflow",
-			fmt.Sprintf("Unable to read workflow, got error: %s", err),
+			"Reading pipeline definition",
+			fmt.Sprintf("Unable to read pipeline definition, got error: %s", err),
 		)
 		return
 	}
@@ -1381,7 +1324,7 @@ func (r *workflowResource) Read(
 			TroccoSnowflakeDatamartConfig: wm.NewTroccoSnowflakeDatamartTaskConfig(t.TroccoSnowflakeDatamartConfig),
 			WorkflowConfig:                wm.NewWorkflowTaskConfig(t.WorkflowConfig),
 			SlackNotificationConfig:       newWorkflowResourceSlackNotificationTaskConfig(t.SlackNotificationConfig),
-			TableauDataExtractionConfig:   newWorkflowResourceTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig),
+			TableauDataExtractionConfig:   wm.NewTableauDataExtractionTaskConfig(t.TableauDataExtractionConfig),
 			BigqueryDataCheckConfig:       newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig),
 			SnowflakeDataCheckConfig:      newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig),
 			RedshiftDataCheckConfig:       newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig),
@@ -1391,7 +1334,7 @@ func (r *workflowResource) Read(
 		tasks = append(tasks, task)
 	}
 
-	newState := workflowResourceModel{
+	newState := pipelineDefinitionResourceModel{
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
@@ -1409,7 +1352,7 @@ func (r *workflowResource) Delete(
 	req resource.DeleteRequest,
 	resp *resource.DeleteResponse,
 ) {
-	s := &workflowResourceModel{}
+	s := &pipelineDefinitionResourceModel{}
 	resp.Diagnostics.Append(req.State.Get(ctx, s)...)
 	if resp.Diagnostics.HasError() {
 		return
