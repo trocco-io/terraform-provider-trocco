@@ -246,7 +246,7 @@ type workflowResourceTaskModel struct {
 	BigqueryDataCheckConfig       *workflowBigqueryDataCheckTaskConfigModel    `tfsdk:"bigquery_data_check_config"`
 	SnowflakeDataCheckConfig      *workflowSnowflakeDataCheckTaskConfigModel   `tfsdk:"snowflake_data_check_config"`
 	RedshiftDataCheckConfig       *workflowRedshiftDataCheckTaskConfigModel    `tfsdk:"redshift_data_check_config"`
-	HTTPRequestConfig             *workflowHTTPRequestTaskConfigModel          `tfsdk:"http_request_config"`
+	HTTPRequestConfig             *wm.HTTPRequestTaskConfig                    `tfsdk:"http_request_config"`
 }
 
 type workflowResourceTaskDependencyModel struct {
@@ -337,25 +337,6 @@ func newWorkflowResourceBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskC
 		return nil
 	}
 
-	customVariables := []wm.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, wm.CustomVariable{
-			Name:      types.StringPointerValue(v.Name),
-			Type:      types.StringPointerValue(v.Type),
-			Value:     types.StringPointerValue(v.Value),
-			Quantity:  types.Int64PointerValue(v.Quantity),
-			Unit:      types.StringPointerValue(v.Unit),
-			Direction: types.StringPointerValue(v.Direction),
-			Format:    types.StringPointerValue(v.Format),
-			TimeZone:  types.StringPointerValue(v.TimeZone),
-		})
-	}
-
-	// If no custom variables are present, the API returns an empty array but the provider should set `null`.
-	if len(customVariables) == 0 {
-		customVariables = nil
-	}
-
 	return &workflowBigqueryDataCheckTaskConfigModel{
 		Name:            types.StringValue(c.Name),
 		ConnectionID:    types.Int64Value(c.ConnectionID),
@@ -363,14 +344,14 @@ func newWorkflowResourceBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskC
 		Operator:        types.StringValue(c.Operator),
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
-		CustomVariables: customVariables,
+		CustomVariables: wm.NewCustomVariables(c.CustomVariables),
 	}
 }
 
 func (c *workflowBigqueryDataCheckTaskConfigModel) ToInput() *client.WorkflowBigqueryDataCheckTaskConfigInput {
-	customVariables := []client.WorkflowTaskCustomVariableConfigInput{}
+	customVariables := []wp.CustomVariable{}
 	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, client.WorkflowTaskCustomVariableConfigInput{
+		customVariables = append(customVariables, wp.CustomVariable{
 			Name:      v.Name.ValueStringPointer(),
 			Type:      v.Type.ValueStringPointer(),
 			Value:     v.Value.ValueStringPointer(),
@@ -413,25 +394,6 @@ func newWorkflowSnowflakeDataCheckTaskConfigModel(c *we.SnowflakeDataCheckTaskCo
 		return nil
 	}
 
-	customVariables := []wm.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, wm.CustomVariable{
-			Name:      types.StringPointerValue(v.Name),
-			Type:      types.StringPointerValue(v.Type),
-			Value:     types.StringPointerValue(v.Value),
-			Quantity:  types.Int64PointerValue(v.Quantity),
-			Unit:      types.StringPointerValue(v.Unit),
-			Direction: types.StringPointerValue(v.Direction),
-			Format:    types.StringPointerValue(v.Format),
-			TimeZone:  types.StringPointerValue(v.TimeZone),
-		})
-	}
-
-	// If no custom variables are present, the API returns an empty array but the provider should set `null`.
-	if len(customVariables) == 0 {
-		customVariables = nil
-	}
-
 	return &workflowSnowflakeDataCheckTaskConfigModel{
 		Name:            types.StringValue(c.Name),
 		ConnectionID:    types.Int64Value(c.ConnectionID),
@@ -440,14 +402,14 @@ func newWorkflowSnowflakeDataCheckTaskConfigModel(c *we.SnowflakeDataCheckTaskCo
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
 		Warehouse:       types.StringValue(c.Warehouse),
-		CustomVariables: customVariables,
+		CustomVariables: wm.NewCustomVariables(c.CustomVariables),
 	}
 }
 
 func (c *workflowSnowflakeDataCheckTaskConfigModel) ToInput() *client.WorkflowSnowflakeDataCheckTaskConfigInput {
-	customVariables := []client.WorkflowTaskCustomVariableConfigInput{}
+	customVariables := []wp.CustomVariable{}
 	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, client.WorkflowTaskCustomVariableConfigInput{
+		customVariables = append(customVariables, wp.CustomVariable{
 			Name:      v.Name.ValueStringPointer(),
 			Type:      v.Type.ValueStringPointer(),
 			Value:     v.Value.ValueStringPointer(),
@@ -491,25 +453,6 @@ func newWorkflowRedshiftDataCheckTaskConfigModel(c *we.RedshiftDataCheckTaskConf
 		return nil
 	}
 
-	customVariables := []wm.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, wm.CustomVariable{
-			Name:      types.StringPointerValue(v.Name),
-			Type:      types.StringPointerValue(v.Type),
-			Value:     types.StringPointerValue(v.Value),
-			Quantity:  types.Int64PointerValue(v.Quantity),
-			Unit:      types.StringPointerValue(v.Unit),
-			Direction: types.StringPointerValue(v.Direction),
-			Format:    types.StringPointerValue(v.Format),
-			TimeZone:  types.StringPointerValue(v.TimeZone),
-		})
-	}
-
-	// If no custom variables are present, the API returns an empty array but the provider should set `null`.
-	if len(customVariables) == 0 {
-		customVariables = nil
-	}
-
 	return &workflowRedshiftDataCheckTaskConfigModel{
 		Name:            types.StringValue(c.Name),
 		ConnectionID:    types.Int64Value(c.ConnectionID),
@@ -518,14 +461,14 @@ func newWorkflowRedshiftDataCheckTaskConfigModel(c *we.RedshiftDataCheckTaskConf
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
 		Database:        types.StringValue(c.Database),
-		CustomVariables: customVariables,
+		CustomVariables: wm.NewCustomVariables(c.CustomVariables),
 	}
 }
 
 func (c *workflowRedshiftDataCheckTaskConfigModel) ToInput() *client.WorkflowRedshiftDataCheckTaskConfigInput {
-	customVariables := []client.WorkflowTaskCustomVariableConfigInput{}
+	customVariables := []wp.CustomVariable{}
 	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, client.WorkflowTaskCustomVariableConfigInput{
+		customVariables = append(customVariables, wp.CustomVariable{
 			Name:      v.Name.ValueStringPointer(),
 			Type:      v.Type.ValueStringPointer(),
 			Value:     v.Value.ValueStringPointer(),
@@ -546,102 +489,6 @@ func (c *workflowRedshiftDataCheckTaskConfigModel) ToInput() *client.WorkflowRed
 		AcceptsNull:     newNullableFromTerraformBool(c.AcceptsNull),
 		Database:        c.Database.ValueString(),
 		CustomVariables: customVariables,
-	}
-}
-
-//
-// HTTP Request
-//
-
-type workflowHTTPRequestTaskConfigModel struct {
-	Name              types.String              `tfsdk:"name"`
-	ConnectionID      types.Int64               `tfsdk:"connection_id"`
-	Method            types.String              `tfsdk:"http_method"`
-	URL               types.String              `tfsdk:"url"`
-	RequestBody       types.String              `tfsdk:"request_body"`
-	RequestHeaders    []wm.HTTPRequestHeader    `tfsdk:"request_headers"`
-	RequestParameters []wm.HTTPRequestParameter `tfsdk:"request_parameters"`
-	CustomVariables   []wm.CustomVariable       `tfsdk:"custom_variables"`
-}
-
-func newWorkflowHTTPRequestTaskConfigModel(c *we.HTTPRequestTaskConfig) *workflowHTTPRequestTaskConfigModel {
-	if c == nil {
-		return nil
-	}
-
-	customVariables := []wm.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, wm.CustomVariable{
-			Name:      types.StringPointerValue(v.Name),
-			Type:      types.StringPointerValue(v.Type),
-			Value:     types.StringPointerValue(v.Value),
-			Quantity:  types.Int64PointerValue(v.Quantity),
-			Unit:      types.StringPointerValue(v.Unit),
-			Direction: types.StringPointerValue(v.Direction),
-			Format:    types.StringPointerValue(v.Format),
-			TimeZone:  types.StringPointerValue(v.TimeZone),
-		})
-	}
-
-	// If no custom variables are present, the API returns an empty array but the provider should set `null`.
-	if len(customVariables) == 0 {
-		customVariables = nil
-	}
-
-	return &workflowHTTPRequestTaskConfigModel{
-		Name:              types.StringValue(c.Name),
-		ConnectionID:      types.Int64PointerValue(c.ConnectionID),
-		Method:            types.StringValue(c.HTTPMethod),
-		URL:               types.StringValue(c.URL),
-		RequestBody:       types.StringPointerValue(c.RequestBody),
-		RequestHeaders:    wm.NewHTTPRequestHeaders(c.RequestHeaders),
-		RequestParameters: wm.NewHTTPRequestParameters(c.RequestParameters),
-		CustomVariables:   customVariables,
-	}
-}
-
-func (c *workflowHTTPRequestTaskConfigModel) ToInput() *client.WorkflowHTTPRequestTaskConfigInput {
-	requestHeaders := []client.WorkflowTaskRequestHeaderConfigInput{}
-	for _, h := range c.RequestHeaders {
-		requestHeaders = append(requestHeaders, client.WorkflowTaskRequestHeaderConfigInput{
-			Key:     h.Key.ValueString(),
-			Value:   h.Value.ValueString(),
-			Masking: newNullableFromTerraformBool(h.Masking),
-		})
-	}
-
-	requestParameters := []client.WorkflowTaskRequestParameterConfigInput{}
-	for _, p := range c.RequestParameters {
-		requestParameters = append(requestParameters, client.WorkflowTaskRequestParameterConfigInput{
-			Key:     p.Key.ValueString(),
-			Value:   p.Value.ValueString(),
-			Masking: newNullableFromTerraformBool(p.Masking),
-		})
-	}
-
-	customVariables := []client.WorkflowTaskCustomVariableConfigInput{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, client.WorkflowTaskCustomVariableConfigInput{
-			Name:      v.Name.ValueStringPointer(),
-			Type:      v.Type.ValueStringPointer(),
-			Value:     v.Value.ValueStringPointer(),
-			Quantity:  newNullableFromTerraformInt64(v.Quantity),
-			Unit:      v.Unit.ValueStringPointer(),
-			Direction: v.Direction.ValueStringPointer(),
-			Format:    v.Format.ValueStringPointer(),
-			TimeZone:  v.TimeZone.ValueStringPointer(),
-		})
-	}
-
-	return &client.WorkflowHTTPRequestTaskConfigInput{
-		Name:              c.Name.ValueString(),
-		ConnectionID:      newNullableFromTerraformInt64(c.ConnectionID),
-		HTTPMethod:        c.Method.ValueString(),
-		URL:               c.URL.ValueString(),
-		RequestBody:       c.RequestBody.ValueStringPointer(),
-		RequestHeaders:    requestHeaders,
-		RequestParameters: requestParameters,
-		CustomVariables:   customVariables,
 	}
 }
 
@@ -1130,7 +977,7 @@ func (r *workflowResource) Create(
 			BigqueryDataCheckConfig:       newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig),
 			SnowflakeDataCheckConfig:      newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig),
 			RedshiftDataCheckConfig:       newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig),
-			HTTPRequestConfig:             newWorkflowHTTPRequestTaskConfigModel(t.HTTPRequestConfig),
+			HTTPRequestConfig:             wm.NewHTTPRequestTaskConfig(t.HTTPRequestConfig),
 		})
 	}
 
@@ -1209,7 +1056,7 @@ func (r *workflowResource) Update(
 			BigqueryDataCheckConfig:       newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig),
 			SnowflakeDataCheckConfig:      newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig),
 			RedshiftDataCheckConfig:       newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig),
-			HTTPRequestConfig:             newWorkflowHTTPRequestTaskConfigModel(t.HTTPRequestConfig),
+			HTTPRequestConfig:             wm.NewHTTPRequestTaskConfig(t.HTTPRequestConfig),
 		}
 
 		tasks = append(tasks, task)
@@ -1290,7 +1137,7 @@ func (r *workflowResource) Read(
 			BigqueryDataCheckConfig:       newWorkflowResourceBigqueryDataCheckTaskConfig(t.BigqueryDataCheckConfig),
 			SnowflakeDataCheckConfig:      newWorkflowSnowflakeDataCheckTaskConfigModel(t.SnowflakeDataCheckConfig),
 			RedshiftDataCheckConfig:       newWorkflowRedshiftDataCheckTaskConfigModel(t.RedshiftDataCheckConfig),
-			HTTPRequestConfig:             newWorkflowHTTPRequestTaskConfigModel(t.HTTPRequestConfig),
+			HTTPRequestConfig:             wm.NewHTTPRequestTaskConfig(t.HTTPRequestConfig),
 		}
 
 		tasks = append(tasks, task)
