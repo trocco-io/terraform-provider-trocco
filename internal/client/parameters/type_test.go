@@ -1,6 +1,8 @@
-package client
+package parameters
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNullableInt64MarshalJSON(t *testing.T) {
 	cases := []struct {
