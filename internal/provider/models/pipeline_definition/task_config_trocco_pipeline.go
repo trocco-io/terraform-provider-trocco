@@ -14,7 +14,7 @@ type TroccoPipelineTaskConfig struct {
 	CustomVariableLoop *CustomVariableLoop `tfsdk:"custom_variable_loop"`
 }
 
-func NewWorkflowTaskConfig(c *we.WorkflowTaskConfig) *TroccoPipelineTaskConfig {
+func NewTroccoPipelineTaskConfig(c *we.TroccoPipelineTaskConfig) *TroccoPipelineTaskConfig {
 	if c == nil {
 		return nil
 	}

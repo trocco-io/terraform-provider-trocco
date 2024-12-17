@@ -12,7 +12,7 @@ type Task struct {
 	TroccoBigQueryDatamartConfig  *TroccoBigqueryDatamartTaskConfig  `json:"trocco_bigquery_datamart_config,omitempty"`
 	TroccoRedshiftDatamartConfig  *TroccoRedshiftDatamartTaskConfig  `json:"trocco_redshift_datamart_config,omitempty"`
 	TroccoSnowflakeDatamartConfig *TroccoSnowflakeDatamartTaskConfig `json:"trocco_snowflake_datamart_config,omitempty"`
-	WorkflowConfig                *TroccoPipelineTaskConfig          `json:"workflow_config,omitempty"`
+	TroccoPipelineConfig          *TroccoPipelineTaskConfig          `json:"trocco_pipeline_config,omitempty"`
 	SlackNotificationConfig       *SlackNotificationTaskConfig       `json:"slack_notification_config,omitempty"`
 	TableauDataExtractionConfig   *TableauDataExtractionTaskConfig   `json:"tableau_data_extraction_config,omitempty"`
 	BigqueryDataCheckConfig       *BigqueryDataCheckTaskConfigInput  `json:"bigquery_data_check_config,omitempty"`

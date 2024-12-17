@@ -59,7 +59,7 @@ func NewTask(en *we.Task) *Task {
 		TroccoBigQueryDatamartConfig:  NewTroccoBigqueryDatamartTaskConfig(en.TroccoBigQueryDatamartConfig),
 		TroccoRedshiftDatamartConfig:  NewTroccoRedshiftDatamartTaskConfig(en.TroccoRedshiftDatamartConfig),
 		TroccoSnowflakeDatamartConfig: NewTroccoSnowflakeDatamartTaskConfig(en.TroccoSnowflakeDatamartConfig),
-		TroccoPipelineConfig:          NewWorkflowTaskConfig(en.WorkflowConfig),
+		TroccoPipelineConfig:          NewTroccoPipelineTaskConfig(en.TroccoPipelineTaskConfig),
 		SlackNotificationConfig:       NewSlackNotificationTaskConfig(en.SlackNotificationConfig),
 		TableauDataExtractionConfig:   NewTableauDataExtractionTaskConfig(en.TableauDataExtractionConfig),
 		BigqueryDataCheckConfig:       NewBigqueryDataCheckTaskConfig(en.BigqueryDataCheckConfig),
@@ -98,7 +98,7 @@ func (t *Task) ToInput(identifiers map[string]int64) *wp.Task {
 		in.TroccoSnowflakeDatamartConfig = t.TroccoSnowflakeDatamartConfig.ToInput()
 	}
 	if t.TroccoPipelineConfig != nil {
-		in.WorkflowConfig = t.TroccoPipelineConfig.ToInput()
+		in.TroccoPipelineConfig = t.TroccoPipelineConfig.ToInput()
 	}
 	if t.SlackNotificationConfig != nil {
 		in.SlackNotificationConfig = t.SlackNotificationConfig.ToInput()
