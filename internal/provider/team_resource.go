@@ -83,7 +83,11 @@ func (r *teamResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				MarkdownDescription: "The description of the team.",
 			},
 			"members": schema.ListNestedAttribute{
-				Required: true,
+				Required:            true,
+				MarkdownDescription: "The members of the team. At least one `team_admin` is required.",
+				Validators: []validator.List{
+					AtLeastOneTeamAdminValidator{},
+				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"user_id": schema.Int64Attribute{

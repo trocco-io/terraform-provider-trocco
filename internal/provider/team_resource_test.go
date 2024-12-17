@@ -84,7 +84,7 @@ func TestAccTeamNoMembers(t *testing.T) {
 					  members = []
 					}
 				`,
-				ExpectError: regexp.MustCompile(`members must have at least one element`),
+				ExpectError: regexp.MustCompile(`Missing Team Admin`),
 			},
 		},
 	})
@@ -107,7 +107,7 @@ func TestAccTeamInvalidRole(t *testing.T) {
 					  ]
 					}
 				`,
-				ExpectError: regexp.MustCompile(`members must have at least one element with team_admin role`),
+				ExpectError: regexp.MustCompile(`Missing Team Admin`),
 			},
 		},
 	})
