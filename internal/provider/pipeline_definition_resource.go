@@ -532,7 +532,7 @@ func (r *workflowResource) Create(
 		Labels:           pdm.NewLabels(workflow.Labels, plan.Labels == nil),
 		Notifications:    pdm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
 		Schedules:        pdm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
-		Tasks:            pdm.NewTasks(workflow.Tasks),
+		Tasks:            pdm.NewTasks(workflow.Tasks, keys),
 		TaskDependencies: pdm.NewTaskDependencies(workflow.TaskDependencies, keys),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
@@ -579,7 +579,7 @@ func (r *workflowResource) Update(
 		Labels:           pdm.NewLabels(workflow.Labels, plan.Labels == nil),
 		Notifications:    pdm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
 		Schedules:        pdm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
-		Tasks:            pdm.NewTasks(workflow.Tasks),
+		Tasks:            pdm.NewTasks(workflow.Tasks, keys),
 		TaskDependencies: pdm.NewTaskDependencies(workflow.TaskDependencies, keys),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
@@ -608,15 +608,15 @@ func (r *workflowResource) Read(
 	}
 
 	keys := map[int64]types.String{}
-	for _, t := range workflow.Tasks {
-		keys[t.TaskIdentifier] = types.StringValue(t.Key)
+	for _, t := range state.Tasks {
+		keys[t.TaskIdentifier.ValueInt64()] = t.Key
 	}
 
 	newState := pipelineDefinitionModel{
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
-		Tasks:            pdm.NewTasks(workflow.Tasks),
+		Tasks:            pdm.NewTasks(workflow.Tasks, keys),
 		Labels:           pdm.NewLabels(workflow.Labels, state.Labels == nil),
 		Notifications:    pdm.NewNotifications(workflow.Notifications, state.Notifications == nil),
 		Schedules:        pdm.NewSchedules(workflow.Schedules, state.Schedules == nil),

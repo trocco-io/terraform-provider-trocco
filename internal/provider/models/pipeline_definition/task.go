@@ -29,26 +29,45 @@ type Task struct {
 	TroccoTransferConfig          *TroccoTransferTaskConfig          `tfsdk:"trocco_transfer_config"`
 }
 
-func NewTasks(ens []*we.Task) []*Task {
+func NewTasks(ens []*we.Task, keys map[int64]types.String) []*Task {
 	if ens == nil {
 		return nil
 	}
 
 	var tasks []*Task
 	for _, en := range ens {
-		tasks = append(tasks, NewTask(en))
+		tasks = append(tasks, NewTask(en, keys))
 	}
 
 	return tasks
 }
 
-func NewTask(en *we.Task) *Task {
+func NewTask(en *we.Task, keys map[int64]types.String) *Task {
 	if en == nil {
 		return nil
 	}
 
+	// This function accepts keys as an argument.
+	//
+	// Keys are client-only data, so the APIs:
+	//
+	// - Cannot return them on `READ`
+	// - Returns provided keys as is on `CREATE` and `UPDATE`
+	//
+	// Consequently, the client cannot set keys to an entity on `READ`.
+	//
+	// However, even if an entity lacks keys, the provider must set them to the
+	// state. Therefore, on `READ`, the provider searches keys in the state by
+	// identifiers and sets them to the state.
+	//
+	// Moreover, to simplify the code, on `CREATE` and `UPDATE`, the provider
+	// creates a map of keys and identifiers from entities and searches keys
+	// from the map.
+	//
+	// To archive the above behavior, this function accepts keys as an argument.
+
 	return &Task{
-		Key:            types.StringValue(en.Key),
+		Key:            keys[en.TaskIdentifier],
 		TaskIdentifier: types.Int64Value(en.TaskIdentifier),
 		Type:           types.StringValue(en.Type),
 
