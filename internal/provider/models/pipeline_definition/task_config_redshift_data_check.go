@@ -40,16 +40,7 @@ func NewRedshiftDataCheckTaskConfig(c *we.RedshiftDataCheckTaskConfig) *Redshift
 func (c *RedshiftDataCheckTaskConfig) ToInput() *client.WorkflowRedshiftDataCheckTaskConfigInput {
 	customVariables := []wp.CustomVariable{}
 	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, wp.CustomVariable{
-			Name:      v.Name.ValueStringPointer(),
-			Type:      v.Type.ValueStringPointer(),
-			Value:     v.Value.ValueStringPointer(),
-			Quantity:  &p.NullableInt64{Valid: !v.Quantity.IsNull(), Value: v.Quantity.ValueInt64()},
-			Unit:      v.Unit.ValueStringPointer(),
-			Direction: v.Direction.ValueStringPointer(),
-			Format:    v.Format.ValueStringPointer(),
-			TimeZone:  v.TimeZone.ValueStringPointer(),
-		})
+		customVariables = append(customVariables, v.ToInput())
 	}
 
 	return &client.WorkflowRedshiftDataCheckTaskConfigInput{

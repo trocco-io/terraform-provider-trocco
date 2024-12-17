@@ -2,6 +2,8 @@ package workflow
 
 import (
 	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
+	p "terraform-provider-trocco/internal/client/parameters"
+	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -41,5 +43,18 @@ func NewCustomVariable(en we.CustomVariable) CustomVariable {
 		Direction: types.StringPointerValue(en.Direction),
 		Format:    types.StringPointerValue(en.Format),
 		TimeZone:  types.StringPointerValue(en.TimeZone),
+	}
+}
+
+func (v *CustomVariable) ToInput() wp.CustomVariable {
+	return wp.CustomVariable{
+		Name:      v.Name.ValueStringPointer(),
+		Type:      v.Type.ValueStringPointer(),
+		Value:     v.Value.ValueStringPointer(),
+		Quantity:  &p.NullableInt64{Valid: !v.Quantity.IsNull(), Value: v.Quantity.ValueInt64()},
+		Unit:      v.Unit.ValueStringPointer(),
+		Direction: v.Direction.ValueStringPointer(),
+		Format:    v.Format.ValueStringPointer(),
+		TimeZone:  v.TimeZone.ValueStringPointer(),
 	}
 }

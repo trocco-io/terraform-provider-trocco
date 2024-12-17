@@ -27,11 +27,7 @@ var (
 	_ resource.ResourceWithImportState = &workflowResource{}
 )
 
-// -----------------------------------------------------------------------------
-// Provider-side Data Types
-// -----------------------------------------------------------------------------
-
-type pipelineDefinitionResourceModel struct {
+type pipelineDefinitionModel struct {
 	ID               types.Int64          `tfsdk:"id"`
 	Name             types.String         `tfsdk:"name"`
 	Description      types.String         `tfsdk:"description"`
@@ -42,7 +38,7 @@ type pipelineDefinitionResourceModel struct {
 	TaskDependencies []*wm.TaskDependency `tfsdk:"task_dependencies"`
 }
 
-func (m *pipelineDefinitionResourceModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
+func (m *pipelineDefinitionModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
 	labels := []string{}
 	for _, l := range m.Labels {
 		labels = append(labels, l.ValueString())
@@ -131,7 +127,7 @@ func (m *pipelineDefinitionResourceModel) ToCreateWorkflowInput() *client.Create
 	}
 }
 
-func (m *pipelineDefinitionResourceModel) ToUpdateWorkflowInput(state *pipelineDefinitionResourceModel) *client.UpdateWorkflowInput {
+func (m *pipelineDefinitionModel) ToUpdateWorkflowInput(state *pipelineDefinitionModel) *client.UpdateWorkflowInput {
 	labels := []string{}
 	for _, l := range m.Labels {
 		labels = append(labels, l.ValueString())
@@ -226,10 +222,6 @@ func (m *pipelineDefinitionResourceModel) ToUpdateWorkflowInput(state *pipelineD
 		TaskDependencies: taskDependencies,
 	}
 }
-
-// -----------------------------------------------------------------------------
-// Resource
-// -----------------------------------------------------------------------------
 
 type workflowResource struct {
 	client *client.TroccoClient
@@ -675,7 +667,7 @@ func (r *workflowResource) Create(
 	req resource.CreateRequest,
 	resp *resource.CreateResponse,
 ) {
-	plan := &pipelineDefinitionResourceModel{}
+	plan := &pipelineDefinitionModel{}
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -697,7 +689,7 @@ func (r *workflowResource) Create(
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	newState := pipelineDefinitionResourceModel{
+	newState := pipelineDefinitionModel{
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
@@ -715,13 +707,13 @@ func (r *workflowResource) Update(
 	req resource.UpdateRequest,
 	resp *resource.UpdateResponse,
 ) {
-	state := &pipelineDefinitionResourceModel{}
+	state := &pipelineDefinitionModel{}
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	plan := &pipelineDefinitionResourceModel{}
+	plan := &pipelineDefinitionModel{}
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -744,7 +736,7 @@ func (r *workflowResource) Update(
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	newState := pipelineDefinitionResourceModel{
+	newState := pipelineDefinitionModel{
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
@@ -762,7 +754,7 @@ func (r *workflowResource) Read(
 	req resource.ReadRequest,
 	resp *resource.ReadResponse,
 ) {
-	state := &pipelineDefinitionResourceModel{}
+	state := &pipelineDefinitionModel{}
 	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -779,14 +771,12 @@ func (r *workflowResource) Read(
 		return
 	}
 
-	// panic(fmt.Sprintf("AAAA %s", workflow.TaskDependencies))
-
-	stateKeys := map[int64]string{}
-	for _, s := range state.Tasks {
-		stateKeys[s.TaskIdentifier.ValueInt64()] = s.Key.ValueString()
+	keys := map[int64]types.String{}
+	for _, t := range workflow.Tasks {
+		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	newState := pipelineDefinitionResourceModel{
+	newState := pipelineDefinitionModel{
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
@@ -804,7 +794,7 @@ func (r *workflowResource) Delete(
 	req resource.DeleteRequest,
 	resp *resource.DeleteResponse,
 ) {
-	s := &pipelineDefinitionResourceModel{}
+	s := &pipelineDefinitionModel{}
 	resp.Diagnostics.Append(req.State.Get(ctx, s)...)
 	if resp.Diagnostics.HasError() {
 		return
