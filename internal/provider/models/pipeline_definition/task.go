@@ -2,8 +2,10 @@ package workflow
 
 import (
 	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
+	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/samber/lo"
 )
 
 type Task struct {
@@ -65,4 +67,57 @@ func NewTask(en *we.Task) *Task {
 		RedshiftDataCheckConfig:       NewRedshiftDataCheckTaskConfig(en.RedshiftDataCheckConfig),
 		HTTPRequestConfig:             NewHTTPRequestTaskConfig(en.HTTPRequestConfig),
 	}
+}
+
+func (t *Task) ToInput(identifiers map[string]int64) *wp.Task {
+	in := &wp.Task{
+		Key:            t.Key.ValueString(),
+		TaskIdentifier: lo.ValueOr(identifiers, t.Key.ValueString(), t.TaskIdentifier.ValueInt64()),
+		Type:           t.Type.ValueString(),
+	}
+
+	if t.TroccoTransferConfig != nil {
+		in.TroccoTransferConfig = t.TroccoTransferConfig.ToInput()
+	}
+	if t.TroccoTransferBulkConfig != nil {
+		in.TroccoTransferBulkConfig = t.TroccoTransferBulkConfig.ToInput()
+	}
+	if t.DBTConfig != nil {
+		in.DBTConfig = t.DBTConfig.ToInput()
+	}
+	if t.TroccoAgentConfig != nil {
+		in.TroccoAgentConfig = t.TroccoAgentConfig.ToInput()
+	}
+	if t.TroccoBigQueryDatamartConfig != nil {
+		in.TroccoBigQueryDatamartConfig = t.TroccoBigQueryDatamartConfig.ToInput()
+	}
+	if t.TroccoRedshiftDatamartConfig != nil {
+		in.TroccoRedshiftDatamartConfig = t.TroccoRedshiftDatamartConfig.ToInput()
+	}
+	if t.TroccoSnowflakeDatamartConfig != nil {
+		in.TroccoSnowflakeDatamartConfig = t.TroccoSnowflakeDatamartConfig.ToInput()
+	}
+	if t.TroccoPipelineConfig != nil {
+		in.WorkflowConfig = t.TroccoPipelineConfig.ToInput()
+	}
+	if t.SlackNotificationConfig != nil {
+		in.SlackNotificationConfig = t.SlackNotificationConfig.ToInput()
+	}
+	if t.TableauDataExtractionConfig != nil {
+		in.TableauDataExtractionConfig = t.TableauDataExtractionConfig.ToInput()
+	}
+	if t.BigqueryDataCheckConfig != nil {
+		in.BigqueryDataCheckConfig = t.BigqueryDataCheckConfig.ToInput()
+	}
+	if t.SnowflakeDataCheckConfig != nil {
+		in.SnowflakeDataCheckConfig = t.SnowflakeDataCheckConfig.ToInput()
+	}
+	if t.RedshiftDataCheckConfig != nil {
+		in.RedshiftDataCheckConfig = t.RedshiftDataCheckConfig.ToInput()
+	}
+	if t.HTTPRequestConfig != nil {
+		in.HTTPRequestConfig = t.HTTPRequestConfig.ToInput()
+	}
+
+	return in
 }

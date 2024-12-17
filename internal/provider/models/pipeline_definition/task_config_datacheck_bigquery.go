@@ -1,7 +1,6 @@
 package workflow
 
 import (
-	"terraform-provider-trocco/internal/client"
 	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameters"
 	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
@@ -9,48 +8,45 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type SnowflakeDataCheckTaskConfig struct {
+type BigqueryDataCheckTaskConfig struct {
 	Name            types.String     `tfsdk:"name"`
 	ConnectionID    types.Int64      `tfsdk:"connection_id"`
 	Query           types.String     `tfsdk:"query"`
 	Operator        types.String     `tfsdk:"operator"`
 	QueryResult     types.Int64      `tfsdk:"query_result"`
 	AcceptsNull     types.Bool       `tfsdk:"accepts_null"`
-	Warehouse       types.String     `tfsdk:"warehouse"`
 	CustomVariables []CustomVariable `tfsdk:"custom_variables"`
 }
 
-func NewSnowflakeDataCheckTaskConfig(c *we.SnowflakeDataCheckTaskConfig) *SnowflakeDataCheckTaskConfig {
+func NewBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig) *BigqueryDataCheckTaskConfig {
 	if c == nil {
 		return nil
 	}
 
-	return &SnowflakeDataCheckTaskConfig{
+	return &BigqueryDataCheckTaskConfig{
 		Name:            types.StringValue(c.Name),
 		ConnectionID:    types.Int64Value(c.ConnectionID),
 		Query:           types.StringValue(c.Query),
 		Operator:        types.StringValue(c.Operator),
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
-		Warehouse:       types.StringValue(c.Warehouse),
 		CustomVariables: NewCustomVariables(c.CustomVariables),
 	}
 }
 
-func (c *SnowflakeDataCheckTaskConfig) ToInput() *client.WorkflowSnowflakeDataCheckTaskConfigInput {
+func (c *BigqueryDataCheckTaskConfig) ToInput() *wp.BigqueryDataCheckTaskConfigInput {
 	customVariables := []wp.CustomVariable{}
 	for _, v := range c.CustomVariables {
 		customVariables = append(customVariables, v.ToInput())
 	}
 
-	return &client.WorkflowSnowflakeDataCheckTaskConfigInput{
+	return &wp.BigqueryDataCheckTaskConfigInput{
 		Name:            c.Name.ValueString(),
 		ConnectionID:    c.ConnectionID.ValueInt64(),
 		Query:           c.Query.ValueString(),
 		Operator:        c.Operator.ValueString(),
 		QueryResult:     &p.NullableInt64{Valid: !c.QueryResult.IsNull(), Value: c.QueryResult.ValueInt64()},
 		AcceptsNull:     &p.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
-		Warehouse:       c.Warehouse.ValueString(),
 		CustomVariables: customVariables,
 	}
 }

@@ -54,58 +54,9 @@ func (m *pipelineDefinitionModel) ToCreateWorkflowInput() *client.CreateWorkflow
 		schedules = append(schedules, s.ToInput())
 	}
 
-	tasks := []client.WorkflowTaskInput{}
-	for _, r := range m.Tasks {
-		i := client.WorkflowTaskInput{
-			Key:            r.Key.ValueString(),
-			TaskIdentifier: r.TaskIdentifier.ValueInt64(),
-			Type:           r.Type.ValueString(),
-		}
-
-		if r.TroccoTransferConfig != nil {
-			i.TroccoTransferConfig = r.TroccoTransferConfig.ToInput()
-		}
-		if r.TroccoTransferBulkConfig != nil {
-			i.TroccoTransferBulkConfig = r.TroccoTransferBulkConfig.ToInput()
-		}
-		if r.DBTConfig != nil {
-			i.DBTConfig = r.DBTConfig.ToInput()
-		}
-		if r.TroccoAgentConfig != nil {
-			i.TroccoAgentConfig = r.TroccoAgentConfig.ToInput()
-		}
-		if r.TroccoBigQueryDatamartConfig != nil {
-			i.TroccoBigQueryDatamartConfig = r.TroccoBigQueryDatamartConfig.ToInput()
-		}
-		if r.TroccoRedshiftDatamartConfig != nil {
-			i.TroccoRedshiftDatamartConfig = r.TroccoRedshiftDatamartConfig.ToInput()
-		}
-		if r.TroccoSnowflakeDatamartConfig != nil {
-			i.TroccoSnowflakeDatamartConfig = r.TroccoSnowflakeDatamartConfig.ToInput()
-		}
-		if r.TroccoPipelineConfig != nil {
-			i.WorkflowConfig = r.TroccoPipelineConfig.ToInput()
-		}
-		if r.SlackNotificationConfig != nil {
-			i.SlackNotificationConfig = r.SlackNotificationConfig.ToInput()
-		}
-		if r.TableauDataExtractionConfig != nil {
-			i.TableauDataExtractionConfig = r.TableauDataExtractionConfig.ToInput()
-		}
-		if r.BigqueryDataCheckConfig != nil {
-			i.BigqueryDataCheckConfig = r.BigqueryDataCheckConfig.ToInput()
-		}
-		if r.SnowflakeDataCheckConfig != nil {
-			i.SnowflakeDataCheckConfig = r.SnowflakeDataCheckConfig.ToInput()
-		}
-		if r.RedshiftDataCheckConfig != nil {
-			i.RedshiftDataCheckConfig = r.RedshiftDataCheckConfig.ToInput()
-		}
-		if r.HTTPRequestConfig != nil {
-			i.HTTPRequestConfig = r.HTTPRequestConfig.ToInput()
-		}
-
-		tasks = append(tasks, i)
+	tasks := []wp.Task{}
+	for _, t := range m.Tasks {
+		tasks = append(tasks, *t.ToInput(map[string]int64{}))
 	}
 
 	taskDependencies := []wp.TaskDependency{}
@@ -148,60 +99,9 @@ func (m *pipelineDefinitionModel) ToUpdateWorkflowInput(state *pipelineDefinitio
 		stateTaskIdentifiers[s.Key.ValueString()] = s.TaskIdentifier.ValueInt64()
 	}
 
-	tasks := []client.WorkflowTaskInput{}
+	tasks := []wp.Task{}
 	for _, t := range m.Tasks {
-		identifier := stateTaskIdentifiers[t.Key.ValueString()]
-
-		i := client.WorkflowTaskInput{
-			Key:            t.Key.ValueString(),
-			TaskIdentifier: identifier,
-			Type:           t.Type.ValueString(),
-		}
-
-		if t.TroccoTransferConfig != nil {
-			i.TroccoTransferConfig = t.TroccoTransferConfig.ToInput()
-		}
-		if t.TroccoTransferBulkConfig != nil {
-			i.TroccoTransferBulkConfig = t.TroccoTransferBulkConfig.ToInput()
-		}
-		if t.DBTConfig != nil {
-			i.DBTConfig = t.DBTConfig.ToInput()
-		}
-		if t.TroccoAgentConfig != nil {
-			i.TroccoAgentConfig = t.TroccoAgentConfig.ToInput()
-		}
-		if t.TroccoBigQueryDatamartConfig != nil {
-			i.TroccoBigQueryDatamartConfig = t.TroccoBigQueryDatamartConfig.ToInput()
-		}
-		if t.TroccoRedshiftDatamartConfig != nil {
-			i.TroccoRedshiftDatamartConfig = t.TroccoRedshiftDatamartConfig.ToInput()
-		}
-		if t.TroccoSnowflakeDatamartConfig != nil {
-			i.TroccoSnowflakeDatamartConfig = t.TroccoSnowflakeDatamartConfig.ToInput()
-		}
-		if t.TroccoPipelineConfig != nil {
-			i.WorkflowConfig = t.TroccoPipelineConfig.ToInput()
-		}
-		if t.SlackNotificationConfig != nil {
-			i.SlackNotificationConfig = t.SlackNotificationConfig.ToInput()
-		}
-		if t.TableauDataExtractionConfig != nil {
-			i.TableauDataExtractionConfig = t.TableauDataExtractionConfig.ToInput()
-		}
-		if t.BigqueryDataCheckConfig != nil {
-			i.BigqueryDataCheckConfig = t.BigqueryDataCheckConfig.ToInput()
-		}
-		if t.SnowflakeDataCheckConfig != nil {
-			i.SnowflakeDataCheckConfig = t.SnowflakeDataCheckConfig.ToInput()
-		}
-		if t.RedshiftDataCheckConfig != nil {
-			i.RedshiftDataCheckConfig = t.RedshiftDataCheckConfig.ToInput()
-		}
-		if t.HTTPRequestConfig != nil {
-			i.HTTPRequestConfig = t.HTTPRequestConfig.ToInput()
-		}
-
-		tasks = append(tasks, i)
+		tasks = append(tasks, *t.ToInput(stateTaskIdentifiers))
 	}
 
 	taskDependencies := []wp.TaskDependency{}
@@ -265,37 +165,7 @@ func (r *workflowResource) Schema(
 	req resource.SchemaRequest,
 	resp *resource.SchemaResponse,
 ) {
-	customVariables := schema.SetNestedAttribute{
-		Optional: true,
-		NestedObject: schema.NestedAttributeObject{
-			Attributes: map[string]schema.Attribute{
-				"name": schema.StringAttribute{
-					Required: true,
-				},
-				"type": schema.StringAttribute{
-					Required: true,
-				},
-				"value": schema.StringAttribute{
-					Optional: true,
-				},
-				"quantity": schema.Int64Attribute{
-					Optional: true,
-				},
-				"unit": schema.StringAttribute{
-					Optional: true,
-				},
-				"direction": schema.StringAttribute{
-					Optional: true,
-				},
-				"format": schema.StringAttribute{
-					Optional: true,
-				},
-				"time_zone": schema.StringAttribute{
-					Optional: true,
-				},
-			},
-		},
-	}
+	customVariables := ws.NewCustomVariableAttribute()
 
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Provides a TROCCO workflow resource.",
