@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 type TroccoSnowflakeDatamartTaskConfig struct {
 	DefinitionID int64 `json:"definition_id,omitempty"`

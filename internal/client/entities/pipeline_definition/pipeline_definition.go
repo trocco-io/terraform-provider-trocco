@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 type Workflow struct {
 	ID               int64             `json:"id"`

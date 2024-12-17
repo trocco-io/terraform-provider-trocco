@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 type TableauDataExtractionTaskConfig struct {
 	Name         string `json:"name,omitempty"`

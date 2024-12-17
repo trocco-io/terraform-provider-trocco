@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 type Notification struct {
 	Type string `json:"type"`

@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 type Task struct {
 	Key            string `json:"key,omitempty"`
@@ -9,7 +9,7 @@ type Task struct {
 	TroccoTransferBulkConfig      *TroccoTransferBulkTaskConfig      `json:"trocco_transfer_bulk_config,omitempty"`
 	DBTConfig                     *DBTTaskConfig                     `json:"dbt_config,omitempty"`
 	TroccoAgentConfig             *TroccoAgentTaskConfig             `json:"trocco_agent_config,omitempty"`
-	TroccoBigQueryDatamartConfig  *TroccoBigQueryDatamartTaskConfig  `json:"trocco_bigquery_datamart_config,omitempty"`
+	TroccoBigQueryDatamartConfig  *TroccoBigqueryDatamartTaskConfig  `json:"trocco_bigquery_datamart_config,omitempty"`
 	TroccoRedshiftDatamartConfig  *TroccoRedshiftDatamartTaskConfig  `json:"trocco_redshift_datamart_config,omitempty"`
 	TroccoSnowflakeDatamartConfig *TroccoSnowflakeDatamartTaskConfig `json:"trocco_snowflake_datamart_config,omitempty"`
 	WorkflowConfig                *TroccoPipelineTaskConfig          `json:"workflow_config,omitempty"`

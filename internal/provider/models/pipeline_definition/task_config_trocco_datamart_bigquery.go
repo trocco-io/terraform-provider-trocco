@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -9,7 +9,7 @@ import (
 )
 
 //
-// TroccoBigQueryDatamartTaskConfig
+// TroccoBigqueryDatamartTaskConfig
 //
 
 type TroccoBigqueryDatamartTaskConfig struct {
@@ -18,7 +18,7 @@ type TroccoBigqueryDatamartTaskConfig struct {
 	CustomVariableLoop *CustomVariableLoop `tfsdk:"custom_variable_loop"`
 }
 
-func NewTroccoBigQueryDatamartTaskConfig(c *we.TroccoBigQueryDatamartTaskConfig) *TroccoBigqueryDatamartTaskConfig {
+func NewTroccoBigqueryDatamartTaskConfig(c *we.TroccoBigqueryDatamartTaskConfig) *TroccoBigqueryDatamartTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -30,8 +30,8 @@ func NewTroccoBigQueryDatamartTaskConfig(c *we.TroccoBigQueryDatamartTaskConfig)
 	}
 }
 
-func (c *TroccoBigqueryDatamartTaskConfig) ToInput() *wp.TroccoBigQueryDatamartTaskConfig {
-	in := &wp.TroccoBigQueryDatamartTaskConfig{
+func (c *TroccoBigqueryDatamartTaskConfig) ToInput() *wp.TroccoBigqueryDatamartTaskConfig {
+	in := &wp.TroccoBigqueryDatamartTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
 	}
 

@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 type TaskDependency struct {
 	Source      int64 `json:"source"`

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
-	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
-	wm "terraform-provider-trocco/internal/provider/models/pipeline_definition"
-	ws "terraform-provider-trocco/internal/provider/schemas/pipeline_definition"
+	pdp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
+	pdm "terraform-provider-trocco/internal/provider/models/pipeline_definition"
+	pds "terraform-provider-trocco/internal/provider/schemas/pipeline_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -28,14 +28,14 @@ var (
 )
 
 type pipelineDefinitionModel struct {
-	ID               types.Int64          `tfsdk:"id"`
-	Name             types.String         `tfsdk:"name"`
-	Description      types.String         `tfsdk:"description"`
-	Labels           []types.String       `tfsdk:"labels"`
-	Notifications    []wm.Notification    `tfsdk:"notifications"`
-	Schedules        []wm.Schedule        `tfsdk:"schedules"`
-	Tasks            []*wm.Task           `tfsdk:"tasks"`
-	TaskDependencies []*wm.TaskDependency `tfsdk:"task_dependencies"`
+	ID               types.Int64           `tfsdk:"id"`
+	Name             types.String          `tfsdk:"name"`
+	Description      types.String          `tfsdk:"description"`
+	Labels           []types.String        `tfsdk:"labels"`
+	Notifications    []pdm.Notification    `tfsdk:"notifications"`
+	Schedules        []pdm.Schedule        `tfsdk:"schedules"`
+	Tasks            []*pdm.Task           `tfsdk:"tasks"`
+	TaskDependencies []*pdm.TaskDependency `tfsdk:"task_dependencies"`
 }
 
 func (m *pipelineDefinitionModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
@@ -44,24 +44,24 @@ func (m *pipelineDefinitionModel) ToCreateWorkflowInput() *client.CreateWorkflow
 		labels = append(labels, l.ValueString())
 	}
 
-	notifications := []wp.Notification{}
+	notifications := []pdp.Notification{}
 	for _, n := range m.Notifications {
 		notifications = append(notifications, n.ToInput())
 	}
 
-	schedules := []wp.Schedule{}
+	schedules := []pdp.Schedule{}
 	for _, s := range m.Schedules {
 		schedules = append(schedules, s.ToInput())
 	}
 
-	tasks := []wp.Task{}
+	tasks := []pdp.Task{}
 	for _, t := range m.Tasks {
 		tasks = append(tasks, *t.ToInput(map[string]int64{}))
 	}
 
-	taskDependencies := []wp.TaskDependency{}
+	taskDependencies := []pdp.TaskDependency{}
 	for _, d := range m.TaskDependencies {
-		taskDependencies = append(taskDependencies, wp.TaskDependency{
+		taskDependencies = append(taskDependencies, pdp.TaskDependency{
 			Source:      d.Source.ValueString(),
 			Destination: d.Destination.ValueString(),
 		})
@@ -84,12 +84,12 @@ func (m *pipelineDefinitionModel) ToUpdateWorkflowInput(state *pipelineDefinitio
 		labels = append(labels, l.ValueString())
 	}
 
-	notifications := []wp.Notification{}
+	notifications := []pdp.Notification{}
 	for _, n := range m.Notifications {
 		notifications = append(notifications, n.ToInput())
 	}
 
-	schedules := []wp.Schedule{}
+	schedules := []pdp.Schedule{}
 	for _, s := range m.Schedules {
 		schedules = append(schedules, s.ToInput())
 	}
@@ -99,14 +99,14 @@ func (m *pipelineDefinitionModel) ToUpdateWorkflowInput(state *pipelineDefinitio
 		stateTaskIdentifiers[s.Key.ValueString()] = s.TaskIdentifier.ValueInt64()
 	}
 
-	tasks := []wp.Task{}
+	tasks := []pdp.Task{}
 	for _, t := range m.Tasks {
 		tasks = append(tasks, *t.ToInput(stateTaskIdentifiers))
 	}
 
-	taskDependencies := []wp.TaskDependency{}
+	taskDependencies := []pdp.TaskDependency{}
 	for _, d := range m.TaskDependencies {
-		taskDependencies = append(taskDependencies, wp.TaskDependency{
+		taskDependencies = append(taskDependencies, pdp.TaskDependency{
 			Source:      d.Source.ValueString(),
 			Destination: d.Destination.ValueString(),
 		})
@@ -165,7 +165,7 @@ func (r *workflowResource) Schema(
 	req resource.SchemaRequest,
 	resp *resource.SchemaResponse,
 ) {
-	customVariables := ws.NewCustomVariableAttribute()
+	customVariables := pds.NewCustomVariableAttribute()
 
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Provides a TROCCO workflow resource.",
@@ -336,16 +336,16 @@ func (r *workflowResource) Schema(
 								),
 							},
 						},
-						"trocco_transfer_config":           ws.NewTroccoTransferTaskConfigAttribute(),
-						"trocco_transfer_bulk_config":      ws.NewTroccoTransferBulkTaskConfigAttribute(),
-						"dbt_config":                       ws.NewDBTTaskConfigAttribute(),
-						"trocco_agent_config":              ws.NewTroccoAgentTaskConfigAttribute(),
-						"trocco_bigquery_datamart_config":  ws.NewBigQueryDatamartTaskConfigAttribute(),
-						"trocco_redshift_datamart_config":  ws.NewRedshiftDatamartTaskConfigAttribute(),
-						"trocco_snowflake_datamart_config": ws.NewSnowflakeDatamartTaskConfigAttribute(),
-						"trocco_pipeline_config":           ws.NewTroccoPiplineTaskConfigAttribute(),
-						"slack_notification_config":        ws.NewSlackNotificationTaskConfigAttribute(),
-						"tableau_data_extraction_config":   ws.NewTableauDataExtractionTaskConfigAttribute(),
+						"trocco_transfer_config":           pds.NewTroccoTransferTaskConfigAttribute(),
+						"trocco_transfer_bulk_config":      pds.NewTroccoTransferBulkTaskConfigAttribute(),
+						"dbt_config":                       pds.NewDBTTaskConfigAttribute(),
+						"trocco_agent_config":              pds.NewTroccoAgentTaskConfigAttribute(),
+						"trocco_bigquery_datamart_config":  pds.NewBigQueryDatamartTaskConfigAttribute(),
+						"trocco_redshift_datamart_config":  pds.NewRedshiftDatamartTaskConfigAttribute(),
+						"trocco_snowflake_datamart_config": pds.NewSnowflakeDatamartTaskConfigAttribute(),
+						"trocco_pipeline_config":           pds.NewTroccoPiplineTaskConfigAttribute(),
+						"slack_notification_config":        pds.NewSlackNotificationTaskConfigAttribute(),
+						"tableau_data_extraction_config":   pds.NewTableauDataExtractionTaskConfigAttribute(),
 						"http_request_config": schema.SingleNestedAttribute{
 							Optional: true,
 							Attributes: map[string]schema.Attribute{
@@ -529,11 +529,11 @@ func (r *workflowResource) Create(
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
-		Labels:           wm.NewLabels(workflow.Labels, plan.Labels == nil),
-		Notifications:    wm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
-		Schedules:        wm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
-		Tasks:            wm.NewTasks(workflow.Tasks),
-		TaskDependencies: wm.NewTaskDependencies(workflow.TaskDependencies, keys),
+		Labels:           pdm.NewLabels(workflow.Labels, plan.Labels == nil),
+		Notifications:    pdm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
+		Schedules:        pdm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
+		Tasks:            pdm.NewTasks(workflow.Tasks),
+		TaskDependencies: pdm.NewTaskDependencies(workflow.TaskDependencies, keys),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -576,11 +576,11 @@ func (r *workflowResource) Update(
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
-		Labels:           wm.NewLabels(workflow.Labels, plan.Labels == nil),
-		Notifications:    wm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
-		Schedules:        wm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
-		Tasks:            wm.NewTasks(workflow.Tasks),
-		TaskDependencies: wm.NewTaskDependencies(workflow.TaskDependencies, keys),
+		Labels:           pdm.NewLabels(workflow.Labels, plan.Labels == nil),
+		Notifications:    pdm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
+		Schedules:        pdm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
+		Tasks:            pdm.NewTasks(workflow.Tasks),
+		TaskDependencies: pdm.NewTaskDependencies(workflow.TaskDependencies, keys),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -616,10 +616,10 @@ func (r *workflowResource) Read(
 		ID:               types.Int64Value(workflow.ID),
 		Name:             types.StringPointerValue(workflow.Name),
 		Description:      types.StringPointerValue(workflow.Description),
-		Tasks:            wm.NewTasks(workflow.Tasks),
-		Labels:           wm.NewLabels(workflow.Labels, state.Labels == nil),
-		Notifications:    wm.NewNotifications(workflow.Notifications, state.Notifications == nil),
-		Schedules:        wm.NewSchedules(workflow.Schedules, state.Schedules == nil),
+		Tasks:            pdm.NewTasks(workflow.Tasks),
+		Labels:           pdm.NewLabels(workflow.Labels, state.Labels == nil),
+		Notifications:    pdm.NewNotifications(workflow.Notifications, state.Notifications == nil),
+		Schedules:        pdm.NewSchedules(workflow.Schedules, state.Schedules == nil),
 		TaskDependencies: state.TaskDependencies,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)

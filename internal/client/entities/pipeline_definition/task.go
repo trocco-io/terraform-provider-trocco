@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 type Task struct {
 	Key            string `json:"key"`
@@ -10,7 +10,7 @@ type Task struct {
 	DBTConfig                     *DBTTaskConfig                     `json:"dbt_config"`
 	TroccoAgentConfig             *TroccoAgentTaskConfig             `json:"trocco_agent_config"`
 	WorkflowConfig                *WorkflowTaskConfig                `json:"workflow_config"`
-	TroccoBigQueryDatamartConfig  *TroccoBigQueryDatamartTaskConfig  `json:"trocco_bigquery_datamart_config"`
+	TroccoBigQueryDatamartConfig  *TroccoBigqueryDatamartTaskConfig  `json:"trocco_bigquery_datamart_config"`
 	TroccoRedshiftDatamartConfig  *TroccoRedshiftDatamartTaskConfig  `json:"trocco_redshift_datamart_config"`
 	TroccoSnowflakeDatamartConfig *TroccoSnowflakeDatamartTaskConfig `json:"trocco_snowflake_datamart_config"`
 	SlackNotificationConfig       *SlackNotificationTaskConfig       `json:"slack_notification_config"`

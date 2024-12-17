@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 type SnowflakeCustomVariableLoopConfig struct {
 	ConnectionID int64    `json:"connection_id"`

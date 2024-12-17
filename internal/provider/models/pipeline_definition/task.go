@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 import (
 	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
@@ -56,7 +56,7 @@ func NewTask(en *we.Task) *Task {
 		TroccoTransferBulkConfig:      NewTroccoTransferBulkTaskConfig(en.TroccoTransferBulkConfig),
 		DBTConfig:                     NewDBTTaskConfig(en.DBTConfig),
 		TroccoAgentConfig:             NewTroccoAgentTaskConfig(en.TroccoAgentConfig),
-		TroccoBigQueryDatamartConfig:  NewTroccoBigQueryDatamartTaskConfig(en.TroccoBigQueryDatamartConfig),
+		TroccoBigQueryDatamartConfig:  NewTroccoBigqueryDatamartTaskConfig(en.TroccoBigQueryDatamartConfig),
 		TroccoRedshiftDatamartConfig:  NewTroccoRedshiftDatamartTaskConfig(en.TroccoRedshiftDatamartConfig),
 		TroccoSnowflakeDatamartConfig: NewTroccoSnowflakeDatamartTaskConfig(en.TroccoSnowflakeDatamartConfig),
 		TroccoPipelineConfig:          NewWorkflowTaskConfig(en.WorkflowConfig),

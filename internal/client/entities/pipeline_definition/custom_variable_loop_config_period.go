@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 type PeriodCustomVariableLoopConfig struct {
 	Interval  string                             `json:"interval"`

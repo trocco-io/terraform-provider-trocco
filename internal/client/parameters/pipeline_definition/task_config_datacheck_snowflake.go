@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 import (
 	p "terraform-provider-trocco/internal/client/parameters"

@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"

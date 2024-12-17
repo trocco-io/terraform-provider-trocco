@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 type TaskDependency struct {
 	Source      string `json:"source,omitempty"`

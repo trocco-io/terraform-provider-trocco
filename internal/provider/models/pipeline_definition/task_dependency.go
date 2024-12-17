@@ -1,4 +1,4 @@
-package workflow
+package pipeline_definition
 
 import (
 	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
