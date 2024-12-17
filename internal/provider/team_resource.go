@@ -131,20 +131,20 @@ func (r *teamResource) Create(ctx context.Context, req resource.CreateRequest, r
 		return
 	}
 
-	data := teamResourceModel{
+	newState := teamResourceModel{
 		ID:          types.Int64Value(team.ID),
 		Name:        types.StringValue(team.Name),
 		Description: types.StringPointerValue(team.Description),
 		Members:     []teamMemberResourceModel{},
 	}
 	for _, m := range team.Members {
-		data.Members = append(data.Members, teamMemberResourceModel{
+		newState.Members = append(newState.Members, teamMemberResourceModel{
 			UserID: types.Int64Value(m.UserID),
 			Role:   types.StringValue(m.Role),
 		})
 	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, data)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 
 func (r *teamResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -163,24 +163,80 @@ func (r *teamResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 		return
 	}
 
-	data := teamResourceModel{
+	newState := teamResourceModel{
 		ID:          types.Int64Value(team.ID),
 		Name:        types.StringValue(team.Name),
 		Description: types.StringPointerValue(team.Description),
 		Members:     []teamMemberResourceModel{},
 	}
 	for _, m := range team.Members {
-		data.Members = append(data.Members, teamMemberResourceModel{
+		newState.Members = append(newState.Members, teamMemberResourceModel{
 			UserID: types.Int64Value(m.UserID),
 			Role:   types.StringValue(m.Role),
 		})
 	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, data)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 func (r *teamResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var plan, state teamResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	input := client.UpdateTeamInput{
+		Name:        plan.Name.ValueStringPointer(),
+		Description: plan.Description.ValueStringPointer(),
+		Members:     []client.MemberInput{},
+	}
+	for _, m := range plan.Members {
+		input.Members = append(input.Members, client.MemberInput{
+			UserID: m.UserID.ValueInt64(),
+			Role:   m.Role.ValueString(),
+		})
+	}
+
+	team, err := r.client.UpdateTeam(state.ID.ValueInt64(), &input)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Updating team",
+			fmt.Sprintf("Unable to update team, got error: %s", err),
+		)
+		return
+	}
+
+	newState := teamResourceModel{
+		ID:          types.Int64Value(team.ID),
+		Name:        types.StringValue(team.Name),
+		Description: types.StringPointerValue(team.Description),
+		Members:     []teamMemberResourceModel{},
+	}
+	for _, m := range team.Members {
+		newState.Members = append(newState.Members, teamMemberResourceModel{
+			UserID: types.Int64Value(m.UserID),
+			Role:   types.StringValue(m.Role),
+		})
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 func (r *teamResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state teamResourceModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	err := r.client.DeleteTeam(state.ID.ValueInt64())
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Deleting user",
+			fmt.Sprintf("Unable to delete user, got error: %s", err),
+		)
+		return
+	}
 }
 
 func (r *teamResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
