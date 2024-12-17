@@ -8,26 +8,26 @@ import (
 	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
 )
 
-type WorkflowTaskConfig struct {
+type TroccoPipelineTaskConfig struct {
 	DefinitionID types.Int64 `tfsdk:"definition_id"`
 
 	CustomVariableLoop *CustomVariableLoop `tfsdk:"custom_variable_loop"`
 }
 
-func NewWorkflowTaskConfig(c *we.WorkflowTaskConfig) *WorkflowTaskConfig {
+func NewWorkflowTaskConfig(c *we.WorkflowTaskConfig) *TroccoPipelineTaskConfig {
 	if c == nil {
 		return nil
 	}
 
-	return &WorkflowTaskConfig{
+	return &TroccoPipelineTaskConfig{
 		DefinitionID: types.Int64Value(c.DefinitionID),
 
 		CustomVariableLoop: NewCustomVariableLoop(c.CustomVariableLoop),
 	}
 }
 
-func (c *WorkflowTaskConfig) ToInput() *wp.WorkflowTaskConfig {
-	in := &wp.WorkflowTaskConfig{
+func (c *TroccoPipelineTaskConfig) ToInput() *wp.TroccoPipelineTaskConfig {
+	in := &wp.TroccoPipelineTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
 	}
 

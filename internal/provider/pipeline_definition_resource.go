@@ -83,8 +83,8 @@ func (m *pipelineDefinitionModel) ToCreateWorkflowInput() *client.CreateWorkflow
 		if r.TroccoSnowflakeDatamartConfig != nil {
 			i.TroccoSnowflakeDatamartConfig = r.TroccoSnowflakeDatamartConfig.ToInput()
 		}
-		if r.WorkflowConfig != nil {
-			i.WorkflowConfig = r.WorkflowConfig.ToInput()
+		if r.TroccoPipelineConfig != nil {
+			i.WorkflowConfig = r.TroccoPipelineConfig.ToInput()
 		}
 		if r.SlackNotificationConfig != nil {
 			i.SlackNotificationConfig = r.SlackNotificationConfig.ToInput()
@@ -179,8 +179,8 @@ func (m *pipelineDefinitionModel) ToUpdateWorkflowInput(state *pipelineDefinitio
 		if t.TroccoSnowflakeDatamartConfig != nil {
 			i.TroccoSnowflakeDatamartConfig = t.TroccoSnowflakeDatamartConfig.ToInput()
 		}
-		if t.WorkflowConfig != nil {
-			i.WorkflowConfig = t.WorkflowConfig.ToInput()
+		if t.TroccoPipelineConfig != nil {
+			i.WorkflowConfig = t.TroccoPipelineConfig.ToInput()
 		}
 		if t.SlackNotificationConfig != nil {
 			i.SlackNotificationConfig = t.SlackNotificationConfig.ToInput()
@@ -473,43 +473,9 @@ func (r *workflowResource) Schema(
 						"trocco_bigquery_datamart_config":  ws.NewBigQueryDatamartTaskConfigAttribute(),
 						"trocco_redshift_datamart_config":  ws.NewRedshiftDatamartTaskConfigAttribute(),
 						"trocco_snowflake_datamart_config": ws.NewSnowflakeDatamartTaskConfigAttribute(),
-						"workflow_config": schema.SingleNestedAttribute{
-							Optional: true,
-							Attributes: map[string]schema.Attribute{
-								"definition_id": schema.Int64Attribute{
-									Required: true,
-								},
-								"custom_variable_loop": ws.NewCustomVariableLoopAttribute(),
-							},
-						},
-						"slack_notification_config": schema.SingleNestedAttribute{
-							Optional: true,
-							Attributes: map[string]schema.Attribute{
-								"name": schema.StringAttribute{
-									Required: true,
-								},
-								"connection_id": schema.Int64Attribute{
-									Required: true,
-								},
-								"message": schema.StringAttribute{
-									Required: true,
-								},
-							},
-						},
-						"tableau_data_extraction_config": schema.SingleNestedAttribute{
-							Optional: true,
-							Attributes: map[string]schema.Attribute{
-								"name": schema.StringAttribute{
-									Required: true,
-								},
-								"connection_id": schema.Int64Attribute{
-									Required: true,
-								},
-								"task_id": schema.StringAttribute{
-									Required: true,
-								},
-							},
-						},
+						"trocco_pipeline_config":           ws.NewTroccoPiplineTaskConfigAttribute(),
+						"slack_notification_config":        ws.NewSlackNotificationTaskConfigAttribute(),
+						"tableau_data_extraction_config":   ws.NewTableauDataExtractionTaskConfigAttribute(),
 						"http_request_config": schema.SingleNestedAttribute{
 							Optional: true,
 							Attributes: map[string]schema.Attribute{

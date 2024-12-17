@@ -20,11 +20,11 @@ type Task struct {
 	TableauDataExtractionConfig   *TableauDataExtractionTaskConfig   `tfsdk:"tableau_data_extraction_config"`
 	TroccoAgentConfig             *TroccoAgentTaskConfig             `tfsdk:"trocco_agent_config"`
 	TroccoBigQueryDatamartConfig  *TroccoBigqueryDatamartTaskConfig  `tfsdk:"trocco_bigquery_datamart_config"`
+	TroccoPipelineConfig          *TroccoPipelineTaskConfig          `tfsdk:"trocco_pipeline_config"`
 	TroccoRedshiftDatamartConfig  *TroccoRedshiftDatamartTaskConfig  `tfsdk:"trocco_redshift_datamart_config"`
 	TroccoSnowflakeDatamartConfig *TroccoSnowflakeDatamartTaskConfig `tfsdk:"trocco_snowflake_datamart_config"`
 	TroccoTransferBulkConfig      *TroccoTransferBulkTaskConfig      `tfsdk:"trocco_transfer_bulk_config"`
 	TroccoTransferConfig          *TroccoTransferTaskConfig          `tfsdk:"trocco_transfer_config"`
-	WorkflowConfig                *WorkflowTaskConfig                `tfsdk:"workflow_config"`
 }
 
 func NewTasks(ens []*we.Task) []*Task {
@@ -57,7 +57,7 @@ func NewTask(en *we.Task) *Task {
 		TroccoBigQueryDatamartConfig:  NewTroccoBigQueryDatamartTaskConfig(en.TroccoBigQueryDatamartConfig),
 		TroccoRedshiftDatamartConfig:  NewTroccoRedshiftDatamartTaskConfig(en.TroccoRedshiftDatamartConfig),
 		TroccoSnowflakeDatamartConfig: NewTroccoSnowflakeDatamartTaskConfig(en.TroccoSnowflakeDatamartConfig),
-		WorkflowConfig:                NewWorkflowTaskConfig(en.WorkflowConfig),
+		TroccoPipelineConfig:          NewWorkflowTaskConfig(en.WorkflowConfig),
 		SlackNotificationConfig:       NewSlackNotificationTaskConfig(en.SlackNotificationConfig),
 		TableauDataExtractionConfig:   NewTableauDataExtractionTaskConfig(en.TableauDataExtractionConfig),
 		BigqueryDataCheckConfig:       NewBigqueryDataCheckTaskConfig(en.BigqueryDataCheckConfig),

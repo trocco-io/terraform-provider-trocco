@@ -60,7 +60,7 @@ type WorkflowTaskInput struct {
 	TroccoBigQueryDatamartConfig  *wp.TroccoBigQueryDatamartTaskConfig       `json:"trocco_bigquery_datamart_config,omitempty"`
 	TroccoRedshiftDatamartConfig  *wp.TroccoRedshiftDatamartTaskConfig       `json:"trocco_redshift_datamart_config,omitempty"`
 	TroccoSnowflakeDatamartConfig *wp.TroccoSnowflakeDatamartTaskConfig      `json:"trocco_snowflake_datamart_config,omitempty"`
-	WorkflowConfig                *wp.WorkflowTaskConfig                     `json:"workflow_config,omitempty"`
+	WorkflowConfig                *wp.TroccoPipelineTaskConfig               `json:"workflow_config,omitempty"`
 	SlackNotificationConfig       *wp.SlackNotificationTaskConfig            `json:"slack_notification_config,omitempty"`
 	TableauDataExtractionConfig   *wp.TableauDataExtractionTaskConfig        `json:"tableau_data_extraction_config,omitempty"`
 	BigqueryDataCheckConfig       *WorkflowBigqueryDataCheckTaskConfigInput  `json:"bigquery_data_check_config,omitempty"`
