@@ -232,8 +232,8 @@ func (r *teamResource) Delete(ctx context.Context, req resource.DeleteRequest, r
 	err := r.client.DeleteTeam(state.ID.ValueInt64())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Deleting user",
-			fmt.Sprintf("Unable to delete user, got error: %s", err),
+			"Deleting team",
+			fmt.Sprintf("Unable to delete team, got error: %s", err),
 		)
 		return
 	}
