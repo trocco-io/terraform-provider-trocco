@@ -234,75 +234,7 @@ func (r *workflowResource) Schema(
 					},
 				},
 			},
-			"schedules": schema.SetNestedAttribute{
-				Optional: true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"type": schema.StringAttribute{
-							Optional: true,
-						},
-						"daily_config": schema.SingleNestedAttribute{
-							Optional: true,
-							Attributes: map[string]schema.Attribute{
-								"time_zone": schema.StringAttribute{
-									Required: true,
-								},
-								"hour": schema.Int64Attribute{
-									Required: true,
-								},
-								"minute": schema.Int64Attribute{
-									Required: true,
-								},
-							},
-						},
-						"hourly_config": schema.SingleNestedAttribute{
-							Optional: true,
-							Attributes: map[string]schema.Attribute{
-								"time_zone": schema.StringAttribute{
-									Required: true,
-								},
-								"minute": schema.Int64Attribute{
-									Required: true,
-								},
-							},
-						},
-						"monthly_config": schema.SingleNestedAttribute{
-							Optional: true,
-							Attributes: map[string]schema.Attribute{
-								"time_zone": schema.StringAttribute{
-									Required: true,
-								},
-								"day": schema.Int64Attribute{
-									Required: true,
-								},
-								"hour": schema.Int64Attribute{
-									Required: true,
-								},
-								"minute": schema.Int64Attribute{
-									Required: true,
-								},
-							},
-						},
-						"weekly_config": schema.SingleNestedAttribute{
-							Optional: true,
-							Attributes: map[string]schema.Attribute{
-								"time_zone": schema.StringAttribute{
-									Required: true,
-								},
-								"day_of_week": schema.Int64Attribute{
-									Required: true,
-								},
-								"hour": schema.Int64Attribute{
-									Required: true,
-								},
-								"minute": schema.Int64Attribute{
-									Required: true,
-								},
-							},
-						},
-					},
-				},
-			},
+			"schedules": pds.NewScheduleAttribute(),
 			"tasks": schema.SetNestedAttribute{
 				MarkdownDescription: "The tasks of the workflow.",
 				Optional:            true,
