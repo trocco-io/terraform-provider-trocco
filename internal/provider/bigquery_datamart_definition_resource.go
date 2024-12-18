@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"terraform-provider-trocco/internal/client/parameters"
+	"terraform-provider-trocco/internal/provider/models"
 
 	"terraform-provider-trocco/internal/client"
 
@@ -32,38 +33,27 @@ type bigqueryDatamartDefinitionResource struct {
 }
 
 type bigqueryDatamartDefinitionModel struct {
-	ID                     types.Int64                  `tfsdk:"id"`
-	Name                   types.String                 `tfsdk:"name"`
-	Description            types.String                 `tfsdk:"description"`
-	IsRunnableConcurrently types.Bool                   `tfsdk:"is_runnable_concurrently"`
-	ResourceGroupID        types.Int64                  `tfsdk:"resource_group_id"`
-	CustomVariableSettings []customVariableSettingModel `tfsdk:"custom_variable_settings"`
-	BigqueryConnectionID   types.Int64                  `tfsdk:"bigquery_connection_id"`
-	QueryMode              types.String                 `tfsdk:"query_mode"`
-	Query                  trimmedStringValue           `tfsdk:"query"`
-	DestinationDataset     types.String                 `tfsdk:"destination_dataset"`
-	DestinationTable       types.String                 `tfsdk:"destination_table"`
-	WriteDisposition       types.String                 `tfsdk:"write_disposition"`
-	BeforeLoad             types.String                 `tfsdk:"before_load"`
-	Partitioning           types.String                 `tfsdk:"partitioning"`
-	PartitioningTime       types.String                 `tfsdk:"partitioning_time"`
-	PartitioningField      types.String                 `tfsdk:"partitioning_field"`
-	ClusteringFields       []types.String               `tfsdk:"clustering_fields"`
-	Location               types.String                 `tfsdk:"location"`
-	Notifications          []datamartNotificationModel  `tfsdk:"notifications"`
-	Schedules              []scheduleModel              `tfsdk:"schedules"`
-	Labels                 []labelModel                 `tfsdk:"labels"`
-}
-
-type customVariableSettingModel struct {
-	Name      types.String `tfsdk:"name"`
-	Type      types.String `tfsdk:"type"`
-	Value     types.String `tfsdk:"value"`
-	Quantity  types.Int32  `tfsdk:"quantity"`
-	Unit      types.String `tfsdk:"unit"`
-	Direction types.String `tfsdk:"direction"`
-	Format    types.String `tfsdk:"format"`
-	TimeZone  types.String `tfsdk:"time_zone"`
+	ID                     types.Int64                    `tfsdk:"id"`
+	Name                   types.String                   `tfsdk:"name"`
+	Description            types.String                   `tfsdk:"description"`
+	IsRunnableConcurrently types.Bool                     `tfsdk:"is_runnable_concurrently"`
+	ResourceGroupID        types.Int64                    `tfsdk:"resource_group_id"`
+	CustomVariableSettings []models.CustomVariableSetting `tfsdk:"custom_variable_settings"`
+	BigqueryConnectionID   types.Int64                    `tfsdk:"bigquery_connection_id"`
+	QueryMode              types.String                   `tfsdk:"query_mode"`
+	Query                  trimmedStringValue             `tfsdk:"query"`
+	DestinationDataset     types.String                   `tfsdk:"destination_dataset"`
+	DestinationTable       types.String                   `tfsdk:"destination_table"`
+	WriteDisposition       types.String                   `tfsdk:"write_disposition"`
+	BeforeLoad             types.String                   `tfsdk:"before_load"`
+	Partitioning           types.String                   `tfsdk:"partitioning"`
+	PartitioningTime       types.String                   `tfsdk:"partitioning_time"`
+	PartitioningField      types.String                   `tfsdk:"partitioning_field"`
+	ClusteringFields       []types.String                 `tfsdk:"clustering_fields"`
+	Location               types.String                   `tfsdk:"location"`
+	Notifications          []datamartNotificationModel    `tfsdk:"notifications"`
+	Schedules              []models.Schedule              `tfsdk:"schedules"`
+	Labels                 []models.LabelModel            `tfsdk:"labels"`
 }
 
 type datamartNotificationModel struct {
@@ -75,20 +65,6 @@ type datamartNotificationModel struct {
 	RecordCount      types.Int64  `tfsdk:"record_count"`
 	RecordOperator   types.String `tfsdk:"record_operator"`
 	Message          types.String `tfsdk:"message"`
-}
-
-type scheduleModel struct {
-	Frequency types.String `tfsdk:"frequency"`
-	Minute    types.Int32  `tfsdk:"minute"`
-	Hour      types.Int32  `tfsdk:"hour"`
-	Day       types.Int32  `tfsdk:"day"`
-	DayOfWeek types.Int32  `tfsdk:"day_of_week"`
-	TimeZone  types.String `tfsdk:"time_zone"`
-}
-
-type labelModel struct {
-	ID   types.Int64  `tfsdk:"id"`
-	Name types.String `tfsdk:"name"`
 }
 
 func (r *bigqueryDatamartDefinitionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -900,9 +876,9 @@ func parseToBigqueryDatamartDefinitionModel(response client.DatamartDefinition) 
 		model.ResourceGroupID = types.Int64Value(response.ResourceGroup.ID)
 	}
 	if response.CustomVariableSettings != nil {
-		customVariableSettings := make([]customVariableSettingModel, len(response.CustomVariableSettings))
+		customVariableSettings := make([]models.CustomVariableSetting, len(response.CustomVariableSettings))
 		for i, v := range response.CustomVariableSettings {
-			customVariableSettings[i] = customVariableSettingModel{
+			customVariableSettings[i] = models.CustomVariableSetting{
 				Name: types.StringValue(v.Name),
 				Type: types.StringValue(v.Type),
 			}
@@ -992,9 +968,9 @@ func parseToBigqueryDatamartDefinitionModel(response client.DatamartDefinition) 
 		model.Notifications = notifications
 	}
 	if response.Schedules != nil {
-		schedules := make([]scheduleModel, len(response.Schedules))
+		schedules := make([]models.Schedule, len(response.Schedules))
 		for i, v := range response.Schedules {
-			schedules[i] = scheduleModel{
+			schedules[i] = models.Schedule{
 				Frequency: types.StringValue(v.Frequency),
 				Minute:    types.Int32Value(int32(v.Minute)),
 				TimeZone:  types.StringValue(v.TimeZone),
@@ -1012,9 +988,9 @@ func parseToBigqueryDatamartDefinitionModel(response client.DatamartDefinition) 
 		model.Schedules = schedules
 	}
 	if response.Labels != nil {
-		labels := make([]labelModel, len(response.Labels))
+		labels := make([]models.LabelModel, len(response.Labels))
 		for i, v := range response.Labels {
-			labels[i] = labelModel{
+			labels[i] = models.LabelModel{
 				ID:   types.Int64Value(v.ID),
 				Name: types.StringValue(v.Name),
 			}

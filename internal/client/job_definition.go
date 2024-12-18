@@ -147,3 +147,16 @@ func (c *TroccoClient) DeleteJobDefinition(id int64) error {
 		nil,
 	)
 }
+
+func (c *TroccoClient) GetJobDefinition(id int64) (*JobDefinition, error) {
+	out := &JobDefinition{}
+	if err := c.do(
+		http.MethodGet,
+		fmt.Sprintf("/api/job_definitions/%d", id),
+		nil,
+		out,
+	); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
