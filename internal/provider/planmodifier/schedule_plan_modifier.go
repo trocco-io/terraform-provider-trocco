@@ -1,4 +1,4 @@
-package provider
+package modifier
 
 import (
 	"context"
@@ -8,19 +8,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ planmodifier.Object = &schedulePlanModifier{}
+var _ planmodifier.Object = &SchedulePlanModifier{}
 
-type schedulePlanModifier struct{}
+type SchedulePlanModifier struct{}
 
-func (d *schedulePlanModifier) Description(ctx context.Context) string {
+func (d *SchedulePlanModifier) Description(ctx context.Context) string {
 	return "Modifier for validating schedule attributes"
 }
 
-func (d *schedulePlanModifier) MarkdownDescription(ctx context.Context) string {
+func (d *SchedulePlanModifier) MarkdownDescription(ctx context.Context) string {
 	return d.Description(ctx)
 }
 
-func (d *schedulePlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
+func (d *SchedulePlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
 	var frequency types.String
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("frequency"), &frequency)...)
 	if resp.Diagnostics.HasError() {

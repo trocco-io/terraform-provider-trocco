@@ -1,4 +1,4 @@
-package provider
+package modifier
 
 import (
 	"context"
@@ -8,19 +8,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ planmodifier.Object = &customVariableSettingPlanModifier{}
+var _ planmodifier.Object = &CustomVariableSettingPlanModifier{}
 
-type customVariableSettingPlanModifier struct{}
+type CustomVariableSettingPlanModifier struct{}
 
-func (d *customVariableSettingPlanModifier) Description(ctx context.Context) string {
+func (d *CustomVariableSettingPlanModifier) Description(ctx context.Context) string {
 	return "Modifier for validating custom_variable_setting"
 }
 
-func (d *customVariableSettingPlanModifier) MarkdownDescription(ctx context.Context) string {
+func (d *CustomVariableSettingPlanModifier) MarkdownDescription(ctx context.Context) string {
 	return d.Description(ctx)
 }
 
-func (d *customVariableSettingPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
+func (d *CustomVariableSettingPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
 	var typ types.String
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("type"), &typ)...)
 	if resp.Diagnostics.HasError() {

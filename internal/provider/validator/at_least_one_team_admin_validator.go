@@ -1,9 +1,10 @@
-package provider
+package validator
 
 import (
 	"context"
 
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	model "terraform-provider-trocco/internal/provider/model/team"
 )
 
 var _ validator.List = AtLeastOneTeamAdminValidator{}
@@ -24,7 +25,7 @@ func (v AtLeastOneTeamAdminValidator) ValidateList(ctx context.Context, req vali
 		return
 	}
 
-	var members []teamMemberResourceModel
+	var members []model.TeamMemberResourceModel
 	diags := req.ConfigValue.ElementsAs(ctx, &members, false)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)

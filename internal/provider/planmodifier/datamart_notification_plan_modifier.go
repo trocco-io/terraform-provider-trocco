@@ -1,4 +1,4 @@
-package provider
+package modifier
 
 import (
 	"context"
@@ -8,19 +8,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ planmodifier.Object = &datamartNotificationPlanModifier{}
+var _ planmodifier.Object = &DatamartNotificationPlanModifier{}
 
-type datamartNotificationPlanModifier struct{}
+type DatamartNotificationPlanModifier struct{}
 
-func (d *datamartNotificationPlanModifier) Description(ctx context.Context) string {
+func (d *DatamartNotificationPlanModifier) Description(ctx context.Context) string {
 	return "Modifier for validating notification attributes"
 }
 
-func (d *datamartNotificationPlanModifier) MarkdownDescription(ctx context.Context) string {
+func (d *DatamartNotificationPlanModifier) MarkdownDescription(ctx context.Context) string {
 	return d.Description(ctx)
 }
 
-func (d *datamartNotificationPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
+func (d *DatamartNotificationPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
 	var destination_type types.String
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("destination_type"), &destination_type)...)
 	if resp.Diagnostics.HasError() {

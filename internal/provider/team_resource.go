@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
+	model "terraform-provider-trocco/internal/provider/model/team"
+	troccoValidator "terraform-provider-trocco/internal/provider/validator"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -28,18 +30,6 @@ func NewTeamResource() resource.Resource {
 
 type teamResource struct {
 	client *client.TroccoClient
-}
-
-type teamResourceModel struct {
-	ID          types.Int64               `tfsdk:"id"`
-	Name        types.String              `tfsdk:"name"`
-	Description types.String              `tfsdk:"description"`
-	Members     []teamMemberResourceModel `tfsdk:"members"`
-}
-
-type teamMemberResourceModel struct {
-	UserID types.Int64  `tfsdk:"user_id"`
-	Role   types.String `tfsdk:"role"`
 }
 
 func (r *teamResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -86,7 +76,7 @@ func (r *teamResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Required:            true,
 				MarkdownDescription: "The members of the team. At least one `team_admin` is required.",
 				Validators: []validator.List{
-					AtLeastOneTeamAdminValidator{},
+					troccoValidator.AtLeastOneTeamAdminValidator{},
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -109,7 +99,7 @@ func (r *teamResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 }
 
 func (r *teamResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan teamResourceModel
+	var plan model.TeamResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -137,14 +127,14 @@ func (r *teamResource) Create(ctx context.Context, req resource.CreateRequest, r
 		return
 	}
 
-	newState := teamResourceModel{
+	newState := model.TeamResourceModel{
 		ID:          types.Int64Value(team.ID),
 		Name:        types.StringValue(team.Name),
 		Description: types.StringPointerValue(team.Description),
-		Members:     []teamMemberResourceModel{},
+		Members:     []model.TeamMemberResourceModel{},
 	}
 	for _, m := range team.Members {
-		newState.Members = append(newState.Members, teamMemberResourceModel{
+		newState.Members = append(newState.Members, model.TeamMemberResourceModel{
 			UserID: types.Int64Value(m.UserID),
 			Role:   types.StringValue(m.Role),
 		})
@@ -154,7 +144,7 @@ func (r *teamResource) Create(ctx context.Context, req resource.CreateRequest, r
 }
 
 func (r *teamResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state teamResourceModel
+	var state model.TeamResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -169,14 +159,14 @@ func (r *teamResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 		return
 	}
 
-	newState := teamResourceModel{
+	newState := model.TeamResourceModel{
 		ID:          types.Int64Value(team.ID),
 		Name:        types.StringValue(team.Name),
 		Description: types.StringPointerValue(team.Description),
-		Members:     []teamMemberResourceModel{},
+		Members:     []model.TeamMemberResourceModel{},
 	}
 	for _, m := range team.Members {
-		newState.Members = append(newState.Members, teamMemberResourceModel{
+		newState.Members = append(newState.Members, model.TeamMemberResourceModel{
 			UserID: types.Int64Value(m.UserID),
 			Role:   types.StringValue(m.Role),
 		})
@@ -185,7 +175,7 @@ func (r *teamResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 func (r *teamResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan, state teamResourceModel
+	var plan, state model.TeamResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
@@ -213,14 +203,14 @@ func (r *teamResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		return
 	}
 
-	newState := teamResourceModel{
+	newState := model.TeamResourceModel{
 		ID:          types.Int64Value(team.ID),
 		Name:        types.StringValue(team.Name),
 		Description: types.StringPointerValue(team.Description),
-		Members:     []teamMemberResourceModel{},
+		Members:     []model.TeamMemberResourceModel{},
 	}
 	for _, m := range team.Members {
-		newState.Members = append(newState.Members, teamMemberResourceModel{
+		newState.Members = append(newState.Members, model.TeamMemberResourceModel{
 			UserID: types.Int64Value(m.UserID),
 			Role:   types.StringValue(m.Role),
 		})
@@ -229,7 +219,7 @@ func (r *teamResource) Update(ctx context.Context, req resource.UpdateRequest, r
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 func (r *teamResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state teamResourceModel
+	var state model.TeamResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
