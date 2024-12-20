@@ -5,11 +5,14 @@ import (
 	"github.com/samber/lo"
 
 	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
+	p "terraform-provider-trocco/internal/client/parameters"
 	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
 )
 
 type CustomVariableLoop struct {
-	Type types.String `tfsdk:"type"`
+	Type              types.String `tfsdk:"type"`
+	IsStoppedOnErrors types.Bool   `tfsdk:"is_stopped_on_errors"`
+	MaxErrors         types.Int64  `tfsdk:"max_errors"`
 
 	StringConfig    *StringCustomVariableLoopConfig    `tfsdk:"string_config"`
 	PeriodConfig    *PeriodCustomVariableLoopConfig    `tfsdk:"period_config"`
@@ -24,7 +27,9 @@ func NewCustomVariableLoop(en *we.CustomVariableLoop) *CustomVariableLoop {
 	}
 
 	md := &CustomVariableLoop{
-		Type: types.StringValue(en.Type),
+		Type:              types.StringValue(en.Type),
+		IsStoppedOnErrors: types.BoolPointerValue(en.IsStoppedOnErrors),
+		MaxErrors:         types.Int64PointerValue(en.MaxErrors),
 	}
 
 	if en.StringConfig != nil {
@@ -48,7 +53,9 @@ func NewCustomVariableLoop(en *we.CustomVariableLoop) *CustomVariableLoop {
 
 func (c *CustomVariableLoop) ToInput() wp.CustomVariableLoop {
 	i := wp.CustomVariableLoop{
-		Type: c.Type.ValueString(),
+		Type:              c.Type.ValueString(),
+		IsStoppedOnErrors: &p.NullableBool{Valid: !c.IsStoppedOnErrors.IsNull(), Value: c.IsStoppedOnErrors.ValueBool()},
+		MaxErrors:         &p.NullableInt64{Valid: !c.MaxErrors.IsNull(), Value: c.MaxErrors.ValueInt64()},
 	}
 
 	if c.StringConfig != nil {

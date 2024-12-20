@@ -1,11 +1,17 @@
 package pipeline_definition
 
+import (
+	p "terraform-provider-trocco/internal/client/parameters"
+)
+
 //
 // CustomVariableLoop
 //
 
 type CustomVariableLoop struct {
-	Type string `json:"type,omitempty"`
+	Type              string           `json:"type,omitempty"`
+	IsStoppedOnErrors *p.NullableBool  `json:"is_stopped_on_errors,omitempty"`
+	MaxErrors         *p.NullableInt64 `json:"max_errors,omitempty"`
 
 	StringConfig    *StringCustomVariableLoopConfig    `json:"string_config,omitempty"`
 	PeriodConfig    *PeriodCustomVariableLoopConfig    `json:"period_config,omitempty"`

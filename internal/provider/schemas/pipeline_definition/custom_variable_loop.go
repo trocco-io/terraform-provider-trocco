@@ -11,6 +11,14 @@ func NewCustomVariableLoopAttribute() schema.Attribute {
 			"type": schema.StringAttribute{
 				Required: true,
 			},
+			"is_stopped_on_errors": schema.BoolAttribute{
+				Optional: true,
+				Computed: true,
+			},
+			"max_errors": schema.Int64Attribute{
+				Optional: true,
+				Computed: true,
+			},
 			"string_config":    NewStringCustomVariableLoopConfigAttribute(),
 			"period_config":    NewPeriodCustomVariableLoopConfigAttribute(),
 			"bigquery_config":  NewBigqueryCustomVariableLoopConfigAttribute(),
