@@ -94,7 +94,7 @@ func (r *userResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Sensitive: true,
 				PlanModifiers: []planmodifier.String{
 					&troccoPlanModifier.IgnoreChangesPlanModifier{},
-					&troccoPlanModifier.RequiredOnCreatePlanModifier{"password"},
+					&troccoPlanModifier.RequiredOnCreatePlanModifier{AttributeName: "password"},
 				},
 				Validators: []validator.String{
 					// see: https://documents.trocco.io/docs/password-policy
