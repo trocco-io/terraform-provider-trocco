@@ -6,7 +6,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client"
+	job_definitions3 "terraform-provider-trocco/internal/client/entities/job_definitions"
+	"terraform-provider-trocco/internal/client/parameters"
 	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
+	filter2 "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
 	"terraform-provider-trocco/internal/provider/models"
 	"terraform-provider-trocco/internal/provider/models/job_definitions"
 	"terraform-provider-trocco/internal/provider/models/job_definitions/filter"
@@ -54,12 +57,19 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 			notifications = append(notifications, n.ToInput())
 		}
 	}
-	//var schedules []parameters.ScheduleInput
-	//if model.Schedules != nil {
-	//	for _, s := range *model.Schedules {
-	//		schedules = append(schedules, s.ToInput())
-	//	}
-	//}
+	var schedules []parameters.ScheduleInput
+	if model.Schedules != nil {
+		for _, s := range *model.Schedules {
+			schedules = append(schedules, s.ToInput())
+		}
+	}
+
+	var filterColumns []filter2.FilterColumnInput
+	if model.FilterColumns != nil {
+		for _, f := range model.FilterColumns {
+			filterColumns = append(filterColumns, f.ToInput())
+		}
+	}
 
 	return &client.CreateJobDefinitionInput{
 		Name:                      model.Name.ValueString(),
@@ -68,7 +78,7 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 		IsRunnableConcurrently:    model.IsRunnableConcurrently.ValueBoolPointer(),
 		RetryLimit:                model.RetryLimit.ValueInt64(),
 		ResourceEnhancement:       model.ResourceEnhancement.ValueStringPointer(),
-		FilterColumns:             nil,
+		FilterColumns:             filterColumns,
 		FilterRows:                nil,
 		FilterMasks:               nil,
 		FilterAddTime:             nil,
@@ -81,7 +91,7 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 		OutputOptionType:          model.OutputOptionType.ValueString(),
 		OutputOption:              model.OutputOption.ToInput(),
 		Labels:                    labels,
-		Schedules:                 nil,
+		Schedules:                 schedules,
 		Notifications:             notifications,
 	}
 }
@@ -98,7 +108,7 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 //		return
 //	}
 //
-//	connection, err := r.client.CreateJobDefinition(
+//	jobDefinition, err := r.client.CreateJobDefinition(
 //		plan.ToCreateJobDefinitionInput(),
 //	)
 //	if err != nil {
@@ -109,28 +119,54 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 //		return
 //	}
 //
-//	newState := connectionResourceModel{
-//		// Common Fields
-//		ConnectionType:  plan.ConnectionType,
-//		ID:              types.Int64Value(connection.ID),
-//		Name:            types.StringPointerValue(connection.Name),
-//		Description:     types.StringPointerValue(connection.Description),
-//		ResourceGroupID: types.Int64PointerValue(connection.ResourceGroupID),
-//
-//		// BigQuery Fields
-//		ProjectID:             types.StringPointerValue(connection.ProjectID),
-//		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
-//
-//		// Snowflake Fields
-//		Host:       types.StringPointerValue(connection.Host),
-//		UserName:   types.StringPointerValue(connection.UserName),
-//		Role:       types.StringPointerValue(connection.Role),
-//		AuthMethod: types.StringPointerValue(connection.AuthMethod),
-//		Password:   plan.Password,
-//		PrivateKey: plan.PrivateKey,
+//	newState := jobDefinitionResourceModel{
+//		ID:                        types.Int64Value(jobDefinition.ID),
+//		Name:                      types.StringValue(jobDefinition.Name),
+//		Description:               types.StringPointerValue(jobDefinition.Description),
+//		ResourceGroupID:           types.Int64PointerValue(jobDefinition.ResourceGroupID),
+//		IsRunnableConcurrently:    types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
+//		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
+//		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
+//		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
+//		InputOption:               job_definitions.InputOption{},
+//		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
+//		OutputOption:              job_definitions.OutputOption{},
+//		FilterColumns:             nil,
+//		FilterRows:                nil,
+//		FilterMasks:               nil,
+//		FilterAddTime:             nil,
+//		FilterGsub:                nil,
+//		FilterStringTransforms:    nil,
+//		FilterHashes:              nil,
+//		FilterUnixTimeConversions: nil,
+//		Notifications:             toJobDefinitionNotificationModel(jobDefinition.Notifications),
+//		Schedules:                 nil,
+//		Labels:                    nil,
 //	}
 //	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 //}
+
+func toJobDefinitionNotificationModel(notifications *[]job_definitions3.JobDefinitionNotification) *[]job_definitions.JobDefinitionNotification {
+	if notifications == nil {
+		return nil
+	}
+	outputs := make([]job_definitions.JobDefinitionNotification, 0, len(*notifications))
+	for _, input := range *notifications {
+		outputs = append(outputs, job_definitions.JobDefinitionNotification{
+			DestinationType:  types.StringValue(input.DestinationType),
+			SlackChannelID:   types.Int64PointerValue(input.SlackChannelID),
+			EmailID:          types.Int64PointerValue(input.EmailID),
+			NotificationType: types.StringValue(input.NotificationType),
+			NotifyWhen:       types.StringPointerValue(input.NotifyWhen),
+			Message:          types.StringValue(input.Message),
+			RecordCount:      types.Int64PointerValue(input.RecordCount),
+			RecordOperator:   types.StringPointerValue(input.RecordOperator),
+			RecordType:       types.StringPointerValue(input.RecordType),
+			Minutes:          types.Int64PointerValue(input.Minutes),
+		})
+	}
+	return &outputs
+}
 
 func (r *jobDefinitionResource) Read(
 	ctx context.Context,

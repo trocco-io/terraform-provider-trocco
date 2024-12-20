@@ -457,7 +457,7 @@ func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLocationEmpt
 }
 
 func NewHourlyScheduleInput(
-	minute int,
+	minute int32,
 	timeZone string,
 ) parameters.ScheduleInput {
 	return parameters.ScheduleInput{
@@ -468,8 +468,8 @@ func NewHourlyScheduleInput(
 }
 
 func NewDailyScheduleInput(
-	hour int,
-	minute int,
+	hour int32,
+	minute int32,
 	timeZone string,
 ) parameters.ScheduleInput {
 	return parameters.ScheduleInput{
@@ -481,9 +481,9 @@ func NewDailyScheduleInput(
 }
 
 func NewWeeklyScheduleInput(
-	dayOfWeek int,
-	hour int,
-	minute int,
+	dayOfWeek int32,
+	hour int32,
+	minute int32,
 	timeZone string,
 ) parameters.ScheduleInput {
 	return parameters.ScheduleInput{
@@ -496,9 +496,9 @@ func NewWeeklyScheduleInput(
 }
 
 func NewMonthlyScheduleInput(
-	day int,
-	hour int,
-	minute int,
+	day int32,
+	hour int32,
+	minute int32,
 	timeZone string,
 ) parameters.ScheduleInput {
 	return parameters.ScheduleInput{

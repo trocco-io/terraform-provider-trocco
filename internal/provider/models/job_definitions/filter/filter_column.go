@@ -3,6 +3,7 @@ package filter
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions/filter"
+	filter2 "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
 )
 
 type FilterColumn struct {
@@ -52,6 +53,34 @@ func NewFilterColumns(filterColumns []filter.FilterColumn) []FilterColumn {
 			JSONExpandColumns:        expandColumns,
 		}
 		outputs = append(outputs, filterColumn)
+	}
+	return outputs
+}
+
+func (filterColumn FilterColumn) ToInput() filter2.FilterColumnInput {
+	return filter2.FilterColumnInput{
+		Name:                     filterColumn.Name.ValueString(),
+		Src:                      filterColumn.Src.ValueString(),
+		Type:                     filterColumn.Type.ValueString(),
+		Default:                  filterColumn.Default.ValueStringPointer(),
+		Format:                   filterColumn.Format.ValueStringPointer(),
+		JSONExpandEnabled:        filterColumn.JSONExpandEnabled.ValueBool(),
+		JSONExpandKeepBaseColumn: filterColumn.JSONExpandKeepBaseColumn.ValueBool(),
+		JSONExpandColumns:        jsonExpandColumns(filterColumn.JSONExpandColumns),
+	}
+}
+
+func jsonExpandColumns(columns []jsonExpandColumn) []filter2.JSONExpandColumnInput {
+	outputs := make([]filter2.JSONExpandColumnInput, 0, len(columns))
+	for _, input := range columns {
+		column := filter2.JSONExpandColumnInput{
+			Name:     input.Name.ValueString(),
+			JSONPath: input.JSONPath.ValueString(),
+			Type:     input.Type.ValueString(),
+			Format:   input.Format.ValueStringPointer(),
+			Timezone: input.Timezone.ValueStringPointer(),
+		}
+		outputs = append(outputs, column)
 	}
 	return outputs
 }

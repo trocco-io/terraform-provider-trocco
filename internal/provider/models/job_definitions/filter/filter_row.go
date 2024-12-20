@@ -34,3 +34,20 @@ func NewFilterRows(filterRows *filter.FilterRows) *FilterRows {
 		FilterRowConditions: conditions,
 	}
 }
+
+//func (filterRows FilterRows) ToInput() filter2.FilterRowsInput {
+//
+//	conditions := make([]filterRowCondition, 0, len(filterRows.FilterRowConditions))
+//	for _, input := range filterRows.FilterRowConditions {
+//		condition := filterRowCondition{
+//			Column:   types.StringValue(input.Column),
+//			Operator: types.StringValue(input.Operator),
+//			Argument: types.StringValue(input.Argument),
+//		}
+//		conditions = append(conditions, condition)
+//	}
+//	return filter2.FilterRowsInput{
+//		Condition:           filterRows.Condition.ValueString(),
+//		FilterRowConditions: nil,
+//	}
+//}

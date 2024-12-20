@@ -462,33 +462,33 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 			case "hourly":
 				{
 					scheduleInputs[i] = client.NewHourlyScheduleInput(
-						int(v.Minute.ValueInt32()),
+						v.Minute.ValueInt32(),
 						v.TimeZone.ValueString(),
 					)
 				}
 			case "daily":
 				{
 					scheduleInputs[i] = client.NewDailyScheduleInput(
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
+						v.Hour.ValueInt32(),
+						v.Minute.ValueInt32(),
 						v.TimeZone.ValueString(),
 					)
 				}
 			case "weekly":
 				{
 					scheduleInputs[i] = client.NewWeeklyScheduleInput(
-						int(v.DayOfWeek.ValueInt32()),
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
+						v.DayOfWeek.ValueInt32(),
+						v.Hour.ValueInt32(),
+						v.Minute.ValueInt32(),
 						v.TimeZone.ValueString(),
 					)
 				}
 			case "monthly":
 				{
 					scheduleInputs[i] = client.NewMonthlyScheduleInput(
-						int(v.Day.ValueInt32()),
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
+						v.Day.ValueInt32(),
+						v.Hour.ValueInt32(),
+						v.Minute.ValueInt32(),
 						v.TimeZone.ValueString(),
 					)
 				}
@@ -677,33 +677,33 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 			case "hourly":
 				{
 					scheduleInputs[i] = client.NewHourlyScheduleInput(
-						int(v.Minute.ValueInt32()),
+						v.Minute.ValueInt32(),
 						v.TimeZone.ValueString(),
 					)
 				}
 			case "daily":
 				{
 					scheduleInputs[i] = client.NewDailyScheduleInput(
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
+						v.Hour.ValueInt32(),
+						v.Minute.ValueInt32(),
 						v.TimeZone.ValueString(),
 					)
 				}
 			case "weekly":
 				{
 					scheduleInputs[i] = client.NewWeeklyScheduleInput(
-						int(v.DayOfWeek.ValueInt32()),
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
+						v.DayOfWeek.ValueInt32(),
+						v.Hour.ValueInt32(),
+						v.Minute.ValueInt32(),
 						v.TimeZone.ValueString(),
 					)
 				}
 			case "monthly":
 				{
 					scheduleInputs[i] = client.NewMonthlyScheduleInput(
-						int(v.Day.ValueInt32()),
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
+						v.Day.ValueInt32(),
+						v.Hour.ValueInt32(),
+						v.Minute.ValueInt32(),
 						v.TimeZone.ValueString(),
 					)
 				}
@@ -972,17 +972,17 @@ func parseToBigqueryDatamartDefinitionModel(response client.DatamartDefinition) 
 		for i, v := range response.Schedules {
 			schedules[i] = models.Schedule{
 				Frequency: types.StringValue(v.Frequency),
-				Minute:    types.Int32Value(int32(v.Minute)),
+				Minute:    types.Int32Value(v.Minute),
 				TimeZone:  types.StringValue(v.TimeZone),
 			}
 			if v.Hour != nil {
-				schedules[i].Hour = types.Int32Value(int32(*v.Hour))
+				schedules[i].Hour = types.Int32Value(*v.Hour)
 			}
 			if v.DayOfWeek != nil {
-				schedules[i].DayOfWeek = types.Int32Value(int32(*v.DayOfWeek))
+				schedules[i].DayOfWeek = types.Int32Value(*v.DayOfWeek)
 			}
 			if v.Day != nil {
-				schedules[i].Day = types.Int32Value(int32(*v.Day))
+				schedules[i].Day = types.Int32Value(*v.Day)
 			}
 		}
 		model.Schedules = schedules
