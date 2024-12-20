@@ -3,6 +3,7 @@ package input_options
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions/input_options"
+	input_options2 "terraform-provider-trocco/internal/client/parameters/job_definitions/input_options"
 	"terraform-provider-trocco/internal/provider/models"
 )
 
@@ -64,4 +65,42 @@ func newInputOptionColumns(inputOptionColumns []input_options.InputOptionColumn)
 		columns = append(columns, column)
 	}
 	return columns
+}
+
+func (mysqlInputOption *MySQLInputOption) ToInput() *input_options2.MySQLInputOptionInput {
+	if mysqlInputOption == nil {
+		return nil
+	}
+
+	return &input_options2.MySQLInputOptionInput{
+		Database:                  mysqlInputOption.Database.ValueString(),
+		Table:                     mysqlInputOption.Table.ValueStringPointer(),
+		Query:                     mysqlInputOption.Query.ValueString(),
+		IncrementalColumns:        mysqlInputOption.IncrementalColumns.ValueStringPointer(),
+		LastRecord:                mysqlInputOption.LastRecord.ValueStringPointer(),
+		IncrementalLoadingEnabled: mysqlInputOption.IncrementalLoadingEnabled.ValueBool(),
+		FetchRows:                 mysqlInputOption.FetchRows.ValueInt64(),
+		ConnectTimeout:            mysqlInputOption.ConnectTimeout.ValueInt64(),
+		SocketTimeout:             mysqlInputOption.SocketTimeout.ValueInt64(),
+		DefaultTimeZone:           mysqlInputOption.DefaultTimeZone.ValueStringPointer(),
+		UseLegacyDatetimeCode:     mysqlInputOption.UseLegacyDatetimeCode.ValueBoolPointer(),
+		MySQLConnectionID:         mysqlInputOption.MySQLConnectionID.ValueInt64(),
+		InputOptionColumns:        toInputOptionColumnsInput(mysqlInputOption.InputOptionColumns),
+		CustomVariableSettings:    models.ToCustomVariableSettingInputs(mysqlInputOption.CustomVariableSettings),
+	}
+}
+
+func toInputOptionColumnsInput(columns []inputOptionColumn) []input_options2.InputOptionColumn {
+	if columns == nil {
+		return nil
+	}
+
+	inputs := make([]input_options2.InputOptionColumn, 0, len(columns))
+	for _, column := range columns {
+		inputs = append(inputs, input_options2.InputOptionColumn{
+			Name: column.Name.ValueString(),
+			Type: column.Type.ValueString(),
+		})
+	}
+	return inputs
 }

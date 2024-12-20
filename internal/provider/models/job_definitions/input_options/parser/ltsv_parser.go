@@ -3,6 +3,7 @@ package parser
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
+	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
 )
 
 type LtsvParser struct {
@@ -35,6 +36,27 @@ func NewLtsvParser(ltsvParser *job_definitions.LtsvParser) *LtsvParser {
 	return &LtsvParser{
 		Newline: types.StringPointerValue(ltsvParser.Newline),
 		Charset: types.StringPointerValue(ltsvParser.Charset),
+		Columns: columns,
+	}
+}
+
+func (ltsvParser *LtsvParser) ToLtsvParserInput() *job_definitions2.LtsvParserInput {
+	if ltsvParser == nil {
+		return nil
+	}
+	columns := make([]job_definitions2.LtsvParserColumnInput, 0, len(ltsvParser.Columns))
+	for _, input := range ltsvParser.Columns {
+		column := job_definitions2.LtsvParserColumnInput{
+			Name:   input.Name.String(),
+			Type:   input.Type.String(),
+			Format: input.Format.ValueStringPointer(),
+		}
+		columns = append(columns, column)
+	}
+
+	return &job_definitions2.LtsvParserInput{
+		Newline: ltsvParser.Newline.ValueStringPointer(),
+		Charset: ltsvParser.Charset.ValueStringPointer(),
 		Columns: columns,
 	}
 }

@@ -1,9 +1,9 @@
 package output_options
 
-import "terraform-provider-trocco/internal/client/parameters"
+import "terraform-provider-trocco/internal/client/entities"
 
 type BigQueryOutputOption struct {
-	CustomVariableSettings                 *[]parameters.CustomVariableSetting `json:"custom_variable_settings"`
+	CustomVariableSettings                 *[]entities.CustomVariableSetting   `json:"custom_variable_settings"`
 	Dataset                                string                              `json:"dataset"`
 	Table                                  string                              `json:"table"`
 	AutoCreateDataset                      bool                                `json:"auto_create_dataset"`

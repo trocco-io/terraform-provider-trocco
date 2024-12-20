@@ -16,3 +16,10 @@ func NewInputOption(inputOption client.InputOption) InputOption {
 		MySQLInputOption: input_options.NewMysqlInputOption(inputOption.MySQLInputOption),
 	}
 }
+
+func (inputOption InputOption) ToInput() client.InputOptionInput {
+	return client.InputOptionInput{
+		GcsInputOption:   inputOption.GcsInputOption.ToInput(),
+		MySQLInputOption: inputOption.MySQLInputOption.ToInput(),
+	}
+}

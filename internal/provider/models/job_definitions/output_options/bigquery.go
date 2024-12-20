@@ -3,11 +3,11 @@ package output_options
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions/output_options"
-	"terraform-provider-trocco/internal/client/parameters"
+	output_options2 "terraform-provider-trocco/internal/client/parameters/job_definitions/output_options"
+	"terraform-provider-trocco/internal/provider/models"
 )
 
 type BigQueryOutputOption struct {
-	CustomVariableSettings                 []parameters.CustomVariableSetting  `tfsdk:"custom_variable_settings"`
 	Dataset                                types.String                        `tfsdk:"dataset"`
 	Table                                  types.String                        `tfsdk:"table"`
 	AutoCreateDataset                      types.Bool                          `tfsdk:"auto_create_dataset"`
@@ -27,9 +27,10 @@ type BigQueryOutputOption struct {
 	TemplateTable                          types.String                        `tfsdk:"template_table"`
 	BigQueryConnectionID                   types.Int64                         `tfsdk:"bigquery_connection_id"`
 	BeforeLoad                             types.String                        `tfsdk:"before_load"`
+	CustomVariableSettings                 *[]models.CustomVariableSetting     `tfsdk:"custom_variable_settings"`
 	BigQueryOutputOptionColumnOptions      *[]bigQueryOutputOptionColumnOption `tfsdk:"bigquery_output_option_column_options"`
-	BigQueryOutputOptionClusteringFields   []types.String                      `tfsdk:"bigquery_output_option_clustering_fields"`
-	BigQueryOutputOptionMergeKeys          []types.String                      `tfsdk:"bigquery_output_option_merge_keys"`
+	BigQueryOutputOptionClusteringFields   *[]types.String                     `tfsdk:"bigquery_output_option_clustering_fields"`
+	BigQueryOutputOptionMergeKeys          *[]types.String                     `tfsdk:"bigquery_output_option_merge_keys"`
 }
 
 type bigQueryOutputOptionColumnOption struct {
@@ -59,7 +60,7 @@ func NewBigQueryOutputOption(bigQueryOutputOption *output_options.BigQueryOutput
 	}
 
 	return &BigQueryOutputOption{
-		CustomVariableSettings:                 *bigQueryOutputOption.CustomVariableSettings,
+		CustomVariableSettings:                 models.NewCustomVariableSettings(bigQueryOutputOption.CustomVariableSettings),
 		Dataset:                                types.StringValue(bigQueryOutputOption.Dataset),
 		Table:                                  types.StringValue(bigQueryOutputOption.Table),
 		AutoCreateDataset:                      types.BoolValue(bigQueryOutputOption.AutoCreateDataset),
@@ -99,6 +100,67 @@ func newBigqueryOutputOptionColumnOptions(bigQueryOutputOptionColumnOptions *[]o
 			TimestampFormat: types.StringPointerValue(input.TimestampFormat),
 			Timezone:        types.StringPointerValue(input.Timezone),
 			Description:     types.StringPointerValue(input.Description),
+		}
+		outputs = append(outputs, columnOption)
+	}
+	return &outputs
+}
+
+func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.BigQueryOutputOptionInput {
+	if bigqueryOutputOption == nil {
+		return nil
+	}
+
+	clusteringFields := make([]string, 0, len(*bigqueryOutputOption.BigQueryOutputOptionClusteringFields))
+	for _, input := range *bigqueryOutputOption.BigQueryOutputOptionClusteringFields {
+		clusteringFields = append(clusteringFields, input.ValueString())
+	}
+	mergeKeys := make([]string, 0, len(*bigqueryOutputOption.BigQueryOutputOptionMergeKeys))
+	for _, input := range *bigqueryOutputOption.BigQueryOutputOptionMergeKeys {
+		mergeKeys = append(mergeKeys, input.ValueString())
+	}
+
+	return &output_options2.BigQueryOutputOptionInput{
+		Dataset:                                bigqueryOutputOption.Dataset.ValueString(),
+		Table:                                  bigqueryOutputOption.Table.ValueString(),
+		AutoCreateDataset:                      bigqueryOutputOption.AutoCreateDataset.ValueBool(),
+		AutoCreateTable:                        bigqueryOutputOption.AutoCreateTable.ValueBool(),
+		OpenTimeoutSec:                         bigqueryOutputOption.OpenTimeoutSec.ValueInt64(),
+		TimeoutSec:                             bigqueryOutputOption.TimeoutSec.ValueInt64(),
+		SendTimeoutSec:                         bigqueryOutputOption.SendTimeoutSec.ValueInt64(),
+		ReadTimeoutSec:                         bigqueryOutputOption.ReadTimeoutSec.ValueInt64(),
+		Retries:                                bigqueryOutputOption.Retries.ValueInt64(),
+		Mode:                                   bigqueryOutputOption.Mode.ValueString(),
+		PartitioningType:                       bigqueryOutputOption.PartitioningType.ValueStringPointer(),
+		TimePartitioningType:                   bigqueryOutputOption.TimePartitioningType.ValueStringPointer(),
+		TimePartitioningField:                  bigqueryOutputOption.TimePartitioningField.ValueStringPointer(),
+		TimePartitioningExpirationMs:           bigqueryOutputOption.TimePartitioningExpirationMs.ValueInt64Pointer(),
+		TimePartitioningRequirePartitionFilter: bigqueryOutputOption.TimePartitioningRequirePartitionFilter.ValueBoolPointer(),
+		Location:                               bigqueryOutputOption.Location.ValueStringPointer(),
+		TemplateTable:                          bigqueryOutputOption.TemplateTable.ValueStringPointer(),
+		BigQueryConnectionID:                   bigqueryOutputOption.BigQueryConnectionID.ValueInt64(),
+		BeforeLoad:                             bigqueryOutputOption.BeforeLoad.ValueString(),
+		CustomVariableSettings:                 models.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
+		BigQueryOutputOptionColumnOptions:      toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOption.BigQueryOutputOptionColumnOptions),
+		BigQueryOutputOptionClusteringFields:   &clusteringFields,
+		BigQueryOutputOptionMergeKeys:          &mergeKeys,
+	}
+}
+
+func toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOptionColumnOptions *[]bigQueryOutputOptionColumnOption) *[]output_options2.BigQueryOutputOptionColumnOptionInput {
+	if bigqueryOutputOptionColumnOptions == nil {
+		return nil
+	}
+
+	outputs := make([]output_options2.BigQueryOutputOptionColumnOptionInput, 0, len(*bigqueryOutputOptionColumnOptions))
+	for _, input := range *bigqueryOutputOptionColumnOptions {
+		columnOption := output_options2.BigQueryOutputOptionColumnOptionInput{
+			Name:            input.Name.String(),
+			Type:            input.Type.String(),
+			Mode:            input.Mode.String(),
+			TimestampFormat: input.TimestampFormat.ValueStringPointer(),
+			Timezone:        input.Timezone.ValueStringPointer(),
+			Description:     input.Description.ValueStringPointer(),
 		}
 		outputs = append(outputs, columnOption)
 	}

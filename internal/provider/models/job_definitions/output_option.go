@@ -14,3 +14,9 @@ func NewOutputOption(outputOption client.OutputOption) OutputOption {
 		BigQueryOutputOption: output_options.NewBigQueryOutputOption(outputOption.BigQueryOutputOption),
 	}
 }
+
+func (outputOption OutputOption) ToInput() client.OutputOptionInput {
+	return client.OutputOptionInput{
+		BigQueryOutputOption: outputOption.BigQueryOutputOption.ToInput(),
+	}
+}

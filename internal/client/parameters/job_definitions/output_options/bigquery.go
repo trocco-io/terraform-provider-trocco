@@ -5,7 +5,7 @@ import (
 )
 
 type BigQueryOutputOptionInput struct {
-	CustomVariableSettings                 *[]parameters.CustomVariableSetting      `json:"custom_variable_settings,omitempty"`
+	CustomVariableSettings                 *[]parameters.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
 	Dataset                                string                                   `json:"dataset"`
 	Table                                  string                                   `json:"table"`
 	AutoCreateDataset                      bool                                     `json:"auto_create_dataset"`
@@ -31,7 +31,7 @@ type BigQueryOutputOptionInput struct {
 }
 
 type UpdateBigQueryOutputOptionInput struct {
-	CustomVariableSettings                 *[]parameters.CustomVariableSetting      `json:"custom_variable_settings,omitempty"`
+	CustomVariableSettings                 *[]parameters.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
 	Dataset                                *string                                  `json:"dataset,omitempty"`
 	Table                                  *string                                  `json:"table,omitempty"`
 	AutoCreateDataset                      *bool                                    `json:"auto_create_dataset,omitempty"`

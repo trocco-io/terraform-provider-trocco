@@ -73,19 +73,19 @@ type UpdateDatamartDefinitionOutput struct {
 }
 
 type DatamartDefinition struct {
-	ID                     int64                              `json:"id"`
-	Name                   string                             `json:"name"`
-	Description            *string                            `json:"description"`
-	DataWarehouseType      string                             `json:"data_warehouse_type"`
-	IsRunnableConcurrently bool                               `json:"is_runnable_concurrently"`
-	ResourceGroup          *ResourceGroup                     `json:"resource_group"`
-	CustomVariableSettings []parameters.CustomVariableSetting `json:"custom_variable_settings"`
-	DatamartBigqueryOption *DatamartBigqueryOption            `json:"datamart_bigquery_option"`
-	CreatedAt              string                             `json:"created_at"`
-	UpdatedAt              string                             `json:"updated_at"`
-	Notifications          []DatamartNotification             `json:"notifications"`
-	Schedules              []entities.Schedule                `json:"schedules"`
-	Labels                 []entities.Label                   `json:"labels"`
+	ID                     int64                            `json:"id"`
+	Name                   string                           `json:"name"`
+	Description            *string                          `json:"description"`
+	DataWarehouseType      string                           `json:"data_warehouse_type"`
+	IsRunnableConcurrently bool                             `json:"is_runnable_concurrently"`
+	ResourceGroup          *ResourceGroup                   `json:"resource_group"`
+	CustomVariableSettings []entities.CustomVariableSetting `json:"custom_variable_settings"`
+	DatamartBigqueryOption *DatamartBigqueryOption          `json:"datamart_bigquery_option"`
+	CreatedAt              string                           `json:"created_at"`
+	UpdatedAt              string                           `json:"updated_at"`
+	Notifications          []DatamartNotification           `json:"notifications"`
+	Schedules              []entities.Schedule              `json:"schedules"`
+	Labels                 []entities.Label                 `json:"labels"`
 }
 
 type DatamartBigqueryOption struct {

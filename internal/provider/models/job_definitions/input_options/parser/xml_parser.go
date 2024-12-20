@@ -3,6 +3,7 @@ package parser
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
+	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
 )
 
 type XmlParser struct {
@@ -33,6 +34,27 @@ func NewXmlParser(xmlParser *job_definitions.XmlParser) *XmlParser {
 
 	return &XmlParser{
 		Root:    types.StringValue(xmlParser.Root),
+		Columns: columns,
+	}
+}
+
+func (xmlParser *XmlParser) ToXmlParserInput() *job_definitions2.XmlParserInput {
+	if xmlParser == nil {
+		return nil
+	}
+	columns := make([]job_definitions2.XmlParserColumnInput, 0, len(xmlParser.Columns))
+	for _, input := range xmlParser.Columns {
+		column := job_definitions2.XmlParserColumnInput{
+			Name:   input.Format.String(),
+			Type:   input.ColumnOrder.String(),
+			Path:   input.Path.String(),
+			Format: input.Format.ValueStringPointer(),
+		}
+		columns = append(columns, column)
+	}
+
+	return &job_definitions2.XmlParserInput{
+		Root:    xmlParser.Root.String(),
 		Columns: columns,
 	}
 }

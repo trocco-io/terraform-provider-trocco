@@ -3,6 +3,7 @@ package parser
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
+	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
 )
 
 type CsvParser struct {
@@ -67,6 +68,43 @@ func NewCsvParser(csvParser *job_definitions.CsvParser) *CsvParser {
 		DefaultDate:          types.StringValue(csvParser.DefaultDate),
 		Newline:              types.StringValue(csvParser.Newline),
 		Charset:              types.StringPointerValue(csvParser.Charset),
+		Columns:              columns,
+	}
+}
+
+func (csvParser *CsvParser) ToCsvParserInput() *job_definitions2.CsvParserInput {
+	if csvParser == nil {
+		return nil
+	}
+	columns := make([]job_definitions2.CsvParserColumnInput, 0, len(csvParser.Columns))
+	for _, input := range csvParser.Columns {
+		column := job_definitions2.CsvParserColumnInput{
+			Name:   input.Name.ValueString(),
+			Type:   input.Type.ValueString(),
+			Format: input.Format.ValueStringPointer(),
+			Date:   input.Date.ValueStringPointer(),
+		}
+		columns = append(columns, column)
+	}
+
+	return &job_definitions2.CsvParserInput{
+		Delimiter:            csvParser.Delimiter.ValueString(),
+		Quote:                csvParser.Quote.ValueStringPointer(),
+		Escape:               csvParser.Escape.ValueStringPointer(),
+		SkipHeaderLines:      csvParser.SkipHeaderLines.ValueInt64(),
+		NullStringEnabled:    csvParser.NullStringEnabled.ValueBoolPointer(),
+		NullString:           csvParser.NullString.ValueStringPointer(),
+		TrimIfNotQuoted:      csvParser.TrimIfNotQuoted.ValueBool(),
+		QuotesInQuotedFields: csvParser.QuotesInQuotedFields.ValueString(),
+		CommentLineMarker:    csvParser.CommentLineMarker.ValueStringPointer(),
+		AllowOptionalColumns: csvParser.AllowOptionalColumns.ValueBool(),
+		AllowExtraColumns:    csvParser.AllowExtraColumns.ValueBool(),
+		MaxQuotedSizeLimit:   csvParser.MaxQuotedSizeLimit.ValueInt64(),
+		StopOnInvalidRecord:  csvParser.StopOnInvalidRecord.ValueBool(),
+		DefaultTimeZone:      csvParser.DefaultTimeZone.ValueString(),
+		DefaultDate:          csvParser.DefaultDate.ValueString(),
+		Newline:              csvParser.Newline.ValueString(),
+		Charset:              csvParser.Charset.ValueStringPointer(),
 		Columns:              columns,
 	}
 }

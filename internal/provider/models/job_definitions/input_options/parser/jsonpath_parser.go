@@ -3,6 +3,7 @@ package parser
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
+	jobdefinitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
 )
 
 type JsonpathParser struct {
@@ -37,6 +38,28 @@ func NewJsonPathParser(jsonpathParser *job_definitions.JsonpathParser) *Jsonpath
 	return &JsonpathParser{
 		Root:            types.StringValue(jsonpathParser.Root),
 		DefaultTimeZone: types.StringValue(jsonpathParser.DefaultTimeZone),
+		Columns:         columns,
+	}
+}
+
+func (jsonpathParser *JsonpathParser) ToJsonpathParserInput() *jobdefinitions2.JsonpathParserInput {
+	if jsonpathParser == nil {
+		return nil
+	}
+	columns := make([]jobdefinitions2.JsonpathParserColumnInput, 0, len(jsonpathParser.Columns))
+	for _, input := range jsonpathParser.Columns {
+		column := jobdefinitions2.JsonpathParserColumnInput{
+			Name:     input.Name.String(),
+			Type:     input.Type.String(),
+			TimeZone: input.TimeZone.ValueStringPointer(),
+			Format:   input.Format.ValueStringPointer(),
+		}
+		columns = append(columns, column)
+	}
+
+	return &jobdefinitions2.JsonpathParserInput{
+		Root:            jsonpathParser.Root.String(),
+		DefaultTimeZone: jsonpathParser.DefaultTimeZone.String(),
 		Columns:         columns,
 	}
 }

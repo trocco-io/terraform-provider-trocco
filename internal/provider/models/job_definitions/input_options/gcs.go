@@ -3,6 +3,7 @@ package input_options
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions/input_options"
+	input_options2 "terraform-provider-trocco/internal/client/parameters/job_definitions/input_options"
 	"terraform-provider-trocco/internal/provider/models"
 	"terraform-provider-trocco/internal/provider/models/job_definitions/input_options/parser"
 )
@@ -47,5 +48,30 @@ func NewGcsInputOption(gcsInputOption *input_options.GcsInputOption) *GcsInputOp
 		ParquetParsers:            parser.NewParquetParser(gcsInputOption.ParquetParsers),
 		CustomVariableSettings:    models.NewCustomVariableSettings(gcsInputOption.CustomVariableSettings),
 		Decoder:                   NewDecoder(gcsInputOption.Decoder),
+	}
+}
+
+func (gcsInputOption *GcsInputOption) ToInput() *input_options2.GcsInputOptionInput {
+	if gcsInputOption == nil {
+		return nil
+	}
+
+	return &input_options2.GcsInputOptionInput{
+		GcsConnectionID:           gcsInputOption.GcsConnectionID.ValueInt64(),
+		Bucket:                    gcsInputOption.Bucket.String(),
+		PathPrefix:                gcsInputOption.PathPrefix.ValueStringPointer(),
+		IncrementalLoadingEnabled: gcsInputOption.IncrementalLoadingEnabled.ValueBool(),
+		LastPath:                  gcsInputOption.LastPath.ValueStringPointer(),
+		StopWhenFileNotFound:      gcsInputOption.StopWhenFileNotFound.ValueBool(),
+		DecompressionType:         gcsInputOption.DecompressionType.ValueStringPointer(),
+		CsvParsers:                gcsInputOption.CsvParsers.ToCsvParserInput(),
+		JsonlParsers:              gcsInputOption.JsonlParsers.ToJsonlParserInput(),
+		JsonpathParsers:           gcsInputOption.JsonpathParsers.ToJsonpathParserInput(),
+		LtsvParsers:               gcsInputOption.LtsvParsers.ToLtsvParserInput(),
+		ExcelParsers:              gcsInputOption.ExcelParsers.ToExcelParserInput(),
+		XmlParsers:                gcsInputOption.XmlParsers.ToXmlParserInput(),
+		ParquetParsers:            gcsInputOption.ParquetParsers.ToParquetParserInput(),
+		CustomVariableSettings:    models.ToCustomVariableSettingInputs(gcsInputOption.CustomVariableSettings),
+		Decoder:                   gcsInputOption.Decoder.ToDecoderInput(),
 	}
 }

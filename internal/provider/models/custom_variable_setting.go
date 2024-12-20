@@ -3,13 +3,14 @@ package models
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities"
+	"terraform-provider-trocco/internal/client/parameters"
 )
 
 type CustomVariableSetting struct {
 	Name      types.String `tfsdk:"name"`
 	Type      types.String `tfsdk:"type"`
 	Value     types.String `tfsdk:"value"`
-	Quantity  types.Int32  `tfsdk:"quantity"`
+	Quantity  types.Int64  `tfsdk:"quantity"`
 	Unit      types.String `tfsdk:"unit"`
 	Direction types.String `tfsdk:"direction"`
 	Format    types.String `tfsdk:"format"`
@@ -24,7 +25,7 @@ func NewCustomVariableSetting(customVariableSetting *entities.CustomVariableSett
 		Name:      types.StringValue(customVariableSetting.Name),
 		Type:      types.StringValue(customVariableSetting.Type),
 		Value:     types.StringPointerValue(customVariableSetting.Value),
-		Quantity:  types.Int32PointerValue(customVariableSetting.Quantity),
+		Quantity:  types.Int64PointerValue(customVariableSetting.Quantity),
 		Unit:      types.StringPointerValue(customVariableSetting.Unit),
 		Direction: types.StringPointerValue(customVariableSetting.Direction),
 		Format:    types.StringPointerValue(customVariableSetting.Format),
@@ -41,4 +42,24 @@ func NewCustomVariableSettings(customVariableSettings *[]entities.CustomVariable
 		settings = append(settings, *NewCustomVariableSetting(&setting))
 	}
 	return &settings
+}
+
+func ToCustomVariableSettingInputs(settings *[]CustomVariableSetting) *[]parameters.CustomVariableSettingInput {
+	if settings == nil {
+		return nil
+	}
+	inputs := make([]parameters.CustomVariableSettingInput, 0, len(*settings))
+	for _, setting := range *settings {
+		inputs = append(inputs, parameters.CustomVariableSettingInput{
+			Name:      setting.Name.ValueString(),
+			Type:      setting.Type.ValueString(),
+			Value:     setting.Value.ValueStringPointer(),
+			Quantity:  &parameters.NullableInt64{Valid: !setting.Quantity.IsNull(), Value: setting.Quantity.ValueInt64()},
+			Unit:      setting.Unit.ValueStringPointer(),
+			Direction: setting.Direction.ValueStringPointer(),
+			Format:    setting.Format.ValueStringPointer(),
+			TimeZone:  setting.TimeZone.ValueStringPointer(),
+		})
+	}
+	return &inputs
 }
