@@ -1,6 +1,9 @@
 package job_definitions
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"terraform-provider-trocco/internal/client/entities/job_definitions"
+)
 
 type JobDefinitionNotification struct {
 	DestinationType  types.String `tfsdk:"destination_type"`
@@ -13,4 +16,27 @@ type JobDefinitionNotification struct {
 	RecordOperator   types.String `tfsdk:"record_operator"`
 	RecordType       types.String `tfsdk:"record_type"`
 	Minutes          types.Int64  `tfsdk:"minutes"`
+}
+
+func NewJobDefinitionNotifications(jobDefinitionNotifications *[]job_definitions.JobDefinitionNotification) *[]JobDefinitionNotification {
+	if jobDefinitionNotifications == nil {
+		return nil
+	}
+	notifications := make([]JobDefinitionNotification, 0, len(*jobDefinitionNotifications))
+	for _, input := range *jobDefinitionNotifications {
+		notification := JobDefinitionNotification{
+			DestinationType:  types.StringValue(input.DestinationType),
+			SlackChannelID:   types.Int64PointerValue(input.SlackChannelID),
+			EmailID:          types.Int64PointerValue(input.EmailID),
+			NotificationType: types.StringValue(input.NotificationType),
+			NotifyWhen:       types.StringPointerValue(input.NotifyWhen),
+			Message:          types.StringValue(input.Message),
+			RecordCount:      types.Int64PointerValue(input.RecordCount),
+			RecordOperator:   types.StringPointerValue(input.RecordOperator),
+			RecordType:       types.StringPointerValue(input.RecordType),
+			Minutes:          types.Int64PointerValue(input.Minutes),
+		}
+		notifications = append(notifications, notification)
+	}
+	return &notifications
 }
