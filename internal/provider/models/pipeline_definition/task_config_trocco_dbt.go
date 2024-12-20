@@ -7,22 +7,22 @@ import (
 	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
 )
 
-type DBTTaskConfig struct {
+type TroccoDBTTaskConfig struct {
 	DefinitionID types.Int64 `tfsdk:"definition_id"`
 }
 
-func NewDBTTaskConfig(c *we.DBTTaskConfig) *DBTTaskConfig {
+func NewTroccoDBTTaskConfig(c *we.TroccoDBTTaskConfig) *TroccoDBTTaskConfig {
 	if c == nil {
 		return nil
 	}
 
-	return &DBTTaskConfig{
+	return &TroccoDBTTaskConfig{
 		DefinitionID: types.Int64Value(c.DefinitionID),
 	}
 }
 
-func (c *DBTTaskConfig) ToInput() *wp.DBTTaskConfig {
-	return &wp.DBTTaskConfig{
+func (c *TroccoDBTTaskConfig) ToInput() *wp.TroccoDBTTaskConfig {
+	return &wp.TroccoDBTTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
 	}
 }

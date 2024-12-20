@@ -14,7 +14,6 @@ type Task struct {
 	Type           types.String `tfsdk:"type"`
 
 	BigqueryDataCheckConfig       *BigqueryDataCheckTaskConfig       `tfsdk:"bigquery_data_check_config"`
-	DBTConfig                     *DBTTaskConfig                     `tfsdk:"dbt_config"`
 	HTTPRequestConfig             *HTTPRequestTaskConfig             `tfsdk:"http_request_config"`
 	RedshiftDataCheckConfig       *RedshiftDataCheckTaskConfig       `tfsdk:"redshift_data_check_config"`
 	SlackNotificationConfig       *SlackNotificationTaskConfig       `tfsdk:"slack_notification_config"`
@@ -22,6 +21,7 @@ type Task struct {
 	TableauDataExtractionConfig   *TableauDataExtractionTaskConfig   `tfsdk:"tableau_data_extraction_config"`
 	TroccoAgentConfig             *TroccoAgentTaskConfig             `tfsdk:"trocco_agent_config"`
 	TroccoBigQueryDatamartConfig  *TroccoBigqueryDatamartTaskConfig  `tfsdk:"trocco_bigquery_datamart_config"`
+	TroccoDBTConfig               *TroccoDBTTaskConfig               `tfsdk:"trocco_dbt_config"`
 	TroccoPipelineConfig          *TroccoPipelineTaskConfig          `tfsdk:"trocco_pipeline_config"`
 	TroccoRedshiftDatamartConfig  *TroccoRedshiftDatamartTaskConfig  `tfsdk:"trocco_redshift_datamart_config"`
 	TroccoSnowflakeDatamartConfig *TroccoSnowflakeDatamartTaskConfig `tfsdk:"trocco_snowflake_datamart_config"`
@@ -73,7 +73,7 @@ func NewTask(en *we.Task, keys map[int64]types.String) *Task {
 
 		TroccoTransferConfig:          NewTroccoTransferTaskConfig(en.TroccoTransferConfig),
 		TroccoTransferBulkConfig:      NewTroccoTransferBulkTaskConfig(en.TroccoTransferBulkConfig),
-		DBTConfig:                     NewDBTTaskConfig(en.DBTConfig),
+		TroccoDBTConfig:               NewTroccoDBTTaskConfig(en.TroccoDBTConfig),
 		TroccoAgentConfig:             NewTroccoAgentTaskConfig(en.TroccoAgentConfig),
 		TroccoBigQueryDatamartConfig:  NewTroccoBigqueryDatamartTaskConfig(en.TroccoBigQueryDatamartConfig),
 		TroccoRedshiftDatamartConfig:  NewTroccoRedshiftDatamartTaskConfig(en.TroccoRedshiftDatamartConfig),
@@ -101,8 +101,8 @@ func (t *Task) ToInput(identifiers map[string]int64) *wp.Task {
 	if t.TroccoTransferBulkConfig != nil {
 		in.TroccoTransferBulkConfig = t.TroccoTransferBulkConfig.ToInput()
 	}
-	if t.DBTConfig != nil {
-		in.DBTConfig = t.DBTConfig.ToInput()
+	if t.TroccoDBTConfig != nil {
+		in.TroccoDBTConfig = t.TroccoDBTConfig.ToInput()
 	}
 	if t.TroccoAgentConfig != nil {
 		in.TroccoAgentConfig = t.TroccoAgentConfig.ToInput()

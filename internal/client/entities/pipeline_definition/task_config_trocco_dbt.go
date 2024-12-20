@@ -1,5 +1,5 @@
 package pipeline_definition
 
-type DBTTaskConfig struct {
+type TroccoDBTTaskConfig struct {
 	DefinitionID int64 `json:"definition_id"`
 }

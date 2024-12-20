@@ -7,7 +7,7 @@ type Task struct {
 
 	TroccoTransferConfig          *TroccoTransferTaskConfig          `json:"trocco_transfer_config,omitempty"`
 	TroccoTransferBulkConfig      *TroccoTransferBulkTaskConfig      `json:"trocco_transfer_bulk_config,omitempty"`
-	DBTConfig                     *DBTTaskConfig                     `json:"dbt_config,omitempty"`
+	TroccoDBTConfig               *TroccoDBTTaskConfig               `json:"trocco_dbt_config,omitempty"`
 	TroccoAgentConfig             *TroccoAgentTaskConfig             `json:"trocco_agent_config,omitempty"`
 	TroccoBigQueryDatamartConfig  *TroccoBigqueryDatamartTaskConfig  `json:"trocco_bigquery_datamart_config,omitempty"`
 	TroccoRedshiftDatamartConfig  *TroccoRedshiftDatamartTaskConfig  `json:"trocco_redshift_datamart_config,omitempty"`
