@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
+	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -92,8 +93,8 @@ func (r *userResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Computed:  true,
 				Sensitive: true,
 				PlanModifiers: []planmodifier.String{
-					&IgnoreChangesPlanModifier{},
-					&RequiredOnCreatePlanModifier{"password"},
+					&troccoPlanModifier.IgnoreChangesPlanModifier{},
+					&troccoPlanModifier.RequiredOnCreatePlanModifier{AttributeName: "password"},
 				},
 				Validators: []validator.String{
 					// see: https://documents.trocco.io/docs/password-policy
