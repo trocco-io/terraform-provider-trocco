@@ -3,12 +3,12 @@
 page_title: "trocco Provider"
 subcategory: ""
 description: |-
-  The TROCCO Terraform Provider enables the management of TROCCO resources using the TROCCO API feature, which is available only with our paid plans.
+  The Terraform Provider for TROCCO enables the management of TROCCO resources using the TROCCO API feature, which is available only with our paid plans.
 ---
 
 # trocco Provider
 
-The TROCCO Terraform Provider enables the management of TROCCO resources using the TROCCO API feature, which is available only with our paid plans.
+The Terraform Provider for TROCCO enables the management of TROCCO resources using the TROCCO API feature, which is available only with our paid plans.
 
 ## Example Usage
 
