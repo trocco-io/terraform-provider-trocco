@@ -13,6 +13,7 @@ import (
 	"terraform-provider-trocco/internal/provider/models"
 	"terraform-provider-trocco/internal/provider/models/job_definitions"
 	"terraform-provider-trocco/internal/provider/models/job_definitions/filter"
+	"terraform-provider-trocco/internal/provider/models/job_definitions/input_options"
 )
 
 type jobDefinitionResourceModel struct {
@@ -71,6 +72,31 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 		}
 	}
 
+	var filterMasks []filter2.FilterMaskInput
+	for _, f := range model.FilterMasks {
+		filterMasks = append(filterMasks, f.ToInput())
+	}
+
+	var filterGsub []filter2.FilterGsubInput
+	for _, f := range model.FilterGsub {
+		filterGsub = append(filterGsub, f.ToInput())
+	}
+
+	var filterStringTransforms []filter2.FilterStringTransformInput
+	for _, f := range model.FilterStringTransforms {
+		filterStringTransforms = append(filterStringTransforms, f.ToInput())
+	}
+
+	var filterHashes []filter2.FilterHashInput
+	for _, f := range model.FilterHashes {
+		filterHashes = append(filterHashes, f.ToInput())
+	}
+
+	var filterUnixTimeconversions []filter2.FilterUnixTimeConversionInput
+	for _, f := range model.FilterUnixTimeConversions {
+		filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
+	}
+
 	return &client.CreateJobDefinitionInput{
 		Name:                      model.Name.ValueString(),
 		Description:               model.Description.ValueStringPointer(),
@@ -79,13 +105,13 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 		RetryLimit:                model.RetryLimit.ValueInt64(),
 		ResourceEnhancement:       model.ResourceEnhancement.ValueStringPointer(),
 		FilterColumns:             filterColumns,
-		FilterRows:                nil,
-		FilterMasks:               nil,
-		FilterAddTime:             nil,
-		FilterGsub:                nil,
-		FilterStringTransforms:    nil,
-		FilterHashes:              nil,
-		FilterUnixTimeConversions: nil,
+		FilterRows:                model.FilterRows.ToInput(),
+		FilterMasks:               filterMasks,
+		FilterAddTime:             model.FilterAddTime.ToInput(),
+		FilterGsub:                filterGsub,
+		FilterStringTransforms:    filterStringTransforms,
+		FilterHashes:              filterHashes,
+		FilterUnixTimeConversions: filterUnixTimeconversions,
 		InputOptionType:           model.InputOptionType.ValueString(),
 		InputOption:               model.InputOption.ToInput(),
 		OutputOptionType:          model.OutputOptionType.ValueString(),
@@ -96,55 +122,65 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 	}
 }
 
-//
-//func (r *connectionResource) Create(
-//	ctx context.Context,
-//	req resource.CreateRequest,
-//	resp *resource.CreateResponse,
-//) {
-//	plan := &jobDefinitionResourceModel{}
-//	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
-//	if resp.Diagnostics.HasError() {
-//		return
-//	}
-//
-//	jobDefinition, err := r.client.CreateJobDefinition(
-//		plan.ToCreateJobDefinitionInput(),
-//	)
-//	if err != nil {
-//		resp.Diagnostics.AddError(
-//			"Creating job definition",
-//			fmt.Sprintf("Unable to create job definition, got error: %s", err),
-//		)
-//		return
-//	}
-//
-//	newState := jobDefinitionResourceModel{
-//		ID:                        types.Int64Value(jobDefinition.ID),
-//		Name:                      types.StringValue(jobDefinition.Name),
-//		Description:               types.StringPointerValue(jobDefinition.Description),
-//		ResourceGroupID:           types.Int64PointerValue(jobDefinition.ResourceGroupID),
-//		IsRunnableConcurrently:    types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
-//		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
-//		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
-//		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
-//		InputOption:               job_definitions.InputOption{},
-//		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
-//		OutputOption:              job_definitions.OutputOption{},
-//		FilterColumns:             nil,
-//		FilterRows:                nil,
-//		FilterMasks:               nil,
-//		FilterAddTime:             nil,
-//		FilterGsub:                nil,
-//		FilterStringTransforms:    nil,
-//		FilterHashes:              nil,
-//		FilterUnixTimeConversions: nil,
-//		Notifications:             toJobDefinitionNotificationModel(jobDefinition.Notifications),
-//		Schedules:                 nil,
-//		Labels:                    nil,
-//	}
-//	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
-//}
+func (r *jobDefinitionResource) Create(
+	ctx context.Context,
+	req resource.CreateRequest,
+	resp *resource.CreateResponse,
+) {
+	plan := &jobDefinitionResourceModel{}
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	jobDefinition, err := r.client.CreateJobDefinition(
+		plan.ToCreateJobDefinitionInput(),
+	)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Creating job definition",
+			fmt.Sprintf("Unable to create job definition, got error: %s", err),
+		)
+		return
+	}
+
+	var mysqlInputOptionColumns []input_options.InputOptionColumn
+	for _, m := range jobDefinition.InputOption.MySQLInputOption.InputOptionColumns {
+		mysqlInputOptionColumns = append(mysqlInputOptionColumns, input_options.InputOptionColumn{
+			Name: types.StringValue(m.Name),
+			Type: types.StringValue(m.Type),
+		})
+	}
+
+	newState := jobDefinitionResourceModel{
+		ID:                     types.Int64Value(jobDefinition.ID),
+		Name:                   types.StringValue(jobDefinition.Name),
+		Description:            types.StringPointerValue(jobDefinition.Description),
+		ResourceGroupID:        types.Int64PointerValue(jobDefinition.ResourceGroupID),
+		IsRunnableConcurrently: types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
+		RetryLimit:             types.Int64Value(jobDefinition.RetryLimit),
+		ResourceEnhancement:    types.StringPointerValue(jobDefinition.ResourceEnhancement),
+		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
+		InputOption: job_definitions.InputOption{
+			MySQLInputOption: input_options.ToMysqlInputOptionModel(jobDefinition.InputOption.MySQLInputOption),
+			GcsInputOption:   input_options.ToGcsInputOptionModel(jobDefinition.InputOption.GcsInputOption),
+		},
+		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
+		OutputOption:              job_definitions.OutputOption{},
+		FilterColumns:             nil,
+		FilterRows:                nil,
+		FilterMasks:               nil,
+		FilterAddTime:             nil,
+		FilterGsub:                nil,
+		FilterStringTransforms:    nil,
+		FilterHashes:              nil,
+		FilterUnixTimeConversions: nil,
+		Notifications:             toJobDefinitionNotificationModel(jobDefinition.Notifications),
+		Schedules:                 nil,
+		Labels:                    nil,
+	}
+	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
+}
 
 func toJobDefinitionNotificationModel(notifications *[]job_definitions3.JobDefinitionNotification) *[]job_definitions.JobDefinitionNotification {
 	if notifications == nil {

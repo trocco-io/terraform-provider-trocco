@@ -27,3 +27,12 @@ func (decoder *Decoder) ToDecoderInput() *job_definitions2.DecoderInput {
 		MatchName: decoder.MatchName.ValueString(),
 	}
 }
+
+func ToDecoderModel(decoder *job_definitions.Decoder) *Decoder {
+	if decoder == nil {
+		return nil
+	}
+	return &Decoder{
+		MatchName: types.StringValue(decoder.MatchName),
+	}
+}

@@ -20,11 +20,11 @@ type MySQLInputOption struct {
 	DefaultTimeZone           types.String                    `tfsdk:"default_time_zone"`
 	UseLegacyDatetimeCode     types.Bool                      `tfsdk:"use_legacy_datetime_code"`
 	MySQLConnectionID         types.Int64                     `tfsdk:"mysql_connection_id"`
-	InputOptionColumns        []inputOptionColumn             `tfsdk:"input_option_columns"`
+	InputOptionColumns        []InputOptionColumn             `tfsdk:"input_option_columns"`
 	CustomVariableSettings    *[]models.CustomVariableSetting `tfsdk:"custom_variable_settings"`
 }
 
-type inputOptionColumn struct {
+type InputOptionColumn struct {
 	Name types.String `tfsdk:"name"`
 	Type types.String `tfsdk:"type"`
 }
@@ -52,13 +52,13 @@ func NewMysqlInputOption(mysqlInputOption *input_options.MySQLInputOption) *MySQ
 	}
 }
 
-func newInputOptionColumns(inputOptionColumns []input_options.InputOptionColumn) []inputOptionColumn {
+func newInputOptionColumns(inputOptionColumns []input_options.InputOptionColumn) []InputOptionColumn {
 	if inputOptionColumns == nil {
 		return nil
 	}
-	columns := make([]inputOptionColumn, 0, len(inputOptionColumns))
+	columns := make([]InputOptionColumn, 0, len(inputOptionColumns))
 	for _, input := range inputOptionColumns {
-		column := inputOptionColumn{
+		column := InputOptionColumn{
 			Name: types.StringValue(input.Name),
 			Type: types.StringValue(input.Type),
 		}
@@ -90,7 +90,7 @@ func (mysqlInputOption *MySQLInputOption) ToInput() *input_options2.MySQLInputOp
 	}
 }
 
-func toInputOptionColumnsInput(columns []inputOptionColumn) []input_options2.InputOptionColumn {
+func toInputOptionColumnsInput(columns []InputOptionColumn) []input_options2.InputOptionColumn {
 	if columns == nil {
 		return nil
 	}
@@ -103,4 +103,34 @@ func toInputOptionColumnsInput(columns []inputOptionColumn) []input_options2.Inp
 		})
 	}
 	return inputs
+}
+
+func ToMysqlInputOptionModel(mysqlInputOption *input_options.MySQLInputOption) *MySQLInputOption {
+	if mysqlInputOption == nil {
+		return nil
+	}
+
+	var mysqlInputOptionColumns []InputOptionColumn
+	for _, m := range mysqlInputOption.InputOptionColumns {
+		mysqlInputOptionColumns = append(mysqlInputOptionColumns, InputOptionColumn{
+			Name: types.StringValue(m.Name),
+			Type: types.StringValue(m.Type),
+		})
+	}
+	return &MySQLInputOption{
+		Database:                  types.StringValue(mysqlInputOption.Database),
+		Table:                     types.StringPointerValue(mysqlInputOption.Table),
+		Query:                     types.StringValue(mysqlInputOption.Query),
+		IncrementalColumns:        types.StringPointerValue(mysqlInputOption.IncrementalColumns),
+		LastRecord:                types.StringPointerValue(mysqlInputOption.LastRecord),
+		IncrementalLoadingEnabled: types.BoolValue(mysqlInputOption.IncrementalLoadingEnabled),
+		FetchRows:                 types.Int64Value(mysqlInputOption.FetchRows),
+		ConnectTimeout:            types.Int64Value(mysqlInputOption.ConnectTimeout),
+		SocketTimeout:             types.Int64Value(mysqlInputOption.SocketTimeout),
+		DefaultTimeZone:           types.StringPointerValue(mysqlInputOption.DefaultTimeZone),
+		UseLegacyDatetimeCode:     types.BoolPointerValue(mysqlInputOption.UseLegacyDatetimeCode),
+		MySQLConnectionID:         types.Int64Value(mysqlInputOption.MySQLConnectionID),
+		InputOptionColumns:        mysqlInputOptionColumns,
+		CustomVariableSettings:    models.CustomVariableEntitiesToModels(mysqlInputOption.CustomVariableSettings),
+	}
 }

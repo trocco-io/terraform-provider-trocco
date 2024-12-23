@@ -108,3 +108,45 @@ func (csvParser *CsvParser) ToCsvParserInput() *job_definitions2.CsvParserInput 
 		Columns:              columns,
 	}
 }
+
+func ToCsvParserModel(csvParser *job_definitions.CsvParser) *CsvParser {
+	return &CsvParser{
+		Delimiter:            types.StringValue(csvParser.Delimiter),
+		Quote:                types.StringPointerValue(csvParser.Quote),
+		Escape:               types.StringPointerValue(csvParser.Escape),
+		SkipHeaderLines:      types.Int64Value(csvParser.SkipHeaderLines),
+		NullStringEnabled:    types.BoolPointerValue(csvParser.NullStringEnabled),
+		NullString:           types.StringPointerValue(csvParser.NullString),
+		TrimIfNotQuoted:      types.BoolValue(csvParser.TrimIfNotQuoted),
+		QuotesInQuotedFields: types.StringValue(csvParser.QuotesInQuotedFields),
+		CommentLineMarker:    types.StringPointerValue(csvParser.CommentLineMarker),
+		AllowOptionalColumns: types.BoolValue(csvParser.AllowExtraColumns),
+		AllowExtraColumns:    types.BoolValue(csvParser.AllowOptionalColumns),
+		MaxQuotedSizeLimit:   types.Int64Value(csvParser.MaxQuotedSizeLimit),
+		StopOnInvalidRecord:  types.BoolValue(csvParser.StopOnInvalidRecord),
+		DefaultTimeZone:      types.StringValue(csvParser.DefaultTimeZone),
+		DefaultDate:          types.StringValue(csvParser.DefaultDate),
+		Newline:              types.StringValue(csvParser.Newline),
+		Charset:              types.StringPointerValue(csvParser.Charset),
+		Columns:              toCsvParserColumnsModel(csvParser.Columns),
+	}
+}
+
+func toCsvParserColumnsModel(columns []job_definitions.CsvParserColumn) []CsvParserColumn {
+	if columns == nil {
+		return nil
+	}
+
+	outputs := make([]CsvParserColumn, 0, len(columns))
+	for _, input := range columns {
+		column := CsvParserColumn{
+			Name:        types.StringValue(input.Name),
+			Type:        types.StringValue(input.Type),
+			Format:      types.StringPointerValue(input.Format),
+			Date:        types.StringPointerValue(input.Date),
+			ColumnOrder: types.Int64Value(input.ColumnOrder),
+		}
+		outputs = append(outputs, column)
+	}
+	return outputs
+}

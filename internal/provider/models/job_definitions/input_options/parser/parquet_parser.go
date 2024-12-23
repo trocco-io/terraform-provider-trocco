@@ -52,3 +52,21 @@ func (parquetParser *ParquetParser) ToParquetParserInput() *job_definitions2.Par
 
 	return &job_definitions2.ParquetParserInput{Columns: columns}
 }
+
+func ToParquetParserModel(parquetParser *job_definitions.ParquetParser) *ParquetParser {
+	if parquetParser == nil {
+		return nil
+	}
+	columns := make([]ParquetParserColumn, 0, len(parquetParser.Columns))
+	for _, input := range parquetParser.Columns {
+		column := ParquetParserColumn{
+			Name:        types.StringValue(input.Name),
+			Type:        types.StringValue(input.Type),
+			Format:      types.StringPointerValue(input.Format),
+			ColumnOrder: types.Int64Value(input.ColumnOrder),
+		}
+		columns = append(columns, column)
+	}
+
+	return &ParquetParser{Columns: columns}
+}

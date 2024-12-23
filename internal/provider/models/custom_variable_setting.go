@@ -63,3 +63,23 @@ func ToCustomVariableSettingInputs(settings *[]CustomVariableSetting) *[]paramet
 	}
 	return &inputs
 }
+
+func CustomVariableEntitiesToModels(customVariables *[]entities.CustomVariableSetting) *[]CustomVariableSetting {
+	if customVariables == nil {
+		return nil
+	}
+	outputs := make([]CustomVariableSetting, 0, len(*customVariables))
+	for _, setting := range *customVariables {
+		outputs = append(outputs, CustomVariableSetting{
+			Name:      types.StringValue(setting.Name),
+			Type:      types.StringValue(setting.Type),
+			Value:     types.StringPointerValue(setting.Value),
+			Quantity:  types.Int64PointerValue(setting.Quantity),
+			Unit:      types.StringPointerValue(setting.Unit),
+			Direction: types.StringPointerValue(setting.Direction),
+			Format:    types.StringPointerValue(setting.Format),
+			TimeZone:  types.StringPointerValue(setting.TimeZone),
+		})
+	}
+	return &outputs
+}

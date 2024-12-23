@@ -3,6 +3,7 @@ package filter
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	filterEntities "terraform-provider-trocco/internal/client/entities/job_definitions/filter"
+	filter2 "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
 )
 
 type FilterMask struct {
@@ -28,4 +29,16 @@ func NewFilterMasks(filterMasks []filterEntities.FilterMask) []FilterMask {
 		outputs = append(outputs, filterMask)
 	}
 	return outputs
+}
+
+func (filterMask FilterMask) ToInput() filter2.FilterMaskInput {
+	input := filter2.FilterMaskInput{
+		Name:       filterMask.Name.ValueString(),
+		MaskType:   filterMask.MaskType.ValueInt32(),
+		Length:     filterMask.Length.ValueInt64Pointer(),
+		Pattern:    filterMask.Pattern.ValueStringPointer(),
+		StartIndex: filterMask.StartIndex.ValueInt64Pointer(),
+		EndIndex:   filterMask.EndIndex.ValueInt64Pointer(),
+	}
+	return input
 }

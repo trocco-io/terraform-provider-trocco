@@ -3,6 +3,7 @@ package filter
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	filterEntities "terraform-provider-trocco/internal/client/entities/job_definitions/filter"
+	"terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
 )
 
 type FilterGsub struct {
@@ -22,4 +23,12 @@ func NewFilterGsub(filterGsubs []filterEntities.FilterGsub) []FilterGsub {
 		outputs = append(outputs, filterGsub)
 	}
 	return outputs
+}
+
+func (filterGsub FilterGsub) ToInput() filter.FilterGsubInput {
+	return filter.FilterGsubInput{
+		ColumnName: filterGsub.ColumnName.ValueString(),
+		Pattern:    filterGsub.Pattern.ValueString(),
+		To:         filterGsub.To.ValueString(),
+	}
 }

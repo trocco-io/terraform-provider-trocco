@@ -2,7 +2,7 @@ package filter
 
 type FilterMaskInput struct {
 	Name       string  `json:"name"`
-	MaskType   int     `json:"mask_type"`
+	MaskType   int32   `json:"mask_type"`
 	Length     *int64  `json:"length,omitempty"`
 	Pattern    *string `json:"pattern,omitempty"`
 	StartIndex *int64  `json:"start_index,omitempty"`

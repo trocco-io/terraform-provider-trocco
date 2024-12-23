@@ -3,6 +3,7 @@ package filter
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions/filter"
+	filter2 "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
 )
 
 type FilterHash struct {
@@ -18,4 +19,10 @@ func NewFilterHashes(filterHashes []filter.FilterHash) []FilterHash {
 		outputs = append(outputs, filterHash)
 	}
 	return outputs
+}
+
+func (filterHash FilterHash) ToInput() filter2.FilterHashInput {
+	return filter2.FilterHashInput{
+		Name: filterHash.Name.ValueString(),
+	}
 }

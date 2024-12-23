@@ -69,3 +69,28 @@ func (jsonlParser *JsonlParser) ToJsonlParserInput() *job_definitions2.JsonlPars
 		Columns:             columns,
 	}
 }
+
+func ToJsonlParserModel(jsonlParser *job_definitions.JsonlParser) *JsonlParser {
+	if jsonlParser == nil {
+		return nil
+	}
+
+	columns := make([]JsonlParserColumn, 0, len(jsonlParser.Columns))
+	for _, input := range jsonlParser.Columns {
+		column := JsonlParserColumn{
+			Name:        types.StringValue(input.Name),
+			Type:        types.StringValue(input.Type),
+			TimeZone:    types.StringPointerValue(input.TimeZone),
+			Format:      types.StringPointerValue(input.Format),
+			ColumnOrder: types.Int64Value(input.ColumnOrder),
+		}
+		columns = append(columns, column)
+	}
+	return &JsonlParser{
+		StopOnInvalidRecord: types.BoolPointerValue(jsonlParser.StopOnInvalidRecord),
+		DefaultTimeZone:     types.StringValue(jsonlParser.DefaultTimeZone),
+		Newline:             types.StringPointerValue(jsonlParser.Newline),
+		Charset:             types.StringPointerValue(jsonlParser.Charset),
+		Columns:             columns,
+	}
+}
