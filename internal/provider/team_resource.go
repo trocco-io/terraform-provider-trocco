@@ -55,7 +55,7 @@ func (r *teamResource) Configure(ctx context.Context, req resource.ConfigureRequ
 
 func (r *teamResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Provides a Trocco team resource.",
+		MarkdownDescription: "Provides a TROCCO team resource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				Computed: true,
