@@ -5,7 +5,8 @@ import (
 )
 
 type TroccoTransferBulkTaskConfig struct {
-	DefinitionID      int64            `json:"definition_id,omitempty"`
-	IsStoppedOnErrors *p.NullableBool  `json:"is_stopped_on_errors,omitempty"`
-	MaxErrors         *p.NullableInt64 `json:"max_errors,omitempty"`
+	DefinitionID               int64            `json:"definition_id,omitempty"`
+	IsParallelExecutionAllowed *p.NullableBool  `json:"is_parallel_execution_allowed,omitempty"`
+	IsStoppedOnErrors          *p.NullableBool  `json:"is_stopped_on_errors,omitempty"`
+	MaxErrors                  *p.NullableInt64 `json:"max_errors,omitempty"`
 }

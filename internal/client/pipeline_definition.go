@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
+	p "terraform-provider-trocco/internal/client/parameters"
 	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
 )
 
@@ -28,23 +29,37 @@ type GetWorkflowsInput struct {
 }
 
 type CreateWorkflowInput struct {
-	Name             string              `json:"name"`
-	Description      *string             `json:"description,omitempty"`
-	Labels           *[]string           `json:"labels,omitempty"`
-	Notifications    *[]wp.Notification  `json:"notifications,omitempty"`
-	Schedules        *[]wp.Schedule      `json:"schedules,omitempty"`
-	Tasks            []wp.Task           `json:"tasks,omitempty"`
-	TaskDependencies []wp.TaskDependency `json:"task_dependencies,omitempty"`
+	ResourceGroupID              *p.NullableInt64    `json:"resource_group_id"`
+	Name                         string              `json:"name"`
+	Description                  *string             `json:"description,omitempty"`
+	MaxTaskParallelism           *p.NullableInt64    `json:"max_task_parallelism,omitempty"`
+	ExecutionTimeout             *p.NullableInt64    `json:"execution_timeout,omitempty"`
+	MaxRetries                   *p.NullableInt64    `json:"max_retries,omitempty"`
+	MinRetryInterval             *p.NullableInt64    `json:"min_retry_interval,omitempty"`
+	IsConcurrentExecutionSkipped *p.NullableBool     `json:"is_concurrent_execution_skipped,omitempty"`
+	IsStoppedOnErrors            *p.NullableBool     `json:"is_stopped_on_errors,omitempty"`
+	Labels                       *[]string           `json:"labels,omitempty"`
+	Notifications                *[]wp.Notification  `json:"notifications,omitempty"`
+	Schedules                    *[]wp.Schedule      `json:"schedules,omitempty"`
+	Tasks                        []wp.Task           `json:"tasks,omitempty"`
+	TaskDependencies             []wp.TaskDependency `json:"task_dependencies,omitempty"`
 }
 
 type UpdateWorkflowInput struct {
-	Name             *string             `json:"name,omitempty"`
-	Description      *string             `json:"description,omitempty"`
-	Labels           *[]string           `json:"labels,omitempty"`
-	Notifications    *[]wp.Notification  `json:"notifications,omitempty"`
-	Schedules        *[]wp.Schedule      `json:"schedules,omitempty"`
-	Tasks            []wp.Task           `json:"tasks,omitempty"`
-	TaskDependencies []wp.TaskDependency `json:"task_dependencies,omitempty"`
+	ResourceGroupID              *p.NullableInt64    `json:"resource_group_id"`
+	Name                         *string             `json:"name,omitempty"`
+	Description                  *string             `json:"description,omitempty"`
+	MaxTaskParallelism           *p.NullableInt64    `json:"max_task_parallelism,omitempty"`
+	ExecutionTimeout             *p.NullableInt64    `json:"execution_timeout,omitempty"`
+	MaxRetries                   *p.NullableInt64    `json:"max_retries,omitempty"`
+	MinRetryInterval             *p.NullableInt64    `json:"min_retry_interval,omitempty"`
+	IsConcurrentExecutionSkipped *p.NullableBool     `json:"is_concurrent_execution_skipped,omitempty"`
+	IsStoppedOnErrors            *p.NullableBool     `json:"is_stopped_on_errors,omitempty"`
+	Labels                       *[]string           `json:"labels,omitempty"`
+	Notifications                *[]wp.Notification  `json:"notifications,omitempty"`
+	Schedules                    *[]wp.Schedule      `json:"schedules,omitempty"`
+	Tasks                        []wp.Task           `json:"tasks,omitempty"`
+	TaskDependencies             []wp.TaskDependency `json:"task_dependencies,omitempty"`
 }
 
 // -----------------------------------------------------------------------------

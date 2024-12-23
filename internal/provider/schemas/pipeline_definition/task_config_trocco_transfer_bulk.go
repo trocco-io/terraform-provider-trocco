@@ -11,6 +11,10 @@ func NewTroccoTransferBulkTaskConfigAttribute() schema.Attribute {
 			"definition_id": schema.Int64Attribute{
 				Required: true,
 			},
+			"is_parallel_execution_allowed": schema.BoolAttribute{
+				Optional: true,
+				Computed: true,
+			},
 			"is_stopped_on_errors": schema.BoolAttribute{
 				Optional: true,
 				Computed: true,

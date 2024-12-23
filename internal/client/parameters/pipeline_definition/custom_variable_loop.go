@@ -9,9 +9,10 @@ import (
 //
 
 type CustomVariableLoop struct {
-	Type              string           `json:"type,omitempty"`
-	IsStoppedOnErrors *p.NullableBool  `json:"is_stopped_on_errors,omitempty"`
-	MaxErrors         *p.NullableInt64 `json:"max_errors,omitempty"`
+	Type                       string           `json:"type,omitempty"`
+	IsParallelExecutionAllowed *p.NullableBool  `json:"is_parallel_execution_allowed,omitempty"`
+	IsStoppedOnErrors          *p.NullableBool  `json:"is_stopped_on_errors,omitempty"`
+	MaxErrors                  *p.NullableInt64 `json:"max_errors,omitempty"`
 
 	StringConfig    *StringCustomVariableLoopConfig    `json:"string_config,omitempty"`
 	PeriodConfig    *PeriodCustomVariableLoopConfig    `json:"period_config,omitempty"`

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"terraform-provider-trocco/internal/client"
 	pdp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
+	"terraform-provider-trocco/internal/provider/models"
 	pdm "terraform-provider-trocco/internal/provider/models/pipeline_definition"
 	pds "terraform-provider-trocco/internal/provider/schemas/pipeline_definition"
 
@@ -28,14 +29,21 @@ var (
 )
 
 type pipelineDefinitionModel struct {
-	ID               types.Int64           `tfsdk:"id"`
-	Name             types.String          `tfsdk:"name"`
-	Description      types.String          `tfsdk:"description"`
-	Labels           []types.String        `tfsdk:"labels"`
-	Notifications    []pdm.Notification    `tfsdk:"notifications"`
-	Schedules        []pdm.Schedule        `tfsdk:"schedules"`
-	Tasks            []*pdm.Task           `tfsdk:"tasks"`
-	TaskDependencies []*pdm.TaskDependency `tfsdk:"task_dependencies"`
+	ID                           types.Int64           `tfsdk:"id"`
+	ResourceGroupID              types.Int64           `tfsdk:"resource_group_id"`
+	Name                         types.String          `tfsdk:"name"`
+	Description                  types.String          `tfsdk:"description"`
+	MaxTaskParallelism           types.Int64           `tfsdk:"max_task_parallelism"`
+	ExecutionTimeout             types.Int64           `tfsdk:"execution_timeout"`
+	MaxRetries                   types.Int64           `tfsdk:"max_retries"`
+	MinRetryInterval             types.Int64           `tfsdk:"min_retry_interval"`
+	IsConcurrentExecutionSkipped types.Bool            `tfsdk:"is_concurrent_execution_skipped"`
+	IsStoppedOnErrors            types.Bool            `tfsdk:"is_stopped_on_errors"`
+	Labels                       []types.String        `tfsdk:"labels"`
+	Notifications                []pdm.Notification    `tfsdk:"notifications"`
+	Schedules                    []pdm.Schedule        `tfsdk:"schedules"`
+	Tasks                        []*pdm.Task           `tfsdk:"tasks"`
+	TaskDependencies             []*pdm.TaskDependency `tfsdk:"task_dependencies"`
 }
 
 func (m *pipelineDefinitionModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
@@ -68,13 +76,20 @@ func (m *pipelineDefinitionModel) ToCreateWorkflowInput() *client.CreateWorkflow
 	}
 
 	return &client.CreateWorkflowInput{
-		Name:             m.Name.ValueString(),
-		Description:      m.Description.ValueStringPointer(),
-		Labels:           lo.ToPtr(labels),
-		Notifications:    lo.ToPtr(notifications),
-		Schedules:        lo.ToPtr(schedules),
-		Tasks:            tasks,
-		TaskDependencies: taskDependencies,
+		ResourceGroupID:              models.NewNullableInt64(m.ResourceGroupID),
+		Name:                         m.Name.ValueString(),
+		Description:                  m.Description.ValueStringPointer(),
+		MaxTaskParallelism:           models.NewNullableInt64(m.MaxTaskParallelism),
+		ExecutionTimeout:             models.NewNullableInt64(m.ExecutionTimeout),
+		MaxRetries:                   models.NewNullableInt64(m.MaxRetries),
+		MinRetryInterval:             models.NewNullableInt64(m.MinRetryInterval),
+		IsConcurrentExecutionSkipped: models.NewNullableBool(m.IsConcurrentExecutionSkipped),
+		IsStoppedOnErrors:            models.NewNullableBool(m.IsStoppedOnErrors),
+		Labels:                       lo.ToPtr(labels),
+		Notifications:                lo.ToPtr(notifications),
+		Schedules:                    lo.ToPtr(schedules),
+		Tasks:                        tasks,
+		TaskDependencies:             taskDependencies,
 	}
 }
 
@@ -113,13 +128,20 @@ func (m *pipelineDefinitionModel) ToUpdateWorkflowInput(state *pipelineDefinitio
 	}
 
 	return &client.UpdateWorkflowInput{
-		Name:             m.Name.ValueStringPointer(),
-		Description:      m.Description.ValueStringPointer(),
-		Labels:           lo.ToPtr(labels),
-		Notifications:    lo.ToPtr(notifications),
-		Schedules:        lo.ToPtr(schedules),
-		Tasks:            tasks,
-		TaskDependencies: taskDependencies,
+		ResourceGroupID:              models.NewNullableInt64(m.ResourceGroupID),
+		Name:                         m.Name.ValueStringPointer(),
+		Description:                  m.Description.ValueStringPointer(),
+		MaxTaskParallelism:           models.NewNullableInt64(m.MaxTaskParallelism),
+		ExecutionTimeout:             models.NewNullableInt64(m.ExecutionTimeout),
+		MaxRetries:                   models.NewNullableInt64(m.MaxRetries),
+		MinRetryInterval:             models.NewNullableInt64(m.MinRetryInterval),
+		IsConcurrentExecutionSkipped: models.NewNullableBool(m.IsConcurrentExecutionSkipped),
+		IsStoppedOnErrors:            models.NewNullableBool(m.IsStoppedOnErrors),
+		Labels:                       lo.ToPtr(labels),
+		Notifications:                lo.ToPtr(notifications),
+		Schedules:                    lo.ToPtr(schedules),
+		Tasks:                        tasks,
+		TaskDependencies:             taskDependencies,
 	}
 }
 
@@ -180,6 +202,12 @@ func (r *workflowResource) Schema(
 					int64validator.AtLeast(1),
 				},
 			},
+			"resource_group_id": schema.Int64Attribute{
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
+				},
+			},
 			"name": schema.StringAttribute{
 				Required: true,
 				Validators: []validator.String{
@@ -191,6 +219,30 @@ func (r *workflowResource) Schema(
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
+			},
+			"max_task_parallelism": schema.Int64Attribute{
+				Optional: true,
+				Computed: true,
+			},
+			"execution_timeout": schema.Int64Attribute{
+				Optional: true,
+				Computed: true,
+			},
+			"max_retries": schema.Int64Attribute{
+				Optional: true,
+				Computed: true,
+			},
+			"min_retry_interval": schema.Int64Attribute{
+				Optional: true,
+				Computed: true,
+			},
+			"is_concurrent_execution_skipped": schema.BoolAttribute{
+				Optional: true,
+				Computed: true,
+			},
+			"is_stopped_on_errors": schema.BoolAttribute{
+				Optional: true,
+				Computed: true,
 			},
 			"labels": schema.SetAttribute{
 				Optional:    true,
@@ -458,14 +510,21 @@ func (r *workflowResource) Create(
 	}
 
 	newState := pipelineDefinitionModel{
-		ID:               types.Int64Value(workflow.ID),
-		Name:             types.StringPointerValue(workflow.Name),
-		Description:      types.StringPointerValue(workflow.Description),
-		Labels:           pdm.NewLabels(workflow.Labels, plan.Labels == nil),
-		Notifications:    pdm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
-		Schedules:        pdm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
-		Tasks:            pdm.NewTasks(workflow.Tasks, keys),
-		TaskDependencies: pdm.NewTaskDependencies(workflow.TaskDependencies, keys),
+		ID:                           types.Int64Value(workflow.ID),
+		ResourceGroupID:              types.Int64PointerValue(workflow.ResourceGroupID),
+		Name:                         types.StringPointerValue(workflow.Name),
+		Description:                  types.StringPointerValue(workflow.Description),
+		MaxTaskParallelism:           types.Int64PointerValue(workflow.MaxTaskParallelism),
+		ExecutionTimeout:             types.Int64PointerValue(workflow.ExecutionTimeout),
+		MaxRetries:                   types.Int64PointerValue(workflow.MaxRetries),
+		MinRetryInterval:             types.Int64PointerValue(workflow.MinRetryInterval),
+		IsConcurrentExecutionSkipped: types.BoolPointerValue(workflow.IsConcurrentExecutionSkipped),
+		IsStoppedOnErrors:            types.BoolPointerValue(workflow.IsStoppedOnErrors),
+		Labels:                       pdm.NewLabels(workflow.Labels, plan.Labels == nil),
+		Notifications:                pdm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
+		Schedules:                    pdm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
+		Tasks:                        pdm.NewTasks(workflow.Tasks, keys),
+		TaskDependencies:             pdm.NewTaskDependencies(workflow.TaskDependencies, keys),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -505,14 +564,21 @@ func (r *workflowResource) Update(
 	}
 
 	newState := pipelineDefinitionModel{
-		ID:               types.Int64Value(workflow.ID),
-		Name:             types.StringPointerValue(workflow.Name),
-		Description:      types.StringPointerValue(workflow.Description),
-		Labels:           pdm.NewLabels(workflow.Labels, plan.Labels == nil),
-		Notifications:    pdm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
-		Schedules:        pdm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
-		Tasks:            pdm.NewTasks(workflow.Tasks, keys),
-		TaskDependencies: pdm.NewTaskDependencies(workflow.TaskDependencies, keys),
+		ID:                           types.Int64Value(workflow.ID),
+		ResourceGroupID:              types.Int64PointerValue(workflow.ResourceGroupID),
+		Name:                         types.StringPointerValue(workflow.Name),
+		Description:                  types.StringPointerValue(workflow.Description),
+		MaxTaskParallelism:           types.Int64PointerValue(workflow.MaxTaskParallelism),
+		ExecutionTimeout:             types.Int64PointerValue(workflow.ExecutionTimeout),
+		MaxRetries:                   types.Int64PointerValue(workflow.MaxRetries),
+		MinRetryInterval:             types.Int64PointerValue(workflow.MinRetryInterval),
+		IsConcurrentExecutionSkipped: types.BoolPointerValue(workflow.IsConcurrentExecutionSkipped),
+		IsStoppedOnErrors:            types.BoolPointerValue(workflow.IsStoppedOnErrors),
+		Labels:                       pdm.NewLabels(workflow.Labels, plan.Labels == nil),
+		Notifications:                pdm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
+		Schedules:                    pdm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
+		Tasks:                        pdm.NewTasks(workflow.Tasks, keys),
+		TaskDependencies:             pdm.NewTaskDependencies(workflow.TaskDependencies, keys),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -545,14 +611,21 @@ func (r *workflowResource) Read(
 	}
 
 	newState := pipelineDefinitionModel{
-		ID:               types.Int64Value(workflow.ID),
-		Name:             types.StringPointerValue(workflow.Name),
-		Description:      types.StringPointerValue(workflow.Description),
-		Tasks:            pdm.NewTasks(workflow.Tasks, keys),
-		Labels:           pdm.NewLabels(workflow.Labels, state.Labels == nil),
-		Notifications:    pdm.NewNotifications(workflow.Notifications, state.Notifications == nil),
-		Schedules:        pdm.NewSchedules(workflow.Schedules, state.Schedules == nil),
-		TaskDependencies: state.TaskDependencies,
+		ID:                           types.Int64Value(workflow.ID),
+		ResourceGroupID:              types.Int64PointerValue(workflow.ResourceGroupID),
+		Name:                         types.StringPointerValue(workflow.Name),
+		Description:                  types.StringPointerValue(workflow.Description),
+		MaxTaskParallelism:           types.Int64PointerValue(workflow.MaxTaskParallelism),
+		ExecutionTimeout:             types.Int64PointerValue(workflow.ExecutionTimeout),
+		MaxRetries:                   types.Int64PointerValue(workflow.MaxRetries),
+		MinRetryInterval:             types.Int64PointerValue(workflow.MinRetryInterval),
+		IsConcurrentExecutionSkipped: types.BoolPointerValue(workflow.IsConcurrentExecutionSkipped),
+		IsStoppedOnErrors:            types.BoolPointerValue(workflow.IsStoppedOnErrors),
+		Tasks:                        pdm.NewTasks(workflow.Tasks, keys),
+		Labels:                       pdm.NewLabels(workflow.Labels, state.Labels == nil),
+		Notifications:                pdm.NewNotifications(workflow.Notifications, state.Notifications == nil),
+		Schedules:                    pdm.NewSchedules(workflow.Schedules, state.Schedules == nil),
+		TaskDependencies:             state.TaskDependencies,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
