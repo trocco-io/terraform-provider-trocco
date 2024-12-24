@@ -3,12 +3,12 @@
 page_title: "trocco_team Resource - trocco"
 subcategory: ""
 description: |-
-  Provides a Trocco team resource.
+  Provides a TROCCO team resource.
 ---
 
 # trocco_team (Resource)
 
-Provides a Trocco team resource.
+Provides a TROCCO team resource.
 
 ## Example Usage
 
