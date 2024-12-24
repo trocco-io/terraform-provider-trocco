@@ -52,6 +52,6 @@ func (filterRows *FilterRows) ToInput() *filter2.FilterRowsInput {
 	}
 	return &filter2.FilterRowsInput{
 		Condition:           filterRows.Condition.ValueString(),
-		FilterRowConditions: nil,
+		FilterRowConditions: conditions,
 	}
 }

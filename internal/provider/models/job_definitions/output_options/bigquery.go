@@ -111,13 +111,20 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.Big
 		return nil
 	}
 
-	clusteringFields := make([]string, 0, len(*bigqueryOutputOption.BigQueryOutputOptionClusteringFields))
-	for _, input := range *bigqueryOutputOption.BigQueryOutputOptionClusteringFields {
-		clusteringFields = append(clusteringFields, input.ValueString())
+	var clusteringFields []string
+	if bigqueryOutputOption.BigQueryOutputOptionClusteringFields != nil {
+		clusteringFields = make([]string, 0, len(*bigqueryOutputOption.BigQueryOutputOptionClusteringFields))
+		for _, input := range *bigqueryOutputOption.BigQueryOutputOptionClusteringFields {
+			clusteringFields = append(clusteringFields, input.ValueString())
+		}
 	}
-	mergeKeys := make([]string, 0, len(*bigqueryOutputOption.BigQueryOutputOptionMergeKeys))
-	for _, input := range *bigqueryOutputOption.BigQueryOutputOptionMergeKeys {
-		mergeKeys = append(mergeKeys, input.ValueString())
+
+	var mergeKeys []string
+	if bigqueryOutputOption.BigQueryOutputOptionMergeKeys != nil {
+		mergeKeys = make([]string, 0, len(*bigqueryOutputOption.BigQueryOutputOptionMergeKeys))
+		for _, input := range *bigqueryOutputOption.BigQueryOutputOptionMergeKeys {
+			mergeKeys = append(mergeKeys, input.ValueString())
+		}
 	}
 
 	return &output_options2.BigQueryOutputOptionInput{

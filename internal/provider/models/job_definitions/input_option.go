@@ -2,6 +2,7 @@ package job_definitions
 
 import (
 	"terraform-provider-trocco/internal/client"
+	input_options2 "terraform-provider-trocco/internal/client/parameters/job_definitions/input_options"
 	"terraform-provider-trocco/internal/provider/models/job_definitions/input_options"
 )
 
@@ -20,6 +21,11 @@ func NewInputOption(inputOption client.InputOption) *InputOption {
 func (inputOption InputOption) ToInput() client.InputOptionInput {
 	return client.InputOptionInput{
 		// GcsInputOption:   inputOption.GcsInputOption.ToInput(),
-		MySQLInputOption: inputOption.MySQLInputOption.ToInput(),
+		MySQLInputOption: func() *input_options2.MySQLInputOptionInput {
+			if inputOption.MySQLInputOption == nil {
+				return nil
+			}
+			return inputOption.MySQLInputOption.ToInput()
+		}(),
 	}
 }
