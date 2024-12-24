@@ -7,7 +7,7 @@ import (
 )
 
 func Tasks() schema.Attribute {
-	return schema.SetNestedAttribute{
+	return schema.ListNestedAttribute{
 		MarkdownDescription: "The tasks of the workflow.",
 		Optional:            true,
 		NestedObject: schema.NestedAttributeObject{

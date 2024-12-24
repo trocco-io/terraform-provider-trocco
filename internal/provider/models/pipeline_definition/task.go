@@ -29,20 +29,20 @@ type Task struct {
 	TroccoTransferConfig          *TroccoTransferTaskConfig          `tfsdk:"trocco_transfer_config"`
 }
 
-func NewTasks(ens []*we.Task, keys map[int64]types.String) []*Task {
+func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDefinition) []*Task {
 	if ens == nil {
 		return nil
 	}
 
 	var tasks []*Task
-	for _, en := range ens {
-		tasks = append(tasks, NewTask(en, keys))
+	for i, en := range ens {
+		tasks = append(tasks, NewTask(en, keys, previous.Tasks[i]))
 	}
 
 	return tasks
 }
 
-func NewTask(en *we.Task, keys map[int64]types.String) *Task {
+func NewTask(en *we.Task, keys map[int64]types.String, previous *Task) *Task {
 	if en == nil {
 		return nil
 	}
@@ -84,7 +84,7 @@ func NewTask(en *we.Task, keys map[int64]types.String) *Task {
 		BigqueryDataCheckConfig:       NewBigqueryDataCheckTaskConfig(en.BigqueryDataCheckConfig),
 		SnowflakeDataCheckConfig:      NewSnowflakeDataCheckTaskConfig(en.SnowflakeDataCheckConfig),
 		RedshiftDataCheckConfig:       NewRedshiftDataCheckTaskConfig(en.RedshiftDataCheckConfig),
-		HTTPRequestConfig:             NewHTTPRequestTaskConfig(en.HTTPRequestConfig),
+		HTTPRequestConfig:             NewHTTPRequestTaskConfig(en.HTTPRequestConfig, previous.HTTPRequestConfig),
 	}
 }
 

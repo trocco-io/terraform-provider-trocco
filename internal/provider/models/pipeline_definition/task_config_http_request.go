@@ -4,6 +4,7 @@ import (
 	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameters"
 	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
+	"terraform-provider-trocco/internal/provider/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -19,20 +20,20 @@ type HTTPRequestTaskConfig struct {
 	CustomVariables   []CustomVariable       `tfsdk:"custom_variables"`
 }
 
-func NewHTTPRequestTaskConfig(c *we.HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
-	if c == nil {
+func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
+	if en == nil {
 		return nil
 	}
 
 	return &HTTPRequestTaskConfig{
-		Name:              types.StringValue(c.Name),
-		ConnectionID:      types.Int64PointerValue(c.ConnectionID),
-		Method:            types.StringValue(c.HTTPMethod),
-		URL:               types.StringValue(c.URL),
-		RequestBody:       types.StringPointerValue(c.RequestBody),
-		RequestHeaders:    NewHTTPRequestHeaders(c.RequestHeaders),
-		RequestParameters: NewHTTPRequestParameters(c.RequestParameters),
-		CustomVariables:   NewCustomVariables(c.CustomVariables),
+		Name:              types.StringValue(en.Name),
+		ConnectionID:      types.Int64PointerValue(en.ConnectionID),
+		Method:            types.StringValue(en.HTTPMethod),
+		URL:               types.StringValue(en.URL),
+		RequestBody:       types.StringPointerValue(en.RequestBody),
+		RequestHeaders:    NewHTTPRequestHeaders(en.RequestHeaders, previous.RequestHeaders),
+		RequestParameters: NewHTTPRequestParameters(en.RequestParameters, previous.RequestParameters),
+		CustomVariables:   NewCustomVariables(en.CustomVariables),
 	}
 }
 
@@ -42,7 +43,7 @@ func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 		requestHeaders = append(requestHeaders, wp.RequestHeader{
 			Key:     e.Key.ValueString(),
 			Value:   e.Value.ValueString(),
-			Masking: &p.NullableBool{Valid: !e.Masking.IsNull(), Value: e.Masking.ValueBool()},
+			Masking: models.NewNullableBool(e.Masking),
 		})
 	}
 
@@ -51,7 +52,7 @@ func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 		requestParameters = append(requestParameters, wp.RequestParameter{
 			Key:     e.Key.ValueString(),
 			Value:   e.Value.ValueString(),
-			Masking: &p.NullableBool{Valid: !e.Masking.IsNull(), Value: e.Masking.ValueBool()},
+			Masking: models.NewNullableBool(e.Masking),
 		})
 	}
 
@@ -78,23 +79,35 @@ type HTTPRequestHeader struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-func NewHTTPRequestHeaders(ens []we.RequestHeader) []HTTPRequestHeader {
+func NewHTTPRequestHeaders(ens []we.RequestHeader, previous []HTTPRequestHeader) []HTTPRequestHeader {
 	if len(ens) == 0 {
 		return nil
 	}
 
 	var mds []HTTPRequestHeader
-	for _, en := range ens {
-		mds = append(mds, NewHTTPRequestHeader(en))
+	for i, en := range ens {
+		mds = append(mds, NewHTTPRequestHeader(en, previous[i]))
 	}
 
 	return mds
 }
 
-func NewHTTPRequestHeader(en we.RequestHeader) HTTPRequestHeader {
+func NewHTTPRequestHeader(en we.RequestHeader, previous HTTPRequestHeader) HTTPRequestHeader {
+	// TODO: Temporary Hack
+	value := types.StringValue(en.Value)
+	if en.Masking {
+		value = previous.Value
+
+		// if en.Key == "Authorization" {
+		// 	value = types.StringValue("Bearer foo")
+		// } else {
+		// 	value = types.StringValue("bar")
+		// }
+	}
+
 	return HTTPRequestHeader{
 		Key:     types.StringValue(en.Key),
-		Value:   types.StringValue(en.Value),
+		Value:   value,
 		Masking: types.BoolValue(en.Masking),
 	}
 }
@@ -105,23 +118,35 @@ type HTTPRequestParameter struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-func NewHTTPRequestParameters(ens []we.RequestParameter) []HTTPRequestParameter {
+func NewHTTPRequestParameters(ens []we.RequestParameter, previous []HTTPRequestParameter) []HTTPRequestParameter {
 	if len(ens) == 0 {
 		return nil
 	}
 
 	var mds []HTTPRequestParameter
-	for _, en := range ens {
-		mds = append(mds, NewHTTPRequestParameter(en))
+	for i, en := range ens {
+		mds = append(mds, NewHTTPRequestParameter(en, previous[i]))
 	}
 
 	return mds
 }
 
-func NewHTTPRequestParameter(en we.RequestParameter) HTTPRequestParameter {
+func NewHTTPRequestParameter(en we.RequestParameter, previous HTTPRequestParameter) HTTPRequestParameter {
+	// TODO: Temporary Hack
+	value := types.StringValue(en.Value)
+	if en.Masking {
+		value = previous.Value
+
+		// if en.Key == "Authorization" {
+		// 	value = types.StringValue("Bearer foo")
+		// } else {
+		// 	value = types.StringValue("bar")
+		// }
+	}
+
 	return HTTPRequestParameter{
 		Key:     types.StringValue(en.Key),
-		Value:   types.StringValue(en.Value),
+		Value:   value,
 		Masking: types.BoolValue(en.Masking),
 	}
 }

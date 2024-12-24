@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
-	pdp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
-	"terraform-provider-trocco/internal/provider/models"
 	pdm "terraform-provider-trocco/internal/provider/models/pipeline_definition"
 	pds "terraform-provider-trocco/internal/provider/schemas/pipeline_definition"
 
@@ -19,7 +17,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/samber/lo"
 )
 
 var (
@@ -27,123 +24,6 @@ var (
 	_ resource.ResourceWithConfigure   = &workflowResource{}
 	_ resource.ResourceWithImportState = &workflowResource{}
 )
-
-type pipelineDefinitionModel struct {
-	ID                           types.Int64           `tfsdk:"id"`
-	ResourceGroupID              types.Int64           `tfsdk:"resource_group_id"`
-	Name                         types.String          `tfsdk:"name"`
-	Description                  types.String          `tfsdk:"description"`
-	MaxTaskParallelism           types.Int64           `tfsdk:"max_task_parallelism"`
-	ExecutionTimeout             types.Int64           `tfsdk:"execution_timeout"`
-	MaxRetries                   types.Int64           `tfsdk:"max_retries"`
-	MinRetryInterval             types.Int64           `tfsdk:"min_retry_interval"`
-	IsConcurrentExecutionSkipped types.Bool            `tfsdk:"is_concurrent_execution_skipped"`
-	IsStoppedOnErrors            types.Bool            `tfsdk:"is_stopped_on_errors"`
-	Labels                       []types.String        `tfsdk:"labels"`
-	Notifications                []pdm.Notification    `tfsdk:"notifications"`
-	Schedules                    []pdm.Schedule        `tfsdk:"schedules"`
-	Tasks                        []*pdm.Task           `tfsdk:"tasks"`
-	TaskDependencies             []*pdm.TaskDependency `tfsdk:"task_dependencies"`
-}
-
-func (m *pipelineDefinitionModel) ToCreateWorkflowInput() *client.CreateWorkflowInput {
-	labels := []string{}
-	for _, l := range m.Labels {
-		labels = append(labels, l.ValueString())
-	}
-
-	notifications := []pdp.Notification{}
-	for _, n := range m.Notifications {
-		notifications = append(notifications, n.ToInput())
-	}
-
-	schedules := []pdp.Schedule{}
-	for _, s := range m.Schedules {
-		schedules = append(schedules, s.ToInput())
-	}
-
-	tasks := []pdp.Task{}
-	for _, t := range m.Tasks {
-		tasks = append(tasks, *t.ToInput(map[string]int64{}))
-	}
-
-	taskDependencies := []pdp.TaskDependency{}
-	for _, d := range m.TaskDependencies {
-		taskDependencies = append(taskDependencies, pdp.TaskDependency{
-			Source:      d.Source.ValueString(),
-			Destination: d.Destination.ValueString(),
-		})
-	}
-
-	return &client.CreateWorkflowInput{
-		ResourceGroupID:              models.NewNullableInt64(m.ResourceGroupID),
-		Name:                         m.Name.ValueString(),
-		Description:                  m.Description.ValueStringPointer(),
-		MaxTaskParallelism:           models.NewNullableInt64(m.MaxTaskParallelism),
-		ExecutionTimeout:             models.NewNullableInt64(m.ExecutionTimeout),
-		MaxRetries:                   models.NewNullableInt64(m.MaxRetries),
-		MinRetryInterval:             models.NewNullableInt64(m.MinRetryInterval),
-		IsConcurrentExecutionSkipped: models.NewNullableBool(m.IsConcurrentExecutionSkipped),
-		IsStoppedOnErrors:            models.NewNullableBool(m.IsStoppedOnErrors),
-		Labels:                       lo.ToPtr(labels),
-		Notifications:                lo.ToPtr(notifications),
-		Schedules:                    lo.ToPtr(schedules),
-		Tasks:                        tasks,
-		TaskDependencies:             taskDependencies,
-	}
-}
-
-func (m *pipelineDefinitionModel) ToUpdateWorkflowInput(state *pipelineDefinitionModel) *client.UpdateWorkflowInput {
-	labels := []string{}
-	for _, l := range m.Labels {
-		labels = append(labels, l.ValueString())
-	}
-
-	notifications := []pdp.Notification{}
-	for _, n := range m.Notifications {
-		notifications = append(notifications, n.ToInput())
-	}
-
-	schedules := []pdp.Schedule{}
-	for _, s := range m.Schedules {
-		schedules = append(schedules, s.ToInput())
-	}
-
-	stateTaskIdentifiers := map[string]int64{}
-	for _, s := range state.Tasks {
-		stateTaskIdentifiers[s.Key.ValueString()] = s.TaskIdentifier.ValueInt64()
-	}
-
-	tasks := []pdp.Task{}
-	for _, t := range m.Tasks {
-		tasks = append(tasks, *t.ToInput(stateTaskIdentifiers))
-	}
-
-	taskDependencies := []pdp.TaskDependency{}
-	for _, d := range m.TaskDependencies {
-		taskDependencies = append(taskDependencies, pdp.TaskDependency{
-			Source:      d.Source.ValueString(),
-			Destination: d.Destination.ValueString(),
-		})
-	}
-
-	return &client.UpdateWorkflowInput{
-		ResourceGroupID:              models.NewNullableInt64(m.ResourceGroupID),
-		Name:                         m.Name.ValueStringPointer(),
-		Description:                  m.Description.ValueStringPointer(),
-		MaxTaskParallelism:           models.NewNullableInt64(m.MaxTaskParallelism),
-		ExecutionTimeout:             models.NewNullableInt64(m.ExecutionTimeout),
-		MaxRetries:                   models.NewNullableInt64(m.MaxRetries),
-		MinRetryInterval:             models.NewNullableInt64(m.MinRetryInterval),
-		IsConcurrentExecutionSkipped: models.NewNullableBool(m.IsConcurrentExecutionSkipped),
-		IsStoppedOnErrors:            models.NewNullableBool(m.IsStoppedOnErrors),
-		Labels:                       lo.ToPtr(labels),
-		Notifications:                lo.ToPtr(notifications),
-		Schedules:                    lo.ToPtr(schedules),
-		Tasks:                        tasks,
-		TaskDependencies:             taskDependencies,
-	}
-}
 
 type workflowResource struct {
 	client *client.TroccoClient
@@ -296,14 +176,14 @@ func (r *workflowResource) Create(
 	req resource.CreateRequest,
 	resp *resource.CreateResponse,
 ) {
-	plan := &pipelineDefinitionModel{}
+	plan := &pdm.PipelineDefinition{}
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	workflow, err := r.client.CreateWorkflow(
-		plan.ToCreateWorkflowInput(),
+		plan.ToCreateInput(),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -318,7 +198,7 @@ func (r *workflowResource) Create(
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	newState := pipelineDefinitionModel{
+	newState := pdm.PipelineDefinition{
 		ID:                           types.Int64Value(workflow.ID),
 		ResourceGroupID:              types.Int64PointerValue(workflow.ResourceGroupID),
 		Name:                         types.StringPointerValue(workflow.Name),
@@ -332,9 +212,10 @@ func (r *workflowResource) Create(
 		Labels:                       pdm.NewLabels(workflow.Labels, plan.Labels == nil),
 		Notifications:                pdm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
 		Schedules:                    pdm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
-		Tasks:                        pdm.NewTasks(workflow.Tasks, keys),
+		Tasks:                        pdm.NewTasks(workflow.Tasks, keys, plan),
 		TaskDependencies:             pdm.NewTaskDependencies(workflow.TaskDependencies, keys),
 	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 
@@ -343,13 +224,13 @@ func (r *workflowResource) Update(
 	req resource.UpdateRequest,
 	resp *resource.UpdateResponse,
 ) {
-	state := &pipelineDefinitionModel{}
+	state := &pdm.PipelineDefinition{}
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	plan := &pipelineDefinitionModel{}
+	plan := &pdm.PipelineDefinition{}
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -372,7 +253,7 @@ func (r *workflowResource) Update(
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	newState := pipelineDefinitionModel{
+	newState := pdm.PipelineDefinition{
 		ID:                           types.Int64Value(workflow.ID),
 		ResourceGroupID:              types.Int64PointerValue(workflow.ResourceGroupID),
 		Name:                         types.StringPointerValue(workflow.Name),
@@ -386,7 +267,7 @@ func (r *workflowResource) Update(
 		Labels:                       pdm.NewLabels(workflow.Labels, plan.Labels == nil),
 		Notifications:                pdm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
 		Schedules:                    pdm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
-		Tasks:                        pdm.NewTasks(workflow.Tasks, keys),
+		Tasks:                        pdm.NewTasks(workflow.Tasks, keys, plan),
 		TaskDependencies:             pdm.NewTaskDependencies(workflow.TaskDependencies, keys),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
@@ -397,7 +278,7 @@ func (r *workflowResource) Read(
 	req resource.ReadRequest,
 	resp *resource.ReadResponse,
 ) {
-	state := &pipelineDefinitionModel{}
+	state := &pdm.PipelineDefinition{}
 	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -419,7 +300,7 @@ func (r *workflowResource) Read(
 		keys[t.TaskIdentifier.ValueInt64()] = t.Key
 	}
 
-	newState := pipelineDefinitionModel{
+	newState := pdm.PipelineDefinition{
 		ID:                           types.Int64Value(workflow.ID),
 		ResourceGroupID:              types.Int64PointerValue(workflow.ResourceGroupID),
 		Name:                         types.StringPointerValue(workflow.Name),
@@ -430,7 +311,7 @@ func (r *workflowResource) Read(
 		MinRetryInterval:             types.Int64PointerValue(workflow.MinRetryInterval),
 		IsConcurrentExecutionSkipped: types.BoolPointerValue(workflow.IsConcurrentExecutionSkipped),
 		IsStoppedOnErrors:            types.BoolPointerValue(workflow.IsStoppedOnErrors),
-		Tasks:                        pdm.NewTasks(workflow.Tasks, keys),
+		Tasks:                        pdm.NewTasks(workflow.Tasks, keys, state),
 		Labels:                       pdm.NewLabels(workflow.Labels, state.Labels == nil),
 		Notifications:                pdm.NewNotifications(workflow.Notifications, state.Notifications == nil),
 		Schedules:                    pdm.NewSchedules(workflow.Schedules, state.Schedules == nil),
@@ -444,7 +325,7 @@ func (r *workflowResource) Delete(
 	req resource.DeleteRequest,
 	resp *resource.DeleteResponse,
 ) {
-	s := &pipelineDefinitionModel{}
+	s := &pdm.PipelineDefinition{}
 	resp.Diagnostics.Append(req.State.Get(ctx, s)...)
 	if resp.Diagnostics.HasError() {
 		return
