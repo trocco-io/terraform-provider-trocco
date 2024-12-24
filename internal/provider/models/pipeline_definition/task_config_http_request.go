@@ -93,16 +93,9 @@ func NewHTTPRequestHeaders(ens []we.RequestHeader, previous []HTTPRequestHeader)
 }
 
 func NewHTTPRequestHeader(en we.RequestHeader, previous HTTPRequestHeader) HTTPRequestHeader {
-	// TODO: Temporary Hack
 	value := types.StringValue(en.Value)
 	if en.Masking {
 		value = previous.Value
-
-		// if en.Key == "Authorization" {
-		// 	value = types.StringValue("Bearer foo")
-		// } else {
-		// 	value = types.StringValue("bar")
-		// }
 	}
 
 	return HTTPRequestHeader{
@@ -132,16 +125,9 @@ func NewHTTPRequestParameters(ens []we.RequestParameter, previous []HTTPRequestP
 }
 
 func NewHTTPRequestParameter(en we.RequestParameter, previous HTTPRequestParameter) HTTPRequestParameter {
-	// TODO: Temporary Hack
 	value := types.StringValue(en.Value)
 	if en.Masking {
 		value = previous.Value
-
-		// if en.Key == "Authorization" {
-		// 	value = types.StringValue("Bearer foo")
-		// } else {
-		// 	value = types.StringValue("bar")
-		// }
 	}
 
 	return HTTPRequestParameter{

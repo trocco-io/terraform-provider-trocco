@@ -16,7 +16,6 @@ func Tasks() schema.Attribute {
 					Required: true,
 				},
 				"task_identifier": schema.Int64Attribute{
-					Optional: true,
 					Computed: true,
 				},
 				"type": schema.StringAttribute{
