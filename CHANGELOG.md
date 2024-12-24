@@ -1,3 +1,11 @@
+## 0.3.0
+FEATURES:
+- Added `trocco_team` resource.
+
+## 0.2.1
+CHORE:
+- Set provider version in the user agent for API calls.
+
 ## 0.2.0
 FEATURES:
 - Added `trocco_connection` resource.
