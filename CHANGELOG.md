@@ -1,3 +1,7 @@
+## 0.2.1
+FEATURES:
+- Added `trocco-team` resource.
+
 ## 0.2.0
 FEATURES:
 - Added `trocco_connection` resource.
