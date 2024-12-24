@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 )
 
-func NewScheduleAttribute() schema.Attribute {
+func Schedule() schema.Attribute {
 	return schema.SetNestedAttribute{
 		Optional: true,
 		NestedObject: schema.NestedAttributeObject{

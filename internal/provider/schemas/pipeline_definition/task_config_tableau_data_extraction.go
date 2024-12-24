@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func NewTableauDataExtractionTaskConfigAttribute() schema.Attribute {
+func TableauDataExtractionTaskConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Optional: true,
 		Attributes: map[string]schema.Attribute{

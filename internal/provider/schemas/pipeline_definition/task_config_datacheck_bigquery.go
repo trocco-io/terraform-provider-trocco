@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func SlackNotificationTaskConfig() schema.Attribute {
+func BigqueryDatacheckTaskConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Optional: true,
 		Attributes: map[string]schema.Attribute{
@@ -14,12 +14,19 @@ func SlackNotificationTaskConfig() schema.Attribute {
 			"connection_id": schema.Int64Attribute{
 				Required: true,
 			},
-			"message": schema.StringAttribute{
-				Required: true,
+			"query": schema.StringAttribute{
+				Optional: true,
 			},
-			"ignore_error": schema.BoolAttribute{
-				Required: true,
+			"operator": schema.StringAttribute{
+				Optional: true,
 			},
+			"query_result": schema.Int64Attribute{
+				Optional: true,
+			},
+			"accepts_null": schema.BoolAttribute{
+				Optional: true,
+			},
+			"custom_variables": CustomVariables(),
 		},
 	}
 }

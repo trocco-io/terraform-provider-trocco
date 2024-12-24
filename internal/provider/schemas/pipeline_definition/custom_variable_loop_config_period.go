@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func NewPeriodCustomVariableLoopConfigAttribute() schema.Attribute {
+func PeriodCustomVariableLoopConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Optional: true,
 		Attributes: map[string]schema.Attribute{

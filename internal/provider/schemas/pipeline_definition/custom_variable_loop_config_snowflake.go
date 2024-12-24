@@ -5,7 +5,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func NewSnowflakeCustomVariableLoopConfigAttribute() schema.Attribute {
+func SnowflakeCustomVariableLoopConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Optional: true,
 		Attributes: map[string]schema.Attribute{

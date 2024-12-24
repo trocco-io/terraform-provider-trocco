@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func NewCustomVariableLoopAttribute() schema.Attribute {
+func CustomVariableLoop() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Optional: true,
 		Attributes: map[string]schema.Attribute{
@@ -23,11 +23,11 @@ func NewCustomVariableLoopAttribute() schema.Attribute {
 				Optional: true,
 				Computed: true,
 			},
-			"string_config":    NewStringCustomVariableLoopConfigAttribute(),
-			"period_config":    NewPeriodCustomVariableLoopConfigAttribute(),
-			"bigquery_config":  NewBigqueryCustomVariableLoopConfigAttribute(),
-			"snowflake_config": NewSnowflakeCustomVariableLoopConfigAttribute(),
-			"redshift_config":  NewRedshiftCustomVariableLoopConfigAttribute(),
+			"string_config":    StringCustomVariableLoopConfig(),
+			"period_config":    PeriodCustomVariableLoopConfig(),
+			"bigquery_config":  BigqueryCustomVariableLoopConfig(),
+			"snowflake_config": SnowflakeCustomVariableLoopConfig(),
+			"redshift_config":  RedshiftCustomVariableLoopConfig(),
 		},
 	}
 }

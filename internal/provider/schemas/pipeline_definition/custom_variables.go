@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 )
 
-func NewCustomVariableAttribute() schema.Attribute {
+func CustomVariables() schema.Attribute {
 	return schema.SetNestedAttribute{
 		Optional: true,
 		NestedObject: schema.NestedAttributeObject{
