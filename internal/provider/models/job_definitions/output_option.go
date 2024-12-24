@@ -9,8 +9,8 @@ type OutputOption struct {
 	BigQueryOutputOption *output_options.BigQueryOutputOption `tfsdk:"bigquery_output_option"`
 }
 
-func NewOutputOption(outputOption client.OutputOption) OutputOption {
-	return OutputOption{
+func NewOutputOption(outputOption client.OutputOption) *OutputOption {
+	return &OutputOption{
 		BigQueryOutputOption: output_options.NewBigQueryOutputOption(outputOption.BigQueryOutputOption),
 	}
 }
