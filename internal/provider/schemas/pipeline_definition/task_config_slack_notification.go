@@ -17,6 +17,9 @@ func NewSlackNotificationTaskConfigAttribute() schema.Attribute {
 			"message": schema.StringAttribute{
 				Required: true,
 			},
+			"ignore_error": schema.BoolAttribute{
+				Required: true,
+			},
 		},
 	}
 }
