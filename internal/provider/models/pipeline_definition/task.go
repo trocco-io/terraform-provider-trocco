@@ -19,7 +19,6 @@ type Task struct {
 	SlackNotificationConfig       *SlackNotificationTaskConfig       `tfsdk:"slack_notification_config"`
 	SnowflakeDataCheckConfig      *SnowflakeDataCheckTaskConfig      `tfsdk:"snowflake_data_check_config"`
 	TableauDataExtractionConfig   *TableauDataExtractionTaskConfig   `tfsdk:"tableau_data_extraction_config"`
-	TroccoAgentConfig             *TroccoAgentTaskConfig             `tfsdk:"trocco_agent_config"`
 	TroccoBigQueryDatamartConfig  *TroccoBigqueryDatamartTaskConfig  `tfsdk:"trocco_bigquery_datamart_config"`
 	TroccoDBTConfig               *TroccoDBTTaskConfig               `tfsdk:"trocco_dbt_config"`
 	TroccoPipelineConfig          *TroccoPipelineTaskConfig          `tfsdk:"trocco_pipeline_config"`
@@ -74,7 +73,6 @@ func NewTask(en *we.Task, keys map[int64]types.String, previous *Task) *Task {
 		TroccoTransferConfig:          NewTroccoTransferTaskConfig(en.TroccoTransferConfig),
 		TroccoTransferBulkConfig:      NewTroccoTransferBulkTaskConfig(en.TroccoTransferBulkConfig),
 		TroccoDBTConfig:               NewTroccoDBTTaskConfig(en.TroccoDBTConfig),
-		TroccoAgentConfig:             NewTroccoAgentTaskConfig(en.TroccoAgentConfig),
 		TroccoBigQueryDatamartConfig:  NewTroccoBigqueryDatamartTaskConfig(en.TroccoBigQueryDatamartConfig),
 		TroccoRedshiftDatamartConfig:  NewTroccoRedshiftDatamartTaskConfig(en.TroccoRedshiftDatamartConfig),
 		TroccoSnowflakeDatamartConfig: NewTroccoSnowflakeDatamartTaskConfig(en.TroccoSnowflakeDatamartConfig),
@@ -103,9 +101,6 @@ func (t *Task) ToInput(identifiers map[string]int64) *wp.Task {
 	}
 	if t.TroccoDBTConfig != nil {
 		in.TroccoDBTConfig = t.TroccoDBTConfig.ToInput()
-	}
-	if t.TroccoAgentConfig != nil {
-		in.TroccoAgentConfig = t.TroccoAgentConfig.ToInput()
 	}
 	if t.TroccoBigQueryDatamartConfig != nil {
 		in.TroccoBigQueryDatamartConfig = t.TroccoBigQueryDatamartConfig.ToInput()

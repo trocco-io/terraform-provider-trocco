@@ -3,6 +3,8 @@ package pipeline_definition
 import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -17,6 +19,9 @@ func Tasks() schema.Attribute {
 				},
 				"task_identifier": schema.Int64Attribute{
 					Computed: true,
+					PlanModifiers: []planmodifier.Int64{
+						int64planmodifier.UseStateForUnknown(),
+					},
 				},
 				"type": schema.StringAttribute{
 					Required: true,
@@ -28,7 +33,6 @@ func Tasks() schema.Attribute {
 							"trocco_dbt",
 							"trocco_redshift_datamart",
 							"trocco_snowflake_datamart",
-							"trocco_agent",
 							"trocco_pipeline",
 							"slack_notify",
 							"tableau_extract",
@@ -42,7 +46,6 @@ func Tasks() schema.Attribute {
 				"trocco_transfer_config":           TroccoTransferTaskConfig(),
 				"trocco_transfer_bulk_config":      TroccoTransferBulkTaskConfig(),
 				"trocco_dbt_config":                TroccoDBTTaskConfig(),
-				"trocco_agent_config":              TroccoAgentTaskConfig(),
 				"trocco_bigquery_datamart_config":  BigQueryDatamartTaskConfig(),
 				"trocco_redshift_datamart_config":  RedshiftDatamartTaskConfig(),
 				"trocco_snowflake_datamart_config": SnowflakeDatamartTaskConfig(),
