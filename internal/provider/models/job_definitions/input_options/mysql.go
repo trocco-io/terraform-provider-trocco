@@ -90,6 +90,31 @@ func (mysqlInputOption *MySQLInputOption) ToInput() *input_options2.MySQLInputOp
 	}
 }
 
+func (mysqlInputOption *MySQLInputOption) ToUpdateInput() *input_options2.UpdateMySQLInputOptionInput {
+	if mysqlInputOption == nil {
+		return nil
+	}
+
+	inputOptionColumns := toInputOptionColumnsInput(mysqlInputOption.InputOptionColumns)
+
+	return &input_options2.UpdateMySQLInputOptionInput{
+		Database:                  mysqlInputOption.Database.ValueStringPointer(),
+		Table:                     mysqlInputOption.Table.ValueStringPointer(),
+		Query:                     mysqlInputOption.Query.ValueStringPointer(),
+		IncrementalColumns:        mysqlInputOption.IncrementalColumns.ValueStringPointer(),
+		LastRecord:                mysqlInputOption.LastRecord.ValueStringPointer(),
+		IncrementalLoadingEnabled: mysqlInputOption.IncrementalLoadingEnabled.ValueBoolPointer(),
+		FetchRows:                 mysqlInputOption.FetchRows.ValueInt64Pointer(),
+		ConnectTimeout:            mysqlInputOption.ConnectTimeout.ValueInt64Pointer(),
+		SocketTimeout:             mysqlInputOption.SocketTimeout.ValueInt64Pointer(),
+		DefaultTimeZone:           mysqlInputOption.DefaultTimeZone.ValueStringPointer(),
+		UseLegacyDatetimeCode:     mysqlInputOption.UseLegacyDatetimeCode.ValueBoolPointer(),
+		MySQLConnectionID:         mysqlInputOption.MySQLConnectionID.ValueInt64Pointer(),
+		InputOptionColumns:        &inputOptionColumns,
+		CustomVariableSettings:    models.ToCustomVariableSettingInputs(mysqlInputOption.CustomVariableSettings),
+	}
+}
+
 func toInputOptionColumnsInput(columns []InputOptionColumn) []input_options2.InputOptionColumn {
 	if columns == nil {
 		return nil

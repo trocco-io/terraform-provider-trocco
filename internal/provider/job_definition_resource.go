@@ -15,7 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
-	job_definitions3 "terraform-provider-trocco/internal/client/entities/job_definitions"
 	"terraform-provider-trocco/internal/client/parameters"
 	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
 	filter2 "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
@@ -587,10 +586,10 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								stringvalidator.UTF8LengthAtLeast(1),
 							},
 						},
-						"masking_type": schema.StringAttribute{
+						"mask_type": schema.Int32Attribute{
 							Required: true,
-							Validators: []validator.String{
-								stringvalidator.OneOf("all", "email", "regex", "substring"),
+							Validators: []validator.Int32{
+								int32validator.OneOf(1, 2, 3, 4),
 							},
 						},
 						"length": schema.Int64Attribute{
@@ -829,6 +828,9 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 							Required:            true,
 							MarkdownDescription: "The message to be sent with the notification",
 						},
+						"minutes": schema.Int64Attribute{
+							Optional: true,
+						},
 					},
 				},
 				MarkdownDescription: "Notifications to be attached to the job definition",
@@ -956,8 +958,131 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 }
 
 func (r *jobDefinitionResource) Update(ctx context.Context, request resource.UpdateRequest, response *resource.UpdateResponse) {
-	//TODO implement me
-	panic("implement me")
+	state := &jobDefinitionResourceModel{}
+	response.Diagnostics.Append(request.State.Get(ctx, &state)...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
+	plan := &jobDefinitionResourceModel{}
+	response.Diagnostics.Append(request.Plan.Get(ctx, &plan)...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
+	jobDefinition, err := r.client.UpdateJobDefinition(
+		state.ID.ValueInt64(),
+		plan.ToUpdateJobDefinitionInput(),
+	)
+	if err != nil {
+		response.Diagnostics.AddError(
+			"Updating job definition",
+			fmt.Sprintf("Unable to update job definition, got error: %s", err),
+		)
+		return
+	}
+
+	newState := jobDefinitionResourceModel{
+		ID:                        types.Int64Value(jobDefinition.ID),
+		Name:                      types.StringValue(jobDefinition.Name),
+		Description:               types.StringPointerValue(jobDefinition.Description),
+		ResourceGroupID:           types.Int64PointerValue(jobDefinition.ResourceGroupID),
+		IsRunnableConcurrently:    types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
+		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
+		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
+		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
+		InputOption:               job_definitions.NewInputOption(jobDefinition.InputOption),
+		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
+		OutputOption:              job_definitions.NewOutputOption(jobDefinition.OutputOption),
+		FilterColumns:             filter.NewFilterColumns(jobDefinition.FilterColumns),
+		FilterRows:                filter.NewFilterRows(jobDefinition.FilterRows),
+		FilterMasks:               filter.NewFilterMasks(jobDefinition.FilterMasks),
+		FilterAddTime:             filter.NewFilterAddTime(jobDefinition.FilterAddTime),
+		FilterGsub:                filter.NewFilterGsub(jobDefinition.FilterGsub),
+		FilterStringTransforms:    filter.NewFilterStringTransforms(jobDefinition.FilterStringTransforms),
+		FilterHashes:              filter.NewFilterHashes(jobDefinition.FilterHashes),
+		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
+		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
+		Schedules:                 models.NewSchedules(jobDefinition.Schedules),
+		Labels:                    models.NewLabels(jobDefinition.Labels),
+	}
+	response.Diagnostics.Append(response.State.Set(ctx, newState)...)
+}
+
+func (model *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.UpdateJobDefinitionInput {
+	labels := []string{}
+	if model.Labels != nil {
+		for _, l := range *model.Labels {
+			labels = append(labels, l.Name.ValueString())
+		}
+	}
+	notifications := []job_definitions2.JobDefinitionNotificationInput{}
+	if model.Notifications != nil {
+		for _, n := range *model.Notifications {
+			notifications = append(notifications, n.ToInput())
+		}
+	}
+
+	schedules := []parameters.ScheduleInput{}
+	if model.Schedules != nil {
+		for _, s := range *model.Schedules {
+			schedules = append(schedules, s.ToInput())
+		}
+	}
+
+	filterColumns := []filter2.FilterColumnInput{}
+	if model.FilterColumns != nil {
+		for _, f := range model.FilterColumns {
+			filterColumns = append(filterColumns, f.ToInput())
+		}
+	}
+
+	filterMasks := []filter2.FilterMaskInput{}
+	for _, f := range model.FilterMasks {
+		filterMasks = append(filterMasks, f.ToInput())
+	}
+
+	filterGsub := []filter2.FilterGsubInput{}
+	for _, f := range model.FilterGsub {
+		filterGsub = append(filterGsub, f.ToInput())
+	}
+
+	filterStringTransforms := []filter2.FilterStringTransformInput{}
+	for _, f := range model.FilterStringTransforms {
+		filterStringTransforms = append(filterStringTransforms, f.ToInput())
+	}
+
+	filterHashes := []filter2.FilterHashInput{}
+	for _, f := range model.FilterHashes {
+		filterHashes = append(filterHashes, f.ToInput())
+	}
+
+	filterUnixTimeconversions := []filter2.FilterUnixTimeConversionInput{}
+	for _, f := range model.FilterUnixTimeConversions {
+		filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
+	}
+
+	return &client.UpdateJobDefinitionInput{
+		Name:                      model.Name.ValueStringPointer(),
+		Description:               model.Description.ValueStringPointer(),
+		ResourceGroupID:           newNullableFromTerraformInt64(model.ResourceGroupID),
+		IsRunnableConcurrently:    model.IsRunnableConcurrently.ValueBoolPointer(),
+		RetryLimit:                model.RetryLimit.ValueInt64Pointer(),
+		ResourceEnhancement:       model.ResourceEnhancement.ValueStringPointer(),
+		FilterColumns:             &filterColumns,
+		FilterRows:                model.FilterRows.ToInput(),
+		FilterMasks:               &filterMasks,
+		FilterAddTime:             model.FilterAddTime.ToInput(),
+		FilterGsub:                &filterGsub,
+		FilterStringTransforms:    &filterStringTransforms,
+		FilterHashes:              &filterHashes,
+		FilterUnixTimeConversions: &filterUnixTimeconversions,
+		InputOption:               model.InputOption.ToUpdateInput(),
+		OutputOption:              model.OutputOption.ToUpdateInput(),
+		Labels:                    &labels,
+		Schedules:                 &schedules,
+		Notifications:             &notifications,
+	}
 }
 
 func (r *jobDefinitionResource) Create(
@@ -1015,28 +1140,6 @@ func (r *jobDefinitionResource) Create(
 		Labels:                    models.NewLabels(jobDefinition.Labels),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
-}
-
-func toJobDefinitionNotificationModel(notifications *[]job_definitions3.JobDefinitionNotification) *[]job_definitions.JobDefinitionNotification {
-	if notifications == nil {
-		return nil
-	}
-	outputs := make([]job_definitions.JobDefinitionNotification, 0, len(*notifications))
-	for _, input := range *notifications {
-		outputs = append(outputs, job_definitions.JobDefinitionNotification{
-			DestinationType:  types.StringValue(input.DestinationType),
-			SlackChannelID:   types.Int64PointerValue(input.SlackChannelID),
-			EmailID:          types.Int64PointerValue(input.EmailID),
-			NotificationType: types.StringValue(input.NotificationType),
-			NotifyWhen:       types.StringPointerValue(input.NotifyWhen),
-			Message:          types.StringValue(input.Message),
-			RecordCount:      types.Int64PointerValue(input.RecordCount),
-			RecordOperator:   types.StringPointerValue(input.RecordOperator),
-			RecordType:       types.StringPointerValue(input.RecordType),
-			Minutes:          types.Int64PointerValue(input.Minutes),
-		})
-	}
-	return &outputs
 }
 
 func (r *jobDefinitionResource) Read(

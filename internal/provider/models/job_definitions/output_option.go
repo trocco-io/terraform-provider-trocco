@@ -26,3 +26,14 @@ func (outputOption OutputOption) ToInput() client.OutputOptionInput {
 		}(),
 	}
 }
+
+func (outputOption OutputOption) ToUpdateInput() *client.UpdateOutputOptionInput {
+	return &client.UpdateOutputOptionInput{
+		BigQueryOutputOption: func() *output_options2.UpdateBigQueryOutputOptionInput {
+			if outputOption.BigQueryOutputOption == nil {
+				return nil
+			}
+			return outputOption.BigQueryOutputOption.ToUpdateInput()
+		}(),
+	}
+}

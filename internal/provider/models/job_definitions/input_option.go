@@ -29,3 +29,15 @@ func (inputOption InputOption) ToInput() client.InputOptionInput {
 		}(),
 	}
 }
+
+func (inputOption InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
+	return &client.UpdateInputOptionInput{
+		// GcsInputOption:   inputOption.GcsInputOption.ToInput(),
+		MySQLInputOption: func() *input_options2.UpdateMySQLInputOptionInput {
+			if inputOption.MySQLInputOption == nil {
+				return nil
+			}
+			return inputOption.MySQLInputOption.ToUpdateInput()
+		}(),
+	}
+}

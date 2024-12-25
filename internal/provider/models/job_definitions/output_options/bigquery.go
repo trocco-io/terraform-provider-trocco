@@ -154,6 +154,54 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.Big
 	}
 }
 
+func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_options2.UpdateBigQueryOutputOptionInput {
+	if bigqueryOutputOption == nil {
+		return nil
+	}
+
+	var clusteringFields []string
+	if bigqueryOutputOption.BigQueryOutputOptionClusteringFields != nil {
+		clusteringFields = make([]string, 0, len(*bigqueryOutputOption.BigQueryOutputOptionClusteringFields))
+		for _, input := range *bigqueryOutputOption.BigQueryOutputOptionClusteringFields {
+			clusteringFields = append(clusteringFields, input.ValueString())
+		}
+	}
+
+	var mergeKeys []string
+	if bigqueryOutputOption.BigQueryOutputOptionMergeKeys != nil {
+		mergeKeys = make([]string, 0, len(*bigqueryOutputOption.BigQueryOutputOptionMergeKeys))
+		for _, input := range *bigqueryOutputOption.BigQueryOutputOptionMergeKeys {
+			mergeKeys = append(mergeKeys, input.ValueString())
+		}
+	}
+
+	return &output_options2.UpdateBigQueryOutputOptionInput{
+		Dataset:                                bigqueryOutputOption.Dataset.ValueStringPointer(),
+		Table:                                  bigqueryOutputOption.Table.ValueStringPointer(),
+		AutoCreateDataset:                      bigqueryOutputOption.AutoCreateDataset.ValueBoolPointer(),
+		AutoCreateTable:                        bigqueryOutputOption.AutoCreateTable.ValueBoolPointer(),
+		OpenTimeoutSec:                         bigqueryOutputOption.OpenTimeoutSec.ValueInt64Pointer(),
+		TimeoutSec:                             bigqueryOutputOption.TimeoutSec.ValueInt64Pointer(),
+		SendTimeoutSec:                         bigqueryOutputOption.SendTimeoutSec.ValueInt64Pointer(),
+		ReadTimeoutSec:                         bigqueryOutputOption.ReadTimeoutSec.ValueInt64Pointer(),
+		Retries:                                bigqueryOutputOption.Retries.ValueInt64Pointer(),
+		Mode:                                   bigqueryOutputOption.Mode.ValueStringPointer(),
+		PartitioningType:                       bigqueryOutputOption.PartitioningType.ValueStringPointer(),
+		TimePartitioningType:                   bigqueryOutputOption.TimePartitioningType.ValueStringPointer(),
+		TimePartitioningField:                  bigqueryOutputOption.TimePartitioningField.ValueStringPointer(),
+		TimePartitioningExpirationMs:           bigqueryOutputOption.TimePartitioningExpirationMs.ValueInt64Pointer(),
+		TimePartitioningRequirePartitionFilter: bigqueryOutputOption.TimePartitioningRequirePartitionFilter.ValueBoolPointer(),
+		Location:                               bigqueryOutputOption.Location.ValueStringPointer(),
+		TemplateTable:                          bigqueryOutputOption.TemplateTable.ValueStringPointer(),
+		BigQueryConnectionID:                   bigqueryOutputOption.BigQueryConnectionID.ValueInt64Pointer(),
+		BeforeLoad:                             bigqueryOutputOption.BeforeLoad.ValueStringPointer(),
+		CustomVariableSettings:                 models.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
+		BigQueryOutputOptionColumnOptions:      toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOption.BigQueryOutputOptionColumnOptions),
+		BigQueryOutputOptionClusteringFields:   &clusteringFields,
+		BigQueryOutputOptionMergeKeys:          &mergeKeys,
+	}
+}
+
 func toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOptionColumnOptions *[]bigQueryOutputOptionColumnOption) *[]output_options2.BigQueryOutputOptionColumnOptionInput {
 	if bigqueryOutputOptionColumnOptions == nil {
 		return nil

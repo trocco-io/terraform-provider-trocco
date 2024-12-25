@@ -81,9 +81,9 @@ type UpdateJobDefinitionInput struct {
 	FilterUnixTimeConversions *[]filterParameters.FilterUnixTimeConversionInput `json:"filter_unixtime_conversions,omitempty"`
 	InputOption               *UpdateInputOptionInput                           `json:"input_option,omitempty"`
 	OutputOption              *UpdateOutputOptionInput                          `json:"output_option,omitempty"`
-	Labels                    *[]string                                         `json:"labels"`
-	Schedules                 *[]parameters.ScheduleInput                       `json:"schedules"`
-	Notifications             *[]job_definitions.JobDefinitionNotificationInput `json:"notifications"`
+	Labels                    *[]string                                         `json:"labels,omitempty"`
+	Schedules                 *[]parameters.ScheduleInput                       `json:"schedules,omitempty"`
+	Notifications             *[]job_definitions.JobDefinitionNotificationInput `json:"notifications,omitempty"`
 }
 
 type InputOption struct {
@@ -98,7 +98,7 @@ type InputOptionInput struct {
 
 type UpdateInputOptionInput struct {
 	MySQLInputOption *input_options.UpdateMySQLInputOptionInput `json:"mysql_input_option,omitempty"`
-	GcsInputOption   *input_options.UpdateGcsInputOptionInput   `json:"gcs_input_option,omitempty"`
+	// GcsInputOption   *input_options.UpdateGcsInputOptionInput   `json:"gcs_input_option,omitempty"`
 }
 
 type OutputOption struct {
