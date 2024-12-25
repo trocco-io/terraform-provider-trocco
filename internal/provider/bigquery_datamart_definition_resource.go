@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"terraform-provider-trocco/internal/client/parameters"
 
 	"terraform-provider-trocco/internal/client"
 	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
@@ -481,7 +482,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		input.SetDatamartBigqueryOption(optionInput)
 	}
 	if plan.Schedules != nil {
-		scheduleInputs := make([]client.ScheduleInput, len(plan.Schedules))
+		scheduleInputs := make([]parameters.ScheduleInput, len(plan.Schedules))
 		for i, v := range plan.Schedules {
 			switch v.Frequency.ValueString() {
 			case "hourly":
@@ -696,7 +697,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 	}
 	input.SetDatamartBigqueryOption(optionInput)
 	if plan.Schedules != nil {
-		scheduleInputs := make([]client.ScheduleInput, len(plan.Schedules))
+		scheduleInputs := make([]parameters.ScheduleInput, len(plan.Schedules))
 		for i, v := range plan.Schedules {
 			switch v.Frequency.ValueString() {
 			case "hourly":
@@ -736,7 +737,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 		}
 		input.SetSchedules(scheduleInputs)
 	} else {
-		input.SetSchedules([]client.ScheduleInput{})
+		input.SetSchedules([]parameters.ScheduleInput{})
 	}
 	if plan.Notifications != nil {
 		notificationInputs := make([]client.DatamartNotificationInput, len(plan.Notifications))

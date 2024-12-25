@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"terraform-provider-trocco/internal/client/parameters"
 	"testing"
 )
 
@@ -667,7 +668,7 @@ func TestUpdateDatamartDefinitionWithSchedules(t *testing.T) {
 
 	client := NewDevTroccoClient("1234567890", server.URL)
 	input := UpdateDatamartDefinitionInput{}
-	input.SetSchedules([]ScheduleInput{
+	input.SetSchedules([]parameters.ScheduleInput{
 		NewHourlyScheduleInput(1, "Asia/Tokyo"),
 		NewDailyScheduleInput(2, 1, "Asia/Tokyo"),
 		NewWeeklyScheduleInput(3, 2, 1, "Asia/Tokyo"),
