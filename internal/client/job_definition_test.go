@@ -189,3 +189,70 @@ func TestUpdateJobDefinition(t *testing.T) {
 	assert.Equal(t, []entities.Schedule(nil), out.Schedules)
 	assert.Equal(t, []job_definitions.JobDefinitionNotification(nil), out.Notifications)
 }
+
+func TestGetJobDefinition(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/api/job_definitions/8", r.URL.Path)
+
+		w.Header().Set("Content-Type", "application/json")
+
+		c := JobDefinition{
+			ID:                        8,
+			Name:                      "new",
+			Description:               lo.ToPtr("description new"),
+			ResourceGroupID:           lo.ToPtr(int64(10)),
+			IsRunnableConcurrently:    lo.ToPtr(true),
+			RetryLimit:                11,
+			ResourceEnhancement:       lo.ToPtr("medium"),
+			FilterColumns:             []filter.FilterColumn{},
+			FilterRows:                lo.ToPtr(filter.FilterRows{}),
+			FilterMasks:               []filter.FilterMask{},
+			FilterAddTime:             lo.ToPtr(filter.FilterAddTime{}),
+			FilterGsub:                []filter.FilterGsub{},
+			FilterStringTransforms:    []filter.FilterStringTransform{},
+			FilterHashes:              []filter.FilterHash{},
+			FilterUnixTimeConversions: []filter.FilterUnixTimeConversion{},
+			InputOptionType:           "gcs",
+			InputOption:               InputOption{},
+			OutputOptionType:          "mysql",
+			OutputOption:              OutputOption{},
+			Labels:                    nil,
+			Schedules:                 nil,
+			Notifications:             nil,
+		}
+		if err := json.NewEncoder(w).Encode(c); err != nil {
+			panic(err)
+		}
+	}))
+	defer s.Close()
+
+	c := NewDevTroccoClient("1234567890", s.URL)
+
+	out, err := c.GetJobDefinition(8)
+
+	assert.NoError(t, err)
+	assert.NoError(t, err)
+	assert.Equal(t, int64(8), out.ID)
+	assert.Equal(t, "new", out.Name)
+	assert.Equal(t, "description new", *out.Description)
+	assert.Equal(t, int64(10), *out.ResourceGroupID)
+	assert.Equal(t, true, *out.IsRunnableConcurrently)
+	assert.Equal(t, int64(11), out.RetryLimit)
+	assert.Equal(t, "medium", *out.ResourceEnhancement)
+	assert.Equal(t, []filter.FilterColumn{}, out.FilterColumns)
+	assert.Equal(t, filter.FilterRows{}, *out.FilterRows)
+	assert.Equal(t, []filter.FilterMask{}, out.FilterMasks)
+	assert.Equal(t, filter.FilterAddTime{}, *out.FilterAddTime)
+	assert.Equal(t, []filter.FilterGsub{}, out.FilterGsub)
+	assert.Equal(t, []filter.FilterStringTransform{}, out.FilterStringTransforms)
+	assert.Equal(t, []filter.FilterHash{}, out.FilterHashes)
+	assert.Equal(t, []filter.FilterUnixTimeConversion{}, out.FilterUnixTimeConversions)
+	assert.Equal(t, "gcs", out.InputOptionType)
+	assert.Equal(t, "mysql", out.OutputOptionType)
+	assert.Equal(t, InputOption{}, out.InputOption)
+	assert.Equal(t, OutputOption{}, out.OutputOption)
+	assert.Equal(t, []entities.Label(nil), out.Labels)
+	assert.Equal(t, []entities.Schedule(nil), out.Schedules)
+	assert.Equal(t, []job_definitions.JobDefinitionNotification(nil), out.Notifications)
+}

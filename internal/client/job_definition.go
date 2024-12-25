@@ -16,28 +16,28 @@ import (
 )
 
 type JobDefinition struct {
-	ID                        int64                                             `json:"id"`
-	Name                      string                                            `json:"name"`
-	Description               *string                                           `json:"description"`
-	ResourceGroupID           *int64                                            `json:"resource_group_id"`
-	IsRunnableConcurrently    *bool                                             `json:"is_runnable_concurrently"`
-	RetryLimit                int64                                             `json:"retry_limit"`
-	ResourceEnhancement       *string                                           `json:"resource_enhancement"`
-	FilterColumns             []filterEntities.FilterColumn                     `json:"filter_columns"`
-	FilterRows                *filterEntities.FilterRows                        `json:"filter_rows"`
-	FilterMasks               []filterEntities.FilterMask                       `json:"filter_masks"`
-	FilterAddTime             *filterEntities.FilterAddTime                     `json:"filter_add_time"`
-	FilterGsub                []filterEntities.FilterGsub                       `json:"filter_gsub"`
-	FilterStringTransforms    []filterEntities.FilterStringTransform            `json:"filter_string_transforms"`
-	FilterHashes              []filterEntities.FilterHash                       `json:"filter_hashes"`
-	FilterUnixTimeConversions []filterEntities.FilterUnixTimeConversion         `json:"filter_unixtime_conversions"`
-	InputOptionType           string                                            `json:"input_option_type"`
-	InputOption               InputOption                                       `json:"input_option"`
-	OutputOptionType          string                                            `json:"output_option_type"`
-	OutputOption              OutputOption                                      `json:"output_option"`
-	Labels                    []entities.Label                                  `json:"labels"`
-	Schedules                 []entities.Schedule                               `json:"schedules"`
-	Notifications             []jobDefinitionEntities.JobDefinitionNotification `json:"notifications"`
+	ID                        int64                                              `json:"id"`
+	Name                      string                                             `json:"name"`
+	Description               *string                                            `json:"description"`
+	ResourceGroupID           *int64                                             `json:"resource_group_id"`
+	IsRunnableConcurrently    *bool                                              `json:"is_runnable_concurrently"`
+	RetryLimit                int64                                              `json:"retry_limit"`
+	ResourceEnhancement       *string                                            `json:"resource_enhancement"`
+	FilterColumns             []filterEntities.FilterColumn                      `json:"filter_columns"`
+	FilterRows                *filterEntities.FilterRows                         `json:"filter_rows"`
+	FilterMasks               []filterEntities.FilterMask                        `json:"filter_masks"`
+	FilterAddTime             *filterEntities.FilterAddTime                      `json:"filter_add_time"`
+	FilterGsub                []filterEntities.FilterGsub                        `json:"filter_gsub"`
+	FilterStringTransforms    []filterEntities.FilterStringTransform             `json:"filter_string_transforms"`
+	FilterHashes              []filterEntities.FilterHash                        `json:"filter_hashes"`
+	FilterUnixTimeConversions []filterEntities.FilterUnixTimeConversion          `json:"filter_unixtime_conversions"`
+	InputOptionType           string                                             `json:"input_option_type"`
+	InputOption               InputOption                                        `json:"input_option"`
+	OutputOptionType          string                                             `json:"output_option_type"`
+	OutputOption              OutputOption                                       `json:"output_option"`
+	Labels                    *[]entities.Label                                  `json:"labels"`
+	Schedules                 *[]entities.Schedule                               `json:"schedules"`
+	Notifications             *[]jobDefinitionEntities.JobDefinitionNotification `json:"notifications"`
 }
 
 type CreateJobDefinitionInput struct {
@@ -81,9 +81,9 @@ type UpdateJobDefinitionInput struct {
 	FilterUnixTimeConversions *[]filterParameters.FilterUnixTimeConversionInput `json:"filter_unixtime_conversions,omitempty"`
 	InputOption               *UpdateInputOptionInput                           `json:"input_option,omitempty"`
 	OutputOption              *UpdateOutputOptionInput                          `json:"output_option,omitempty"`
-	Labels                    *[]string                                         `json:"labels"`
-	Schedules                 *[]parameters.ScheduleInput                       `json:"schedules"`
-	Notifications             *[]job_definitions.JobDefinitionNotificationInput `json:"notifications"`
+	Labels                    *[]string                                         `json:"labels,omitempty"`
+	Schedules                 *[]parameters.ScheduleInput                       `json:"schedules,omitempty"`
+	Notifications             *[]job_definitions.JobDefinitionNotificationInput `json:"notifications,omitempty"`
 }
 
 type InputOption struct {
@@ -98,7 +98,7 @@ type InputOptionInput struct {
 
 type UpdateInputOptionInput struct {
 	MySQLInputOption *input_options.UpdateMySQLInputOptionInput `json:"mysql_input_option,omitempty"`
-	GcsInputOption   *input_options.UpdateGcsInputOptionInput   `json:"gcs_input_option,omitempty"`
+	// GcsInputOption   *input_options.UpdateGcsInputOptionInput   `json:"gcs_input_option,omitempty"`
 }
 
 type OutputOption struct {
@@ -146,4 +146,17 @@ func (c *TroccoClient) DeleteJobDefinition(id int64) error {
 		nil,
 		nil,
 	)
+}
+
+func (c *TroccoClient) GetJobDefinition(id int64) (*JobDefinition, error) {
+	out := &JobDefinition{}
+	if err := c.do(
+		http.MethodGet,
+		fmt.Sprintf("/api/job_definitions/%d", id),
+		nil,
+		out,
+	); err != nil {
+		return nil, err
+	}
+	return out, nil
 }
