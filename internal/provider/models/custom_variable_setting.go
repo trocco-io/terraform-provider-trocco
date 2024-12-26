@@ -10,7 +10,7 @@ type CustomVariableSetting struct {
 	Name      types.String `tfsdk:"name"`
 	Type      types.String `tfsdk:"type"`
 	Value     types.String `tfsdk:"value"`
-	Quantity  types.Int64  `tfsdk:"quantity"`
+	Quantity  types.Int32  `tfsdk:"quantity"`
 	Unit      types.String `tfsdk:"unit"`
 	Direction types.String `tfsdk:"direction"`
 	Format    types.String `tfsdk:"format"`
@@ -25,7 +25,7 @@ func NewCustomVariableSetting(customVariableSetting *entities.CustomVariableSett
 		Name:      types.StringValue(customVariableSetting.Name),
 		Type:      types.StringValue(customVariableSetting.Type),
 		Value:     types.StringPointerValue(customVariableSetting.Value),
-		Quantity:  types.Int64PointerValue(customVariableSetting.Quantity),
+		Quantity:  types.Int32PointerValue(customVariableSetting.Quantity),
 		Unit:      types.StringPointerValue(customVariableSetting.Unit),
 		Direction: types.StringPointerValue(customVariableSetting.Direction),
 		Format:    types.StringPointerValue(customVariableSetting.Format),
@@ -54,7 +54,7 @@ func ToCustomVariableSettingInputs(settings *[]CustomVariableSetting) *[]paramet
 			Name:      setting.Name.ValueString(),
 			Type:      setting.Type.ValueString(),
 			Value:     setting.Value.ValueStringPointer(),
-			Quantity:  &parameters.NullableInt64{Valid: !setting.Quantity.IsNull(), Value: setting.Quantity.ValueInt64()},
+			Quantity:  setting.Quantity.ValueInt32Pointer(),
 			Unit:      setting.Unit.ValueStringPointer(),
 			Direction: setting.Direction.ValueStringPointer(),
 			Format:    setting.Format.ValueStringPointer(),
@@ -74,7 +74,7 @@ func CustomVariableEntitiesToModels(customVariables *[]entities.CustomVariableSe
 			Name:      types.StringValue(setting.Name),
 			Type:      types.StringValue(setting.Type),
 			Value:     types.StringPointerValue(setting.Value),
-			Quantity:  types.Int64PointerValue(setting.Quantity),
+			Quantity:  types.Int32PointerValue(setting.Quantity),
 			Unit:      types.StringPointerValue(setting.Unit),
 			Direction: types.StringPointerValue(setting.Direction),
 			Format:    types.StringPointerValue(setting.Format),

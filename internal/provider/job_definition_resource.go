@@ -589,7 +589,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 						"mask_type": schema.Int32Attribute{
 							Required: true,
 							Validators: []validator.Int32{
-								int32validator.OneOf(1, 2, 3, 4),
+								int32validator.OneOf(0, 1, 2, 3),
 							},
 						},
 						"length": schema.Int64Attribute{
@@ -795,9 +795,9 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 						"notification_type": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
-								stringvalidator.OneOf("job", "record"),
+								stringvalidator.OneOf("job", "record", "exec_time"),
 							},
-							MarkdownDescription: "Category of condition. The following types are supported: `job`, `record`",
+							MarkdownDescription: "Category of condition. The following types are supported: `job`, `record`, `exec_time`",
 						},
 						"notify_when": schema.StringAttribute{
 							Optional: true,

@@ -407,7 +407,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 				customVariableSettingInputs[i] = client.NewTimestampTypeCustomVariableSettingInput(
 					v.Name.ValueString(),
 					v.Type.ValueString(),
-					int(v.Quantity.ValueInt64()),
+					int(v.Quantity.ValueInt32()),
 					v.Unit.ValueString(),
 					v.Direction.ValueString(),
 					v.Format.ValueString(),
@@ -614,7 +614,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 				customVariableSettingInputs[i] = client.NewTimestampTypeCustomVariableSettingInput(
 					v.Name.ValueString(),
 					v.Type.ValueString(),
-					int(v.Quantity.ValueInt64()),
+					int(v.Quantity.ValueInt32()),
 					v.Unit.ValueString(),
 					v.Direction.ValueString(),
 					v.Format.ValueString(),
@@ -886,7 +886,7 @@ func parseToBigqueryDatamartDefinitionModel(response client.DatamartDefinition) 
 				customVariableSettings[i].Value = types.StringValue(*v.Value)
 			}
 			if v.Quantity != nil {
-				customVariableSettings[i].Quantity = types.Int64Value(*v.Quantity)
+				customVariableSettings[i].Quantity = types.Int32Value(*v.Quantity)
 			}
 			if v.Unit != nil {
 				customVariableSettings[i].Unit = types.StringValue(*v.Unit)
