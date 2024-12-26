@@ -18,16 +18,17 @@ type Notification struct {
 	SlackConfig *SlackNotificationConfig `tfsdk:"slack_config"`
 }
 
-func NewNotifications(ens []we.Notification, returnsNilIfEmpty bool) []Notification {
+func NewNotifications(ens []*we.Notification, previous *PipelineDefinition) []*Notification {
 	if ens == nil {
 		return nil
 	}
 
-	if returnsNilIfEmpty && len(ens) == 0 {
+	// If the attribute in the plan (or state) is nil, the provider should sets nil to the state.
+	if previous.Notifications == nil && len(ens) == 0 {
 		return nil
 	}
 
-	mds := []Notification{}
+	mds := []*Notification{}
 	for _, en := range ens {
 		mds = append(mds, NewNotification(en))
 	}
@@ -35,16 +36,16 @@ func NewNotifications(ens []we.Notification, returnsNilIfEmpty bool) []Notificat
 	return mds
 }
 
-func NewNotification(en we.Notification) Notification {
-	return Notification{
+func NewNotification(en *we.Notification) *Notification {
+	return &Notification{
 		Type:        types.StringValue(en.Type),
 		EmailConfig: NewEmailNotificationConfig(en.EmailConfig),
 		SlackConfig: NewSlackNotificationConfig(en.SlackConfig),
 	}
 }
 
-func (n *Notification) ToInput() wp.Notification {
-	param := wp.Notification{
+func (n *Notification) ToInput() *wp.Notification {
+	param := &wp.Notification{
 		Type: n.Type.ValueString(),
 	}
 

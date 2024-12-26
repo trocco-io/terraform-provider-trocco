@@ -21,16 +21,17 @@ type Schedule struct {
 	Minute    types.Int64  `tfsdk:"minute"`
 }
 
-func NewSchedules(ens []we.Schedule, returnsNilIfEmpty bool) []Schedule {
+func NewSchedules(ens []*we.Schedule, previous *PipelineDefinition) []*Schedule {
 	if ens == nil {
 		return nil
 	}
 
-	if returnsNilIfEmpty && len(ens) == 0 {
+	// If the attribute in the plan (or state) is nil, the provider should sets nil to the state.
+	if previous.Schedules == nil && len(ens) == 0 {
 		return nil
 	}
 
-	mds := []Schedule{}
+	mds := []*Schedule{}
 	for _, en := range ens {
 		mds = append(mds, NewSchedule(en))
 	}
@@ -38,8 +39,8 @@ func NewSchedules(ens []we.Schedule, returnsNilIfEmpty bool) []Schedule {
 	return mds
 }
 
-func NewSchedule(en we.Schedule) Schedule {
-	return Schedule{
+func NewSchedule(en *we.Schedule) *Schedule {
+	return &Schedule{
 		Frequency: types.StringValue(en.Frequency),
 		TimeZone:  types.StringValue(en.TimeZone),
 		Minute:    types.Int64Value(en.Minute),
@@ -49,8 +50,8 @@ func NewSchedule(en we.Schedule) Schedule {
 	}
 }
 
-func (m *Schedule) ToInput() wp.Schedule {
-	return wp.Schedule{
+func (m *Schedule) ToInput() *wp.Schedule {
+	return &wp.Schedule{
 		Frequency: m.Frequency.ValueString(),
 		TimeZone:  m.TimeZone.ValueString(),
 		Minute:    m.Minute.ValueInt64(),

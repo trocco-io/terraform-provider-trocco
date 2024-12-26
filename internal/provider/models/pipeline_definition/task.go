@@ -33,7 +33,12 @@ func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDef
 		return nil
 	}
 
-	var tasks []*Task
+	// If the attribute in the plan (or state) is nil, the provider should sets nil to the state.
+	if previous.Tasks == nil && len(ens) == 0 {
+		return nil
+	}
+
+	tasks := []*Task{}
 	for i, en := range ens {
 		tasks = append(tasks, NewTask(en, keys, previous.Tasks[i]))
 	}

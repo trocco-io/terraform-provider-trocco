@@ -2,6 +2,7 @@ package pipeline_definition
 
 import (
 	"terraform-provider-trocco/internal/client"
+	entities "terraform-provider-trocco/internal/client/entities/pipeline_definition"
 	pdp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
 	"terraform-provider-trocco/internal/provider/models"
 
@@ -21,24 +22,44 @@ type PipelineDefinition struct {
 	IsConcurrentExecutionSkipped types.Bool        `tfsdk:"is_concurrent_execution_skipped"`
 	IsStoppedOnErrors            types.Bool        `tfsdk:"is_stopped_on_errors"`
 	Labels                       []types.String    `tfsdk:"labels"`
-	Notifications                []Notification    `tfsdk:"notifications"`
-	Schedules                    []Schedule        `tfsdk:"schedules"`
+	Notifications                []*Notification   `tfsdk:"notifications"`
+	Schedules                    []*Schedule       `tfsdk:"schedules"`
 	Tasks                        []*Task           `tfsdk:"tasks"`
 	TaskDependencies             []*TaskDependency `tfsdk:"task_dependencies"`
 }
 
-func (m *PipelineDefinition) ToCreateInput() *client.CreateWorkflowInput {
+func NewPipelineDefinition(en *entities.PipelineDefinition, keys map[int64]types.String, previous *PipelineDefinition) *PipelineDefinition {
+	return &PipelineDefinition{
+		ID:                           types.Int64Value(en.ID),
+		ResourceGroupID:              types.Int64PointerValue(en.ResourceGroupID),
+		Name:                         types.StringPointerValue(en.Name),
+		Description:                  types.StringPointerValue(en.Description),
+		MaxTaskParallelism:           types.Int64PointerValue(en.MaxTaskParallelism),
+		ExecutionTimeout:             types.Int64PointerValue(en.ExecutionTimeout),
+		MaxRetries:                   types.Int64PointerValue(en.MaxRetries),
+		MinRetryInterval:             types.Int64PointerValue(en.MinRetryInterval),
+		IsConcurrentExecutionSkipped: types.BoolPointerValue(en.IsConcurrentExecutionSkipped),
+		IsStoppedOnErrors:            types.BoolPointerValue(en.IsStoppedOnErrors),
+		Labels:                       NewLabels(en.Labels, previous.Labels == nil),
+		Notifications:                NewNotifications(en.Notifications, previous),
+		Schedules:                    NewSchedules(en.Schedules, previous),
+		Tasks:                        NewTasks(en.Tasks, keys, previous),
+		TaskDependencies:             NewTaskDependencies(en.TaskDependencies, keys, previous),
+	}
+}
+
+func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInput {
 	labels := []string{}
 	for _, l := range m.Labels {
 		labels = append(labels, l.ValueString())
 	}
 
-	notifications := []pdp.Notification{}
+	notifications := []*pdp.Notification{}
 	for _, n := range m.Notifications {
 		notifications = append(notifications, n.ToInput())
 	}
 
-	schedules := []pdp.Schedule{}
+	schedules := []*pdp.Schedule{}
 	for _, s := range m.Schedules {
 		schedules = append(schedules, s.ToInput())
 	}
@@ -56,10 +77,10 @@ func (m *PipelineDefinition) ToCreateInput() *client.CreateWorkflowInput {
 		})
 	}
 
-	return &client.CreateWorkflowInput{
+	return &client.CreatePipelineDefinitionInput{
 		ResourceGroupID:              models.NewNullableInt64(m.ResourceGroupID),
 		Name:                         m.Name.ValueString(),
-		Description:                  m.Description.ValueStringPointer(),
+		Description:                  models.NewNullableString(m.Description),
 		MaxTaskParallelism:           models.NewNullableInt64(m.MaxTaskParallelism),
 		ExecutionTimeout:             models.NewNullableInt64(m.ExecutionTimeout),
 		MaxRetries:                   models.NewNullableInt64(m.MaxRetries),
@@ -74,18 +95,18 @@ func (m *PipelineDefinition) ToCreateInput() *client.CreateWorkflowInput {
 	}
 }
 
-func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *client.UpdateWorkflowInput {
+func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *client.UpdatePipelineDefinitionInput {
 	labels := []string{}
 	for _, l := range m.Labels {
 		labels = append(labels, l.ValueString())
 	}
 
-	notifications := []pdp.Notification{}
+	notifications := []*pdp.Notification{}
 	for _, n := range m.Notifications {
 		notifications = append(notifications, n.ToInput())
 	}
 
-	schedules := []pdp.Schedule{}
+	schedules := []*pdp.Schedule{}
 	for _, s := range m.Schedules {
 		schedules = append(schedules, s.ToInput())
 	}
@@ -108,10 +129,10 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *c
 		})
 	}
 
-	return &client.UpdateWorkflowInput{
+	return &client.UpdatePipelineDefinitionInput{
 		ResourceGroupID:              models.NewNullableInt64(m.ResourceGroupID),
 		Name:                         m.Name.ValueStringPointer(),
-		Description:                  m.Description.ValueStringPointer(),
+		Description:                  models.NewNullableString(m.Description),
 		MaxTaskParallelism:           models.NewNullableInt64(m.MaxTaskParallelism),
 		ExecutionTimeout:             models.NewNullableInt64(m.ExecutionTimeout),
 		MaxRetries:                   models.NewNullableInt64(m.MaxRetries),

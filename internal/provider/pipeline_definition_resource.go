@@ -20,28 +20,28 @@ import (
 )
 
 var (
-	_ resource.Resource                = &workflowResource{}
-	_ resource.ResourceWithConfigure   = &workflowResource{}
-	_ resource.ResourceWithImportState = &workflowResource{}
+	_ resource.Resource                = &pipelineDefinitionResource{}
+	_ resource.ResourceWithConfigure   = &pipelineDefinitionResource{}
+	_ resource.ResourceWithImportState = &pipelineDefinitionResource{}
 )
 
-type workflowResource struct {
+type pipelineDefinitionResource struct {
 	client *client.TroccoClient
 }
 
-func NewWorkflowResource() resource.Resource {
-	return &workflowResource{}
+func NewPipelineDefinitionResource() resource.Resource {
+	return &pipelineDefinitionResource{}
 }
 
-func (r *workflowResource) Metadata(
+func (r *pipelineDefinitionResource) Metadata(
 	ctx context.Context,
 	req resource.MetadataRequest,
 	resp *resource.MetadataResponse,
 ) {
-	resp.TypeName = fmt.Sprintf("%s_workflow", req.ProviderTypeName)
+	resp.TypeName = fmt.Sprintf("%s_pipeline_definition", req.ProviderTypeName)
 }
 
-func (r *workflowResource) Configure(
+func (r *pipelineDefinitionResource) Configure(
 	ctx context.Context,
 	req resource.ConfigureRequest,
 	resp *resource.ConfigureResponse,
@@ -62,16 +62,16 @@ func (r *workflowResource) Configure(
 	r.client = c
 }
 
-func (r *workflowResource) Schema(
+func (r *pipelineDefinitionResource) Schema(
 	ctx context.Context,
 	req resource.SchemaRequest,
 	resp *resource.SchemaResponse,
 ) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Provides a TROCCO workflow resource.",
+		MarkdownDescription: "Provides a TROCCO pipelineDefinition resource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
-				MarkdownDescription: "The ID of the workflow",
+				MarkdownDescription: "The ID of the pipelineDefinition",
 				Computed:            true,
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
@@ -94,9 +94,7 @@ func (r *workflowResource) Schema(
 			},
 			"description": schema.StringAttribute{
 				Optional: true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
-				},
+				Computed: true,
 			},
 			"max_task_parallelism": schema.Int64Attribute{
 				Optional: true,
@@ -171,7 +169,7 @@ func (r *workflowResource) Schema(
 	}
 }
 
-func (r *workflowResource) Create(
+func (r *pipelineDefinitionResource) Create(
 	ctx context.Context,
 	req resource.CreateRequest,
 	resp *resource.CreateResponse,
@@ -182,44 +180,28 @@ func (r *workflowResource) Create(
 		return
 	}
 
-	workflow, err := r.client.CreateWorkflow(
+	en, err := r.client.CreatePipelineDefinition(
 		plan.ToCreateInput(),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Creating workflow",
-			fmt.Sprintf("Unable to create workflow, got error: %s", err),
+			"Creating pipeline definition",
+			fmt.Sprintf("Unable to create pipeline definition, got error: %s", err),
 		)
 		return
 	}
 
 	keys := map[int64]types.String{}
-	for _, t := range workflow.Tasks {
+	for _, t := range en.Tasks {
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	newState := pdm.PipelineDefinition{
-		ID:                           types.Int64Value(workflow.ID),
-		ResourceGroupID:              types.Int64PointerValue(workflow.ResourceGroupID),
-		Name:                         types.StringPointerValue(workflow.Name),
-		Description:                  types.StringPointerValue(workflow.Description),
-		MaxTaskParallelism:           types.Int64PointerValue(workflow.MaxTaskParallelism),
-		ExecutionTimeout:             types.Int64PointerValue(workflow.ExecutionTimeout),
-		MaxRetries:                   types.Int64PointerValue(workflow.MaxRetries),
-		MinRetryInterval:             types.Int64PointerValue(workflow.MinRetryInterval),
-		IsConcurrentExecutionSkipped: types.BoolPointerValue(workflow.IsConcurrentExecutionSkipped),
-		IsStoppedOnErrors:            types.BoolPointerValue(workflow.IsStoppedOnErrors),
-		Labels:                       pdm.NewLabels(workflow.Labels, plan.Labels == nil),
-		Notifications:                pdm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
-		Schedules:                    pdm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
-		Tasks:                        pdm.NewTasks(workflow.Tasks, keys, plan),
-		TaskDependencies:             pdm.NewTaskDependencies(workflow.TaskDependencies, keys),
-	}
+	newState := pdm.NewPipelineDefinition(en, keys, plan)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 
-func (r *workflowResource) Update(
+func (r *pipelineDefinitionResource) Update(
 	ctx context.Context,
 	req resource.UpdateRequest,
 	resp *resource.UpdateResponse,
@@ -236,44 +218,29 @@ func (r *workflowResource) Update(
 		return
 	}
 
-	workflow, err := r.client.UpdateWorkflow(
+	en, err := r.client.UpdatePipelineDefinition(
 		state.ID.ValueInt64(),
 		plan.ToUpdateWorkflowInput(state),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Updating workflow",
-			fmt.Sprintf("Unable to update workflow, got error: %s", err),
+			"Updating pipeline definition",
+			fmt.Sprintf("Unable to update pipeline definition, got error: %s", err),
 		)
 		return
 	}
 
 	keys := map[int64]types.String{}
-	for _, t := range workflow.Tasks {
+	for _, t := range en.Tasks {
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	newState := pdm.PipelineDefinition{
-		ID:                           types.Int64Value(workflow.ID),
-		ResourceGroupID:              types.Int64PointerValue(workflow.ResourceGroupID),
-		Name:                         types.StringPointerValue(workflow.Name),
-		Description:                  types.StringPointerValue(workflow.Description),
-		MaxTaskParallelism:           types.Int64PointerValue(workflow.MaxTaskParallelism),
-		ExecutionTimeout:             types.Int64PointerValue(workflow.ExecutionTimeout),
-		MaxRetries:                   types.Int64PointerValue(workflow.MaxRetries),
-		MinRetryInterval:             types.Int64PointerValue(workflow.MinRetryInterval),
-		IsConcurrentExecutionSkipped: types.BoolPointerValue(workflow.IsConcurrentExecutionSkipped),
-		IsStoppedOnErrors:            types.BoolPointerValue(workflow.IsStoppedOnErrors),
-		Labels:                       pdm.NewLabels(workflow.Labels, plan.Labels == nil),
-		Notifications:                pdm.NewNotifications(workflow.Notifications, plan.Notifications == nil),
-		Schedules:                    pdm.NewSchedules(workflow.Schedules, plan.Schedules == nil),
-		Tasks:                        pdm.NewTasks(workflow.Tasks, keys, plan),
-		TaskDependencies:             pdm.NewTaskDependencies(workflow.TaskDependencies, keys),
-	}
+	newState := pdm.NewPipelineDefinition(en, keys, plan)
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 
-func (r *workflowResource) Read(
+func (r *pipelineDefinitionResource) Read(
 	ctx context.Context,
 	req resource.ReadRequest,
 	resp *resource.ReadResponse,
@@ -284,7 +251,7 @@ func (r *workflowResource) Read(
 		return
 	}
 
-	workflow, err := r.client.GetWorkflow(
+	en, err := r.client.GetPipelineDefinition(
 		state.ID.ValueInt64(),
 	)
 	if err != nil {
@@ -300,27 +267,12 @@ func (r *workflowResource) Read(
 		keys[t.TaskIdentifier.ValueInt64()] = t.Key
 	}
 
-	newState := pdm.PipelineDefinition{
-		ID:                           types.Int64Value(workflow.ID),
-		ResourceGroupID:              types.Int64PointerValue(workflow.ResourceGroupID),
-		Name:                         types.StringPointerValue(workflow.Name),
-		Description:                  types.StringPointerValue(workflow.Description),
-		MaxTaskParallelism:           types.Int64PointerValue(workflow.MaxTaskParallelism),
-		ExecutionTimeout:             types.Int64PointerValue(workflow.ExecutionTimeout),
-		MaxRetries:                   types.Int64PointerValue(workflow.MaxRetries),
-		MinRetryInterval:             types.Int64PointerValue(workflow.MinRetryInterval),
-		IsConcurrentExecutionSkipped: types.BoolPointerValue(workflow.IsConcurrentExecutionSkipped),
-		IsStoppedOnErrors:            types.BoolPointerValue(workflow.IsStoppedOnErrors),
-		Tasks:                        pdm.NewTasks(workflow.Tasks, keys, state),
-		Labels:                       pdm.NewLabels(workflow.Labels, state.Labels == nil),
-		Notifications:                pdm.NewNotifications(workflow.Notifications, state.Notifications == nil),
-		Schedules:                    pdm.NewSchedules(workflow.Schedules, state.Schedules == nil),
-		TaskDependencies:             state.TaskDependencies,
-	}
+	newState := pdm.NewPipelineDefinition(en, keys, state)
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 
-func (r *workflowResource) Delete(
+func (r *pipelineDefinitionResource) Delete(
 	ctx context.Context,
 	req resource.DeleteRequest,
 	resp *resource.DeleteResponse,
@@ -331,18 +283,18 @@ func (r *workflowResource) Delete(
 		return
 	}
 
-	if err := r.client.DeleteWorkflow(
+	if err := r.client.DeletePipelineDefinition(
 		s.ID.ValueInt64(),
 	); err != nil {
 		resp.Diagnostics.AddError(
-			"Deleting workflow",
-			fmt.Sprintf("Unable to delete workflow, got error: %s", err),
+			"Deleting pipeline definition",
+			fmt.Sprintf("Unable to delete pipeline definition, got error: %s", err),
 		)
 		return
 	}
 }
 
-func (r *workflowResource) ImportState(
+func (r *pipelineDefinitionResource) ImportState(
 	ctx context.Context,
 	req resource.ImportStateRequest,
 	resp *resource.ImportStateResponse,
@@ -350,7 +302,7 @@ func (r *workflowResource) ImportState(
 	id, err := strconv.ParseInt(req.ID, 10, 64)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Importing workflow",
+			"Importing pipeline definition",
 			fmt.Sprintf("Unable to parse id, got error: %s", err),
 		)
 		return

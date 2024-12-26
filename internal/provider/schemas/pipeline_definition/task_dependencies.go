@@ -7,7 +7,7 @@ import (
 func TaskDependencies() schema.Attribute {
 	return schema.SetNestedAttribute{
 		MarkdownDescription: "The task dependencies of the workflow.",
-		Required:            true,
+		Optional:            true,
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
 				"source": schema.StringAttribute{

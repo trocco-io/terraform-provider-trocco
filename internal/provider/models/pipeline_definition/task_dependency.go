@@ -12,8 +12,13 @@ type TaskDependency struct {
 	Destination types.String `tfsdk:"destination"`
 }
 
-func NewTaskDependencies(ens []*we.TaskDependency, keys map[int64]types.String) []*TaskDependency {
+func NewTaskDependencies(ens []*we.TaskDependency, keys map[int64]types.String, previous *PipelineDefinition) []*TaskDependency {
 	if ens == nil {
+		return nil
+	}
+
+	// If the attribute in the plan (or state) is nil, the provider should sets nil to the state.
+	if previous.TaskDependencies == nil && len(ens) == 0 {
 		return nil
 	}
 

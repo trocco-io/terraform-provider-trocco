@@ -1,6 +1,6 @@
 package pipeline_definition
 
-type Workflow struct {
+type PipelineDefinition struct {
 	ID                           int64             `json:"id"`
 	ResourceGroupID              *int64            `json:"resource_group_id"`
 	Name                         *string           `json:"name"`
@@ -12,8 +12,8 @@ type Workflow struct {
 	IsConcurrentExecutionSkipped *bool             `json:"is_concurrent_execution_skipped"`
 	IsStoppedOnErrors            *bool             `json:"is_stopped_on_errors"`
 	Labels                       []string          `json:"labels"`
-	Notifications                []Notification    `json:"notifications"`
-	Schedules                    []Schedule        `json:"schedules"`
+	Notifications                []*Notification   `json:"notifications"`
+	Schedules                    []*Schedule       `json:"schedules"`
 	Tasks                        []*Task           `json:"tasks"`
 	TaskDependencies             []*TaskDependency `json:"task_dependencies"`
 }
