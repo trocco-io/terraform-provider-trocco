@@ -4,8 +4,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
 
-	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
+	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type TroccoSnowflakeDatamartTaskConfig struct {

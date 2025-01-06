@@ -1,7 +1,7 @@
 package pipeline_definition
 
 import (
-	p "terraform-provider-trocco/internal/client/parameters"
+	p "terraform-provider-trocco/internal/client/parameter"
 )
 
 type Schedule struct {

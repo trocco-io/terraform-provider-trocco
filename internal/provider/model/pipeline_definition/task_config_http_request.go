@@ -1,9 +1,9 @@
 package pipeline_definition
 
 import (
-	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
-	p "terraform-provider-trocco/internal/client/parameters"
-	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
+	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	p "terraform-provider-trocco/internal/client/parameter"
+	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	model "terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -16,7 +16,7 @@ type HTTPRequestTaskConfig struct {
 	URL               types.String           `tfsdk:"url"`
 	RequestBody       types.String           `tfsdk:"request_body"`
 	RequestHeaders    []HTTPRequestHeader    `tfsdk:"request_headers"`
-	RequestParameters []HTTPRequestParameter `tfsdk:"request_parameters"`
+	RequestParameters []HTTPRequestParameter `tfsdk:"request_parameter"`
 	CustomVariables   []CustomVariable       `tfsdk:"custom_variables"`
 }
 

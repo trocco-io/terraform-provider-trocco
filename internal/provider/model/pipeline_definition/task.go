@@ -1,8 +1,8 @@
 package pipeline_definition
 
 import (
-	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
+	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
@@ -66,7 +66,7 @@ func NewTask(en *we.Task, keys map[int64]types.String, previous *Task) *Task {
 	// identifiers and sets them to the state.
 	//
 	// Moreover, to simplify the code, on `CREATE` and `UPDATE`, the provider
-	// creates a map of keys and identifiers from entities and searches keys
+	// creates a map of keys and identifiers from entity and searches keys
 	// from the map.
 	//
 	// To archive the above behavior, this function accepts keys as an argument.

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"net/url"
 
-	entities "terraform-provider-trocco/internal/client/entities/pipeline_definition"
-	p "terraform-provider-trocco/internal/client/parameters"
-	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
+	entity "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	p "terraform-provider-trocco/internal/client/parameter"
+	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type ListPipelineDefinitionsInput struct {
@@ -49,7 +49,7 @@ type UpdatePipelineDefinitionInput struct {
 	TaskDependencies             *[]wp.TaskDependency `json:"task_dependencies,omitempty"`
 }
 
-func (c *TroccoClient) ListPipelineDefinitions(in *ListPipelineDefinitionsInput) (*entities.PipelineDefinitionList, error) {
+func (c *TroccoClient) ListPipelineDefinitions(in *ListPipelineDefinitionsInput) (*entity.PipelineDefinitionList, error) {
 	params := url.Values{}
 	if in != nil {
 		if in.Limit != 0 {
@@ -63,37 +63,37 @@ func (c *TroccoClient) ListPipelineDefinitions(in *ListPipelineDefinitionsInput)
 
 	url := fmt.Sprintf("/api/pipeline_definitions?%s", params.Encode())
 
-	out := &entities.PipelineDefinitionList{}
+	out := &entity.PipelineDefinitionList{}
 	if err := c.do(http.MethodGet, url, nil, out); err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *TroccoClient) GetPipelineDefinition(id int64) (*entities.PipelineDefinition, error) {
+func (c *TroccoClient) GetPipelineDefinition(id int64) (*entity.PipelineDefinition, error) {
 	url := fmt.Sprintf("/api/pipeline_definitions/%d", id)
 
-	out := &entities.PipelineDefinition{}
+	out := &entity.PipelineDefinition{}
 	if err := c.do(http.MethodGet, url, nil, out); err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *TroccoClient) CreatePipelineDefinition(in *CreatePipelineDefinitionInput) (*entities.PipelineDefinition, error) {
+func (c *TroccoClient) CreatePipelineDefinition(in *CreatePipelineDefinitionInput) (*entity.PipelineDefinition, error) {
 	url := "/api/pipeline_definitions"
 
-	out := &entities.PipelineDefinition{}
+	out := &entity.PipelineDefinition{}
 	if err := c.do(http.MethodPost, url, in, out); err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *TroccoClient) UpdatePipelineDefinition(id int64, in *UpdatePipelineDefinitionInput) (*entities.PipelineDefinition, error) {
+func (c *TroccoClient) UpdatePipelineDefinition(id int64, in *UpdatePipelineDefinitionInput) (*entity.PipelineDefinition, error) {
 	url := fmt.Sprintf("/api/pipeline_definitions/%d", id)
 
-	out := &entities.PipelineDefinition{}
+	out := &entity.PipelineDefinition{}
 	if err := c.do(http.MethodPatch, url, in, out); err != nil {
 		return nil, err
 	}

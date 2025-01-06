@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"terraform-provider-trocco/internal/client/parameters"
+	"terraform-provider-trocco/internal/client/parameter"
 )
 
 type ConnectionList struct {
@@ -41,9 +41,9 @@ type GetConnectionsInput struct {
 
 type CreateConnectionInput struct {
 	// Common Fields
-	Name            string                    `json:"name"`
-	Description     *string                   `json:"description,omitempty"`
-	ResourceGroupID *parameters.NullableInt64 `json:"resource_group_id,omitempty"`
+	Name            string                   `json:"name"`
+	Description     *string                  `json:"description,omitempty"`
+	ResourceGroupID *parameter.NullableInt64 `json:"resource_group_id,omitempty"`
 
 	// BigQuery Fields
 	ProjectID             *string `json:"project_id,omitempty"`
@@ -60,9 +60,9 @@ type CreateConnectionInput struct {
 
 type UpdateConnectionInput struct {
 	// Common Fields
-	Name            *string                   `json:"name,omitempty"`
-	Description     *string                   `json:"description,omitempty"`
-	ResourceGroupID *parameters.NullableInt64 `json:"resource_group_id,omitempty"`
+	Name            *string                  `json:"name,omitempty"`
+	Description     *string                  `json:"description,omitempty"`
+	ResourceGroupID *parameter.NullableInt64 `json:"resource_group_id,omitempty"`
 
 	// BigQuery Fields
 	ProjectID             *string `json:"project_id,omitempty"`

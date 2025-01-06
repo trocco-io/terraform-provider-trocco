@@ -2,8 +2,8 @@ package pipeline_definition
 
 import (
 	"terraform-provider-trocco/internal/client"
-	entities "terraform-provider-trocco/internal/client/entities/pipeline_definition"
-	pdp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
+	entity "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pdp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	model "terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -28,7 +28,7 @@ type PipelineDefinition struct {
 	TaskDependencies             []*TaskDependency `tfsdk:"task_dependencies"`
 }
 
-func NewPipelineDefinition(en *entities.PipelineDefinition, keys map[int64]types.String, previous *PipelineDefinition) *PipelineDefinition {
+func NewPipelineDefinition(en *entity.PipelineDefinition, keys map[int64]types.String, previous *PipelineDefinition) *PipelineDefinition {
 	return &PipelineDefinition{
 		ID:                           types.Int64Value(en.ID),
 		ResourceGroupID:              types.Int64PointerValue(en.ResourceGroupID),

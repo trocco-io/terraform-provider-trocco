@@ -1,7 +1,7 @@
 package pipeline_definition
 
 import (
-	p "terraform-provider-trocco/internal/client/parameters"
+	p "terraform-provider-trocco/internal/client/parameter"
 )
 
 type HTTPRequestTaskConfig struct {
@@ -11,7 +11,7 @@ type HTTPRequestTaskConfig struct {
 	URL               string             `json:"url,omitempty"`
 	RequestBody       *string            `json:"request_body,omitempty"`
 	RequestHeaders    []RequestHeader    `json:"request_headers,omitempty"`
-	RequestParameters []RequestParameter `json:"request_parameters,omitempty"`
+	RequestParameters []RequestParameter `json:"request_parameter,omitempty"`
 	CustomVariables   []CustomVariable   `json:"custom_variables,omitempty"`
 }
 

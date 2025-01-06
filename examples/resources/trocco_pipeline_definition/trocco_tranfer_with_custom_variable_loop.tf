@@ -1,5 +1,5 @@
-resource "trocco_pipeline_definition" "trocco_transfer" {
-  name = "trocco_transfer"
+resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop" {
+  name = "trocco_transfer_with_custom_variable_loop"
 
   tasks = [
     {
@@ -10,7 +10,7 @@ resource "trocco_pipeline_definition" "trocco_transfer" {
         definition_id = 1
 
         custom_variable_loop = {
-            type = string
+            type = "string"
             string_config = {
                 variables = [
                     { 

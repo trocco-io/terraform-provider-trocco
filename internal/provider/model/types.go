@@ -1,31 +1,31 @@
 package models
 
 import (
-	"terraform-provider-trocco/internal/client/parameters"
+	"terraform-provider-trocco/internal/client/parameter"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func NewNullableBool(v types.Bool) *parameters.NullableBool {
+func NewNullableBool(v types.Bool) *parameter.NullableBool {
 	if v.IsUnknown() {
 		return nil
 	}
 
-	return &parameters.NullableBool{Valid: !v.IsNull(), Value: v.ValueBool()}
+	return &parameter.NullableBool{Valid: !v.IsNull(), Value: v.ValueBool()}
 }
 
-func NewNullableInt64(v types.Int64) *parameters.NullableInt64 {
+func NewNullableInt64(v types.Int64) *parameter.NullableInt64 {
 	if v.IsUnknown() {
 		return nil
 	}
 
-	return &parameters.NullableInt64{Valid: !v.IsNull(), Value: v.ValueInt64()}
+	return &parameter.NullableInt64{Valid: !v.IsNull(), Value: v.ValueInt64()}
 }
 
-func NewNullableString(v types.String) *parameters.NullableString {
+func NewNullableString(v types.String) *parameter.NullableString {
 	if v.IsUnknown() {
 		return nil
 	}
 
-	return &parameters.NullableString{Valid: !v.IsNull(), Value: v.ValueString()}
+	return &parameter.NullableString{Valid: !v.IsNull(), Value: v.ValueString()}
 }
