@@ -1,0 +1,40 @@
+package pipeline_definition
+
+import (
+	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
+)
+
+func CustomVariables() schema.Attribute {
+	return schema.SetNestedAttribute{
+		MarkdownDescription: "The custom variables of the pipeline definition",
+		Optional:            true,
+		NestedObject: schema.NestedAttributeObject{
+			Attributes: map[string]schema.Attribute{
+				"name": schema.StringAttribute{
+					Required: true,
+				},
+				"type": schema.StringAttribute{
+					Required: true,
+				},
+				"value": schema.StringAttribute{
+					Optional: true,
+				},
+				"quantity": schema.Int64Attribute{
+					Optional: true,
+				},
+				"unit": schema.StringAttribute{
+					Optional: true,
+				},
+				"direction": schema.StringAttribute{
+					Optional: true,
+				},
+				"format": schema.StringAttribute{
+					Optional: true,
+				},
+				"time_zone": schema.StringAttribute{
+					Optional: true,
+				},
+			},
+		},
+	}
+}

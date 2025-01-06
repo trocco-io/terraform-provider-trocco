@@ -81,6 +81,8 @@ func (client *TroccoClient) do(
 		}
 		reqBody = bytes.NewBuffer(b)
 	}
+	// return fmt.Errorf("%+v", reqBody)
+
 	url := client.BaseURL + path
 	req, err := http.NewRequest(method, url, reqBody)
 	if err != nil {
@@ -111,6 +113,8 @@ func (client *TroccoClient) do(
 		return nil
 	}
 	respBody, err := io.ReadAll(resp.Body)
+
+	// return fmt.Errorf("%+v", string(respBody))
 	if err != nil {
 		return err
 	}
