@@ -4,7 +4,7 @@ import (
 	"terraform-provider-trocco/internal/client"
 	entities "terraform-provider-trocco/internal/client/entities/pipeline_definition"
 	pdp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
-	"terraform-provider-trocco/internal/provider/models"
+	model "terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
@@ -78,15 +78,15 @@ func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInp
 	}
 
 	return &client.CreatePipelineDefinitionInput{
-		ResourceGroupID:              models.NewNullableInt64(m.ResourceGroupID),
+		ResourceGroupID:              model.NewNullableInt64(m.ResourceGroupID),
 		Name:                         m.Name.ValueString(),
-		Description:                  models.NewNullableString(m.Description),
-		MaxTaskParallelism:           models.NewNullableInt64(m.MaxTaskParallelism),
-		ExecutionTimeout:             models.NewNullableInt64(m.ExecutionTimeout),
-		MaxRetries:                   models.NewNullableInt64(m.MaxRetries),
-		MinRetryInterval:             models.NewNullableInt64(m.MinRetryInterval),
-		IsConcurrentExecutionSkipped: models.NewNullableBool(m.IsConcurrentExecutionSkipped),
-		IsStoppedOnErrors:            models.NewNullableBool(m.IsStoppedOnErrors),
+		Description:                  model.NewNullableString(m.Description),
+		MaxTaskParallelism:           model.NewNullableInt64(m.MaxTaskParallelism),
+		ExecutionTimeout:             model.NewNullableInt64(m.ExecutionTimeout),
+		MaxRetries:                   model.NewNullableInt64(m.MaxRetries),
+		MinRetryInterval:             model.NewNullableInt64(m.MinRetryInterval),
+		IsConcurrentExecutionSkipped: model.NewNullableBool(m.IsConcurrentExecutionSkipped),
+		IsStoppedOnErrors:            model.NewNullableBool(m.IsStoppedOnErrors),
 		Labels:                       lo.ToPtr(labels),
 		Notifications:                lo.ToPtr(notifications),
 		Schedules:                    lo.ToPtr(schedules),
@@ -130,15 +130,15 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *c
 	}
 
 	return &client.UpdatePipelineDefinitionInput{
-		ResourceGroupID:              models.NewNullableInt64(m.ResourceGroupID),
+		ResourceGroupID:              model.NewNullableInt64(m.ResourceGroupID),
 		Name:                         m.Name.ValueStringPointer(),
-		Description:                  models.NewNullableString(m.Description),
-		MaxTaskParallelism:           models.NewNullableInt64(m.MaxTaskParallelism),
-		ExecutionTimeout:             models.NewNullableInt64(m.ExecutionTimeout),
-		MaxRetries:                   models.NewNullableInt64(m.MaxRetries),
-		MinRetryInterval:             models.NewNullableInt64(m.MinRetryInterval),
-		IsConcurrentExecutionSkipped: models.NewNullableBool(m.IsConcurrentExecutionSkipped),
-		IsStoppedOnErrors:            models.NewNullableBool(m.IsStoppedOnErrors),
+		Description:                  model.NewNullableString(m.Description),
+		MaxTaskParallelism:           model.NewNullableInt64(m.MaxTaskParallelism),
+		ExecutionTimeout:             model.NewNullableInt64(m.ExecutionTimeout),
+		MaxRetries:                   model.NewNullableInt64(m.MaxRetries),
+		MinRetryInterval:             model.NewNullableInt64(m.MinRetryInterval),
+		IsConcurrentExecutionSkipped: model.NewNullableBool(m.IsConcurrentExecutionSkipped),
+		IsStoppedOnErrors:            model.NewNullableBool(m.IsStoppedOnErrors),
 		Labels:                       lo.ToPtr(labels),
 		Notifications:                lo.ToPtr(notifications),
 		Schedules:                    lo.ToPtr(schedules),

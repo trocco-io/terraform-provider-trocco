@@ -3,7 +3,7 @@ package pipeline_definition
 import (
 	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
 	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
-	"terraform-provider-trocco/internal/provider/models"
+	model "terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -33,6 +33,6 @@ func (c *SlackNotificationTaskConfig) ToInput() *wp.SlackNotificationTaskConfig 
 		Name:         c.Name.ValueString(),
 		ConnectionID: c.ConnectionID.ValueInt64(),
 		Message:      c.Message.ValueString(),
-		IgnoreError:  models.NewNullableBool(c.IgnoreError),
+		IgnoreError:  model.NewNullableBool(c.IgnoreError),
 	}
 }

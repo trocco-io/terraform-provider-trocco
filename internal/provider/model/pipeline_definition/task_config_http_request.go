@@ -4,7 +4,7 @@ import (
 	we "terraform-provider-trocco/internal/client/entities/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameters"
 	wp "terraform-provider-trocco/internal/client/parameters/pipeline_definition"
-	"terraform-provider-trocco/internal/provider/models"
+	model "terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -43,7 +43,7 @@ func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 		requestHeaders = append(requestHeaders, wp.RequestHeader{
 			Key:     e.Key.ValueString(),
 			Value:   e.Value.ValueString(),
-			Masking: models.NewNullableBool(e.Masking),
+			Masking: model.NewNullableBool(e.Masking),
 		})
 	}
 
@@ -52,7 +52,7 @@ func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 		requestParameters = append(requestParameters, wp.RequestParameter{
 			Key:     e.Key.ValueString(),
 			Value:   e.Value.ValueString(),
-			Masking: models.NewNullableBool(e.Masking),
+			Masking: model.NewNullableBool(e.Masking),
 		})
 	}
 

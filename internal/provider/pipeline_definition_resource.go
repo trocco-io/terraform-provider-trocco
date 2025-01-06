@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
-	pdm "terraform-provider-trocco/internal/provider/models/pipeline_definition"
-	pds "terraform-provider-trocco/internal/provider/schemas/pipeline_definition"
+	pdm "terraform-provider-trocco/internal/provider/model/pipeline_definition"
+	pds "terraform-provider-trocco/internal/provider/schema/pipeline_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
