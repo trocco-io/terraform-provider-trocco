@@ -133,6 +133,7 @@ func (p *TroccoProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewConnectionResource,
 		NewUserResource,
 		NewPipelineDefinitionResource,
+		NewTeamResource,
 	}
 }
 
