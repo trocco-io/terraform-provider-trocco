@@ -108,6 +108,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 			},
 			"resource_enhancement": schema.StringAttribute{
 				Optional: true,
+				Computed: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("medium", "custom_spec", "large", "xlarge"),
 				},
@@ -932,8 +933,8 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 	return &client.CreateJobDefinitionInput{
 		Name:                      model.Name.ValueString(),
 		Description:               model.Description.ValueStringPointer(),
-		ResourceGroupID:           newNullableFromTerraformInt64(model.ResourceGroupID),
-		IsRunnableConcurrently:    model.IsRunnableConcurrently.ValueBoolPointer(),
+		ResourceGroupID:           models.NewNullableInt64(model.ResourceGroupID),
+		IsRunnableConcurrently:    model.IsRunnableConcurrently.ValueBool(),
 		RetryLimit:                model.RetryLimit.ValueInt64(),
 		ResourceEnhancement:       model.ResourceEnhancement.ValueStringPointer(),
 		FilterColumns:             filterColumns,
@@ -1061,8 +1062,8 @@ func (model *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Up
 
 	return &client.UpdateJobDefinitionInput{
 		Name:                      model.Name.ValueStringPointer(),
-		Description:               model.Description.ValueStringPointer(),
-		ResourceGroupID:           newNullableFromTerraformInt64(model.ResourceGroupID),
+		Description:               models.NewNullableString(model.Description),
+		ResourceGroupID:           models.NewNullableInt64(model.ResourceGroupID),
 		IsRunnableConcurrently:    model.IsRunnableConcurrently.ValueBoolPointer(),
 		RetryLimit:                model.RetryLimit.ValueInt64Pointer(),
 		ResourceEnhancement:       model.ResourceEnhancement.ValueStringPointer(),

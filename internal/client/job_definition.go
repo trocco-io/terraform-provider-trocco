@@ -44,7 +44,7 @@ type CreateJobDefinitionInput struct {
 	Name                      string                                           `json:"name"`
 	Description               *string                                          `json:"description,omitempty"`
 	ResourceGroupID           *parameters.NullableInt64                        `json:"resource_group_id,omitempty"`
-	IsRunnableConcurrently    *bool                                            `json:"is_runnable_concurrently"`
+	IsRunnableConcurrently    bool                                             `json:"is_runnable_concurrently"`
 	RetryLimit                int64                                            `json:"retry_limit"`
 	ResourceEnhancement       *string                                          `json:"resource_enhancement,omitempty"`
 	FilterColumns             []filterParameters.FilterColumnInput             `json:"filter_columns"`
@@ -66,7 +66,7 @@ type CreateJobDefinitionInput struct {
 
 type UpdateJobDefinitionInput struct {
 	Name                      *string                                           `json:"name,omitempty"`
-	Description               *string                                           `json:"description,omitempty"`
+	Description               *parameters.NullableString                        `json:"description,omitempty"`
 	ResourceGroupID           *parameters.NullableInt64                         `json:"resource_group_id,omitempty"`
 	IsRunnableConcurrently    *bool                                             `json:"is_runnable_concurrently,omitempty"`
 	RetryLimit                *int64                                            `json:"retry_limit,omitempty"`
