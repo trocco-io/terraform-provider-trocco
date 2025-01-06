@@ -98,7 +98,7 @@ type InputOptionInput struct {
 
 type UpdateInputOptionInput struct {
 	MySQLInputOption *input_options.UpdateMySQLInputOptionInput `json:"mysql_input_option,omitempty"`
-	// GcsInputOption   *input_options.UpdateGcsInputOptionInput   `json:"gcs_input_option,omitempty"`
+	GcsInputOption   *input_options.UpdateGcsInputOptionInput   `json:"gcs_input_option,omitempty"`
 }
 
 type OutputOption struct {

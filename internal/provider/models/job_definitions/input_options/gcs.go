@@ -58,7 +58,7 @@ func (gcsInputOption *GcsInputOption) ToInput() *input_options2.GcsInputOptionIn
 
 	return &input_options2.GcsInputOptionInput{
 		GcsConnectionID:           gcsInputOption.GcsConnectionID.ValueInt64(),
-		Bucket:                    gcsInputOption.Bucket.String(),
+		Bucket:                    gcsInputOption.Bucket.ValueString(),
 		PathPrefix:                gcsInputOption.PathPrefix.ValueStringPointer(),
 		IncrementalLoadingEnabled: gcsInputOption.IncrementalLoadingEnabled.ValueBool(),
 		LastPath:                  gcsInputOption.LastPath.ValueStringPointer(),

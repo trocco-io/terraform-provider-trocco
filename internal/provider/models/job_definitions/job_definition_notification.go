@@ -49,7 +49,7 @@ func (notification JobDefinitionNotification) ToInput() job_definitions2.JobDefi
 		EmailID:          notification.EmailID.ValueInt64Pointer(),
 		NotificationType: notification.NotificationType.ValueString(),
 		NotifyWhen:       notification.NotifyWhen.ValueStringPointer(),
-		Message:          notification.Message.String(),
+		Message:          notification.Message.ValueString(),
 		RecordCount:      notification.RecordCount.ValueInt64Pointer(),
 		RecordOperator:   notification.RecordOperator.ValueStringPointer(),
 		RecordType:       notification.RecordType.ValueStringPointer(),

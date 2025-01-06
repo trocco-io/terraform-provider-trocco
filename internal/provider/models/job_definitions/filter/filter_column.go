@@ -11,7 +11,6 @@ type FilterColumn struct {
 	Src                      types.String       `tfsdk:"src"`
 	Type                     types.String       `tfsdk:"type"`
 	Default                  types.String       `tfsdk:"default"`
-	HasParser                types.Bool         `tfsdk:"has_parser"`
 	Format                   types.String       `tfsdk:"format"`
 	JSONExpandEnabled        types.Bool         `tfsdk:"json_expand_enabled"`
 	JSONExpandKeepBaseColumn types.Bool         `tfsdk:"json_expand_keep_base_column"`
@@ -36,7 +35,7 @@ func NewFilterColumns(filterColumns []filter.FilterColumn) []FilterColumn {
 				JSONPath: types.StringValue(input.JSONPath),
 				Type:     types.StringValue(input.Type),
 				Format:   types.StringPointerValue(input.Format),
-				Timezone: types.StringValue(input.Type),
+				Timezone: types.StringPointerValue(input.Timezone),
 			}
 			expandColumns = append(expandColumns, column)
 		}
@@ -46,7 +45,6 @@ func NewFilterColumns(filterColumns []filter.FilterColumn) []FilterColumn {
 			Src:                      types.StringValue(input.Src),
 			Type:                     types.StringValue(input.Type),
 			Default:                  types.StringPointerValue(input.Default),
-			HasParser:                types.BoolValue(input.HasParser),
 			Format:                   types.StringPointerValue(input.Format),
 			JSONExpandEnabled:        types.BoolValue(input.JSONExpandEnabled),
 			JSONExpandKeepBaseColumn: types.BoolValue(input.JSONExpandKeepBaseColumn),

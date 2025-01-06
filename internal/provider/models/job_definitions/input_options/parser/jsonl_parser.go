@@ -53,8 +53,8 @@ func (jsonlParser *JsonlParser) ToJsonlParserInput() *job_definitions2.JsonlPars
 	columns := make([]job_definitions2.JsonlParserColumnInput, 0, len(jsonlParser.Columns))
 	for _, input := range jsonlParser.Columns {
 		column := job_definitions2.JsonlParserColumnInput{
-			Name:     input.Name.String(),
-			Type:     input.Type.String(),
+			Name:     input.Name.ValueString(),
+			Type:     input.Type.ValueString(),
 			TimeZone: input.TimeZone.ValueStringPointer(),
 			Format:   input.Format.ValueStringPointer(),
 		}
@@ -63,7 +63,7 @@ func (jsonlParser *JsonlParser) ToJsonlParserInput() *job_definitions2.JsonlPars
 
 	return &job_definitions2.JsonlParserInput{
 		StopOnInvalidRecord: jsonlParser.StopOnInvalidRecord.ValueBoolPointer(),
-		DefaultTimeZone:     jsonlParser.DefaultTimeZone.String(),
+		DefaultTimeZone:     jsonlParser.DefaultTimeZone.ValueString(),
 		Newline:             jsonlParser.Newline.ValueStringPointer(),
 		Charset:             jsonlParser.Charset.ValueStringPointer(),
 		Columns:             columns,

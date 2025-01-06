@@ -45,16 +45,16 @@ func (xmlParser *XmlParser) ToXmlParserInput() *job_definitions2.XmlParserInput 
 	columns := make([]job_definitions2.XmlParserColumnInput, 0, len(xmlParser.Columns))
 	for _, input := range xmlParser.Columns {
 		column := job_definitions2.XmlParserColumnInput{
-			Name:   input.Format.String(),
-			Type:   input.ColumnOrder.String(),
-			Path:   input.Path.String(),
+			Name:   input.Format.ValueString(),
+			Type:   input.Type.ValueString(),
+			Path:   input.Path.ValueString(),
 			Format: input.Format.ValueStringPointer(),
 		}
 		columns = append(columns, column)
 	}
 
 	return &job_definitions2.XmlParserInput{
-		Root:    xmlParser.Root.String(),
+		Root:    xmlParser.Root.ValueString(),
 		Columns: columns,
 	}
 }

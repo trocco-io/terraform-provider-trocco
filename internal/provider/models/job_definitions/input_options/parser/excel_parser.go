@@ -60,8 +60,8 @@ func (excelParser *ExcelParser) ToExcelParserInput() *job_definitions2.ExcelPars
 	}
 
 	return &job_definitions2.ExcelParserInput{
-		DefaultTimeZone: excelParser.DefaultTimeZone.String(),
-		SheetName:       excelParser.SheetName.String(),
+		DefaultTimeZone: excelParser.DefaultTimeZone.ValueString(),
+		SheetName:       excelParser.SheetName.ValueString(),
 		SkipHeaderLines: excelParser.SkipHeaderLines.ValueInt64(),
 		Columns:         columns,
 	}

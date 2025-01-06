@@ -497,9 +497,6 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 						"format": schema.StringAttribute{
 							Optional: true,
 						},
-						"has_parser": schema.BoolAttribute{
-							Required: true,
-						},
 						"json_expand_enabled": schema.BoolAttribute{
 							Required: true,
 						},

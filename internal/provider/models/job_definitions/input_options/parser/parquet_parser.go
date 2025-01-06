@@ -43,8 +43,8 @@ func (parquetParser *ParquetParser) ToParquetParserInput() *job_definitions2.Par
 	columns := make([]job_definitions2.ParquetParserColumnInput, 0, len(parquetParser.Columns))
 	for _, input := range parquetParser.Columns {
 		column := job_definitions2.ParquetParserColumnInput{
-			Name:   input.Name.String(),
-			Type:   input.Type.String(),
+			Name:   input.Name.ValueString(),
+			Type:   input.Type.ValueString(),
 			Format: input.Format.ValueStringPointer(),
 		}
 		columns = append(columns, column)

@@ -46,18 +46,6 @@ func NewBigQueryOutputOption(bigQueryOutputOption *output_options.BigQueryOutput
 	if bigQueryOutputOption == nil {
 		return nil
 	}
-	columnOptions := make([]bigQueryOutputOptionColumnOption, 0, len(*bigQueryOutputOption.BigQueryOutputOptionColumnOptions))
-	for _, input := range *bigQueryOutputOption.BigQueryOutputOptionColumnOptions {
-		columnOption := bigQueryOutputOptionColumnOption{
-			Name:            types.StringValue(input.Name),
-			Type:            types.StringValue(input.Type),
-			Mode:            types.StringValue(input.Mode),
-			TimestampFormat: types.StringPointerValue(input.TimestampFormat),
-			Timezone:        types.StringPointerValue(input.Timezone),
-			Description:     types.StringPointerValue(input.Description),
-		}
-		columnOptions = append(columnOptions, columnOption)
-	}
 
 	return &BigQueryOutputOption{
 		CustomVariableSettings:                 models.NewCustomVariableSettings(bigQueryOutputOption.CustomVariableSettings),
@@ -81,9 +69,33 @@ func NewBigQueryOutputOption(bigQueryOutputOption *output_options.BigQueryOutput
 		BeforeLoad:                             types.StringValue(bigQueryOutputOption.BeforeLoad),
 		BigQueryConnectionID:                   types.Int64Value(bigQueryOutputOption.BigQueryConnectionID),
 		BigQueryOutputOptionColumnOptions:      newBigqueryOutputOptionColumnOptions(bigQueryOutputOption.BigQueryOutputOptionColumnOptions),
-		BigQueryOutputOptionClusteringFields:   nil,
-		BigQueryOutputOptionMergeKeys:          nil,
+		BigQueryOutputOptionClusteringFields:   newBigQueryOutputOptionClusteringFields(bigQueryOutputOption.BigQueryOutputOptionClusteringFields),
+		BigQueryOutputOptionMergeKeys:          newBigQueryOutputOptionMergeKeys(bigQueryOutputOption.BigQueryOutputOptionMergeKeys),
 	}
+}
+
+func newBigQueryOutputOptionMergeKeys(mergeKeys *[]string) *[]types.String {
+	if mergeKeys == nil || len(*mergeKeys) == 0 {
+		return nil
+	}
+
+	outputs := make([]types.String, 0, len(*mergeKeys))
+	for _, input := range *mergeKeys {
+		outputs = append(outputs, types.StringValue(input))
+	}
+	return &outputs
+}
+
+func newBigQueryOutputOptionClusteringFields(fields *[]string) *[]types.String {
+	if fields == nil || len(*fields) == 0 {
+		return nil
+	}
+
+	outputs := make([]types.String, 0, len(*fields))
+	for _, input := range *fields {
+		outputs = append(outputs, types.StringValue(input))
+	}
+	return &outputs
 }
 
 func newBigqueryOutputOptionColumnOptions(bigQueryOutputOptionColumnOptions *[]output_options.BigQueryOutputOptionColumnOption) *[]bigQueryOutputOptionColumnOption {
@@ -209,15 +221,14 @@ func toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOptionColumnOptions 
 
 	outputs := make([]output_options2.BigQueryOutputOptionColumnOptionInput, 0, len(*bigqueryOutputOptionColumnOptions))
 	for _, input := range *bigqueryOutputOptionColumnOptions {
-		columnOption := output_options2.BigQueryOutputOptionColumnOptionInput{
-			Name:            input.Name.String(),
-			Type:            input.Type.String(),
-			Mode:            input.Mode.String(),
+		outputs = append(outputs, output_options2.BigQueryOutputOptionColumnOptionInput{
+			Name:            input.Name.ValueString(),
+			Type:            input.Type.ValueString(),
+			Mode:            input.Mode.ValueString(),
 			TimestampFormat: input.TimestampFormat.ValueStringPointer(),
 			Timezone:        input.Timezone.ValueStringPointer(),
 			Description:     input.Description.ValueStringPointer(),
-		}
-		outputs = append(outputs, columnOption)
+		})
 	}
 	return &outputs
 }

@@ -47,8 +47,8 @@ func (ltsvParser *LtsvParser) ToLtsvParserInput() *job_definitions2.LtsvParserIn
 	columns := make([]job_definitions2.LtsvParserColumnInput, 0, len(ltsvParser.Columns))
 	for _, input := range ltsvParser.Columns {
 		column := job_definitions2.LtsvParserColumnInput{
-			Name:   input.Name.String(),
-			Type:   input.Type.String(),
+			Name:   input.Name.ValueString(),
+			Type:   input.Type.ValueString(),
 			Format: input.Format.ValueStringPointer(),
 		}
 		columns = append(columns, column)
