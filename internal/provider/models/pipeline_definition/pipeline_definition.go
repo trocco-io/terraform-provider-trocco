@@ -90,8 +90,8 @@ func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInp
 		Labels:                       lo.ToPtr(labels),
 		Notifications:                lo.ToPtr(notifications),
 		Schedules:                    lo.ToPtr(schedules),
-		Tasks:                        tasks,
-		TaskDependencies:             taskDependencies,
+		Tasks:                        lo.ToPtr(tasks),
+		TaskDependencies:             lo.ToPtr(taskDependencies),
 	}
 }
 
@@ -142,7 +142,7 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *c
 		Labels:                       lo.ToPtr(labels),
 		Notifications:                lo.ToPtr(notifications),
 		Schedules:                    lo.ToPtr(schedules),
-		Tasks:                        tasks,
-		TaskDependencies:             taskDependencies,
+		Tasks:                        lo.ToPtr(tasks),
+		TaskDependencies:             lo.ToPtr(taskDependencies),
 	}
 }

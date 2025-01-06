@@ -7,20 +7,25 @@ import (
 
 func RedshiftCustomVariableLoopConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "Redshift custom variable loop configuration",
+		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"connection_id": schema.Int64Attribute{
-				Required: true,
+				MarkdownDescription: "Redshift connection ID",
+				Required:            true,
 			},
 			"query": schema.StringAttribute{
-				Required: true,
-			},
-			"database": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "Query to expand custom variables",
+				Required:            true,
 			},
 			"variables": schema.ListAttribute{
-				Required:    true,
-				ElementType: types.StringType,
+				MarkdownDescription: "Custom variables to be expanded",
+				Required:            true,
+				ElementType:         types.StringType,
+			},
+			"database": schema.StringAttribute{
+				MarkdownDescription: "Redshift database",
+				Required:            true,
 			},
 		},
 	}

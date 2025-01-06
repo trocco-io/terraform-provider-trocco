@@ -6,7 +6,8 @@ import (
 
 func BigqueryDatacheckTaskConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "The datacheck task config of the pipeline definition",
+		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
 				Required: true,

@@ -9,7 +9,8 @@ import (
 
 func CustomVariableLoop() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "The custom variable loop of the pipeline definition",
+		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"type": schema.StringAttribute{
 				Required: true,

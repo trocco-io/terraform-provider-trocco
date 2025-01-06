@@ -13,8 +13,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -68,10 +70,10 @@ func (r *pipelineDefinitionResource) Schema(
 	resp *resource.SchemaResponse,
 ) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Provides a TROCCO pipelineDefinition resource.",
+		MarkdownDescription: "Provides a TROCCO pipeline definition resource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
-				MarkdownDescription: "The ID of the pipelineDefinition",
+				MarkdownDescription: "The ID of the pipeline definition",
 				Computed:            true,
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
@@ -81,88 +83,93 @@ func (r *pipelineDefinitionResource) Schema(
 				},
 			},
 			"resource_group_id": schema.Int64Attribute{
-				Optional: true,
+				MarkdownDescription: "The resource group ID of the pipeline definition",
+				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
 			},
 			"name": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "The name of the pipeline definition",
+				Required:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtMost(255),
 				},
 			},
 			"description": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-			},
-			"max_task_parallelism": schema.Int64Attribute{
-				Optional: true,
-				Computed: true,
-			},
-			"execution_timeout": schema.Int64Attribute{
-				Optional: true,
-				Computed: true,
-			},
-			"max_retries": schema.Int64Attribute{
-				Optional: true,
-				Computed: true,
-			},
-			"min_retry_interval": schema.Int64Attribute{
-				Optional: true,
-				Computed: true,
-			},
-			"is_concurrent_execution_skipped": schema.BoolAttribute{
-				Optional: true,
-				Computed: true,
-			},
-			"is_stopped_on_errors": schema.BoolAttribute{
-				Optional: true,
-				Computed: true,
-			},
-			"labels": schema.SetAttribute{
-				Optional:    true,
-				ElementType: types.StringType,
-			},
-			"notifications": schema.ListNestedAttribute{
-				Optional: true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"type": schema.StringAttribute{
-							Optional: true,
-						},
-						"email_config": schema.SingleNestedAttribute{
-							Optional: true,
-							Attributes: map[string]schema.Attribute{
-								"notification_id": schema.Int64Attribute{
-									Required: true,
-								},
-								"notify_when": schema.StringAttribute{
-									Required: true,
-								},
-								"message": schema.StringAttribute{
-									Required: true,
-								},
-							},
-						},
-						"slack_config": schema.SingleNestedAttribute{
-							Optional: true,
-							Attributes: map[string]schema.Attribute{
-								"notification_id": schema.Int64Attribute{
-									Required: true,
-								},
-								"notify_when": schema.StringAttribute{
-									Required: true,
-								},
-								"message": schema.StringAttribute{
-									Required: true,
-								},
-							},
-						},
-					},
+				MarkdownDescription: "The description of the pipeline definition",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"schedules":         pds.Schedule(),
+			"max_task_parallelism": schema.Int64Attribute{
+				MarkdownDescription: "The maximum number of tasks that the pipeline can run in parallel",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+					int64validator.AtMost(10),
+				},
+			},
+			"execution_timeout": schema.Int64Attribute{
+				MarkdownDescription: "The maximum time in minutes that the pipeline can run",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+				},
+			},
+			"max_retries": schema.Int64Attribute{
+				MarkdownDescription: "The maximum number of retries that the pipeline can have",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+					int64validator.AtMost(10),
+				},
+			},
+			"min_retry_interval": schema.Int64Attribute{
+				MarkdownDescription: "The minimum time in minutes between retries",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+					int64validator.AtMost(10),
+				},
+			},
+			"is_concurrent_execution_skipped": schema.BoolAttribute{
+				MarkdownDescription: "Weather to skip execution of the pipeline if it is already running",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"is_stopped_on_errors": schema.BoolAttribute{
+				MarkdownDescription: "Weather to stop the pipeline if any task fails",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"labels":            pds.Labels(),
+			"notifications":     pds.Notifications(),
+			"schedules":         pds.Schedules(),
 			"tasks":             pds.Tasks(),
 			"task_dependencies": pds.TaskDependencies(),
 		},

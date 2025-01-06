@@ -7,20 +7,25 @@ import (
 
 func SnowflakeCustomVariableLoopConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "Snowflake custom variable loop configuration",
+		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"connection_id": schema.Int64Attribute{
-				Required: true,
+				MarkdownDescription: "Snowflake connection ID",
+				Required:            true,
 			},
 			"query": schema.StringAttribute{
-				Required: true,
-			},
-			"warehouse": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "Query to expand custom variables",
+				Required:            true,
 			},
 			"variables": schema.ListAttribute{
-				Required:    true,
-				ElementType: types.StringType,
+				MarkdownDescription: "Custom variables to be expanded",
+				Required:            true,
+				ElementType:         types.StringType,
+			},
+			"warehouse": schema.StringAttribute{
+				MarkdownDescription: "Snowflake warehouse",
+				Required:            true,
 			},
 		},
 	}

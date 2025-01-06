@@ -4,9 +4,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 )
 
-func Schedule() schema.Attribute {
+func Schedules() schema.Attribute {
 	return schema.SetNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "The schedules of the pipeline definition",
+		Optional:            true,
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
 				"frequency": schema.StringAttribute{

@@ -6,51 +6,65 @@ import (
 
 func PeriodCustomVariableLoopConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "Period custom variable loop configuration",
+		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"interval": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "Interval of the loop",
+				Required:            true,
 			},
 			"time_zone": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "Timezone of the configuration",
+				Required:            true,
 			},
 			"from": schema.SingleNestedAttribute{
-				Required: true,
+				MarkdownDescription: "Start of the loop",
+				Required:            true,
 				Attributes: map[string]schema.Attribute{
 					"value": schema.Int64Attribute{
-						Required: true,
+						MarkdownDescription: "Value",
+						Required:            true,
 					},
 					"unit": schema.StringAttribute{
-						Required: true,
+						MarkdownDescription: "Unit",
+						Required:            true,
 					},
 				},
 			},
 			"to": schema.SingleNestedAttribute{
-				Required: true,
+				MarkdownDescription: "End of the loop",
+				Required:            true,
 				Attributes: map[string]schema.Attribute{
 					"value": schema.Int64Attribute{
-						Required: true,
+						MarkdownDescription: "Value",
+						Required:            true,
 					},
 					"unit": schema.StringAttribute{
-						Required: true,
+						MarkdownDescription: "Unit",
+						Required:            true,
 					},
 				},
 			},
 			"variables": schema.ListNestedAttribute{
-				Required: true,
+				MarkdownDescription: "Custom variables to be expanded",
+				Required:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
-							Required: true,
+							MarkdownDescription: "Name of custom variable",
+							Required:            true,
 						},
 						"offset": schema.SingleNestedAttribute{
-							Required: true,
+							MarkdownDescription: "Offset on custom variable expanded",
+							Required:            true,
 							Attributes: map[string]schema.Attribute{
 								"value": schema.Int64Attribute{
-									Required: true,
+									MarkdownDescription: "Value",
+									Required:            true,
 								},
 								"unit": schema.StringAttribute{
-									Required: true,
+									MarkdownDescription: "Unit",
+									Required:            true,
 								},
 							},
 						},

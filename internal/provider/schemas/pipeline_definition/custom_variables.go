@@ -6,7 +6,8 @@ import (
 
 func CustomVariables() schema.Attribute {
 	return schema.SetNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "The custom variables of the pipeline definition",
+		Optional:            true,
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
 				"name": schema.StringAttribute{

@@ -13,19 +13,20 @@ type Task struct {
 	TaskIdentifier types.Int64  `tfsdk:"task_identifier"`
 	Type           types.String `tfsdk:"type"`
 
-	BigqueryDataCheckConfig       *BigqueryDataCheckTaskConfig       `tfsdk:"bigquery_data_check_config"`
-	HTTPRequestConfig             *HTTPRequestTaskConfig             `tfsdk:"http_request_config"`
-	RedshiftDataCheckConfig       *RedshiftDataCheckTaskConfig       `tfsdk:"redshift_data_check_config"`
-	SlackNotificationConfig       *SlackNotificationTaskConfig       `tfsdk:"slack_notification_config"`
-	SnowflakeDataCheckConfig      *SnowflakeDataCheckTaskConfig      `tfsdk:"snowflake_data_check_config"`
-	TableauDataExtractionConfig   *TableauDataExtractionTaskConfig   `tfsdk:"tableau_data_extraction_config"`
-	TroccoBigQueryDatamartConfig  *TroccoBigqueryDatamartTaskConfig  `tfsdk:"trocco_bigquery_datamart_config"`
-	TroccoDBTConfig               *TroccoDBTTaskConfig               `tfsdk:"trocco_dbt_config"`
-	TroccoPipelineConfig          *TroccoPipelineTaskConfig          `tfsdk:"trocco_pipeline_config"`
-	TroccoRedshiftDatamartConfig  *TroccoRedshiftDatamartTaskConfig  `tfsdk:"trocco_redshift_datamart_config"`
-	TroccoSnowflakeDatamartConfig *TroccoSnowflakeDatamartTaskConfig `tfsdk:"trocco_snowflake_datamart_config"`
-	TroccoTransferBulkConfig      *TroccoTransferBulkTaskConfig      `tfsdk:"trocco_transfer_bulk_config"`
-	TroccoTransferConfig          *TroccoTransferTaskConfig          `tfsdk:"trocco_transfer_config"`
+	BigqueryDataCheckConfig                   *BigqueryDataCheckTaskConfig                   `tfsdk:"bigquery_data_check_config"`
+	HTTPRequestConfig                         *HTTPRequestTaskConfig                         `tfsdk:"http_request_config"`
+	RedshiftDataCheckConfig                   *RedshiftDataCheckTaskConfig                   `tfsdk:"redshift_data_check_config"`
+	SlackNotificationConfig                   *SlackNotificationTaskConfig                   `tfsdk:"slack_notification_config"`
+	SnowflakeDataCheckConfig                  *SnowflakeDataCheckTaskConfig                  `tfsdk:"snowflake_data_check_config"`
+	TableauDataExtractionConfig               *TableauDataExtractionTaskConfig               `tfsdk:"tableau_data_extraction_config"`
+	TroccoBigQueryDatamartConfig              *TroccoBigqueryDatamartTaskConfig              `tfsdk:"trocco_bigquery_datamart_config"`
+	TroccoDBTConfig                           *TroccoDBTTaskConfig                           `tfsdk:"trocco_dbt_config"`
+	TroccoPipelineConfig                      *TroccoPipelineTaskConfig                      `tfsdk:"trocco_pipeline_config"`
+	TroccoRedshiftDatamartConfig              *TroccoRedshiftDatamartTaskConfig              `tfsdk:"trocco_redshift_datamart_config"`
+	TroccoSnowflakeDatamartConfig             *TroccoSnowflakeDatamartTaskConfig             `tfsdk:"trocco_snowflake_datamart_config"`
+	TroccoAzureSynapseAnalyticsDatamartConfig *TroccoAzureSynapseAnalyticsDatamartTaskConfig `tfsdk:"trocco_azure_synapse_analytics_datamart_config"`
+	TroccoTransferBulkConfig                  *TroccoTransferBulkTaskConfig                  `tfsdk:"trocco_transfer_bulk_config"`
+	TroccoTransferConfig                      *TroccoTransferTaskConfig                      `tfsdk:"trocco_transfer_config"`
 }
 
 func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDefinition) []*Task {
@@ -75,19 +76,20 @@ func NewTask(en *we.Task, keys map[int64]types.String, previous *Task) *Task {
 		TaskIdentifier: types.Int64Value(en.TaskIdentifier),
 		Type:           types.StringValue(en.Type),
 
-		TroccoTransferConfig:          NewTroccoTransferTaskConfig(en.TroccoTransferConfig),
-		TroccoTransferBulkConfig:      NewTroccoTransferBulkTaskConfig(en.TroccoTransferBulkConfig),
-		TroccoDBTConfig:               NewTroccoDBTTaskConfig(en.TroccoDBTConfig),
-		TroccoBigQueryDatamartConfig:  NewTroccoBigqueryDatamartTaskConfig(en.TroccoBigQueryDatamartConfig),
-		TroccoRedshiftDatamartConfig:  NewTroccoRedshiftDatamartTaskConfig(en.TroccoRedshiftDatamartConfig),
-		TroccoSnowflakeDatamartConfig: NewTroccoSnowflakeDatamartTaskConfig(en.TroccoSnowflakeDatamartConfig),
-		TroccoPipelineConfig:          NewTroccoPipelineTaskConfig(en.TroccoPipelineTaskConfig),
-		SlackNotificationConfig:       NewSlackNotificationTaskConfig(en.SlackNotificationConfig),
-		TableauDataExtractionConfig:   NewTableauDataExtractionTaskConfig(en.TableauDataExtractionConfig),
-		BigqueryDataCheckConfig:       NewBigqueryDataCheckTaskConfig(en.BigqueryDataCheckConfig),
-		SnowflakeDataCheckConfig:      NewSnowflakeDataCheckTaskConfig(en.SnowflakeDataCheckConfig),
-		RedshiftDataCheckConfig:       NewRedshiftDataCheckTaskConfig(en.RedshiftDataCheckConfig),
-		HTTPRequestConfig:             NewHTTPRequestTaskConfig(en.HTTPRequestConfig, previous.HTTPRequestConfig),
+		TroccoTransferConfig:                      NewTroccoTransferTaskConfig(en.TroccoTransferConfig),
+		TroccoTransferBulkConfig:                  NewTroccoTransferBulkTaskConfig(en.TroccoTransferBulkConfig),
+		TroccoDBTConfig:                           NewTroccoDBTTaskConfig(en.TroccoDBTConfig),
+		TroccoBigQueryDatamartConfig:              NewTroccoBigqueryDatamartTaskConfig(en.TroccoBigQueryDatamartConfig),
+		TroccoRedshiftDatamartConfig:              NewTroccoRedshiftDatamartTaskConfig(en.TroccoRedshiftDatamartConfig),
+		TroccoSnowflakeDatamartConfig:             NewTroccoSnowflakeDatamartTaskConfig(en.TroccoSnowflakeDatamartConfig),
+		TroccoAzureSynapseAnalyticsDatamartConfig: NewTroccoAzureSynapseAnalyticsDatamartTaskConfig(en.TroccoAzureSynapseAnalyticsDatamartConfig),
+		TroccoPipelineConfig:                      NewTroccoPipelineTaskConfig(en.TroccoPipelineTaskConfig),
+		SlackNotificationConfig:                   NewSlackNotificationTaskConfig(en.SlackNotificationConfig),
+		TableauDataExtractionConfig:               NewTableauDataExtractionTaskConfig(en.TableauDataExtractionConfig),
+		BigqueryDataCheckConfig:                   NewBigqueryDataCheckTaskConfig(en.BigqueryDataCheckConfig),
+		SnowflakeDataCheckConfig:                  NewSnowflakeDataCheckTaskConfig(en.SnowflakeDataCheckConfig),
+		RedshiftDataCheckConfig:                   NewRedshiftDataCheckTaskConfig(en.RedshiftDataCheckConfig),
+		HTTPRequestConfig:                         NewHTTPRequestTaskConfig(en.HTTPRequestConfig, previous.HTTPRequestConfig),
 	}
 }
 
@@ -115,6 +117,9 @@ func (t *Task) ToInput(identifiers map[string]int64) *wp.Task {
 	}
 	if t.TroccoSnowflakeDatamartConfig != nil {
 		in.TroccoSnowflakeDatamartConfig = t.TroccoSnowflakeDatamartConfig.ToInput()
+	}
+	if t.TroccoAzureSynapseAnalyticsDatamartConfig != nil {
+		in.TroccoAzureSynapseAnalyticsDatamartConfig = t.TroccoAzureSynapseAnalyticsDatamartConfig.ToInput()
 	}
 	if t.TroccoPipelineConfig != nil {
 		in.TroccoPipelineConfig = t.TroccoPipelineConfig.ToInput()

@@ -7,18 +7,22 @@ import (
 
 func StringCustomVariableLoopConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "String custom variable loop configuration",
+		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"variables": schema.ListNestedAttribute{
-				Required: true,
+				MarkdownDescription: "Custom variables",
+				Required:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
-							Required: true,
+							MarkdownDescription: "Custom variable name",
+							Required:            true,
 						},
 						"values": schema.ListAttribute{
-							Required:    true,
-							ElementType: types.StringType,
+							MarkdownDescription: "Custom variable values",
+							Required:            true,
+							ElementType:         types.StringType,
 						},
 					},
 				},

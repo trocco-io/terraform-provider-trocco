@@ -16,42 +16,38 @@ type ListPipelineDefinitionsInput struct {
 }
 
 type CreatePipelineDefinitionInput struct {
-	ResourceGroupID              *p.NullableInt64    `json:"resource_group_id"`
-	Name                         string              `json:"name"`
-	Description                  *p.NullableString   `json:"description,omitempty"`
-	MaxTaskParallelism           *p.NullableInt64    `json:"max_task_parallelism,omitempty"`
-	ExecutionTimeout             *p.NullableInt64    `json:"execution_timeout,omitempty"`
-	MaxRetries                   *p.NullableInt64    `json:"max_retries,omitempty"`
-	MinRetryInterval             *p.NullableInt64    `json:"min_retry_interval,omitempty"`
-	IsConcurrentExecutionSkipped *p.NullableBool     `json:"is_concurrent_execution_skipped,omitempty"`
-	IsStoppedOnErrors            *p.NullableBool     `json:"is_stopped_on_errors,omitempty"`
-	Labels                       *[]string           `json:"labels,omitempty"`
-	Notifications                *[]*wp.Notification `json:"notifications,omitempty"`
-	Schedules                    *[]*wp.Schedule     `json:"schedules,omitempty"`
-	Tasks                        []wp.Task           `json:"tasks,omitempty"`
-	TaskDependencies             []wp.TaskDependency `json:"task_dependencies,omitempty"`
+	ResourceGroupID              *p.NullableInt64     `json:"resource_group_id"`
+	Name                         string               `json:"name"`
+	Description                  *p.NullableString    `json:"description,omitempty"`
+	MaxTaskParallelism           *p.NullableInt64     `json:"max_task_parallelism,omitempty"`
+	ExecutionTimeout             *p.NullableInt64     `json:"execution_timeout,omitempty"`
+	MaxRetries                   *p.NullableInt64     `json:"max_retries,omitempty"`
+	MinRetryInterval             *p.NullableInt64     `json:"min_retry_interval,omitempty"`
+	IsConcurrentExecutionSkipped *p.NullableBool      `json:"is_concurrent_execution_skipped,omitempty"`
+	IsStoppedOnErrors            *p.NullableBool      `json:"is_stopped_on_errors,omitempty"`
+	Labels                       *[]string            `json:"labels,omitempty"`
+	Notifications                *[]*wp.Notification  `json:"notifications,omitempty"`
+	Schedules                    *[]*wp.Schedule      `json:"schedules,omitempty"`
+	Tasks                        *[]wp.Task           `json:"tasks,omitempty"`
+	TaskDependencies             *[]wp.TaskDependency `json:"task_dependencies,omitempty"`
 }
 
 type UpdatePipelineDefinitionInput struct {
-	ResourceGroupID              *p.NullableInt64    `json:"resource_group_id"`
-	Name                         *string             `json:"name,omitempty"`
-	Description                  *p.NullableString   `json:"description,omitempty"`
-	MaxTaskParallelism           *p.NullableInt64    `json:"max_task_parallelism,omitempty"`
-	ExecutionTimeout             *p.NullableInt64    `json:"execution_timeout,omitempty"`
-	MaxRetries                   *p.NullableInt64    `json:"max_retries,omitempty"`
-	MinRetryInterval             *p.NullableInt64    `json:"min_retry_interval,omitempty"`
-	IsConcurrentExecutionSkipped *p.NullableBool     `json:"is_concurrent_execution_skipped,omitempty"`
-	IsStoppedOnErrors            *p.NullableBool     `json:"is_stopped_on_errors,omitempty"`
-	Labels                       *[]string           `json:"labels,omitempty"`
-	Notifications                *[]*wp.Notification `json:"notifications,omitempty"`
-	Schedules                    *[]*wp.Schedule     `json:"schedules,omitempty"`
-	Tasks                        []wp.Task           `json:"tasks,omitempty"`
-	TaskDependencies             []wp.TaskDependency `json:"task_dependencies,omitempty"`
+	ResourceGroupID              *p.NullableInt64     `json:"resource_group_id"`
+	Name                         *string              `json:"name,omitempty"`
+	Description                  *p.NullableString    `json:"description,omitempty"`
+	MaxTaskParallelism           *p.NullableInt64     `json:"max_task_parallelism,omitempty"`
+	ExecutionTimeout             *p.NullableInt64     `json:"execution_timeout,omitempty"`
+	MaxRetries                   *p.NullableInt64     `json:"max_retries,omitempty"`
+	MinRetryInterval             *p.NullableInt64     `json:"min_retry_interval,omitempty"`
+	IsConcurrentExecutionSkipped *p.NullableBool      `json:"is_concurrent_execution_skipped,omitempty"`
+	IsStoppedOnErrors            *p.NullableBool      `json:"is_stopped_on_errors,omitempty"`
+	Labels                       *[]string            `json:"labels,omitempty"`
+	Notifications                *[]*wp.Notification  `json:"notifications,omitempty"`
+	Schedules                    *[]*wp.Schedule      `json:"schedules,omitempty"`
+	Tasks                        *[]wp.Task           `json:"tasks,omitempty"`
+	TaskDependencies             *[]wp.TaskDependency `json:"task_dependencies,omitempty"`
 }
-
-// -----------------------------------------------------------------------------
-// Operations
-// -----------------------------------------------------------------------------
 
 func (c *TroccoClient) ListPipelineDefinitions(in *ListPipelineDefinitionsInput) (*entities.PipelineDefinitionList, error) {
 	params := url.Values{}
