@@ -10,22 +10,28 @@ func BigqueryDatacheckTaskConfig() schema.Attribute {
 		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "The name of the datacheck task",
+				Required:            true,
 			},
 			"connection_id": schema.Int64Attribute{
-				Required: true,
+				MarkdownDescription: "The connection id of the datacheck task",
+				Required:            true,
 			},
 			"query": schema.StringAttribute{
-				Optional: true,
+				MarkdownDescription: "The query of the datacheck task",
+				Optional:            true,
 			},
 			"operator": schema.StringAttribute{
-				Optional: true,
+				MarkdownDescription: "The operator of the datacheck task",
+				Optional:            true,
 			},
 			"query_result": schema.Int64Attribute{
-				Optional: true,
+				MarkdownDescription: "The query result of the datacheck task",
+				Optional:            true,
 			},
 			"accepts_null": schema.BoolAttribute{
-				Optional: true,
+				MarkdownDescription: "Whether the datacheck task accepts null",
+				Optional:            true,
 			},
 			"custom_variables": CustomVariables(),
 		},

@@ -15,16 +15,19 @@ func Tasks() schema.Attribute {
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
 				"key": schema.StringAttribute{
-					Required: true,
+					MarkdownDescription: "The key of the task.",
+					Required:            true,
 				},
 				"task_identifier": schema.Int64Attribute{
-					Computed: true,
+					MarkdownDescription: "The task identifier.",
+					Computed:            true,
 					PlanModifiers: []planmodifier.Int64{
 						int64planmodifier.UseStateForUnknown(),
 					},
 				},
 				"type": schema.StringAttribute{
-					Required: true,
+					MarkdownDescription: "The type of the task.",
+					Required:            true,
 					Validators: []validator.String{
 						stringvalidator.OneOf(
 							"trocco_transfer",

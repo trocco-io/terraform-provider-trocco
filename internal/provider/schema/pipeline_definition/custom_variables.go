@@ -11,28 +11,36 @@ func CustomVariables() schema.Attribute {
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
 				"name": schema.StringAttribute{
-					Required: true,
+					MarkdownDescription: "The name of the custom variable",
+					Required:            true,
 				},
 				"type": schema.StringAttribute{
-					Required: true,
+					MarkdownDescription: "The type of the custom variable",
+					Required:            true,
 				},
 				"value": schema.StringAttribute{
-					Optional: true,
+					MarkdownDescription: "The value of the custom variable",
+					Optional:            true,
 				},
 				"quantity": schema.Int64Attribute{
-					Optional: true,
+					MarkdownDescription: "The quantity of the custom variable",
+					Optional:            true,
 				},
 				"unit": schema.StringAttribute{
-					Optional: true,
+					MarkdownDescription: "The unit of the custom variable",
+					Optional:            true,
 				},
 				"direction": schema.StringAttribute{
-					Optional: true,
+					MarkdownDescription: "The direction of the custom variable",
+					Optional:            true,
 				},
 				"format": schema.StringAttribute{
-					Optional: true,
+					MarkdownDescription: "The format of the custom variable",
+					Optional:            true,
 				},
 				"time_zone": schema.StringAttribute{
-					Optional: true,
+					MarkdownDescription: "The time zone of the custom variable",
+					Optional:            true,
 				},
 			},
 		},

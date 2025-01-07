@@ -44,18 +44,18 @@ Provides a TROCCO pipeline definition resource.
 
 Optional:
 
-- `email_config` (Attributes) (see [below for nested schema](#nestedatt--notifications--email_config))
-- `slack_config` (Attributes) (see [below for nested schema](#nestedatt--notifications--slack_config))
-- `type` (String)
+- `email_config` (Attributes) The email configuration of the notification (see [below for nested schema](#nestedatt--notifications--email_config))
+- `slack_config` (Attributes) The slack configuration of the notification (see [below for nested schema](#nestedatt--notifications--slack_config))
+- `type` (String) The type of the notification
 
 <a id="nestedatt--notifications--email_config"></a>
 ### Nested Schema for `notifications.email_config`
 
 Required:
 
-- `message` (String)
-- `notification_id` (Number)
-- `notify_when` (String)
+- `message` (String) The message of the notification
+- `notification_id` (Number) The notification id
+- `notify_when` (String) When to notify
 
 
 <a id="nestedatt--notifications--slack_config"></a>
@@ -63,9 +63,9 @@ Required:
 
 Required:
 
-- `message` (String)
-- `notification_id` (Number)
-- `notify_when` (String)
+- `message` (String) The message of the notification
+- `notification_id` (Number) The notification id
+- `notify_when` (String) When to notify
 
 
 
@@ -74,15 +74,15 @@ Required:
 
 Required:
 
-- `frequency` (String)
-- `minute` (Number)
-- `time_zone` (String)
+- `frequency` (String) The frequency of the schedule
+- `minute` (Number) The minute of the schedule
+- `time_zone` (String) The time zone of the schedule
 
 Optional:
 
-- `day` (Number)
-- `day_of_week` (Number)
-- `hour` (Number)
+- `day` (Number) The day of the schedule
+- `day_of_week` (Number) The day of the week of the schedule
+- `hour` (Number) The hour of the schedule
 
 
 <a id="nestedatt--task_dependencies"></a>
@@ -90,8 +90,8 @@ Optional:
 
 Required:
 
-- `destination` (String)
-- `source` (String)
+- `destination` (String) The destination task key.
+- `source` (String) The source task key.
 
 
 <a id="nestedatt--tasks"></a>
@@ -99,62 +99,62 @@ Required:
 
 Required:
 
-- `key` (String)
-- `type` (String)
+- `key` (String) The key of the task.
+- `type` (String) The type of the task.
 
 Optional:
 
 - `bigquery_data_check_config` (Attributes) The datacheck task config of the pipeline definition (see [below for nested schema](#nestedatt--tasks--bigquery_data_check_config))
-- `http_request_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--http_request_config))
-- `redshift_data_check_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--redshift_data_check_config))
-- `slack_notification_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--slack_notification_config))
-- `snowflake_data_check_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--snowflake_data_check_config))
-- `tableau_data_extraction_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--tableau_data_extraction_config))
-- `trocco_azure_synapse_analytics_datamart_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--trocco_azure_synapse_analytics_datamart_config))
-- `trocco_bigquery_datamart_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--trocco_bigquery_datamart_config))
-- `trocco_dbt_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--trocco_dbt_config))
-- `trocco_pipeline_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--trocco_pipeline_config))
-- `trocco_redshift_datamart_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--trocco_redshift_datamart_config))
-- `trocco_snowflake_datamart_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--trocco_snowflake_datamart_config))
-- `trocco_transfer_bulk_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--trocco_transfer_bulk_config))
-- `trocco_transfer_config` (Attributes) (see [below for nested schema](#nestedatt--tasks--trocco_transfer_config))
+- `http_request_config` (Attributes) The task configuration for the HTTP request task. (see [below for nested schema](#nestedatt--tasks--http_request_config))
+- `redshift_data_check_config` (Attributes) The task configuration for the datacheck task. (see [below for nested schema](#nestedatt--tasks--redshift_data_check_config))
+- `slack_notification_config` (Attributes) The task configuration for the slack notification task. (see [below for nested schema](#nestedatt--tasks--slack_notification_config))
+- `snowflake_data_check_config` (Attributes) The task configuration for the datacheck task. (see [below for nested schema](#nestedatt--tasks--snowflake_data_check_config))
+- `tableau_data_extraction_config` (Attributes) The task configuration for the tableau data extraction task. (see [below for nested schema](#nestedatt--tasks--tableau_data_extraction_config))
+- `trocco_azure_synapse_analytics_datamart_config` (Attributes) The task configuration for the datamart task. (see [below for nested schema](#nestedatt--tasks--trocco_azure_synapse_analytics_datamart_config))
+- `trocco_bigquery_datamart_config` (Attributes) The task configuration for the datamart task. (see [below for nested schema](#nestedatt--tasks--trocco_bigquery_datamart_config))
+- `trocco_dbt_config` (Attributes) The task configuration for the trocco dbt task. (see [below for nested schema](#nestedatt--tasks--trocco_dbt_config))
+- `trocco_pipeline_config` (Attributes) The task configuration for the trocco pipeline task. (see [below for nested schema](#nestedatt--tasks--trocco_pipeline_config))
+- `trocco_redshift_datamart_config` (Attributes) The task configuration for the datamart task. (see [below for nested schema](#nestedatt--tasks--trocco_redshift_datamart_config))
+- `trocco_snowflake_datamart_config` (Attributes) The task configuration for the datamart task. (see [below for nested schema](#nestedatt--tasks--trocco_snowflake_datamart_config))
+- `trocco_transfer_bulk_config` (Attributes) The task configuration for the trocco transfer bulk task. (see [below for nested schema](#nestedatt--tasks--trocco_transfer_bulk_config))
+- `trocco_transfer_config` (Attributes) The task configuration for the trocco transfer task. (see [below for nested schema](#nestedatt--tasks--trocco_transfer_config))
 
 Read-Only:
 
-- `task_identifier` (Number)
+- `task_identifier` (Number) The task identifier.
 
 <a id="nestedatt--tasks--bigquery_data_check_config"></a>
 ### Nested Schema for `tasks.bigquery_data_check_config`
 
 Required:
 
-- `connection_id` (Number)
-- `name` (String)
+- `connection_id` (Number) The connection id of the datacheck task
+- `name` (String) The name of the datacheck task
 
 Optional:
 
-- `accepts_null` (Boolean)
+- `accepts_null` (Boolean) Whether the datacheck task accepts null
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--bigquery_data_check_config--custom_variables))
-- `operator` (String)
-- `query` (String)
-- `query_result` (Number)
+- `operator` (String) The operator of the datacheck task
+- `query` (String) The query of the datacheck task
+- `query_result` (Number) The query result of the datacheck task
 
 <a id="nestedatt--tasks--bigquery_data_check_config--custom_variables"></a>
 ### Nested Schema for `tasks.bigquery_data_check_config.custom_variables`
 
 Required:
 
-- `name` (String)
-- `type` (String)
+- `name` (String) The name of the custom variable
+- `type` (String) The type of the custom variable
 
 Optional:
 
-- `direction` (String)
-- `format` (String)
-- `quantity` (Number)
-- `time_zone` (String)
-- `unit` (String)
-- `value` (String)
+- `direction` (String) The direction of the custom variable
+- `format` (String) The format of the custom variable
+- `quantity` (Number) The quantity of the custom variable
+- `time_zone` (String) The time zone of the custom variable
+- `unit` (String) The unit of the custom variable
+- `value` (String) The value of the custom variable
 
 
 
@@ -163,16 +163,16 @@ Optional:
 
 Required:
 
-- `http_method` (String)
-- `name` (String)
-- `url` (String)
+- `http_method` (String) The HTTP method to use for the request
+- `name` (String) The name of the task
+- `url` (String) The URL to send the request to
 
 Optional:
 
-- `connection_id` (Number)
+- `connection_id` (Number) The connection id to use for the task
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--http_request_config--custom_variables))
-- `request_body` (String)
-- `request_headers` (Attributes List) (see [below for nested schema](#nestedatt--tasks--http_request_config--request_headers))
+- `request_body` (String) The body of the request
+- `request_headers` (Attributes List) The headers to send with the request (see [below for nested schema](#nestedatt--tasks--http_request_config--request_headers))
 - `request_parameter` (Attributes List) (see [below for nested schema](#nestedatt--tasks--http_request_config--request_parameter))
 
 <a id="nestedatt--tasks--http_request_config--custom_variables"></a>
@@ -180,17 +180,17 @@ Optional:
 
 Required:
 
-- `name` (String)
-- `type` (String)
+- `name` (String) The name of the custom variable
+- `type` (String) The type of the custom variable
 
 Optional:
 
-- `direction` (String)
-- `format` (String)
-- `quantity` (Number)
-- `time_zone` (String)
-- `unit` (String)
-- `value` (String)
+- `direction` (String) The direction of the custom variable
+- `format` (String) The format of the custom variable
+- `quantity` (Number) The quantity of the custom variable
+- `time_zone` (String) The time zone of the custom variable
+- `unit` (String) The unit of the custom variable
+- `value` (String) The value of the custom variable
 
 
 <a id="nestedatt--tasks--http_request_config--request_headers"></a>
@@ -198,12 +198,12 @@ Optional:
 
 Required:
 
-- `key` (String)
-- `value` (String)
+- `key` (String) The key of the header
+- `value` (String) The value of the header
 
 Optional:
 
-- `masking` (Boolean)
+- `masking` (Boolean) Whether to mask the value of the header
 
 
 <a id="nestedatt--tasks--http_request_config--request_parameter"></a>
@@ -211,12 +211,12 @@ Optional:
 
 Required:
 
-- `key` (String)
-- `value` (String)
+- `key` (String) The key of the parameter
+- `value` (String) The value of the parameter
 
 Optional:
 
-- `masking` (Boolean)
+- `masking` (Boolean) Whether to mask the value of the parameter
 
 
 
@@ -225,34 +225,34 @@ Optional:
 
 Required:
 
-- `connection_id` (Number)
-- `name` (String)
+- `connection_id` (Number) The connection id to use for the datacheck task
+- `name` (String) The name of the datacheck task
 
 Optional:
 
-- `accepts_null` (Boolean)
+- `accepts_null` (Boolean) Whether the datacheck task accepts null values
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--redshift_data_check_config--custom_variables))
-- `database` (String)
-- `operator` (String)
-- `query` (String)
-- `query_result` (Number)
+- `database` (String) The database to use for the datacheck task
+- `operator` (String) The operator to use for the datacheck task
+- `query` (String) The query to run for the datacheck task
+- `query_result` (Number) The query result to use for the datacheck task
 
 <a id="nestedatt--tasks--redshift_data_check_config--custom_variables"></a>
 ### Nested Schema for `tasks.redshift_data_check_config.custom_variables`
 
 Required:
 
-- `name` (String)
-- `type` (String)
+- `name` (String) The name of the custom variable
+- `type` (String) The type of the custom variable
 
 Optional:
 
-- `direction` (String)
-- `format` (String)
-- `quantity` (Number)
-- `time_zone` (String)
-- `unit` (String)
-- `value` (String)
+- `direction` (String) The direction of the custom variable
+- `format` (String) The format of the custom variable
+- `quantity` (Number) The quantity of the custom variable
+- `time_zone` (String) The time zone of the custom variable
+- `unit` (String) The unit of the custom variable
+- `value` (String) The value of the custom variable
 
 
 
@@ -261,10 +261,10 @@ Optional:
 
 Required:
 
-- `connection_id` (Number)
-- `ignore_error` (Boolean)
-- `message` (String)
-- `name` (String)
+- `connection_id` (Number) The connection id to use for the task
+- `ignore_error` (Boolean) Whether to ignore errors
+- `message` (String) The message to send
+- `name` (String) The name of the task
 
 
 <a id="nestedatt--tasks--snowflake_data_check_config"></a>
@@ -272,34 +272,34 @@ Required:
 
 Required:
 
-- `connection_id` (Number)
-- `name` (String)
+- `connection_id` (Number) The connection id to use for the datacheck task
+- `name` (String) The name of the datacheck task
 
 Optional:
 
-- `accepts_null` (Boolean)
+- `accepts_null` (Boolean) Whether the datacheck task accepts null values
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--snowflake_data_check_config--custom_variables))
-- `operator` (String)
-- `query` (String)
-- `query_result` (Number)
-- `warehouse` (String)
+- `operator` (String) The operator to use for the datacheck task
+- `query` (String) The query to run for the datacheck task
+- `query_result` (Number) The query result to use for the datacheck task
+- `warehouse` (String) The warehouse to use for the datacheck task
 
 <a id="nestedatt--tasks--snowflake_data_check_config--custom_variables"></a>
 ### Nested Schema for `tasks.snowflake_data_check_config.custom_variables`
 
 Required:
 
-- `name` (String)
-- `type` (String)
+- `name` (String) The name of the custom variable
+- `type` (String) The type of the custom variable
 
 Optional:
 
-- `direction` (String)
-- `format` (String)
-- `quantity` (Number)
-- `time_zone` (String)
-- `unit` (String)
-- `value` (String)
+- `direction` (String) The direction of the custom variable
+- `format` (String) The format of the custom variable
+- `quantity` (Number) The quantity of the custom variable
+- `time_zone` (String) The time zone of the custom variable
+- `unit` (String) The unit of the custom variable
+- `value` (String) The value of the custom variable
 
 
 
@@ -308,9 +308,9 @@ Optional:
 
 Required:
 
-- `connection_id` (Number)
-- `name` (String)
-- `task_id` (String)
+- `connection_id` (Number) The connection id to use for the task
+- `name` (String) The name of the task
+- `task_id` (String) The task id to use for the task
 
 
 <a id="nestedatt--tasks--trocco_azure_synapse_analytics_datamart_config"></a>
@@ -318,7 +318,7 @@ Required:
 
 Required:
 
-- `definition_id` (Number)
+- `definition_id` (Number) The definition id to use for the datamart task
 
 Optional:
 
@@ -329,14 +329,14 @@ Optional:
 
 Required:
 
-- `type` (String)
+- `type` (String) The type of the custom variable loop
 
 Optional:
 
 - `bigquery_config` (Attributes) BigQuery custom variabe loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_azure_synapse_analytics_datamart_config--custom_variable_loop--bigquery_config))
-- `is_parallel_execution_allowed` (Boolean)
-- `is_stopped_on_errors` (Boolean)
-- `max_errors` (Number)
+- `is_parallel_execution_allowed` (Boolean) Whether parallel execution is allowed
+- `is_stopped_on_errors` (Boolean) Whether the loop is stopped on errors
+- `max_errors` (Number) The maximum number of errors
 - `period_config` (Attributes) Period custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_azure_synapse_analytics_datamart_config--custom_variable_loop--period_config))
 - `redshift_config` (Attributes) Redshift custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_azure_synapse_analytics_datamart_config--custom_variable_loop--redshift_config))
 - `snowflake_config` (Attributes) Snowflake custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_azure_synapse_analytics_datamart_config--custom_variable_loop--snowflake_config))
@@ -446,7 +446,7 @@ Required:
 
 Required:
 
-- `definition_id` (Number)
+- `definition_id` (Number) The definition id to use for the datamart task
 
 Optional:
 
@@ -457,14 +457,14 @@ Optional:
 
 Required:
 
-- `type` (String)
+- `type` (String) The type of the custom variable loop
 
 Optional:
 
 - `bigquery_config` (Attributes) BigQuery custom variabe loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_bigquery_datamart_config--custom_variable_loop--bigquery_config))
-- `is_parallel_execution_allowed` (Boolean)
-- `is_stopped_on_errors` (Boolean)
-- `max_errors` (Number)
+- `is_parallel_execution_allowed` (Boolean) Whether parallel execution is allowed
+- `is_stopped_on_errors` (Boolean) Whether the loop is stopped on errors
+- `max_errors` (Number) The maximum number of errors
 - `period_config` (Attributes) Period custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_bigquery_datamart_config--custom_variable_loop--period_config))
 - `redshift_config` (Attributes) Redshift custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_bigquery_datamart_config--custom_variable_loop--redshift_config))
 - `snowflake_config` (Attributes) Snowflake custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_bigquery_datamart_config--custom_variable_loop--snowflake_config))
@@ -574,7 +574,7 @@ Required:
 
 Required:
 
-- `definition_id` (Number)
+- `definition_id` (Number) The definition id to use for the trocco dbt task
 
 
 <a id="nestedatt--tasks--trocco_pipeline_config"></a>
@@ -582,7 +582,7 @@ Required:
 
 Required:
 
-- `definition_id` (Number)
+- `definition_id` (Number) The definition id to use for the trocco pipeline task
 
 Optional:
 
@@ -593,14 +593,14 @@ Optional:
 
 Required:
 
-- `type` (String)
+- `type` (String) The type of the custom variable loop
 
 Optional:
 
 - `bigquery_config` (Attributes) BigQuery custom variabe loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_pipeline_config--custom_variable_loop--bigquery_config))
-- `is_parallel_execution_allowed` (Boolean)
-- `is_stopped_on_errors` (Boolean)
-- `max_errors` (Number)
+- `is_parallel_execution_allowed` (Boolean) Whether parallel execution is allowed
+- `is_stopped_on_errors` (Boolean) Whether the loop is stopped on errors
+- `max_errors` (Number) The maximum number of errors
 - `period_config` (Attributes) Period custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_pipeline_config--custom_variable_loop--period_config))
 - `redshift_config` (Attributes) Redshift custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_pipeline_config--custom_variable_loop--redshift_config))
 - `snowflake_config` (Attributes) Snowflake custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_pipeline_config--custom_variable_loop--snowflake_config))
@@ -710,7 +710,7 @@ Required:
 
 Required:
 
-- `definition_id` (Number)
+- `definition_id` (Number) The definition id to use for the datamart task
 
 Optional:
 
@@ -721,14 +721,14 @@ Optional:
 
 Required:
 
-- `type` (String)
+- `type` (String) The type of the custom variable loop
 
 Optional:
 
 - `bigquery_config` (Attributes) BigQuery custom variabe loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_redshift_datamart_config--custom_variable_loop--bigquery_config))
-- `is_parallel_execution_allowed` (Boolean)
-- `is_stopped_on_errors` (Boolean)
-- `max_errors` (Number)
+- `is_parallel_execution_allowed` (Boolean) Whether parallel execution is allowed
+- `is_stopped_on_errors` (Boolean) Whether the loop is stopped on errors
+- `max_errors` (Number) The maximum number of errors
 - `period_config` (Attributes) Period custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_redshift_datamart_config--custom_variable_loop--period_config))
 - `redshift_config` (Attributes) Redshift custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_redshift_datamart_config--custom_variable_loop--redshift_config))
 - `snowflake_config` (Attributes) Snowflake custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_redshift_datamart_config--custom_variable_loop--snowflake_config))
@@ -838,7 +838,7 @@ Required:
 
 Required:
 
-- `definition_id` (Number)
+- `definition_id` (Number) The definition id to use for the datamart task
 
 Optional:
 
@@ -849,14 +849,14 @@ Optional:
 
 Required:
 
-- `type` (String)
+- `type` (String) The type of the custom variable loop
 
 Optional:
 
 - `bigquery_config` (Attributes) BigQuery custom variabe loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_snowflake_datamart_config--custom_variable_loop--bigquery_config))
-- `is_parallel_execution_allowed` (Boolean)
-- `is_stopped_on_errors` (Boolean)
-- `max_errors` (Number)
+- `is_parallel_execution_allowed` (Boolean) Whether parallel execution is allowed
+- `is_stopped_on_errors` (Boolean) Whether the loop is stopped on errors
+- `max_errors` (Number) The maximum number of errors
 - `period_config` (Attributes) Period custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_snowflake_datamart_config--custom_variable_loop--period_config))
 - `redshift_config` (Attributes) Redshift custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_snowflake_datamart_config--custom_variable_loop--redshift_config))
 - `snowflake_config` (Attributes) Snowflake custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_snowflake_datamart_config--custom_variable_loop--snowflake_config))
@@ -966,13 +966,13 @@ Required:
 
 Required:
 
-- `definition_id` (Number)
+- `definition_id` (Number) The definition id to use for the trocco transfer bulk task
 
 Optional:
 
-- `is_parallel_execution_allowed` (Boolean)
-- `is_stopped_on_errors` (Boolean)
-- `max_errors` (Number)
+- `is_parallel_execution_allowed` (Boolean) Whether the task is allowed to run in parallel
+- `is_stopped_on_errors` (Boolean) Whether the task should stop on errors
+- `max_errors` (Number) The maximum number of errors allowed before the task stops
 
 
 <a id="nestedatt--tasks--trocco_transfer_config"></a>
@@ -980,7 +980,7 @@ Optional:
 
 Required:
 
-- `definition_id` (Number)
+- `definition_id` (Number) The definition id to use for the trocco transfer task
 
 Optional:
 
@@ -991,14 +991,14 @@ Optional:
 
 Required:
 
-- `type` (String)
+- `type` (String) The type of the custom variable loop
 
 Optional:
 
 - `bigquery_config` (Attributes) BigQuery custom variabe loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_transfer_config--custom_variable_loop--bigquery_config))
-- `is_parallel_execution_allowed` (Boolean)
-- `is_stopped_on_errors` (Boolean)
-- `max_errors` (Number)
+- `is_parallel_execution_allowed` (Boolean) Whether parallel execution is allowed
+- `is_stopped_on_errors` (Boolean) Whether the loop is stopped on errors
+- `max_errors` (Number) The maximum number of errors
 - `period_config` (Attributes) Period custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_transfer_config--custom_variable_loop--period_config))
 - `redshift_config` (Attributes) Redshift custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_transfer_config--custom_variable_loop--redshift_config))
 - `snowflake_config` (Attributes) Snowflake custom variable loop configuration (see [below for nested schema](#nestedatt--tasks--trocco_transfer_config--custom_variable_loop--snowflake_config))

@@ -11,22 +11,28 @@ func Schedules() schema.Attribute {
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
 				"frequency": schema.StringAttribute{
-					Required: true,
+					MarkdownDescription: "The frequency of the schedule",
+					Required:            true,
 				},
 				"time_zone": schema.StringAttribute{
-					Required: true,
+					MarkdownDescription: "The time zone of the schedule",
+					Required:            true,
 				},
 				"minute": schema.Int64Attribute{
-					Required: true,
+					MarkdownDescription: "The minute of the schedule",
+					Required:            true,
 				},
 				"day": schema.Int64Attribute{
-					Optional: true,
+					MarkdownDescription: "The day of the schedule",
+					Optional:            true,
 				},
 				"day_of_week": schema.Int64Attribute{
-					Optional: true,
+					MarkdownDescription: "The day of the week of the schedule",
+					Optional:            true,
 				},
 				"hour": schema.Int64Attribute{
-					Optional: true,
+					MarkdownDescription: "The hour of the schedule",
+					Optional:            true,
 				},
 			},
 		},

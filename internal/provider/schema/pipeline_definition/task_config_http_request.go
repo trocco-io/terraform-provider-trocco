@@ -6,35 +6,45 @@ import (
 
 func HTTPRequestTaskConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "The task configuration for the HTTP request task.",
+		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "The name of the task",
+				Required:            true,
 			},
 			"connection_id": schema.Int64Attribute{
-				Optional: true,
+				MarkdownDescription: "The connection id to use for the task",
+				Optional:            true,
 			},
 			"http_method": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "The HTTP method to use for the request",
+				Required:            true,
 			},
 			"url": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "The URL to send the request to",
+				Required:            true,
 			},
 			"request_body": schema.StringAttribute{
-				Optional: true,
+				MarkdownDescription: "The body of the request",
+				Optional:            true,
 			},
 			"request_headers": schema.ListNestedAttribute{
-				Optional: true,
+				MarkdownDescription: "The headers to send with the request",
+				Optional:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
-							Required: true,
+							MarkdownDescription: "The key of the header",
+							Required:            true,
 						},
 						"value": schema.StringAttribute{
-							Required: true,
+							MarkdownDescription: "The value of the header",
+							Required:            true,
 						},
 						"masking": schema.BoolAttribute{
-							Optional: true,
+							MarkdownDescription: "Whether to mask the value of the header",
+							Optional:            true,
 						},
 					},
 				},
@@ -44,13 +54,16 @@ func HTTPRequestTaskConfig() schema.Attribute {
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
-							Required: true,
+							MarkdownDescription: "The key of the parameter",
+							Required:            true,
 						},
 						"value": schema.StringAttribute{
-							Required: true,
+							MarkdownDescription: "The value of the parameter",
+							Required:            true,
 						},
 						"masking": schema.BoolAttribute{
-							Optional: true,
+							MarkdownDescription: "Whether to mask the value of the parameter",
+							Optional:            true,
 						},
 					},
 				},

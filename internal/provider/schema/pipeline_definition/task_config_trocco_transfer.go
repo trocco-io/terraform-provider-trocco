@@ -6,10 +6,12 @@ import (
 
 func TroccoTransferTaskConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "The task configuration for the trocco transfer task.",
+		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"definition_id": schema.Int64Attribute{
-				Required: true,
+				MarkdownDescription: "The definition id to use for the trocco transfer task",
+				Required:            true,
 			},
 			"custom_variable_loop": CustomVariableLoop(),
 		},

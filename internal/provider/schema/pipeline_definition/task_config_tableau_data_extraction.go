@@ -6,16 +6,20 @@ import (
 
 func TableauDataExtractionTaskConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "The task configuration for the tableau data extraction task.",
+		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "The name of the task",
+				Required:            true,
 			},
 			"connection_id": schema.Int64Attribute{
-				Required: true,
+				MarkdownDescription: "The connection id to use for the task",
+				Required:            true,
 			},
 			"task_id": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "The task id to use for the task",
+				Required:            true,
 			},
 		},
 	}

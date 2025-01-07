@@ -11,33 +11,42 @@ func Notifications() schema.Attribute {
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
 				"type": schema.StringAttribute{
-					Optional: true,
+					MarkdownDescription: "The type of the notification",
+					Optional:            true,
 				},
 				"email_config": schema.SingleNestedAttribute{
-					Optional: true,
+					MarkdownDescription: "The email configuration of the notification",
+					Optional:            true,
 					Attributes: map[string]schema.Attribute{
 						"notification_id": schema.Int64Attribute{
-							Required: true,
+							MarkdownDescription: "The notification id",
+							Required:            true,
 						},
 						"notify_when": schema.StringAttribute{
-							Required: true,
+							MarkdownDescription: "When to notify",
+							Required:            true,
 						},
 						"message": schema.StringAttribute{
-							Required: true,
+							MarkdownDescription: "The message of the notification",
+							Required:            true,
 						},
 					},
 				},
 				"slack_config": schema.SingleNestedAttribute{
-					Optional: true,
+					MarkdownDescription: "The slack configuration of the notification",
+					Optional:            true,
 					Attributes: map[string]schema.Attribute{
 						"notification_id": schema.Int64Attribute{
-							Required: true,
+							MarkdownDescription: "The notification id",
+							Required:            true,
 						},
 						"notify_when": schema.StringAttribute{
-							Required: true,
+							MarkdownDescription: "When to notify",
+							Required:            true,
 						},
 						"message": schema.StringAttribute{
-							Required: true,
+							MarkdownDescription: "The message of the notification",
+							Required:            true,
 						},
 					},
 				},

@@ -6,19 +6,24 @@ import (
 
 func SlackNotificationTaskConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "The task configuration for the slack notification task.",
+		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "The name of the task",
+				Required:            true,
 			},
 			"connection_id": schema.Int64Attribute{
-				Required: true,
+				MarkdownDescription: "The connection id to use for the task",
+				Required:            true,
 			},
 			"message": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "The message to send",
+				Required:            true,
 			},
 			"ignore_error": schema.BoolAttribute{
-				Required: true,
+				MarkdownDescription: "Whether to ignore errors",
+				Required:            true,
 			},
 		},
 	}

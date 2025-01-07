@@ -13,25 +13,29 @@ func CustomVariableLoop() schema.Attribute {
 		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"type": schema.StringAttribute{
-				Required: true,
+				MarkdownDescription: "The type of the custom variable loop",
+				Required:            true,
 			},
 			"is_parallel_execution_allowed": schema.BoolAttribute{
-				Optional: true,
-				Computed: true,
+				MarkdownDescription: "Whether parallel execution is allowed",
+				Optional:            true,
+				Computed:            true,
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"is_stopped_on_errors": schema.BoolAttribute{
-				Optional: true,
-				Computed: true,
+				MarkdownDescription: "Whether the loop is stopped on errors",
+				Optional:            true,
+				Computed:            true,
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"max_errors": schema.Int64Attribute{
-				Optional: true,
-				Computed: true,
+				MarkdownDescription: "The maximum number of errors",
+				Optional:            true,
+				Computed:            true,
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},

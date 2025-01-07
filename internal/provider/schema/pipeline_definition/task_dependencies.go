@@ -11,10 +11,12 @@ func TaskDependencies() schema.Attribute {
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
 				"source": schema.StringAttribute{
-					Required: true,
+					MarkdownDescription: "The source task key.",
+					Required:            true,
 				},
 				"destination": schema.StringAttribute{
-					Required: true,
+					MarkdownDescription: "The destination task key.",
+					Required:            true,
 				},
 			},
 		},

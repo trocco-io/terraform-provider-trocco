@@ -9,28 +9,33 @@ import (
 
 func TroccoTransferBulkTaskConfig() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		Optional: true,
+		MarkdownDescription: "The task configuration for the trocco transfer bulk task.",
+		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"definition_id": schema.Int64Attribute{
-				Required: true,
+				MarkdownDescription: "The definition id to use for the trocco transfer bulk task",
+				Required:            true,
 			},
 			"is_parallel_execution_allowed": schema.BoolAttribute{
-				Optional: true,
-				Computed: true,
+				MarkdownDescription: "Whether the task is allowed to run in parallel",
+				Optional:            true,
+				Computed:            true,
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"is_stopped_on_errors": schema.BoolAttribute{
-				Optional: true,
-				Computed: true,
+				MarkdownDescription: "Whether the task should stop on errors",
+				Optional:            true,
+				Computed:            true,
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"max_errors": schema.Int64Attribute{
-				Optional: true,
-				Computed: true,
+				MarkdownDescription: "The maximum number of errors allowed before the task stops",
+				Optional:            true,
+				Computed:            true,
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},
