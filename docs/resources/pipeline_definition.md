@@ -1098,3 +1098,11 @@ Required:
 
 - `name` (String) Custom variable name
 - `values` (List of String) Custom variable values
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+terraform import trocco_pipeline_definition.example <id>
+```
