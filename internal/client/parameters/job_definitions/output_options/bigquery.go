@@ -16,15 +16,15 @@ type BigQueryOutputOptionInput struct {
 	ReadTimeoutSec                         int64                                    `json:"read_timeout_sec"`
 	Retries                                int64                                    `json:"retries"`
 	Mode                                   string                                   `json:"mode"`
-	PartitioningType                       *string                                  `json:"partitioning_type,omitempty"`
-	TimePartitioningType                   *string                                  `json:"time_partitioning_type,omitempty"`
-	TimePartitioningField                  *string                                  `json:"time_partitioning_field,omitempty"`
-	TimePartitioningExpirationMs           *int64                                   `json:"time_partitioning_expiration_ms,omitempty"`
-	TimePartitioningRequirePartitionFilter *bool                                    `json:"time_partitioning_require_partition_filter,omitempty"`
-	Location                               *string                                  `json:"location,omitempty"`
-	TemplateTable                          *string                                  `json:"template_table,omitempty"`
+	PartitioningType                       *parameters.NullableString               `json:"partitioning_type,omitempty"`
+	TimePartitioningType                   *parameters.NullableString               `json:"time_partitioning_type,omitempty"`
+	TimePartitioningField                  *parameters.NullableString               `json:"time_partitioning_field,omitempty"`
+	TimePartitioningExpirationMs           *parameters.NullableInt64                `json:"time_partitioning_expiration_ms,omitempty"`
+	TimePartitioningRequirePartitionFilter bool                                     `json:"time_partitioning_require_partition_filter"`
+	Location                               string                                   `json:"location,omitempty"`
+	TemplateTable                          *parameters.NullableString               `json:"template_table,omitempty"`
 	BigQueryConnectionID                   int64                                    `json:"bigquery_connection_id"`
-	BeforeLoad                             string                                   `json:"before_load"`
+	BeforeLoad                             *parameters.NullableString               `json:"before_load"`
 	BigQueryOutputOptionColumnOptions      *[]BigQueryOutputOptionColumnOptionInput `json:"bigquery_output_option_column_options,omitempty"`
 	BigQueryOutputOptionClusteringFields   *[]string                                `json:"bigquery_output_option_clustering_fields,omitempty"`
 	BigQueryOutputOptionMergeKeys          *[]string                                `json:"bigquery_output_option_merge_keys,omitempty"`
@@ -42,15 +42,15 @@ type UpdateBigQueryOutputOptionInput struct {
 	ReadTimeoutSec                         *int64                                   `json:"read_timeout_sec,omitempty"`
 	Retries                                *int64                                   `json:"retries,omitempty"`
 	Mode                                   *string                                  `json:"mode,omitempty"`
-	PartitioningType                       *string                                  `json:"partitioning_type,omitempty"`
-	TimePartitioningType                   *string                                  `json:"time_partitioning_type,omitempty"`
-	TimePartitioningField                  *string                                  `json:"time_partitioning_field,omitempty"`
-	TimePartitioningExpirationMs           *int64                                   `json:"time_partitioning_expiration_ms,omitempty"`
+	PartitioningType                       *parameters.NullableString               `json:"partitioning_type,omitempty"`
+	TimePartitioningType                   *parameters.NullableString               `json:"time_partitioning_type,omitempty"`
+	TimePartitioningField                  *parameters.NullableString               `json:"time_partitioning_field,omitempty"`
+	TimePartitioningExpirationMs           *parameters.NullableInt64                `json:"time_partitioning_expiration_ms,omitempty"`
 	TimePartitioningRequirePartitionFilter *bool                                    `json:"time_partitioning_require_partition_filter,omitempty"`
 	Location                               *string                                  `json:"location,omitempty"`
-	TemplateTable                          *string                                  `json:"template_table,omitempty"`
+	TemplateTable                          *parameters.NullableString               `json:"template_table,omitempty"`
 	BigQueryConnectionID                   *int64                                   `json:"bigquery_connection_id,omitempty"`
-	BeforeLoad                             *string                                  `json:"before_load,omitempty"`
+	BeforeLoad                             *parameters.NullableString               `json:"before_load,omitempty"`
 	BigQueryOutputOptionColumnOptions      *[]BigQueryOutputOptionColumnOptionInput `json:"bigquery_output_option_column_options,omitempty"`
 	BigQueryOutputOptionClusteringFields   *[]string                                `json:"bigquery_output_option_clustering_fields,omitempty"`
 	BigQueryOutputOptionMergeKeys          *[]string                                `json:"bigquery_output_option_merge_keys,omitempty"`

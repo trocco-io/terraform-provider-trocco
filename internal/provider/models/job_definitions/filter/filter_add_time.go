@@ -4,6 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	filterEntities "terraform-provider-trocco/internal/client/entities/job_definitions/filter"
 	filter2 "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
+	"terraform-provider-trocco/internal/provider/models"
 )
 
 type FilterAddTime struct {
@@ -33,7 +34,7 @@ func (filterAddTime *FilterAddTime) ToInput() *filter2.FilterAddTimeInput {
 	return &filter2.FilterAddTimeInput{
 		ColumnName:      filterAddTime.ColumnName.ValueString(),
 		Type:            filterAddTime.Type.ValueString(),
-		TimestampFormat: filterAddTime.TimestampFormat.ValueStringPointer(),
-		TimeZone:        filterAddTime.TimeZone.ValueStringPointer(),
+		TimestampFormat: models.NewNullableString(filterAddTime.TimestampFormat),
+		TimeZone:        models.NewNullableString(filterAddTime.TimeZone),
 	}
 }
