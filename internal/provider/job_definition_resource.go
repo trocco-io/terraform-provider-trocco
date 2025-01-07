@@ -575,7 +575,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				},
 			},
 			"filter_masks": schema.ListNestedAttribute{
-				Optional: true,
+				Required: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
@@ -584,10 +584,10 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								stringvalidator.UTF8LengthAtLeast(1),
 							},
 						},
-						"mask_type": schema.Int32Attribute{
+						"mask_type": schema.StringAttribute{
 							Required: true,
-							Validators: []validator.Int32{
-								int32validator.OneOf(0, 1, 2, 3),
+							Validators: []validator.String{
+								stringvalidator.OneOf("all", "email", "regex", "substring"),
 							},
 						},
 						"length": schema.Int64Attribute{
