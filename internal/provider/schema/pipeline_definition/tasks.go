@@ -15,7 +15,7 @@ func Tasks() schema.Attribute {
 		MarkdownDescription: "The tasks of the workflow.",
 		Optional:            true,
 		PlanModifiers: []planmodifier.List{
-			tpm.UniqueStringValuePlanModifier{
+			tpm.UniqueStringAttributeValuePlanModifier{
 				AttributeName: "key",
 			},
 		},

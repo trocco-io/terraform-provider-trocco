@@ -9,21 +9,21 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ planmodifier.List = &UniqueStringValuePlanModifier{}
+var _ planmodifier.List = &UniqueStringAttributeValuePlanModifier{}
 
-type UniqueStringValuePlanModifier struct {
+type UniqueStringAttributeValuePlanModifier struct {
 	AttributeName string
 }
 
-func (m UniqueStringValuePlanModifier) Description(ctx context.Context) string {
+func (m UniqueStringAttributeValuePlanModifier) Description(ctx context.Context) string {
 	return "Ensures the value of the specified string attribute of the object in the list is unique."
 }
 
-func (m UniqueStringValuePlanModifier) MarkdownDescription(ctx context.Context) string {
+func (m UniqueStringAttributeValuePlanModifier) MarkdownDescription(ctx context.Context) string {
 	return "Ensures the value of the specified string attribute of the object in the list is unique."
 }
 
-func (m UniqueStringValuePlanModifier) PlanModifyList(
+func (m UniqueStringAttributeValuePlanModifier) PlanModifyList(
 	ctx context.Context,
 	req planmodifier.ListRequest,
 	resp *planmodifier.ListResponse,
@@ -34,7 +34,7 @@ func (m UniqueStringValuePlanModifier) PlanModifyList(
 		return
 	}
 
-	attributeValues := []attr.Value{}
+	attributeValues := map[string]attr.Value{}
 	for i, object := range objects.Elements() {
 		object, ok := object.(types.Object)
 		if !ok {
@@ -50,22 +50,20 @@ func (m UniqueStringValuePlanModifier) PlanModifyList(
 		}
 
 		// Check the attribute value of the object is already in the list.
-		for _, k := range attributeValues {
-			if k.Equal(attributeValue) {
-				resp.Diagnostics.AddAttributeError(
-					req.Path.AtListIndex(i),
-					"Duplicated Value of Attribute of Object in List",
-					fmt.Sprintf(
-						"Attribute value %s of %s is duplicated",
-						attributeValue,
-						m.AttributeName,
-					),
-				)
+		if _, ok := attributeValues[attributeValue.String()]; ok {
+			resp.Diagnostics.AddAttributeError(
+				req.Path.AtListIndex(i),
+				"Duplicated Value of Attribute of Object in List",
+				fmt.Sprintf(
+					"Attribute value %s of %s is duplicated",
+					attributeValue,
+					m.AttributeName,
+				),
+			)
 
-				break
-			}
+			break
 		}
 
-		attributeValues = append(attributeValues, attributeValue)
+		attributeValues[attributeValue.String()] = attributeValue
 	}
 }
