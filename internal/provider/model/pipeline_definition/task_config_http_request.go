@@ -10,19 +10,26 @@ import (
 )
 
 type HTTPRequestTaskConfig struct {
-	Name              types.String           `tfsdk:"name"`
-	ConnectionID      types.Int64            `tfsdk:"connection_id"`
-	Method            types.String           `tfsdk:"http_method"`
-	URL               types.String           `tfsdk:"url"`
-	RequestBody       types.String           `tfsdk:"request_body"`
-	RequestHeaders    []HTTPRequestHeader    `tfsdk:"request_headers"`
-	RequestParameters []HTTPRequestParameter `tfsdk:"request_parameter"`
-	CustomVariables   []CustomVariable       `tfsdk:"custom_variables"`
+	Name              types.String            `tfsdk:"name"`
+	ConnectionID      types.Int64             `tfsdk:"connection_id"`
+	Method            types.String            `tfsdk:"http_method"`
+	URL               types.String            `tfsdk:"url"`
+	RequestBody       types.String            `tfsdk:"request_body"`
+	RequestHeaders    []*HTTPRequestHeader    `tfsdk:"request_headers"`
+	RequestParameters []*HTTPRequestParameter `tfsdk:"request_parameter"`
+	CustomVariables   []CustomVariable        `tfsdk:"custom_variables"`
 }
 
 func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
 	if en == nil {
 		return nil
+	}
+
+	var previousRequestHeaders []*HTTPRequestHeader
+	var previousRequestParameters []*HTTPRequestParameter
+	if previous != nil {
+		previousRequestHeaders = previous.RequestHeaders
+		previousRequestParameters = previous.RequestParameters
 	}
 
 	return &HTTPRequestTaskConfig{
@@ -31,8 +38,8 @@ func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPReques
 		Method:            types.StringValue(en.HTTPMethod),
 		URL:               types.StringValue(en.URL),
 		RequestBody:       types.StringPointerValue(en.RequestBody),
-		RequestHeaders:    NewHTTPRequestHeaders(en.RequestHeaders, previous.RequestHeaders),
-		RequestParameters: NewHTTPRequestParameters(en.RequestParameters, previous.RequestParameters),
+		RequestHeaders:    NewHTTPRequestHeaders(en.RequestHeaders, previousRequestHeaders),
+		RequestParameters: NewHTTPRequestParameters(en.RequestParameters, previousRequestParameters),
 		CustomVariables:   NewCustomVariables(en.CustomVariables),
 	}
 }
@@ -79,26 +86,31 @@ type HTTPRequestHeader struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-func NewHTTPRequestHeaders(ens []we.RequestHeader, previous []HTTPRequestHeader) []HTTPRequestHeader {
+func NewHTTPRequestHeaders(ens []we.RequestHeader, previous []*HTTPRequestHeader) []*HTTPRequestHeader {
 	if len(ens) == 0 {
 		return nil
 	}
 
-	var mds []HTTPRequestHeader
+	var mds []*HTTPRequestHeader
 	for i, en := range ens {
-		mds = append(mds, NewHTTPRequestHeader(en, previous[i]))
+		var previousHTTPRequestHeader *HTTPRequestHeader
+		if len(previous) > i {
+			previousHTTPRequestHeader = previous[i]
+		}
+
+		mds = append(mds, NewHTTPRequestHeader(en, previousHTTPRequestHeader))
 	}
 
 	return mds
 }
 
-func NewHTTPRequestHeader(en we.RequestHeader, previous HTTPRequestHeader) HTTPRequestHeader {
+func NewHTTPRequestHeader(en we.RequestHeader, previous *HTTPRequestHeader) *HTTPRequestHeader {
 	value := types.StringValue(en.Value)
-	if en.Masking {
+	if en.Masking && previous != nil {
 		value = previous.Value
 	}
 
-	return HTTPRequestHeader{
+	return &HTTPRequestHeader{
 		Key:     types.StringValue(en.Key),
 		Value:   value,
 		Masking: types.BoolValue(en.Masking),
@@ -111,26 +123,31 @@ type HTTPRequestParameter struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-func NewHTTPRequestParameters(ens []we.RequestParameter, previous []HTTPRequestParameter) []HTTPRequestParameter {
+func NewHTTPRequestParameters(ens []we.RequestParameter, previous []*HTTPRequestParameter) []*HTTPRequestParameter {
 	if len(ens) == 0 {
 		return nil
 	}
 
-	var mds []HTTPRequestParameter
+	var mds []*HTTPRequestParameter
 	for i, en := range ens {
-		mds = append(mds, NewHTTPRequestParameter(en, previous[i]))
+		var previousHTTPRequestParameter *HTTPRequestParameter
+		if len(previous) > i {
+			previousHTTPRequestParameter = previous[i]
+		}
+
+		mds = append(mds, NewHTTPRequestParameter(en, previousHTTPRequestParameter))
 	}
 
 	return mds
 }
 
-func NewHTTPRequestParameter(en we.RequestParameter, previous HTTPRequestParameter) HTTPRequestParameter {
+func NewHTTPRequestParameter(en we.RequestParameter, previous *HTTPRequestParameter) *HTTPRequestParameter {
 	value := types.StringValue(en.Value)
-	if en.Masking {
+	if en.Masking && previous != nil {
 		value = previous.Value
 	}
 
-	return HTTPRequestParameter{
+	return &HTTPRequestParameter{
 		Key:     types.StringValue(en.Key),
 		Value:   value,
 		Masking: types.BoolValue(en.Masking),
