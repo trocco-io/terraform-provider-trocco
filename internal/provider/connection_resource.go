@@ -44,6 +44,10 @@ type connectionResourceModel struct {
 	AuthMethod types.String `tfsdk:"auth_method"`
 	Password   types.String `tfsdk:"password"`
 	PrivateKey types.String `tfsdk:"private_key"`
+
+	// GCS Fields
+	ApplicationName     types.String `tfsdk:"application_name"`
+	ServiceAccountEmail types.String `tfsdk:"service_account_email"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -64,6 +68,10 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		AuthMethod: m.AuthMethod.ValueStringPointer(),
 		Password:   m.Password.ValueStringPointer(),
 		PrivateKey: m.PrivateKey.ValueStringPointer(),
+
+		// GCS Fields
+		ApplicationName:     newNullableFromTerraformString(m.ApplicationName),
+		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 	}
 }
 
@@ -85,6 +93,10 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		AuthMethod: m.AuthMethod.ValueStringPointer(),
 		Password:   m.Password.ValueStringPointer(),
 		PrivateKey: m.PrivateKey.ValueStringPointer(),
+
+		// GCS Fields
+		ApplicationName:     newNullableFromTerraformString(m.ApplicationName),
+		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 	}
 }
 
@@ -135,13 +147,13 @@ func (r *connectionResource) Schema(
 		Attributes: map[string]schema.Attribute{
 			// Common Fields
 			"connection_type": schema.StringAttribute{
-				MarkdownDescription: "The type of the connection. It must be one of `bigquery` or `snowflake`.",
+				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake` or `gcs`.",
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery", "snowflake"),
+					stringvalidator.OneOf("bigquery", "snowflake", "gcs"),
 				},
 			},
 			"id": schema.Int64Attribute{
@@ -178,7 +190,7 @@ func (r *connectionResource) Schema(
 
 			// BigQuery Fields
 			"project_id": schema.StringAttribute{
-				MarkdownDescription: "BigQuery: A GCP project ID.",
+				MarkdownDescription: "BigQuery, GCS: A GCP project ID.",
 				Computed:            true,
 				Optional:            true,
 				Validators: []validator.String{
@@ -239,6 +251,23 @@ func (r *connectionResource) Schema(
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
+
+			// GCS Fields
+			"application_name": schema.StringAttribute{
+				MarkdownDescription: "GCS: Application name.",
+				Computed:            true,
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"service_account_email": schema.StringAttribute{
+				MarkdownDescription: "GCS: A GCP service account email.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
 		},
 	}
 }
@@ -285,6 +314,10 @@ func (r *connectionResource) Create(
 		AuthMethod: types.StringPointerValue(connection.AuthMethod),
 		Password:   plan.Password,
 		PrivateKey: plan.PrivateKey,
+
+		// GCS Fields
+		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
+		ServiceAccountEmail: types.StringPointerValue(connection.ServiceAccountEmail),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -338,6 +371,10 @@ func (r *connectionResource) Update(
 		AuthMethod: types.StringPointerValue(connection.AuthMethod),
 		Password:   plan.Password,
 		PrivateKey: plan.PrivateKey,
+
+		// GCS Fields
+		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
+		ServiceAccountEmail: types.StringPointerValue(connection.ServiceAccountEmail),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -384,6 +421,10 @@ func (r *connectionResource) Read(
 		AuthMethod: types.StringPointerValue(connection.AuthMethod),
 		Password:   state.Password,
 		PrivateKey: state.PrivateKey,
+
+		// GCS Fields
+		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
+		ServiceAccountEmail: types.StringPointerValue(connection.ServiceAccountEmail),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }

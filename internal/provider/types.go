@@ -12,3 +12,7 @@ import (
 func newNullableFromTerraformInt64(v types.Int64) *parameters.NullableInt64 {
 	return &parameters.NullableInt64{Valid: !v.IsNull(), Value: v.ValueInt64()}
 }
+
+func newNullableFromTerraformString(v types.String) *parameters.NullableString {
+	return &parameters.NullableString{Valid: !v.IsNull(), Value: v.ValueString()}
+}

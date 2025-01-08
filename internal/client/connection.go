@@ -32,6 +32,10 @@ type Connection struct {
 	AuthMethod            *string `json:"auth_method"`
 	AWSPrivateLinkEnabled *bool   `json:"aws_privatelink_enabled"`
 	Driver                *string `json:"driver"`
+
+	// GCS Fields
+	ApplicationName     *string `json:"application_name"`
+	ServiceAccountEmail *string `json:"service_account_email"`
 }
 
 type GetConnectionsInput struct {
@@ -56,6 +60,10 @@ type CreateConnectionInput struct {
 	AuthMethod *string `json:"auth_method,omitempty"`
 	Password   *string `json:"password,omitempty"`
 	PrivateKey *string `json:"private_key,omitempty"`
+
+	// GCS Fields
+	ApplicationName     *parameters.NullableString `json:"application_name,omitempty"`
+	ServiceAccountEmail *string                    `json:"service_account_email,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -75,6 +83,10 @@ type UpdateConnectionInput struct {
 	AuthMethod *string `json:"auth_method,omitempty"`
 	Password   *string `json:"password,omitempty"`
 	PrivateKey *string `json:"private_key,omitempty"`
+
+	// GCS Fields
+	ApplicationName     *parameters.NullableString `json:"application_name,omitempty"`
+	ServiceAccountEmail *string                    `json:"service_account_email,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {
