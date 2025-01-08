@@ -12,11 +12,10 @@ type XmlParser struct {
 }
 
 type XmlParserColumn struct {
-	Name        types.String `tfsdk:"name"`
-	Type        types.String `tfsdk:"type"`
-	Path        types.String `tfsdk:"path"`
-	Format      types.String `tfsdk:"format"`
-	ColumnOrder types.Int64  `tfsdk:"column_order"`
+	Name   types.String `tfsdk:"name"`
+	Type   types.String `tfsdk:"type"`
+	Path   types.String `tfsdk:"path"`
+	Format types.String `tfsdk:"format"`
 }
 
 func NewXmlParser(xmlParser *job_definitions.XmlParser) *XmlParser {

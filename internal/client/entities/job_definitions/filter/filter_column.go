@@ -5,7 +5,6 @@ type FilterColumn struct {
 	Src                      string             `json:"src"`
 	Type                     string             `json:"type"`
 	Default                  *string            `json:"default"`
-	HasParser                bool               `json:"has_parser"`
 	Format                   *string            `json:"format"`
 	JSONExpandEnabled        bool               `json:"json_expand_enabled"`
 	JSONExpandKeepBaseColumn bool               `json:"json_expand_keep_base_column"`

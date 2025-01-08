@@ -13,11 +13,10 @@ type JsonpathParser struct {
 }
 
 type JsonpathParserColumn struct {
-	Name        types.String `tfsdk:"name"`
-	Type        types.String `tfsdk:"type"`
-	TimeZone    types.String `tfsdk:"time_zone"`
-	Format      types.String `tfsdk:"format"`
-	ColumnOrder types.Int64  `tfsdk:"column_order"`
+	Name     types.String `tfsdk:"name"`
+	Type     types.String `tfsdk:"type"`
+	TimeZone types.String `tfsdk:"time_zone"`
+	Format   types.String `tfsdk:"format"`
 }
 
 func NewJsonPathParser(jsonpathParser *job_definitions.JsonpathParser) *JsonpathParser {
@@ -27,11 +26,10 @@ func NewJsonPathParser(jsonpathParser *job_definitions.JsonpathParser) *Jsonpath
 	columns := make([]JsonpathParserColumn, 0, len(jsonpathParser.Columns))
 	for _, input := range jsonpathParser.Columns {
 		column := JsonpathParserColumn{
-			Name:        types.StringValue(input.Name),
-			Type:        types.StringValue(input.Type),
-			TimeZone:    types.StringPointerValue(input.TimeZone),
-			Format:      types.StringPointerValue(input.Format),
-			ColumnOrder: types.Int64Value(input.ColumnOrder),
+			Name:     types.StringValue(input.Name),
+			Type:     types.StringValue(input.Type),
+			TimeZone: types.StringPointerValue(input.TimeZone),
+			Format:   types.StringPointerValue(input.Format),
 		}
 		columns = append(columns, column)
 	}
@@ -72,11 +70,10 @@ func ToJsonPathParserModel(jsonpathParserInput *job_definitions.JsonpathParser) 
 	columns := make([]JsonpathParserColumn, 0, len(jsonpathParserInput.Columns))
 	for _, input := range jsonpathParserInput.Columns {
 		column := JsonpathParserColumn{
-			Name:        types.StringValue(input.Name),
-			Type:        types.StringValue(input.Type),
-			TimeZone:    types.StringPointerValue(input.TimeZone),
-			Format:      types.StringPointerValue(input.Format),
-			ColumnOrder: types.Int64Value(input.ColumnOrder),
+			Name:     types.StringValue(input.Name),
+			Type:     types.StringValue(input.Type),
+			TimeZone: types.StringPointerValue(input.TimeZone),
+			Format:   types.StringPointerValue(input.Format),
 		}
 		columns = append(columns, column)
 	}

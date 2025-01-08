@@ -16,13 +16,13 @@ type GcsInputOption struct {
 	LastPath                  types.String                    `tfsdk:"last_path"`
 	StopWhenFileNotFound      types.Bool                      `tfsdk:"stop_when_file_not_found"`
 	DecompressionType         types.String                    `tfsdk:"decompression_type"`
-	CsvParsers                *parser.CsvParser               `tfsdk:"csv_parsers"`
-	JsonlParsers              *parser.JsonlParser             `tfsdk:"jsonl_parsers"`
-	JsonpathParsers           *parser.JsonpathParser          `tfsdk:"jsonpath_parsers"`
-	LtsvParsers               *parser.LtsvParser              `tfsdk:"ltsv_parsers"`
-	ExcelParsers              *parser.ExcelParser             `tfsdk:"excel_parsers"`
-	XmlParsers                *parser.XmlParser               `tfsdk:"xml_parsers"`
-	ParquetParsers            *parser.ParquetParser           `tfsdk:"parquet_parsers"`
+	CsvParser                 *parser.CsvParser               `tfsdk:"csv_parser"`
+	JsonlParser               *parser.JsonlParser             `tfsdk:"jsonl_parser"`
+	JsonpathParser            *parser.JsonpathParser          `tfsdk:"jsonpath_parser"`
+	LtsvParser                *parser.LtsvParser              `tfsdk:"ltsv_parser"`
+	ExcelParser               *parser.ExcelParser             `tfsdk:"excel_parser"`
+	XmlParser                 *parser.XmlParser               `tfsdk:"xml_parser"`
+	ParquetParser             *parser.ParquetParser           `tfsdk:"parquet_parser"`
 	CustomVariableSettings    *[]models.CustomVariableSetting `tfsdk:"custom_variable_settings"`
 	Decoder                   *Decoder                        `tfsdk:"decoder"`
 }
@@ -39,13 +39,13 @@ func NewGcsInputOption(gcsInputOption *input_options.GcsInputOption) *GcsInputOp
 		LastPath:                  types.StringPointerValue(gcsInputOption.LastPath),
 		StopWhenFileNotFound:      types.BoolValue(gcsInputOption.StopWhenFileNotFound),
 		DecompressionType:         types.StringPointerValue(gcsInputOption.DecompressionType),
-		CsvParsers:                parser.NewCsvParser(gcsInputOption.CsvParsers),
-		JsonlParsers:              parser.NewJsonlParser(gcsInputOption.JsonlParsers),
-		JsonpathParsers:           parser.NewJsonPathParser(gcsInputOption.JsonpathParsers),
-		LtsvParsers:               parser.NewLtsvParser(gcsInputOption.LtsvParsers),
-		ExcelParsers:              parser.NewExcelParser(gcsInputOption.ExcelParsers),
-		XmlParsers:                parser.NewXmlParser(gcsInputOption.XmlParsers),
-		ParquetParsers:            parser.NewParquetParser(gcsInputOption.ParquetParsers),
+		CsvParser:                 parser.NewCsvParser(gcsInputOption.CsvParser),
+		JsonlParser:               parser.NewJsonlParser(gcsInputOption.JsonlParser),
+		JsonpathParser:            parser.NewJsonPathParser(gcsInputOption.JsonpathParser),
+		LtsvParser:                parser.NewLtsvParser(gcsInputOption.LtsvParser),
+		ExcelParser:               parser.NewExcelParser(gcsInputOption.ExcelParser),
+		XmlParser:                 parser.NewXmlParser(gcsInputOption.XmlParser),
+		ParquetParser:             parser.NewParquetParser(gcsInputOption.ParquetParser),
 		CustomVariableSettings:    models.NewCustomVariableSettings(gcsInputOption.CustomVariableSettings),
 		Decoder:                   NewDecoder(gcsInputOption.Decoder),
 	}
@@ -64,13 +64,38 @@ func (gcsInputOption *GcsInputOption) ToInput() *input_options2.GcsInputOptionIn
 		LastPath:                  gcsInputOption.LastPath.ValueStringPointer(),
 		StopWhenFileNotFound:      gcsInputOption.StopWhenFileNotFound.ValueBool(),
 		DecompressionType:         gcsInputOption.DecompressionType.ValueStringPointer(),
-		CsvParsers:                gcsInputOption.CsvParsers.ToCsvParserInput(),
-		JsonlParsers:              gcsInputOption.JsonlParsers.ToJsonlParserInput(),
-		JsonpathParsers:           gcsInputOption.JsonpathParsers.ToJsonpathParserInput(),
-		LtsvParsers:               gcsInputOption.LtsvParsers.ToLtsvParserInput(),
-		ExcelParsers:              gcsInputOption.ExcelParsers.ToExcelParserInput(),
-		XmlParsers:                gcsInputOption.XmlParsers.ToXmlParserInput(),
-		ParquetParsers:            gcsInputOption.ParquetParsers.ToParquetParserInput(),
+		CsvParser:                 gcsInputOption.CsvParser.ToCsvParserInput(),
+		JsonlParser:               gcsInputOption.JsonlParser.ToJsonlParserInput(),
+		JsonpathParser:            gcsInputOption.JsonpathParser.ToJsonpathParserInput(),
+		LtsvParser:                gcsInputOption.LtsvParser.ToLtsvParserInput(),
+		ExcelParser:               gcsInputOption.ExcelParser.ToExcelParserInput(),
+		XmlParser:                 gcsInputOption.XmlParser.ToXmlParserInput(),
+		ParquetParser:             gcsInputOption.ParquetParser.ToParquetParserInput(),
+		CustomVariableSettings:    models.ToCustomVariableSettingInputs(gcsInputOption.CustomVariableSettings),
+		Decoder:                   gcsInputOption.Decoder.ToDecoderInput(),
+	}
+}
+
+func (gcsInputOption *GcsInputOption) ToUpdateInput() *input_options2.UpdateGcsInputOptionInput {
+	if gcsInputOption == nil {
+		return nil
+	}
+
+	return &input_options2.UpdateGcsInputOptionInput{
+		GcsConnectionID:           gcsInputOption.GcsConnectionID.ValueInt64Pointer(),
+		Bucket:                    gcsInputOption.Bucket.ValueStringPointer(),
+		PathPrefix:                gcsInputOption.PathPrefix.ValueStringPointer(),
+		IncrementalLoadingEnabled: gcsInputOption.IncrementalLoadingEnabled.ValueBoolPointer(),
+		LastPath:                  gcsInputOption.LastPath.ValueStringPointer(),
+		StopWhenFileNotFound:      gcsInputOption.StopWhenFileNotFound.ValueBoolPointer(),
+		DecompressionType:         gcsInputOption.DecompressionType.ValueStringPointer(),
+		CsvParser:                 gcsInputOption.CsvParser.ToCsvParserInput(),
+		JsonlParser:               gcsInputOption.JsonlParser.ToJsonlParserInput(),
+		JsonpathParser:            gcsInputOption.JsonpathParser.ToJsonpathParserInput(),
+		LtsvParser:                gcsInputOption.LtsvParser.ToLtsvParserInput(),
+		ExcelParser:               gcsInputOption.ExcelParser.ToExcelParserInput(),
+		XmlParser:                 gcsInputOption.XmlParser.ToXmlParserInput(),
+		ParquetParser:             gcsInputOption.ParquetParser.ToParquetParserInput(),
 		CustomVariableSettings:    models.ToCustomVariableSettingInputs(gcsInputOption.CustomVariableSettings),
 		Decoder:                   gcsInputOption.Decoder.ToDecoderInput(),
 	}

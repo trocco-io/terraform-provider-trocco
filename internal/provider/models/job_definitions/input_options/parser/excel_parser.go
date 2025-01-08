@@ -18,7 +18,6 @@ type ExcelParserColumn struct {
 	Type            types.String `tfsdk:"type"`
 	Format          types.String `tfsdk:"format"`
 	FormulaHandling types.String `tfsdk:"formula_handling"`
-	ColumnOrder     types.Int64  `tfsdk:"column_order"`
 }
 
 func NewExcelParser(excelParser *job_definitions.ExcelParser) *ExcelParser {
@@ -32,7 +31,6 @@ func NewExcelParser(excelParser *job_definitions.ExcelParser) *ExcelParser {
 			Type:            types.StringValue(input.Type),
 			Format:          types.StringPointerValue(input.Format),
 			FormulaHandling: types.StringPointerValue(input.FormulaHandling),
-			ColumnOrder:     types.Int64Value(input.ColumnOrder),
 		}
 		columns = append(columns, column)
 	}
@@ -78,7 +76,6 @@ func ToExcelParserModel(excelParser *job_definitions.ExcelParser) *ExcelParser {
 			Type:            types.StringValue(input.Type),
 			Format:          types.StringPointerValue(input.Format),
 			FormulaHandling: types.StringPointerValue(input.FormulaHandling),
-			ColumnOrder:     types.Int64Value(input.ColumnOrder),
 		}
 		columns = append(columns, column)
 	}

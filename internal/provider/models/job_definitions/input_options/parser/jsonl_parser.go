@@ -15,11 +15,10 @@ type JsonlParser struct {
 }
 
 type JsonlParserColumn struct {
-	Name        types.String `tfsdk:"name"`
-	Type        types.String `tfsdk:"type"`
-	TimeZone    types.String `tfsdk:"time_zone"`
-	Format      types.String `tfsdk:"format"`
-	ColumnOrder types.Int64  `tfsdk:"column_order"`
+	Name     types.String `tfsdk:"name"`
+	Type     types.String `tfsdk:"type"`
+	TimeZone types.String `tfsdk:"time_zone"`
+	Format   types.String `tfsdk:"format"`
 }
 
 func NewJsonlParser(jsonlParser *job_definitions.JsonlParser) *JsonlParser {
@@ -29,11 +28,10 @@ func NewJsonlParser(jsonlParser *job_definitions.JsonlParser) *JsonlParser {
 	columns := make([]JsonlParserColumn, 0, len(jsonlParser.Columns))
 	for _, input := range jsonlParser.Columns {
 		column := JsonlParserColumn{
-			Name:        types.StringValue(input.Name),
-			Type:        types.StringValue(input.Type),
-			TimeZone:    types.StringPointerValue(input.TimeZone),
-			Format:      types.StringPointerValue(input.Format),
-			ColumnOrder: types.Int64Value(input.ColumnOrder),
+			Name:     types.StringValue(input.Name),
+			Type:     types.StringValue(input.Type),
+			TimeZone: types.StringPointerValue(input.TimeZone),
+			Format:   types.StringPointerValue(input.Format),
 		}
 		columns = append(columns, column)
 	}
@@ -78,11 +76,10 @@ func ToJsonlParserModel(jsonlParser *job_definitions.JsonlParser) *JsonlParser {
 	columns := make([]JsonlParserColumn, 0, len(jsonlParser.Columns))
 	for _, input := range jsonlParser.Columns {
 		column := JsonlParserColumn{
-			Name:        types.StringValue(input.Name),
-			Type:        types.StringValue(input.Type),
-			TimeZone:    types.StringPointerValue(input.TimeZone),
-			Format:      types.StringPointerValue(input.Format),
-			ColumnOrder: types.Int64Value(input.ColumnOrder),
+			Name:     types.StringValue(input.Name),
+			Type:     types.StringValue(input.Type),
+			TimeZone: types.StringPointerValue(input.TimeZone),
+			Format:   types.StringPointerValue(input.Format),
 		}
 		columns = append(columns, column)
 	}

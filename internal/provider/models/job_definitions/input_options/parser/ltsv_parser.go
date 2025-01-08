@@ -13,10 +13,9 @@ type LtsvParser struct {
 }
 
 type LtsvParserColumn struct {
-	Name        types.String `tfsdk:"name"`
-	Type        types.String `tfsdk:"type"`
-	Format      types.String `tfsdk:"format"`
-	ColumnOrder types.Int64  `tfsdk:"column_order"`
+	Name   types.String `tfsdk:"name"`
+	Type   types.String `tfsdk:"type"`
+	Format types.String `tfsdk:"format"`
 }
 
 func NewLtsvParser(ltsvParser *job_definitions.LtsvParser) *LtsvParser {
@@ -26,10 +25,9 @@ func NewLtsvParser(ltsvParser *job_definitions.LtsvParser) *LtsvParser {
 	columns := make([]LtsvParserColumn, 0, len(ltsvParser.Columns))
 	for _, input := range ltsvParser.Columns {
 		column := LtsvParserColumn{
-			Name:        types.StringValue(input.Name),
-			Type:        types.StringValue(input.Type),
-			Format:      types.StringPointerValue(input.Format),
-			ColumnOrder: types.Int64Value(input.ColumnOrder),
+			Name:   types.StringValue(input.Name),
+			Type:   types.StringValue(input.Type),
+			Format: types.StringPointerValue(input.Format),
 		}
 		columns = append(columns, column)
 	}
@@ -68,10 +66,9 @@ func ToLtsvParserModel(ltsvParser *job_definitions.LtsvParser) *LtsvParser {
 	columns := make([]LtsvParserColumn, 0, len(ltsvParser.Columns))
 	for _, input := range ltsvParser.Columns {
 		column := LtsvParserColumn{
-			Name:        types.StringValue(input.Name),
-			Type:        types.StringValue(input.Type),
-			Format:      types.StringPointerValue(input.Format),
-			ColumnOrder: types.Int64Value(input.ColumnOrder),
+			Name:   types.StringValue(input.Name),
+			Type:   types.StringValue(input.Type),
+			Format: types.StringPointerValue(input.Format),
 		}
 		columns = append(columns, column)
 	}

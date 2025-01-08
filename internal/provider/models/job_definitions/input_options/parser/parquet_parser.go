@@ -11,10 +11,9 @@ type ParquetParser struct {
 }
 
 type ParquetParserColumn struct {
-	Name        types.String `tfsdk:"name"`
-	Type        types.String `tfsdk:"type"`
-	Format      types.String `tfsdk:"format"`
-	ColumnOrder types.Int64  `tfsdk:"column_order"`
+	Name   types.String `tfsdk:"name"`
+	Type   types.String `tfsdk:"type"`
+	Format types.String `tfsdk:"format"`
 }
 
 func NewParquetParser(parquetParser *job_definitions.ParquetParser) *ParquetParser {
@@ -24,10 +23,9 @@ func NewParquetParser(parquetParser *job_definitions.ParquetParser) *ParquetPars
 	columns := make([]ParquetParserColumn, 0, len(parquetParser.Columns))
 	for _, input := range parquetParser.Columns {
 		column := ParquetParserColumn{
-			Name:        types.StringValue(input.Name),
-			Type:        types.StringValue(input.Type),
-			Format:      types.StringPointerValue(input.Format),
-			ColumnOrder: types.Int64Value(input.ColumnOrder),
+			Name:   types.StringValue(input.Name),
+			Type:   types.StringValue(input.Type),
+			Format: types.StringPointerValue(input.Format),
 		}
 		columns = append(columns, column)
 	}
@@ -60,10 +58,9 @@ func ToParquetParserModel(parquetParser *job_definitions.ParquetParser) *Parquet
 	columns := make([]ParquetParserColumn, 0, len(parquetParser.Columns))
 	for _, input := range parquetParser.Columns {
 		column := ParquetParserColumn{
-			Name:        types.StringValue(input.Name),
-			Type:        types.StringValue(input.Type),
-			Format:      types.StringPointerValue(input.Format),
-			ColumnOrder: types.Int64Value(input.ColumnOrder),
+			Name:   types.StringValue(input.Name),
+			Type:   types.StringValue(input.Type),
+			Format: types.StringPointerValue(input.Format),
 		}
 		columns = append(columns, column)
 	}

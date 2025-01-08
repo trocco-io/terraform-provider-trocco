@@ -13,13 +13,13 @@ type GcsInputOptionInput struct {
 	LastPath                  *string                                  `json:"last_path,omitempty"`
 	StopWhenFileNotFound      bool                                     `json:"stop_when_file_not_found"`
 	DecompressionType         *string                                  `json:"decompression_type,omitempty"`
-	CsvParsers                *job_definitions.CsvParserInput          `json:"csv_parsers,omitempty"`
-	JsonlParsers              *job_definitions.JsonlParserInput        `json:"jsonl_parsers,omitempty"`
-	JsonpathParsers           *job_definitions.JsonpathParserInput     `json:"jsonpath_parsers,omitempty"`
-	LtsvParsers               *job_definitions.LtsvParserInput         `json:"ltsv_parsers,omitempty"`
-	ExcelParsers              *job_definitions.ExcelParserInput        `json:"excel_parsers,omitempty"`
-	XmlParsers                *job_definitions.XmlParserInput          `json:"xml_parsers,omitempty"`
-	ParquetParsers            *job_definitions.ParquetParserInput      `json:"parquet_parsers,omitempty"`
+	CsvParser                 *job_definitions.CsvParserInput          `json:"csv_parser,omitempty"`
+	JsonlParser               *job_definitions.JsonlParserInput        `json:"jsonl_parser,omitempty"`
+	JsonpathParser            *job_definitions.JsonpathParserInput     `json:"jsonpath_parser,omitempty"`
+	LtsvParser                *job_definitions.LtsvParserInput         `json:"ltsv_parser,omitempty"`
+	ExcelParser               *job_definitions.ExcelParserInput        `json:"excel_parser,omitempty"`
+	XmlParser                 *job_definitions.XmlParserInput          `json:"xml_parser,omitempty"`
+	ParquetParser             *job_definitions.ParquetParserInput      `json:"parquet_parser,omitempty"`
 	CustomVariableSettings    *[]parameters.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
 	Decoder                   *job_definitions.DecoderInput            `json:"decoder,omitempty"`
 }
@@ -32,13 +32,13 @@ type UpdateGcsInputOptionInput struct {
 	LastPath                  *string                                  `json:"last_path,omitempty"`
 	StopWhenFileNotFound      *bool                                    `json:"stop_when_file_not_found,omitempty"`
 	DecompressionType         *string                                  `json:"decompression_type,omitempty"`
-	CsvParsers                *job_definitions.CsvParserInput          `json:"csv_parsers,omitempty"`
-	JsonlParsers              *job_definitions.JsonlParserInput        `json:"jsonl_parsers,omitempty"`
-	JsonpathParsers           *job_definitions.JsonpathParserInput     `json:"jsonpath_parsers,omitempty"`
-	LtsvParsers               *job_definitions.LtsvParserInput         `json:"ltsv_parsers,omitempty"`
-	ExcelParsers              *job_definitions.ExcelParserInput        `json:"excel_parsers,omitempty"`
-	XmlParsers                *job_definitions.XmlParserInput          `json:"xml_parsers,omitempty"`
-	ParquetParsers            *job_definitions.ParquetParserInput      `json:"parquet_parsers,omitempty"`
+	CsvParser                 *job_definitions.CsvParserInput          `json:"csv_parser,omitempty"`
+	JsonlParser               *job_definitions.JsonlParserInput        `json:"jsonl_parser,omitempty"`
+	JsonpathParser            *job_definitions.JsonpathParserInput     `json:"jsonpath_parser,omitempty"`
+	LtsvParser                *job_definitions.LtsvParserInput         `json:"ltsv_parser,omitempty"`
+	ExcelParser               *job_definitions.ExcelParserInput        `json:"excel_parser,omitempty"`
+	XmlParser                 *job_definitions.XmlParserInput          `json:"xml_parser,omitempty"`
+	ParquetParser             *job_definitions.ParquetParserInput      `json:"parquet_parser,omitempty"`
 	CustomVariableSettings    *[]parameters.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
 	Decoder                   *job_definitions.DecoderInput            `json:"decoder,omitempty"`
 }

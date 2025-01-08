@@ -28,11 +28,10 @@ type CsvParser struct {
 }
 
 type CsvParserColumn struct {
-	Name        types.String `tfsdk:"name"`
-	Type        types.String `tfsdk:"type"`
-	Format      types.String `tfsdk:"format"`
-	Date        types.String `tfsdk:"date"`
-	ColumnOrder types.Int64  `tfsdk:"column_order"`
+	Name   types.String `tfsdk:"name"`
+	Type   types.String `tfsdk:"type"`
+	Format types.String `tfsdk:"format"`
+	Date   types.String `tfsdk:"date"`
 }
 
 func NewCsvParser(csvParser *job_definitions.CsvParser) *CsvParser {
@@ -42,11 +41,10 @@ func NewCsvParser(csvParser *job_definitions.CsvParser) *CsvParser {
 	columns := make([]CsvParserColumn, 0, len(csvParser.Columns))
 	for _, input := range csvParser.Columns {
 		column := CsvParserColumn{
-			Name:        types.StringValue(input.Name),
-			Type:        types.StringValue(input.Type),
-			Format:      types.StringPointerValue(input.Format),
-			Date:        types.StringPointerValue(input.Date),
-			ColumnOrder: types.Int64Value(input.ColumnOrder),
+			Name:   types.StringValue(input.Name),
+			Type:   types.StringValue(input.Type),
+			Format: types.StringPointerValue(input.Format),
+			Date:   types.StringPointerValue(input.Date),
 		}
 		columns = append(columns, column)
 	}
@@ -140,11 +138,10 @@ func toCsvParserColumnsModel(columns []job_definitions.CsvParserColumn) []CsvPar
 	outputs := make([]CsvParserColumn, 0, len(columns))
 	for _, input := range columns {
 		column := CsvParserColumn{
-			Name:        types.StringValue(input.Name),
-			Type:        types.StringValue(input.Type),
-			Format:      types.StringPointerValue(input.Format),
-			Date:        types.StringPointerValue(input.Date),
-			ColumnOrder: types.Int64Value(input.ColumnOrder),
+			Name:   types.StringValue(input.Name),
+			Type:   types.StringValue(input.Type),
+			Format: types.StringPointerValue(input.Format),
+			Date:   types.StringPointerValue(input.Date),
 		}
 		outputs = append(outputs, column)
 	}

@@ -22,7 +22,6 @@ import (
 	"terraform-provider-trocco/internal/provider/models"
 	"terraform-provider-trocco/internal/provider/models/job_definitions"
 	"terraform-provider-trocco/internal/provider/models/job_definitions/filter"
-	"terraform-provider-trocco/internal/provider/models/job_definitions/input_options"
 )
 
 var (
@@ -280,7 +279,369 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 							&mysqlInputOptionPlanModifier{},
 						},
 					},
-					// TODO: GCS
+					"gcs_input_option": schema.SingleNestedAttribute{
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"bucket": schema.StringAttribute{
+								Required: true,
+								Validators: []validator.String{
+									stringvalidator.UTF8LengthAtLeast(1),
+								},
+							},
+							"path_prefix": schema.StringAttribute{
+								Required: true,
+								Validators: []validator.String{
+									stringvalidator.UTF8LengthAtLeast(1),
+								},
+							},
+							"incremental_loading_enabled": schema.BoolAttribute{
+								Required: true,
+							},
+							"last_path": schema.StringAttribute{
+								Optional: true,
+							},
+							"stop_when_file_not_found": schema.BoolAttribute{
+								Required: true,
+							},
+							"gcs_connection_id": schema.Int64Attribute{
+								Required: true,
+								Validators: []validator.Int64{
+									int64validator.AtLeast(1),
+								},
+							},
+							"decompression_type": schema.StringAttribute{
+								Optional: true,
+							},
+							"parquet_parser": schema.SingleNestedAttribute{
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"columns": schema.ListNestedAttribute{
+										Required: true,
+										NestedObject: schema.NestedAttributeObject{
+											Attributes: map[string]schema.Attribute{
+												"name": schema.StringAttribute{
+													Required: true,
+												},
+												"type": schema.StringAttribute{
+													Required:   true,
+													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+												},
+												"format": schema.StringAttribute{
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+							"jsonpath_parser": schema.SingleNestedAttribute{
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"root": schema.StringAttribute{
+										Required: true,
+									},
+									"default_time_zone": schema.StringAttribute{
+										Required: true,
+									},
+									"columns": schema.ListNestedAttribute{
+										Required: true,
+										NestedObject: schema.NestedAttributeObject{
+											Attributes: map[string]schema.Attribute{
+												"name": schema.StringAttribute{
+													Required: true,
+												},
+												"type": schema.StringAttribute{
+													Required:   true,
+													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+												},
+												"time_zone": schema.StringAttribute{
+													Optional: true,
+												},
+												"format": schema.StringAttribute{
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+							"xml_parser": schema.SingleNestedAttribute{
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"root": schema.StringAttribute{
+										Required: true,
+									},
+									"columns": schema.ListNestedAttribute{
+										Required: true,
+										NestedObject: schema.NestedAttributeObject{
+											Attributes: map[string]schema.Attribute{
+												"name": schema.StringAttribute{
+													Required: true,
+												},
+												"type": schema.StringAttribute{
+													Required:   true,
+													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+												},
+												"path": schema.StringAttribute{
+													Required: true,
+												},
+												"timezone": schema.StringAttribute{
+													Optional: true,
+												},
+												"format": schema.StringAttribute{
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+							"excel_parser": schema.SingleNestedAttribute{
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"default_time_zone": schema.StringAttribute{
+										Required: true,
+									},
+									"sheet_name": schema.StringAttribute{
+										Required: true,
+									},
+									"skip_header_lines": schema.Int64Attribute{
+										Required: true,
+									},
+									"columns": schema.ListNestedAttribute{
+										Required: true,
+										NestedObject: schema.NestedAttributeObject{
+											Attributes: map[string]schema.Attribute{
+												"name": schema.StringAttribute{
+													Required: true,
+												},
+												"type": schema.StringAttribute{
+													Required:   true,
+													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+												},
+												"format": schema.StringAttribute{
+													Optional: true,
+												},
+												"formula_handling": schema.Int64Attribute{
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+							"ltsv_parser": schema.SingleNestedAttribute{
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"newline": schema.StringAttribute{
+										Optional: true,
+									},
+									"charset": schema.StringAttribute{
+										Optional: true,
+									},
+									"columns": schema.ListNestedAttribute{
+										Required: true,
+										NestedObject: schema.NestedAttributeObject{
+											Attributes: map[string]schema.Attribute{
+												"name": schema.StringAttribute{
+													Required: true,
+												},
+												"type": schema.StringAttribute{
+													Required:   true,
+													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean")},
+												},
+												"format": schema.StringAttribute{
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+							"jsonl_parser": schema.SingleNestedAttribute{
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"stop_on_invalid_record": schema.BoolAttribute{
+										Required: true,
+									},
+									"default_time_zone": schema.StringAttribute{
+										Required: true,
+									},
+									"newline": schema.StringAttribute{
+										Optional: true,
+									},
+									"charset": schema.StringAttribute{
+										Optional: true,
+									},
+									"columns": schema.ListNestedAttribute{
+										Required: true,
+										NestedObject: schema.NestedAttributeObject{
+											Attributes: map[string]schema.Attribute{
+												"name": schema.StringAttribute{
+													Required: true,
+												},
+												"type": schema.StringAttribute{
+													Required:   true,
+													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean")},
+												},
+												"time_zone": schema.StringAttribute{
+													Optional: true,
+												},
+												"format": schema.StringAttribute{
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+							"csv_parser": schema.SingleNestedAttribute{
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"delimiter": schema.StringAttribute{
+										Required: true,
+									},
+									"quote": schema.StringAttribute{
+										Optional: true,
+									},
+									"escape": schema.StringAttribute{
+										Optional: true,
+									},
+									"skip_header_lines": schema.Int64Attribute{
+										Required: true,
+									},
+									"null_string_enabled": schema.BoolAttribute{
+										Optional: true,
+									},
+									"null_string": schema.StringAttribute{
+										Optional: true,
+									},
+									"trim_if_not_quoted": schema.BoolAttribute{
+										Required: true,
+									},
+									"quotes_in_quoted_fields": schema.StringAttribute{
+										Required:   true,
+										Validators: []validator.String{stringvalidator.OneOf("ACCEPT_ONLY_RFC4180_ESCAPED", "ACCEPT_STRAY_QUOTES_ASSUMING_NO_DELIMITERS_IN_FIELDS")},
+									},
+									"comment_line_marker": schema.StringAttribute{
+										Optional: true,
+									},
+									"allow_optional_columns": schema.BoolAttribute{
+										Required: true,
+									},
+									"allow_extra_columns": schema.BoolAttribute{
+										Required: true,
+									},
+									"max_quoted_size_limit": schema.Int64Attribute{
+										Required: true,
+									},
+									"stop_on_invalid_record": schema.BoolAttribute{
+										Required: true,
+									},
+									"default_time_zone": schema.StringAttribute{
+										Required: true,
+									},
+									"default_date": schema.StringAttribute{
+										Required: true,
+									},
+									"newline": schema.StringAttribute{
+										Required: true,
+									},
+									"charset": schema.StringAttribute{
+										Optional: true,
+									},
+									"columns": schema.ListNestedAttribute{
+										Required: true,
+										NestedObject: schema.NestedAttributeObject{
+											Attributes: map[string]schema.Attribute{
+												"name": schema.StringAttribute{
+													Required: true,
+												},
+												"type": schema.StringAttribute{
+													Required:   true,
+													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean")},
+												},
+												"format": schema.StringAttribute{
+													Optional: true,
+												},
+												"date": schema.StringAttribute{
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+							"decoder": schema.SingleNestedAttribute{
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"match_name": schema.StringAttribute{
+										Optional: true,
+									},
+								},
+							},
+							"custom_variable_settings": schema.ListNestedAttribute{
+								Optional: true,
+								NestedObject: schema.NestedAttributeObject{
+									Attributes: map[string]schema.Attribute{
+										"name": schema.StringAttribute{
+											Required: true,
+											Validators: []validator.String{
+												wrappingDollarValidator{},
+											},
+											MarkdownDescription: "Custom variable name. It must start and end with `$`",
+										},
+										"type": schema.StringAttribute{
+											Required: true,
+											Validators: []validator.String{
+												stringvalidator.OneOf("string", "timestamp", "timestamp_runtime"),
+											},
+											MarkdownDescription: "Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`",
+										},
+										"value": schema.StringAttribute{
+											Optional:            true,
+											MarkdownDescription: "Fixed string which will replace variables at runtime. Required in `string` type",
+										},
+										"quantity": schema.Int32Attribute{
+											Optional: true,
+											Validators: []validator.Int32{
+												int32validator.AtLeast(0),
+											},
+											MarkdownDescription: "Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types",
+										},
+										"unit": schema.StringAttribute{
+											Optional: true,
+											Validators: []validator.String{
+												stringvalidator.OneOf("hour", "date", "month"),
+											},
+											MarkdownDescription: "Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types",
+										},
+										"direction": schema.StringAttribute{
+											Optional: true,
+											Validators: []validator.String{
+												stringvalidator.OneOf("ago", "later"),
+											},
+											MarkdownDescription: "Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types",
+										},
+										"format": schema.StringAttribute{
+											Optional:            true,
+											MarkdownDescription: "Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types",
+										},
+										"time_zone": schema.StringAttribute{
+											Optional:            true,
+											MarkdownDescription: "Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types",
+										},
+									},
+									PlanModifiers: []planmodifier.Object{
+										&customVariableSettingPlanModifier{},
+									},
+								},
+							},
+						},
+						//PlanModifiers: []planmodifier.Object{
+						//	&mysqlInputOptionPlanModifier{},
+						//},
+					},
 				},
 			},
 			"output_option_type": schema.StringAttribute{
@@ -1112,14 +1473,6 @@ func (r *jobDefinitionResource) Create(
 			fmt.Sprintf("Unable to create job definition, got error: %s", err),
 		)
 		return
-	}
-
-	var mysqlInputOptionColumns []input_options.InputOptionColumn
-	for _, m := range jobDefinition.InputOption.MySQLInputOption.InputOptionColumns {
-		mysqlInputOptionColumns = append(mysqlInputOptionColumns, input_options.InputOptionColumn{
-			Name: types.StringValue(m.Name),
-			Type: types.StringValue(m.Type),
-		})
 	}
 
 	newState := jobDefinitionResourceModel{
