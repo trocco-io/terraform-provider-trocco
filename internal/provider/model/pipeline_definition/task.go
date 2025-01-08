@@ -35,13 +35,18 @@ func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDef
 	}
 
 	// If the attribute in the plan (or state) is nil, the provider should sets nil to the state.
-	if previous.Tasks == nil && len(ens) == 0 {
+	if len(ens) == 0 && previous.Tasks == nil {
 		return nil
 	}
 
 	tasks := []*Task{}
 	for i, en := range ens {
-		tasks = append(tasks, NewTask(en, keys, previous.Tasks[i]))
+		var previousTask *Task
+		if len(previous.Tasks) > i {
+			previousTask = previous.Tasks[i]
+		}
+
+		tasks = append(tasks, NewTask(en, keys, previousTask))
 	}
 
 	return tasks
@@ -71,6 +76,11 @@ func NewTask(en *we.Task, keys map[int64]types.String, previous *Task) *Task {
 	//
 	// To archive the above behavior, this function accepts keys as an argument.
 
+	var previousHTTPRequestConfig *HTTPRequestTaskConfig
+	if previous != nil {
+		previousHTTPRequestConfig = previous.HTTPRequestConfig
+	}
+
 	return &Task{
 		Key:            keys[en.TaskIdentifier],
 		TaskIdentifier: types.Int64Value(en.TaskIdentifier),
@@ -89,7 +99,7 @@ func NewTask(en *we.Task, keys map[int64]types.String, previous *Task) *Task {
 		BigqueryDataCheckConfig:                   NewBigqueryDataCheckTaskConfig(en.BigqueryDataCheckConfig),
 		SnowflakeDataCheckConfig:                  NewSnowflakeDataCheckTaskConfig(en.SnowflakeDataCheckConfig),
 		RedshiftDataCheckConfig:                   NewRedshiftDataCheckTaskConfig(en.RedshiftDataCheckConfig),
-		HTTPRequestConfig:                         NewHTTPRequestTaskConfig(en.HTTPRequestConfig, previous.HTTPRequestConfig),
+		HTTPRequestConfig:                         NewHTTPRequestTaskConfig(en.HTTPRequestConfig, previousHTTPRequestConfig),
 	}
 }
 
