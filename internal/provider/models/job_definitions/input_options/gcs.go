@@ -75,27 +75,3 @@ func (gcsInputOption *GcsInputOption) ToInput() *input_options2.GcsInputOptionIn
 		Decoder:                   gcsInputOption.Decoder.ToDecoderInput(),
 	}
 }
-
-func ToGcsInputOptionModel(gcsInputOption *input_options.GcsInputOption) *GcsInputOption {
-	if gcsInputOption == nil {
-		return nil
-	}
-	return &GcsInputOption{
-		GcsConnectionID:           types.Int64Value(gcsInputOption.GcsConnectionID),
-		Bucket:                    types.StringValue(gcsInputOption.Bucket),
-		PathPrefix:                types.StringPointerValue(gcsInputOption.PathPrefix),
-		IncrementalLoadingEnabled: types.BoolValue(gcsInputOption.IncrementalLoadingEnabled),
-		LastPath:                  types.StringPointerValue(gcsInputOption.LastPath),
-		StopWhenFileNotFound:      types.BoolValue(gcsInputOption.StopWhenFileNotFound),
-		DecompressionType:         types.StringPointerValue(gcsInputOption.DecompressionType),
-		CsvParsers:                parser.ToCsvParserModel(gcsInputOption.CsvParsers),
-		JsonlParsers:              parser.ToJsonlParserModel(gcsInputOption.JsonlParsers),
-		JsonpathParsers:           parser.ToJsonPathParserModel(gcsInputOption.JsonpathParsers),
-		LtsvParsers:               parser.ToLtsvParserModel(gcsInputOption.LtsvParsers),
-		ExcelParsers:              parser.ToExcelParserModel(gcsInputOption.ExcelParsers),
-		XmlParsers:                parser.ToXmlParserModel(gcsInputOption.XmlParsers),
-		ParquetParsers:            parser.ToParquetParserModel(gcsInputOption.ParquetParsers),
-		CustomVariableSettings:    models.CustomVariableEntitiesToModels(gcsInputOption.CustomVariableSettings),
-		Decoder:                   ToDecoderModel(gcsInputOption.Decoder),
-	}
-}

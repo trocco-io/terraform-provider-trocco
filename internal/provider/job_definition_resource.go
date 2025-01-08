@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -85,7 +86,10 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 		MarkdownDescription: "Provides a TROCCO job definitions.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
-				Computed:            true,
+				Computed: true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
 				MarkdownDescription: "The ID of the job definition",
 			},
 			"name": schema.StringAttribute{
@@ -271,6 +275,9 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 									},
 								},
 							},
+						},
+						PlanModifiers: []planmodifier.Object{
+							&mysqlInputOptionPlanModifier{},
 						},
 					},
 					// TODO: GCS
