@@ -8,11 +8,11 @@ import (
 type GcsInputOptionInput struct {
 	GcsConnectionID           int64                                    `json:"gcs_connection_id"`
 	Bucket                    string                                   `json:"bucket"`
-	PathPrefix                *string                                  `json:"path_prefix,omitempty"`
+	PathPrefix                string                                   `json:"path_prefix"`
 	IncrementalLoadingEnabled bool                                     `json:"incremental_loading_enabled"`
-	LastPath                  *string                                  `json:"last_path,omitempty"`
+	LastPath                  *parameters.NullableString               `json:"last_path,omitempty"`
 	StopWhenFileNotFound      bool                                     `json:"stop_when_file_not_found"`
-	DecompressionType         *string                                  `json:"decompression_type,omitempty"`
+	DecompressionType         *parameters.NullableString               `json:"decompression_type,omitempty"`
 	CsvParser                 *job_definitions.CsvParserInput          `json:"csv_parser,omitempty"`
 	JsonlParser               *job_definitions.JsonlParserInput        `json:"jsonl_parser,omitempty"`
 	JsonpathParser            *job_definitions.JsonpathParserInput     `json:"jsonpath_parser,omitempty"`
@@ -29,9 +29,9 @@ type UpdateGcsInputOptionInput struct {
 	Bucket                    *string                                  `json:"bucket,omitempty"`
 	PathPrefix                *string                                  `json:"path_prefix,omitempty"`
 	IncrementalLoadingEnabled *bool                                    `json:"incremental_loading_enabled,omitempty"`
-	LastPath                  *string                                  `json:"last_path,omitempty"`
+	LastPath                  *parameters.NullableString               `json:"last_path,omitempty"`
 	StopWhenFileNotFound      *bool                                    `json:"stop_when_file_not_found,omitempty"`
-	DecompressionType         *string                                  `json:"decompression_type,omitempty"`
+	DecompressionType         *parameters.NullableString               `json:"decompression_type,omitempty"`
 	CsvParser                 *job_definitions.CsvParserInput          `json:"csv_parser,omitempty"`
 	JsonlParser               *job_definitions.JsonlParserInput        `json:"jsonl_parser,omitempty"`
 	JsonpathParser            *job_definitions.JsonpathParserInput     `json:"jsonpath_parser,omitempty"`

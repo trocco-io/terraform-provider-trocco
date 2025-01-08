@@ -4,6 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
 	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
+	"terraform-provider-trocco/internal/provider/models"
 )
 
 type CsvParser struct {
@@ -53,7 +54,7 @@ func NewCsvParser(csvParser *job_definitions.CsvParser) *CsvParser {
 		Quote:                types.StringPointerValue(csvParser.Quote),
 		Escape:               types.StringPointerValue(csvParser.Escape),
 		SkipHeaderLines:      types.Int64Value(csvParser.SkipHeaderLines),
-		NullStringEnabled:    types.BoolPointerValue(csvParser.NullStringEnabled),
+		NullStringEnabled:    types.BoolValue(csvParser.NullStringEnabled),
 		NullString:           types.StringPointerValue(csvParser.NullString),
 		TrimIfNotQuoted:      types.BoolValue(csvParser.TrimIfNotQuoted),
 		QuotesInQuotedFields: types.StringValue(csvParser.QuotesInQuotedFields),
@@ -87,14 +88,14 @@ func (csvParser *CsvParser) ToCsvParserInput() *job_definitions2.CsvParserInput 
 
 	return &job_definitions2.CsvParserInput{
 		Delimiter:            csvParser.Delimiter.ValueString(),
-		Quote:                csvParser.Quote.ValueStringPointer(),
-		Escape:               csvParser.Escape.ValueStringPointer(),
+		Quote:                models.NewNullableString(csvParser.Quote),
+		Escape:               models.NewNullableString(csvParser.Escape),
 		SkipHeaderLines:      csvParser.SkipHeaderLines.ValueInt64(),
-		NullStringEnabled:    csvParser.NullStringEnabled.ValueBoolPointer(),
-		NullString:           csvParser.NullString.ValueStringPointer(),
+		NullStringEnabled:    csvParser.NullStringEnabled.ValueBool(),
+		NullString:           models.NewNullableString(csvParser.NullString),
 		TrimIfNotQuoted:      csvParser.TrimIfNotQuoted.ValueBool(),
 		QuotesInQuotedFields: csvParser.QuotesInQuotedFields.ValueString(),
-		CommentLineMarker:    csvParser.CommentLineMarker.ValueStringPointer(),
+		CommentLineMarker:    models.NewNullableString(csvParser.CommentLineMarker),
 		AllowOptionalColumns: csvParser.AllowOptionalColumns.ValueBool(),
 		AllowExtraColumns:    csvParser.AllowExtraColumns.ValueBool(),
 		MaxQuotedSizeLimit:   csvParser.MaxQuotedSizeLimit.ValueInt64(),
@@ -102,7 +103,7 @@ func (csvParser *CsvParser) ToCsvParserInput() *job_definitions2.CsvParserInput 
 		DefaultTimeZone:      csvParser.DefaultTimeZone.ValueString(),
 		DefaultDate:          csvParser.DefaultDate.ValueString(),
 		Newline:              csvParser.Newline.ValueString(),
-		Charset:              csvParser.Charset.ValueStringPointer(),
+		Charset:              models.NewNullableString(csvParser.Charset),
 		Columns:              columns,
 	}
 }
@@ -113,7 +114,7 @@ func ToCsvParserModel(csvParser *job_definitions.CsvParser) *CsvParser {
 		Quote:                types.StringPointerValue(csvParser.Quote),
 		Escape:               types.StringPointerValue(csvParser.Escape),
 		SkipHeaderLines:      types.Int64Value(csvParser.SkipHeaderLines),
-		NullStringEnabled:    types.BoolPointerValue(csvParser.NullStringEnabled),
+		NullStringEnabled:    types.BoolValue(csvParser.NullStringEnabled),
 		NullString:           types.StringPointerValue(csvParser.NullString),
 		TrimIfNotQuoted:      types.BoolValue(csvParser.TrimIfNotQuoted),
 		QuotesInQuotedFields: types.StringValue(csvParser.QuotesInQuotedFields),

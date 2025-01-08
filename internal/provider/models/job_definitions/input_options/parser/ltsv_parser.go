@@ -4,6 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
 	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
+	"terraform-provider-trocco/internal/provider/models"
 )
 
 type LtsvParser struct {
@@ -53,8 +54,8 @@ func (ltsvParser *LtsvParser) ToLtsvParserInput() *job_definitions2.LtsvParserIn
 	}
 
 	return &job_definitions2.LtsvParserInput{
-		Newline: ltsvParser.Newline.ValueStringPointer(),
-		Charset: ltsvParser.Charset.ValueStringPointer(),
+		Newline: models.NewNullableString(ltsvParser.Newline),
+		Charset: models.NewNullableString(ltsvParser.Charset),
 		Columns: columns,
 	}
 }

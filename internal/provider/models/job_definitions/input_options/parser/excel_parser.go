@@ -30,7 +30,7 @@ func NewExcelParser(excelParser *job_definitions.ExcelParser) *ExcelParser {
 			Name:            types.StringValue(input.Name),
 			Type:            types.StringValue(input.Type),
 			Format:          types.StringPointerValue(input.Format),
-			FormulaHandling: types.StringPointerValue(input.FormulaHandling),
+			FormulaHandling: types.StringValue(input.FormulaHandling),
 		}
 		columns = append(columns, column)
 	}
@@ -52,7 +52,7 @@ func (excelParser *ExcelParser) ToExcelParserInput() *job_definitions2.ExcelPars
 			Name:            input.Name.ValueString(),
 			Type:            input.Type.ValueString(),
 			Format:          input.Format.ValueStringPointer(),
-			FormulaHandling: input.FormulaHandling.ValueStringPointer(),
+			FormulaHandling: input.FormulaHandling.ValueString(),
 		}
 		columns = append(columns, column)
 	}
@@ -75,7 +75,7 @@ func ToExcelParserModel(excelParser *job_definitions.ExcelParser) *ExcelParser {
 			Name:            types.StringValue(input.Name),
 			Type:            types.StringValue(input.Type),
 			Format:          types.StringPointerValue(input.Format),
-			FormulaHandling: types.StringPointerValue(input.FormulaHandling),
+			FormulaHandling: types.StringValue(input.FormulaHandling),
 		}
 		columns = append(columns, column)
 	}

@@ -311,6 +311,9 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 							},
 							"decompression_type": schema.StringAttribute{
 								Optional: true,
+								Validators: []validator.String{
+									stringvalidator.OneOf("gzip", "bzip2", "zip", "targz"),
+								},
 							},
 							"parquet_parser": schema.SingleNestedAttribute{
 								Optional: true,
@@ -422,8 +425,9 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 												"format": schema.StringAttribute{
 													Optional: true,
 												},
-												"formula_handling": schema.Int64Attribute{
-													Optional: true,
+												"formula_handling": schema.StringAttribute{
+													Required:   true,
+													Validators: []validator.String{stringvalidator.OneOf("cashed_value", "evaluate")},
 												},
 											},
 										},
@@ -511,7 +515,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 										Required: true,
 									},
 									"null_string_enabled": schema.BoolAttribute{
-										Optional: true,
+										Required: true,
 									},
 									"null_string": schema.StringAttribute{
 										Optional: true,
@@ -638,9 +642,10 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								},
 							},
 						},
-						//PlanModifiers: []planmodifier.Object{
-						//	&mysqlInputOptionPlanModifier{},
-						//},
+						PlanModifiers: []planmodifier.Object{
+							&fileParserPlanModifier{},
+							&gcsInputOptionPlanModifier{},
+						},
 					},
 				},
 			},

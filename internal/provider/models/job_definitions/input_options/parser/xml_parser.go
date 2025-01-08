@@ -12,10 +12,11 @@ type XmlParser struct {
 }
 
 type XmlParserColumn struct {
-	Name   types.String `tfsdk:"name"`
-	Type   types.String `tfsdk:"type"`
-	Path   types.String `tfsdk:"path"`
-	Format types.String `tfsdk:"format"`
+	Name     types.String `tfsdk:"name"`
+	Type     types.String `tfsdk:"type"`
+	Path     types.String `tfsdk:"path"`
+	Timezone types.String `tfsdk:"timezone"`
+	Format   types.String `tfsdk:"format"`
 }
 
 func NewXmlParser(xmlParser *job_definitions.XmlParser) *XmlParser {
@@ -25,8 +26,11 @@ func NewXmlParser(xmlParser *job_definitions.XmlParser) *XmlParser {
 	columns := make([]XmlParserColumn, 0, len(xmlParser.Columns))
 	for _, input := range xmlParser.Columns {
 		column := XmlParserColumn{
-			Name: types.StringValue(input.Name),
-			Type: types.StringValue(input.Type),
+			Name:     types.StringValue(input.Name),
+			Type:     types.StringValue(input.Type),
+			Path:     types.StringValue(input.Path),
+			Timezone: types.StringPointerValue(input.Timezone),
+			Format:   types.StringPointerValue(input.Format),
 		}
 		columns = append(columns, column)
 	}
@@ -44,10 +48,11 @@ func (xmlParser *XmlParser) ToXmlParserInput() *job_definitions2.XmlParserInput 
 	columns := make([]job_definitions2.XmlParserColumnInput, 0, len(xmlParser.Columns))
 	for _, input := range xmlParser.Columns {
 		column := job_definitions2.XmlParserColumnInput{
-			Name:   input.Format.ValueString(),
-			Type:   input.Type.ValueString(),
-			Path:   input.Path.ValueString(),
-			Format: input.Format.ValueStringPointer(),
+			Name:     input.Name.ValueString(),
+			Type:     input.Type.ValueString(),
+			Path:     input.Path.ValueString(),
+			Format:   input.Format.ValueStringPointer(),
+			Timezone: input.Timezone.ValueStringPointer(),
 		}
 		columns = append(columns, column)
 	}

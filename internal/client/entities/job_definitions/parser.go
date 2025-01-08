@@ -5,7 +5,7 @@ type CsvParser struct {
 	Quote                *string           `json:"quote"`
 	Escape               *string           `json:"escape"`
 	SkipHeaderLines      int64             `json:"skip_header_lines"`
-	NullStringEnabled    *bool             `json:"null_string_enabled"`
+	NullStringEnabled    bool              `json:"null_string_enabled"`
 	NullString           *string           `json:"null_string"`
 	TrimIfNotQuoted      bool              `json:"trim_if_not_quoted"`
 	QuotesInQuotedFields string            `json:"quotes_in_quoted_fields"`
@@ -79,7 +79,7 @@ type ExcelParserColumn struct {
 	Name            string  `json:"name"`
 	Type            string  `json:"type"`
 	Format          *string `json:"format"`
-	FormulaHandling *string `json:"formula_handling"`
+	FormulaHandling string  `json:"formula_handling"`
 }
 
 type XmlParser struct {
@@ -88,10 +88,11 @@ type XmlParser struct {
 }
 
 type XmlParserColumn struct {
-	Name   string  `json:"name"`
-	Type   string  `json:"type"`
-	Path   string  `json:"path"`
-	Format *string `json:"format"`
+	Name     string  `json:"name"`
+	Type     string  `json:"type"`
+	Path     string  `json:"path"`
+	Timezone *string `json:"timezone"`
+	Format   *string `json:"format"`
 }
 
 type ParquetParser struct {

@@ -8,7 +8,7 @@ import (
 type GcsInputOption struct {
 	GcsConnectionID           int64                             `json:"gcs_connection_id"`
 	Bucket                    string                            `json:"bucket"`
-	PathPrefix                *string                           `json:"path_prefix"`
+	PathPrefix                string                            `json:"path_prefix"`
 	IncrementalLoadingEnabled bool                              `json:"incremental_loading_enabled"`
 	LastPath                  *string                           `json:"last_path"`
 	StopWhenFileNotFound      bool                              `json:"stop_when_file_not_found"`
