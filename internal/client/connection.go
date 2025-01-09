@@ -62,8 +62,8 @@ type CreateConnectionInput struct {
 	PrivateKey *string `json:"private_key,omitempty"`
 
 	// GCS Fields
-	ApplicationName     *parameters.NullableString `json:"application_name,omitempty"`
-	ServiceAccountEmail *string                    `json:"service_account_email,omitempty"`
+	ApplicationName     *string `json:"application_name,omitempty"`
+	ServiceAccountEmail *string `json:"service_account_email,omitempty"`
 }
 
 type UpdateConnectionInput struct {

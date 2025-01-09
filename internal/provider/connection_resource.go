@@ -70,7 +70,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		PrivateKey: m.PrivateKey.ValueStringPointer(),
 
 		// GCS Fields
-		ApplicationName:     newNullableFromTerraformString(m.ApplicationName),
+		ApplicationName:     m.ApplicationName.ValueStringPointer(),
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 	}
 }
