@@ -484,3 +484,77 @@ func (r *connectionResource) ImportState(
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("connection_type"), connectionType)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), connectionID)...)
 }
+
+func (r *connectionResource) ValidateConfig(
+	ctx context.Context,
+	req resource.ValidateConfigRequest,
+	resp *resource.ValidateConfigResponse,
+) {
+	plan := &connectionResourceModel{}
+	resp.Diagnostics.Append(req.Config.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if plan.ConnectionType.ValueString() == "bigquery" {
+		if plan.ServiceAccountJSONKey.ValueString() == "" {
+			resp.Diagnostics.AddError(
+				"service_account_json_key",
+				"Service account JSON key is required for BigQuery connection.",
+			)
+		}
+	}
+
+	if plan.ConnectionType.ValueString() == "snowflake" {
+		if plan.Host.ValueString() == "" {
+			resp.Diagnostics.AddError(
+				"host",
+				"Host is required for Snowflake connection.",
+			)
+		}
+
+		if plan.UserName.ValueString() == "" {
+			resp.Diagnostics.AddError(
+				"user_name",
+				"User name is required for Snowflake connection.",
+			)
+		}
+
+		if plan.AuthMethod.ValueString() == "" {
+			resp.Diagnostics.AddError(
+				"auth_method",
+				"Auth method is required for Snowflake connection.",
+			)
+		}
+
+		if plan.AuthMethod.ValueString() == "key_pair" && plan.PrivateKey.ValueString() == "" {
+			resp.Diagnostics.AddError(
+				"private_key",
+				"Private key is required for Snowflake connection with key pair authentication.",
+			)
+		}
+
+		if plan.AuthMethod.ValueString() == "user_password" && plan.Password.ValueString() == "" {
+			resp.Diagnostics.AddError(
+				"password",
+				"Password is required for Snowflake connection with user password authentication.",
+			)
+		}
+	}
+
+	if plan.ConnectionType.ValueString() == "gcs" {
+		if plan.ApplicationName.ValueString() == "" {
+			resp.Diagnostics.AddError(
+				"application_name",
+				"Application name is required for GCS connection.",
+			)
+		}
+
+		if plan.ServiceAccountEmail.ValueString() == "" {
+			resp.Diagnostics.AddError(
+				"service_account_email",
+				"Service account email is required for GCS connection.",
+			)
+		}
+	}
+}
