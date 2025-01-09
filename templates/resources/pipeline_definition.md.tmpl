@@ -1,0 +1,99 @@
+---
+page_title: "{{.Name}} {{.Type}} - {{.ProviderShortName}}"
+subcategory: ""
+description: |-
+  {{.Description}}
+---
+
+# {{.Name}} ({{.Type}})
+
+{{.Description}}
+
+## Example Usage
+
+### Minimum
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/minimum.tf"}}
+
+### Task Dependencies
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/task_dependencies.tf"}}
+
+### Notifications
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/notifications.tf"}}
+
+### Tasks
+
+#### TROCCO Transfer
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/trocco_tranfer.tf"}}
+
+##### Custom Variable Loop
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/trocco_tranfer_with_custom_variable_loop.tf"}}
+
+#### TROCCO Transfer Bulk
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/trocco_transfer_bulk.tf"}}
+
+#### Datamart
+
+##### Azure Synapse Analytics
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/trocco_azure_synapse_analytics_datamart.tf"}}
+
+##### BigQuery
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/trocco_bigquery_datamart.tf"}}
+
+##### Redshift
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/trocco_redshift_datamart.tf"}}
+
+##### Snowflake
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/trocco_snowflake_datamart.tf"}}
+
+#### Data Check
+
+##### BigQuery Data Check
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/bigquery_data_check.tf"}}
+
+##### Redshift Data Check
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/redshift_data_check.tf"}}
+
+##### Snowflake Data Check
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/snowflake_data_check.tf"}}
+
+#### HTTP Request
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/http_request.tf"}}
+
+#### Slack Notify
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/slack_notify.tf"}}
+
+#### Tableau Extract
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/tableau_extract.tf"}}
+
+#### dbt
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/trocco_dbt.tf"}}
+
+#### TROCCO Pipeline
+
+{{codefile "terraform" "examples/resources/trocco_pipeline_definition/trocco_pipeline.tf"}}
+
+{{.SchemaMarkdown}}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/trocco_pipeline_definition/import.sh"}}
+
