@@ -243,7 +243,7 @@ resource "trocco_pipeline_definition" "trocco_snowflake_datamart" {
 
 #### Data Check
 
-##### BigQuery Data Check
+##### BigQuery
 
 ```terraform
 resource "trocco_pipeline_definition" "bigquery_data_check" {
@@ -267,7 +267,7 @@ resource "trocco_pipeline_definition" "bigquery_data_check" {
 }
 ```
 
-##### Redshift Data Check
+##### Redshift
 
 ```terraform
 resource "trocco_pipeline_definition" "redshift_data_check" {
@@ -292,7 +292,7 @@ resource "trocco_pipeline_definition" "redshift_data_check" {
 }
 ```
 
-##### Snowflake Data Check
+##### Snowflake
 
 ```terraform
 resource "trocco_pipeline_definition" "snowflake_data_check" {
