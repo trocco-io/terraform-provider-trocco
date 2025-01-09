@@ -1,24 +1,26 @@
 package job_definitions
 
+import "terraform-provider-trocco/internal/client/parameters"
+
 type CsvParserInput struct {
-	Delimiter            string                 `json:"delimiter"`
-	Quote                *string                `json:"quote,omitempty"`
-	Escape               *string                `json:"escape,omitempty"`
-	SkipHeaderLines      int64                  `json:"skip_header_lines"`
-	NullStringEnabled    *bool                  `json:"null_string_enabled,omitempty"`
-	NullString           *string                `json:"null_string,omitempty"`
-	TrimIfNotQuoted      bool                   `json:"trim_if_not_quoted"`
-	QuotesInQuotedFields string                 `json:"quotes_in_quoted_fields"`
-	CommentLineMarker    *string                `json:"comment_line_marker,omitempty"`
-	AllowOptionalColumns bool                   `json:"allow_optional_columns"`
-	AllowExtraColumns    bool                   `json:"allow_extra_columns"`
-	MaxQuotedSizeLimit   int64                  `json:"max_quoted_size_limit"`
-	StopOnInvalidRecord  bool                   `json:"stop_on_invalid_record"`
-	DefaultTimeZone      string                 `json:"default_time_zone"`
-	DefaultDate          string                 `json:"default_date"`
-	Newline              string                 `json:"newline"`
-	Charset              *string                `json:"charset,omitempty"`
-	Columns              []CsvParserColumnInput `json:"columns"`
+	Delimiter            string                     `json:"delimiter"`
+	Quote                *parameters.NullableString `json:"quote,omitempty"`
+	Escape               *parameters.NullableString `json:"escape,omitempty"`
+	SkipHeaderLines      int64                      `json:"skip_header_lines"`
+	NullStringEnabled    bool                       `json:"null_string_enabled"`
+	NullString           *parameters.NullableString `json:"null_string,omitempty"`
+	TrimIfNotQuoted      bool                       `json:"trim_if_not_quoted"`
+	QuotesInQuotedFields string                     `json:"quotes_in_quoted_fields"`
+	CommentLineMarker    *parameters.NullableString `json:"comment_line_marker,omitempty"`
+	AllowOptionalColumns bool                       `json:"allow_optional_columns"`
+	AllowExtraColumns    bool                       `json:"allow_extra_columns"`
+	MaxQuotedSizeLimit   int64                      `json:"max_quoted_size_limit"`
+	StopOnInvalidRecord  bool                       `json:"stop_on_invalid_record"`
+	DefaultTimeZone      string                     `json:"default_time_zone"`
+	DefaultDate          string                     `json:"default_date"`
+	Newline              string                     `json:"newline"`
+	Charset              *parameters.NullableString `json:"charset,omitempty"`
+	Columns              []CsvParserColumnInput     `json:"columns"`
 }
 
 type CsvParserColumnInput struct {
@@ -29,11 +31,11 @@ type CsvParserColumnInput struct {
 }
 
 type JsonlParserInput struct {
-	StopOnInvalidRecord *bool                    `json:"stop_on_invalid_record,omitempty"`
-	DefaultTimeZone     string                   `json:"default_time_zone"`
-	Newline             *string                  `json:"newline,omitempty"`
-	Charset             *string                  `json:"charset,omitempty"`
-	Columns             []JsonlParserColumnInput `json:"columns"`
+	StopOnInvalidRecord bool                       `json:"stop_on_invalid_record"`
+	DefaultTimeZone     string                     `json:"default_time_zone"`
+	Newline             *parameters.NullableString `json:"newline,omitempty"`
+	Charset             *parameters.NullableString `json:"charset,omitempty"`
+	Columns             []JsonlParserColumnInput   `json:"columns"`
 }
 
 type JsonlParserColumnInput struct {
@@ -57,9 +59,9 @@ type JsonpathParserColumnInput struct {
 }
 
 type LtsvParserInput struct {
-	Newline *string                 `json:"newline,omitempty"`
-	Charset *string                 `json:"charset,omitempty"`
-	Columns []LtsvParserColumnInput `json:"columns"`
+	Newline *parameters.NullableString `json:"newline,omitempty"`
+	Charset *parameters.NullableString `json:"charset,omitempty"`
+	Columns []LtsvParserColumnInput    `json:"columns"`
 }
 
 type LtsvParserColumnInput struct {
@@ -79,7 +81,7 @@ type ExcelParserColumnInput struct {
 	Name            string  `json:"name"`
 	Type            string  `json:"type"`
 	Format          *string `json:"format,omitempty"`
-	FormulaHandling *string `json:"formula_handling,omitempty"`
+	FormulaHandling string  `json:"formula_handling,omitempty"`
 }
 
 type XmlParserInput struct {
@@ -88,10 +90,11 @@ type XmlParserInput struct {
 }
 
 type XmlParserColumnInput struct {
-	Name   string  `json:"name"`
-	Type   string  `json:"type"`
-	Path   string  `json:"path"`
-	Format *string `json:"format,omitempty"`
+	Name     string  `json:"name"`
+	Type     string  `json:"type"`
+	Path     string  `json:"path"`
+	Format   *string `json:"format,omitempty"`
+	Timezone *string `json:"timezone,omitempty"`
 }
 
 type ParquetParserInput struct {

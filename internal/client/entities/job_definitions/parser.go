@@ -5,7 +5,7 @@ type CsvParser struct {
 	Quote                *string           `json:"quote"`
 	Escape               *string           `json:"escape"`
 	SkipHeaderLines      int64             `json:"skip_header_lines"`
-	NullStringEnabled    *bool             `json:"null_string_enabled"`
+	NullStringEnabled    bool              `json:"null_string_enabled"`
 	NullString           *string           `json:"null_string"`
 	TrimIfNotQuoted      bool              `json:"trim_if_not_quoted"`
 	QuotesInQuotedFields string            `json:"quotes_in_quoted_fields"`
@@ -22,11 +22,10 @@ type CsvParser struct {
 }
 
 type CsvParserColumn struct {
-	Name        string  `json:"name"`
-	Type        string  `json:"type"`
-	Format      *string `json:"format"`
-	Date        *string `json:"date"`
-	ColumnOrder int64   `json:"column_order"`
+	Name   string  `json:"name"`
+	Type   string  `json:"type"`
+	Format *string `json:"format"`
+	Date   *string `json:"date"`
 }
 
 type JsonlParser struct {
@@ -38,11 +37,10 @@ type JsonlParser struct {
 }
 
 type JsonlParserColumn struct {
-	Name        string  `json:"name"`
-	Type        string  `json:"type"`
-	TimeZone    *string `json:"time_zone"`
-	Format      *string `json:"format"`
-	ColumnOrder int64   `json:"column_order"`
+	Name     string  `json:"name"`
+	Type     string  `json:"type"`
+	TimeZone *string `json:"time_zone"`
+	Format   *string `json:"format"`
 }
 
 type JsonpathParser struct {
@@ -52,11 +50,10 @@ type JsonpathParser struct {
 }
 
 type JsonpathParserColumn struct {
-	Name        string  `json:"name"`
-	Type        string  `json:"type"`
-	TimeZone    *string `json:"time_zone"`
-	Format      *string `json:"format"`
-	ColumnOrder int64   `json:"column_order"`
+	Name     string  `json:"name"`
+	Type     string  `json:"type"`
+	TimeZone *string `json:"time_zone"`
+	Format   *string `json:"format"`
 }
 
 type LtsvParser struct {
@@ -66,10 +63,9 @@ type LtsvParser struct {
 }
 
 type LtsvParserColumn struct {
-	Name        string  `json:"name"`
-	Type        string  `json:"type"`
-	Format      *string `json:"format"`
-	ColumnOrder int64   `json:"column_order"`
+	Name   string  `json:"name"`
+	Type   string  `json:"type"`
+	Format *string `json:"format"`
 }
 
 type ExcelParser struct {
@@ -83,8 +79,7 @@ type ExcelParserColumn struct {
 	Name            string  `json:"name"`
 	Type            string  `json:"type"`
 	Format          *string `json:"format"`
-	FormulaHandling *string `json:"formula_handling"`
-	ColumnOrder     int64   `json:"column_order"`
+	FormulaHandling string  `json:"formula_handling"`
 }
 
 type XmlParser struct {
@@ -93,11 +88,11 @@ type XmlParser struct {
 }
 
 type XmlParserColumn struct {
-	Name        string  `json:"name"`
-	Type        string  `json:"type"`
-	Path        string  `json:"path"`
-	Format      *string `json:"format"`
-	ColumnOrder int64   `json:"column_order"`
+	Name     string  `json:"name"`
+	Type     string  `json:"type"`
+	Path     string  `json:"path"`
+	Timezone *string `json:"timezone"`
+	Format   *string `json:"format"`
 }
 
 type ParquetParser struct {
@@ -105,8 +100,7 @@ type ParquetParser struct {
 }
 
 type ParquetParserColumn struct {
-	Name        string  `json:"name"`
-	Type        string  `json:"type"`
-	Format      *string `json:"format"`
-	ColumnOrder int64   `json:"column_order"`
+	Name   string  `json:"name"`
+	Type   string  `json:"type"`
+	Format *string `json:"format"`
 }

@@ -1,14 +1,14 @@
 package filter
 
 type FilterColumnInput struct {
-	Name                     string                   `json:"name"`
-	Src                      string                   `json:"src"`
-	Type                     string                   `json:"type"`
-	Default                  *string                  `json:"default,omitempty"`
-	Format                   *string                  `json:"format"`
-	JSONExpandEnabled        bool                     `json:"json_expand_enabled"`
-	JSONExpandKeepBaseColumn bool                     `json:"json_expand_keep_base_column"`
-	JSONExpandColumns        *[]JSONExpandColumnInput `json:"json_expand_columns,omitempty"`
+	Name                     string                  `json:"name"`
+	Src                      string                  `json:"src"`
+	Type                     string                  `json:"type"`
+	Default                  *string                 `json:"default,omitempty"`
+	Format                   *string                 `json:"format"`
+	JSONExpandEnabled        bool                    `json:"json_expand_enabled"`
+	JSONExpandKeepBaseColumn bool                    `json:"json_expand_keep_base_column"`
+	JSONExpandColumns        []JSONExpandColumnInput `json:"json_expand_columns,omitempty"`
 }
 
 type JSONExpandColumnInput struct {
