@@ -85,8 +85,8 @@ type UpdateConnectionInput struct {
 	PrivateKey *string `json:"private_key,omitempty"`
 
 	// GCS Fields
-	ApplicationName     *parameters.NullableString `json:"application_name,omitempty"`
-	ServiceAccountEmail *string                    `json:"service_account_email,omitempty"`
+	ApplicationName     *string `json:"application_name,omitempty"`
+	ServiceAccountEmail *string `json:"service_account_email,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {

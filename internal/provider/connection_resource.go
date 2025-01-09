@@ -95,7 +95,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		PrivateKey: m.PrivateKey.ValueStringPointer(),
 
 		// GCS Fields
-		ApplicationName:     newNullableFromTerraformString(m.ApplicationName),
+		ApplicationName:     m.ApplicationName.ValueStringPointer(),
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 	}
 }
@@ -264,6 +264,7 @@ func (r *connectionResource) Schema(
 			"service_account_email": schema.StringAttribute{
 				MarkdownDescription: "GCS: A GCP service account email.",
 				Optional:            true,
+				Sensitive:           true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
@@ -317,7 +318,7 @@ func (r *connectionResource) Create(
 
 		// GCS Fields
 		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
-		ServiceAccountEmail: types.StringPointerValue(connection.ServiceAccountEmail),
+		ServiceAccountEmail: plan.ServiceAccountEmail,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -374,7 +375,7 @@ func (r *connectionResource) Update(
 
 		// GCS Fields
 		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
-		ServiceAccountEmail: types.StringPointerValue(connection.ServiceAccountEmail),
+		ServiceAccountEmail: plan.ServiceAccountEmail,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -424,7 +425,7 @@ func (r *connectionResource) Read(
 
 		// GCS Fields
 		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
-		ServiceAccountEmail: types.StringPointerValue(connection.ServiceAccountEmail),
+		ServiceAccountEmail: state.ServiceAccountEmail,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
