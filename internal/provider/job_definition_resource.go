@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"strconv"
@@ -734,11 +735,10 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 							"time_partitioning_expiration_ms": schema.Int64Attribute{
 								Optional: true,
 							},
-							"time_partitioning_require_partition_filter": schema.BoolAttribute{
-								Optional: true,
-							},
 							"location": schema.StringAttribute{
-								Optional: true,
+								Optional:      true,
+								Computed:      true,
+								PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 							},
 							"template_table": schema.StringAttribute{
 								Optional: true,
@@ -750,7 +750,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								},
 							},
 							"before_load": schema.StringAttribute{
-								Optional: true,
+								Required: true,
 							},
 							"bigquery_output_option_column_options": schema.ListNestedAttribute{
 								Optional: true,
@@ -778,11 +778,11 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								},
 							},
 							"bigquery_output_option_clustering_fields": schema.ListAttribute{
-								Optional:    true,
+								Required:    true,
 								ElementType: types.StringType,
 							},
 							"bigquery_output_option_merge_keys": schema.ListAttribute{
-								Optional:    true,
+								Required:    true,
 								ElementType: types.StringType,
 							},
 							"custom_variable_settings": schema.ListNestedAttribute{
@@ -842,6 +842,9 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 									},
 								},
 							},
+						},
+						PlanModifiers: []planmodifier.Object{
+							&bigqueryOutputOptionPlanModifier{},
 						},
 					},
 				},
