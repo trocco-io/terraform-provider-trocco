@@ -23,6 +23,8 @@ import (
 	"terraform-provider-trocco/internal/provider/models"
 	"terraform-provider-trocco/internal/provider/models/job_definitions"
 	"terraform-provider-trocco/internal/provider/models/job_definitions/filter"
+	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+	validator2 "terraform-provider-trocco/internal/provider/validator"
 )
 
 var (
@@ -225,7 +227,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 										"name": schema.StringAttribute{
 											Required: true,
 											Validators: []validator.String{
-												wrappingDollarValidator{},
+												validator2.WrappingDollarValidator{},
 											},
 											MarkdownDescription: "Custom variable name. It must start and end with `$`",
 										},
@@ -271,7 +273,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 										},
 									},
 									PlanModifiers: []planmodifier.Object{
-										&customVariableSettingPlanModifier{},
+										&planmodifier2.CustomVariableSettingPlanModifier{},
 									},
 								},
 							},
@@ -592,7 +594,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 										"name": schema.StringAttribute{
 											Required: true,
 											Validators: []validator.String{
-												wrappingDollarValidator{},
+												validator2.WrappingDollarValidator{},
 											},
 											MarkdownDescription: "Custom variable name. It must start and end with `$`",
 										},
@@ -638,7 +640,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 										},
 									},
 									PlanModifiers: []planmodifier.Object{
-										&customVariableSettingPlanModifier{},
+										&planmodifier2.CustomVariableSettingPlanModifier{},
 									},
 								},
 							},
@@ -792,7 +794,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 										"name": schema.StringAttribute{
 											Required: true,
 											Validators: []validator.String{
-												wrappingDollarValidator{},
+												validator2.WrappingDollarValidator{},
 											},
 											MarkdownDescription: "Custom variable name. It must start and end with `$`",
 										},
@@ -838,7 +840,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 										},
 									},
 									PlanModifiers: []planmodifier.Object{
-										&customVariableSettingPlanModifier{},
+										&planmodifier2.CustomVariableSettingPlanModifier{},
 									},
 								},
 							},
@@ -1138,7 +1140,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 						},
 					},
 					PlanModifiers: []planmodifier.Object{
-						&schedulePlanModifier{},
+						&planmodifier2.SchedulePlanModifier{},
 					},
 				},
 				MarkdownDescription: "Schedules to be attached to the job definition",
