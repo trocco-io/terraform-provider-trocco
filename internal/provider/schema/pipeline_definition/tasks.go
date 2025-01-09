@@ -24,6 +24,9 @@ func Tasks() schema.Attribute {
 				"key": schema.StringAttribute{
 					MarkdownDescription: "The key of the task.",
 					Required:            true,
+					Validators: []validator.String{
+						stringvalidator.LengthBetween(1, 100),
+					},
 				},
 				"task_identifier": schema.Int64Attribute{
 					MarkdownDescription: "The task identifier.",
