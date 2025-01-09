@@ -60,7 +60,7 @@ resource "trocco_connection" "snowflake" {
 - `project_id` (String) BigQuery, GCS: A GCP project ID.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
 - `role` (String) Snowflake: A role attached to the Snowflake user.
-- `service_account_email` (String) GCS: A GCP service account email.
+- `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery: A GCP service account key.
 - `user_name` (String) Snowflake: The name of a Snowflake user.
 
