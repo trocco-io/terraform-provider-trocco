@@ -42,11 +42,17 @@ Provides a TROCCO pipeline definition resource.
 <a id="nestedatt--notifications"></a>
 ### Nested Schema for `notifications`
 
+Required:
+
+- `destination_type` (String) The destination type of the notification
+- `type` (String) The type of the notification
+
 Optional:
 
 - `email_config` (Attributes) The email configuration of the notification (see [below for nested schema](#nestedatt--notifications--email_config))
+- `notify_when` (String) When to notify
 - `slack_config` (Attributes) The slack configuration of the notification (see [below for nested schema](#nestedatt--notifications--slack_config))
-- `type` (String) The type of the notification
+- `time` (Number) The time of the notification
 
 <a id="nestedatt--notifications--email_config"></a>
 ### Nested Schema for `notifications.email_config`
@@ -55,7 +61,6 @@ Required:
 
 - `message` (String) The message of the notification
 - `notification_id` (Number) The notification id
-- `notify_when` (String) When to notify
 
 
 <a id="nestedatt--notifications--slack_config"></a>
@@ -65,7 +70,6 @@ Required:
 
 - `message` (String) The message of the notification
 - `notification_id` (Number) The notification id
-- `notify_when` (String) When to notify
 
 
 
