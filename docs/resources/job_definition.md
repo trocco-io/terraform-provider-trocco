@@ -17,17 +17,25 @@ Provides a TROCCO job definitions.
 
 ### Required
 
-- `input_option` (Attributes Map) (see [below for nested schema](#nestedatt--input_option))
+- `filter_columns` (Attributes List) (see [below for nested schema](#nestedatt--filter_columns))
+- `filter_gsub` (Attributes List) Filter gsub to be attached to the job definition (see [below for nested schema](#nestedatt--filter_gsub))
+- `filter_hashes` (Attributes List) (see [below for nested schema](#nestedatt--filter_hashes))
+- `filter_masks` (Attributes List) Filter masks to be attached to the job definition (see [below for nested schema](#nestedatt--filter_masks))
+- `filter_string_transforms` (Attributes List) (see [below for nested schema](#nestedatt--filter_string_transforms))
+- `filter_unixtime_conversions` (Attributes List) (see [below for nested schema](#nestedatt--filter_unixtime_conversions))
+- `input_option` (Attributes) (see [below for nested schema](#nestedatt--input_option))
 - `input_option_type` (String) Input option type.
 - `is_runnable_concurrently` (Boolean) Specifies whether or not to run a job if another job with the same job definition is running at the time the job is run
 - `name` (String) Name of the job definition. It must be less than 256 characters
-- `output_option` (Attributes Map) (see [below for nested schema](#nestedatt--output_option))
+- `output_option` (Attributes) (see [below for nested schema](#nestedatt--output_option))
 - `output_option_type` (String) Output option type.
 - `retry_limit` (Number) Maximum number of retries. if set 0, the job will not be retried
 
 ### Optional
 
 - `description` (String) Description of the job definition. It must be at least 1 character
+- `filter_add_time` (Attributes) (see [below for nested schema](#nestedatt--filter_add_time))
+- `filter_rows` (Attributes) (see [below for nested schema](#nestedatt--filter_rows))
 - `labels` (Attributes Set) Labels to be attached to the job definition (see [below for nested schema](#nestedatt--labels))
 - `notifications` (Attributes Set) Notifications to be attached to the job definition (see [below for nested schema](#nestedatt--notifications))
 - `resource_enhancement` (String) Resource size to be used when executing the job. If not specified, the resource size specified in the transfer settings is applied. The value that can be specified varies depending on the connector. (This parameter is available only in the Professional plan.
@@ -38,12 +46,344 @@ Provides a TROCCO job definitions.
 
 - `id` (Number) The ID of the job definition
 
+<a id="nestedatt--filter_columns"></a>
+### Nested Schema for `filter_columns`
+
+Required:
+
+- `json_expand_columns` (Attributes List) (see [below for nested schema](#nestedatt--filter_columns--json_expand_columns))
+- `json_expand_enabled` (Boolean)
+- `json_expand_keep_base_column` (Boolean)
+- `name` (String)
+- `src` (String)
+- `type` (String)
+
+Optional:
+
+- `default` (String)
+- `format` (String)
+
+<a id="nestedatt--filter_columns--json_expand_columns"></a>
+### Nested Schema for `filter_columns.json_expand_columns`
+
+Required:
+
+- `json_path` (String)
+- `name` (String)
+- `type` (String)
+
+Optional:
+
+- `format` (String)
+- `timezone` (String)
+
+
+
+<a id="nestedatt--filter_gsub"></a>
+### Nested Schema for `filter_gsub`
+
+Required:
+
+- `column_name` (String)
+- `pattern` (String)
+- `to` (String)
+
+
+<a id="nestedatt--filter_hashes"></a>
+### Nested Schema for `filter_hashes`
+
+Required:
+
+- `name` (String)
+
+
+<a id="nestedatt--filter_masks"></a>
+### Nested Schema for `filter_masks`
+
+Required:
+
+- `mask_type` (String)
+- `name` (String)
+
+Optional:
+
+- `end_index` (Number)
+- `length` (Number)
+- `pattern` (String)
+- `start_index` (Number)
+
+
+<a id="nestedatt--filter_string_transforms"></a>
+### Nested Schema for `filter_string_transforms`
+
+Required:
+
+- `column_name` (String)
+- `type` (String)
+
+
+<a id="nestedatt--filter_unixtime_conversions"></a>
+### Nested Schema for `filter_unixtime_conversions`
+
+Required:
+
+- `column_name` (String)
+- `datetime_format` (String)
+- `datetime_timezone` (String)
+- `kind` (String)
+- `unixtime_unit` (String)
+
+
 <a id="nestedatt--input_option"></a>
 ### Nested Schema for `input_option`
 
 Optional:
 
-- `mysql_input_option` (Attributes Map) (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
+- `gcs_input_option` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
+- `mysql_input_option` (Attributes) (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
+
+<a id="nestedatt--input_option--gcs_input_option"></a>
+### Nested Schema for `input_option.gcs_input_option`
+
+Required:
+
+- `bucket` (String)
+- `gcs_connection_id` (Number)
+- `incremental_loading_enabled` (Boolean)
+- `path_prefix` (String)
+- `stop_when_file_not_found` (Boolean)
+
+Optional:
+
+- `csv_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--csv_parser))
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--custom_variable_settings))
+- `decoder` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--decoder))
+- `decompression_type` (String)
+- `excel_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--excel_parser))
+- `jsonl_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonl_parser))
+- `jsonpath_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonpath_parser))
+- `last_path` (String)
+- `ltsv_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--ltsv_parser))
+- `parquet_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--parquet_parser))
+- `xml_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--xml_parser))
+
+<a id="nestedatt--input_option--gcs_input_option--csv_parser"></a>
+### Nested Schema for `input_option.gcs_input_option.csv_parser`
+
+Required:
+
+- `allow_extra_columns` (Boolean)
+- `allow_optional_columns` (Boolean)
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--csv_parser--columns))
+- `default_date` (String)
+- `default_time_zone` (String)
+- `delimiter` (String)
+- `max_quoted_size_limit` (Number)
+- `newline` (String)
+- `null_string_enabled` (Boolean)
+- `quotes_in_quoted_fields` (String)
+- `skip_header_lines` (Number)
+- `stop_on_invalid_record` (Boolean)
+- `trim_if_not_quoted` (Boolean)
+
+Optional:
+
+- `charset` (String)
+- `comment_line_marker` (String)
+- `escape` (String)
+- `null_string` (String)
+- `quote` (String)
+
+<a id="nestedatt--input_option--gcs_input_option--csv_parser--columns"></a>
+### Nested Schema for `input_option.gcs_input_option.csv_parser.columns`
+
+Required:
+
+- `name` (String)
+- `type` (String)
+
+Optional:
+
+- `date` (String)
+- `format` (String)
+
+
+
+<a id="nestedatt--input_option--gcs_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.gcs_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--gcs_input_option--decoder"></a>
+### Nested Schema for `input_option.gcs_input_option.decoder`
+
+Optional:
+
+- `match_name` (String)
+
+
+<a id="nestedatt--input_option--gcs_input_option--excel_parser"></a>
+### Nested Schema for `input_option.gcs_input_option.excel_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--excel_parser--columns))
+- `default_time_zone` (String)
+- `sheet_name` (String)
+- `skip_header_lines` (Number)
+
+<a id="nestedatt--input_option--gcs_input_option--excel_parser--columns"></a>
+### Nested Schema for `input_option.gcs_input_option.excel_parser.columns`
+
+Required:
+
+- `formula_handling` (String)
+- `name` (String)
+- `type` (String)
+
+Optional:
+
+- `format` (String)
+
+
+
+<a id="nestedatt--input_option--gcs_input_option--jsonl_parser"></a>
+### Nested Schema for `input_option.gcs_input_option.jsonl_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonl_parser--columns))
+- `default_time_zone` (String)
+- `stop_on_invalid_record` (Boolean)
+
+Optional:
+
+- `charset` (String)
+- `newline` (String)
+
+<a id="nestedatt--input_option--gcs_input_option--jsonl_parser--columns"></a>
+### Nested Schema for `input_option.gcs_input_option.jsonl_parser.columns`
+
+Required:
+
+- `name` (String)
+- `type` (String)
+
+Optional:
+
+- `format` (String)
+- `time_zone` (String)
+
+
+
+<a id="nestedatt--input_option--gcs_input_option--jsonpath_parser"></a>
+### Nested Schema for `input_option.gcs_input_option.jsonpath_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonpath_parser--columns))
+- `default_time_zone` (String)
+- `root` (String)
+
+<a id="nestedatt--input_option--gcs_input_option--jsonpath_parser--columns"></a>
+### Nested Schema for `input_option.gcs_input_option.jsonpath_parser.columns`
+
+Required:
+
+- `name` (String)
+- `type` (String)
+
+Optional:
+
+- `format` (String)
+- `time_zone` (String)
+
+
+
+<a id="nestedatt--input_option--gcs_input_option--ltsv_parser"></a>
+### Nested Schema for `input_option.gcs_input_option.ltsv_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--ltsv_parser--columns))
+
+Optional:
+
+- `charset` (String)
+- `newline` (String)
+
+<a id="nestedatt--input_option--gcs_input_option--ltsv_parser--columns"></a>
+### Nested Schema for `input_option.gcs_input_option.ltsv_parser.columns`
+
+Required:
+
+- `name` (String)
+- `type` (String)
+
+Optional:
+
+- `format` (String)
+
+
+
+<a id="nestedatt--input_option--gcs_input_option--parquet_parser"></a>
+### Nested Schema for `input_option.gcs_input_option.parquet_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--parquet_parser--columns))
+
+<a id="nestedatt--input_option--gcs_input_option--parquet_parser--columns"></a>
+### Nested Schema for `input_option.gcs_input_option.parquet_parser.columns`
+
+Required:
+
+- `name` (String)
+- `type` (String)
+
+Optional:
+
+- `format` (String)
+
+
+
+<a id="nestedatt--input_option--gcs_input_option--xml_parser"></a>
+### Nested Schema for `input_option.gcs_input_option.xml_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--xml_parser--columns))
+- `root` (String)
+
+<a id="nestedatt--input_option--gcs_input_option--xml_parser--columns"></a>
+### Nested Schema for `input_option.gcs_input_option.xml_parser.columns`
+
+Required:
+
+- `name` (String)
+- `path` (String)
+- `type` (String)
+
+Optional:
+
+- `format` (String)
+- `timezone` (String)
+
+
+
 
 <a id="nestedatt--input_option--mysql_input_option"></a>
 ### Nested Schema for `input_option.mysql_input_option`
@@ -102,7 +442,7 @@ Optional:
 
 Optional:
 
-- `bigquery_output_option` (Attributes Map) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
+- `bigquery_output_option` (Attributes) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
 
 <a id="nestedatt--output_option--bigquery_output_option"></a>
 ### Nested Schema for `output_option.bigquery_output_option`
@@ -111,7 +451,10 @@ Required:
 
 - `auto_create_dataset` (Boolean)
 - `auto_create_table` (Boolean)
+- `before_load` (String)
 - `bigquery_connection_id` (Number)
+- `bigquery_output_option_clustering_fields` (List of String)
+- `bigquery_output_option_merge_keys` (List of String)
 - `dataset` (String)
 - `mode` (String)
 - `open_timeout_sec` (Number)
@@ -123,16 +466,13 @@ Required:
 
 Optional:
 
-- `before_load` (String)
-- `bigquery_output_option_clustering_fields` (List of String)
 - `bigquery_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options))
-- `bigquery_output_option_merge_keys` (List of String)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--custom_variable_settings))
 - `location` (String)
 - `partitioning_type` (String)
 - `template_table` (String)
 - `time_partitioning_expiration_ms` (Number)
 - `time_partitioning_field` (String)
-- `time_partitioning_require_partition_filter` (Boolean)
 - `time_partitioning_type` (String)
 
 <a id="nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options"></a>
@@ -150,6 +490,57 @@ Optional:
 - `timestamp_format` (String)
 - `timezone` (String)
 
+
+<a id="nestedatt--output_option--bigquery_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.bigquery_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+
+<a id="nestedatt--filter_add_time"></a>
+### Nested Schema for `filter_add_time`
+
+Required:
+
+- `column_name` (String)
+- `type` (String)
+
+Optional:
+
+- `time_zone` (String)
+- `timestamp_format` (String)
+
+
+<a id="nestedatt--filter_rows"></a>
+### Nested Schema for `filter_rows`
+
+Required:
+
+- `condition` (String)
+- `filter_row_conditions` (Attributes List) (see [below for nested schema](#nestedatt--filter_rows--filter_row_conditions))
+
+<a id="nestedatt--filter_rows--filter_row_conditions"></a>
+### Nested Schema for `filter_rows.filter_row_conditions`
+
+Required:
+
+- `argument` (String)
+- `column` (String)
+- `operator` (String)
 
 
 
@@ -172,11 +563,12 @@ Required:
 
 - `destination_type` (String) Destination service where the notification will be sent. The following types are supported: `slack`, `email`
 - `message` (String) The message to be sent with the notification
-- `notification_type` (String) Category of condition. The following types are supported: `job`, `record`
+- `notification_type` (String) Category of condition. The following types are supported: `job`, `record`, `exec_time`
 
 Optional:
 
 - `email_id` (Number) ID of the email used to send notifications. Required when `destination_type` is `email`
+- `minutes` (Number)
 - `notify_when` (String) Specifies the job status that trigger a notification. The following types are supported: `finished`, `failed`. Required when `notification_type` is `job`
 - `record_count` (Number) The number of records to be used for condition. Required when `notification_type` is `record`
 - `record_operator` (String) Operator to be used for condition. The following operators are supported: `above`, `below`. Required when `notification_type` is `record`
@@ -198,3 +590,11 @@ Optional:
 - `day` (Number) Value of day. Required in `monthly` schedule
 - `day_of_week` (Number) Value of day of week. Sunday - Saturday is represented as 0 - 6. Required in `weekly` schedule
 - `hour` (Number) Value of hour. Required in `daily`, `weekly`, and `monthly` schedules
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+terraform import trocco_job_definition.example <job_definition_id>
+```
