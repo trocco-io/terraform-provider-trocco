@@ -7,7 +7,7 @@ import (
 type MySQLInputOptionInput struct {
 	Database                  string                                   `json:"database"`
 	Table                     *parameters.NullableString               `json:"table,omitempty"`
-	Query                     string                                   `json:"query"`
+	Query                     *parameters.NullableString               `json:"query"`
 	IncrementalColumns        *parameters.NullableString               `json:"incremental_columns,omitempty"`
 	LastRecord                *parameters.NullableString               `json:"last_record,omitempty"`
 	IncrementalLoadingEnabled bool                                     `json:"incremental_loading_enabled"`
@@ -24,7 +24,7 @@ type MySQLInputOptionInput struct {
 type UpdateMySQLInputOptionInput struct {
 	Database                  *string                                  `json:"database,omitempty"`
 	Table                     *parameters.NullableString               `json:"table,omitempty"`
-	Query                     *string                                  `json:"query,omitempty"`
+	Query                     *parameters.NullableString               `json:"query,omitempty"`
 	IncrementalColumns        *parameters.NullableString               `json:"incremental_columns,omitempty"`
 	LastRecord                *parameters.NullableString               `json:"last_record,omitempty"`
 	IncrementalLoadingEnabled *bool                                    `json:"incremental_loading_enabled,omitempty"`

@@ -5,7 +5,7 @@ import "terraform-provider-trocco/internal/client/entities"
 type MySQLInputOption struct {
 	Database                  string                            `json:"database"`
 	Table                     *string                           `json:"table"`
-	Query                     string                            `json:"query"`
+	Query                     *string                           `json:"query"`
 	IncrementalColumns        *string                           `json:"incremental_columns"`
 	LastRecord                *string                           `json:"last_record"`
 	IncrementalLoadingEnabled bool                              `json:"incremental_loading_enabled"`

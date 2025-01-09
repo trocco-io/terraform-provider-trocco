@@ -37,7 +37,7 @@ func NewMysqlInputOption(mysqlInputOption *input_options.MySQLInputOption) *MySQ
 	return &MySQLInputOption{
 		Database:                  types.StringValue(mysqlInputOption.Database),
 		Table:                     types.StringPointerValue(mysqlInputOption.Table),
-		Query:                     types.StringValue(mysqlInputOption.Query),
+		Query:                     types.StringPointerValue(mysqlInputOption.Query),
 		IncrementalColumns:        types.StringPointerValue(mysqlInputOption.IncrementalColumns),
 		LastRecord:                types.StringPointerValue(mysqlInputOption.LastRecord),
 		IncrementalLoadingEnabled: types.BoolValue(mysqlInputOption.IncrementalLoadingEnabled),
@@ -75,7 +75,7 @@ func (mysqlInputOption *MySQLInputOption) ToInput() *input_options2.MySQLInputOp
 	return &input_options2.MySQLInputOptionInput{
 		Database:                  mysqlInputOption.Database.ValueString(),
 		Table:                     models.NewNullableString(mysqlInputOption.Table),
-		Query:                     mysqlInputOption.Query.ValueString(),
+		Query:                     models.NewNullableString(mysqlInputOption.Query),
 		IncrementalColumns:        models.NewNullableString(mysqlInputOption.IncrementalColumns),
 		LastRecord:                models.NewNullableString(mysqlInputOption.LastRecord),
 		IncrementalLoadingEnabled: mysqlInputOption.IncrementalLoadingEnabled.ValueBool(),
@@ -100,7 +100,7 @@ func (mysqlInputOption *MySQLInputOption) ToUpdateInput() *input_options2.Update
 	return &input_options2.UpdateMySQLInputOptionInput{
 		Database:                  mysqlInputOption.Database.ValueStringPointer(),
 		Table:                     models.NewNullableString(mysqlInputOption.Table),
-		Query:                     mysqlInputOption.Query.ValueStringPointer(),
+		Query:                     models.NewNullableString(mysqlInputOption.Query),
 		IncrementalColumns:        models.NewNullableString(mysqlInputOption.IncrementalColumns),
 		LastRecord:                models.NewNullableString(mysqlInputOption.LastRecord),
 		IncrementalLoadingEnabled: mysqlInputOption.IncrementalLoadingEnabled.ValueBoolPointer(),
@@ -128,34 +128,4 @@ func toInputOptionColumnsInput(columns []InputOptionColumn) []input_options2.Inp
 		})
 	}
 	return inputs
-}
-
-func ToMysqlInputOptionModel(mysqlInputOption *input_options.MySQLInputOption) *MySQLInputOption {
-	if mysqlInputOption == nil {
-		return nil
-	}
-
-	var mysqlInputOptionColumns []InputOptionColumn
-	for _, m := range mysqlInputOption.InputOptionColumns {
-		mysqlInputOptionColumns = append(mysqlInputOptionColumns, InputOptionColumn{
-			Name: types.StringValue(m.Name),
-			Type: types.StringValue(m.Type),
-		})
-	}
-	return &MySQLInputOption{
-		Database:                  types.StringValue(mysqlInputOption.Database),
-		Table:                     types.StringPointerValue(mysqlInputOption.Table),
-		Query:                     types.StringValue(mysqlInputOption.Query),
-		IncrementalColumns:        types.StringPointerValue(mysqlInputOption.IncrementalColumns),
-		LastRecord:                types.StringPointerValue(mysqlInputOption.LastRecord),
-		IncrementalLoadingEnabled: types.BoolValue(mysqlInputOption.IncrementalLoadingEnabled),
-		FetchRows:                 types.Int64Value(mysqlInputOption.FetchRows),
-		ConnectTimeout:            types.Int64Value(mysqlInputOption.ConnectTimeout),
-		SocketTimeout:             types.Int64Value(mysqlInputOption.SocketTimeout),
-		DefaultTimeZone:           types.StringPointerValue(mysqlInputOption.DefaultTimeZone),
-		UseLegacyDatetimeCode:     types.BoolPointerValue(mysqlInputOption.UseLegacyDatetimeCode),
-		MySQLConnectionID:         types.Int64Value(mysqlInputOption.MySQLConnectionID),
-		InputOptionColumns:        mysqlInputOptionColumns,
-		CustomVariableSettings:    models.CustomVariableEntitiesToModels(mysqlInputOption.CustomVariableSettings),
-	}
 }

@@ -140,7 +140,7 @@ Required:
 Optional:
 
 - `gcs_input_option` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
-- `mysql_input_option` (Attributes) (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
+- `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
 
 <a id="nestedatt--input_option--gcs_input_option"></a>
 ### Nested Schema for `input_option.gcs_input_option`
@@ -390,23 +390,23 @@ Optional:
 
 Required:
 
-- `connect_timeout` (Number)
-- `database` (String)
-- `fetch_rows` (Number)
-- `incremental_loading_enabled` (Boolean)
+- `connect_timeout` (Number) Connection timeout (sec)
+- `database` (String) database name
+- `fetch_rows` (Number) Number of records processed by the cursor at one time
+- `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
 - `input_option_columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--mysql_input_option--input_option_columns))
-- `mysql_connection_id` (Number)
-- `query` (String)
-- `socket_timeout` (Number)
+- `mysql_connection_id` (Number) ID of MySQL connection
+- `socket_timeout` (Number) Socket timeout (seconds)
 
 Optional:
 
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--mysql_input_option--custom_variable_settings))
-- `default_time_zone` (String)
-- `incremental_columns` (String)
-- `last_record` (String)
-- `table` (String)
-- `use_legacy_datetime_code` (Boolean)
+- `default_time_zone` (String) Default time zone. enter the server-side time zone setting for MySQL. If the time zone is set to Japan, enter “Asia/Tokyo”.
+- `incremental_columns` (String) Columns to determine incremental data
+- `last_record` (String) Last record transferred. The value of the column specified here is stored in “Last Transferred Record” for each transfer, and for the second and subsequent transfers, only records for which the value of the “Column for Determining Incremental Data” is greater than the value of the previous transfer (= “Last Transferred Record”) are transferred. If you wish to specify multiple columns, specify them separated by commas. If not specified, the primary key is used.
+- `query` (String) If you want to use all record loading, specify it.
+- `table` (String) table name. If you want to use incremental loading, specify it.
+- `use_legacy_datetime_code` (Boolean) Legacy time code setting. setting the useLegacyDatetimeCode option in the JDBC driver
 
 <a id="nestedatt--input_option--mysql_input_option--input_option_columns"></a>
 ### Nested Schema for `input_option.mysql_input_option.input_option_columns`
