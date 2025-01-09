@@ -136,6 +136,9 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				MarkdownDescription: "Input option type.",
 			},
 			"input_option": schema.SingleNestedAttribute{
@@ -656,6 +659,9 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				Required: true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
+				},
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: "Output option type.",
 			},
