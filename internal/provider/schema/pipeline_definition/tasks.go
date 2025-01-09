@@ -1,7 +1,7 @@
 package pipeline_definition
 
 import (
-	tpm "terraform-provider-trocco/internal/provider/planmodifier"
+	troccoListPlanModifier "terraform-provider-trocco/internal/provider/planmodifier/list"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -15,7 +15,7 @@ func Tasks() schema.Attribute {
 		MarkdownDescription: "The tasks of the workflow.",
 		Optional:            true,
 		PlanModifiers: []planmodifier.List{
-			tpm.UniqueStringAttributeValuePlanModifier{
+			troccoListPlanModifier.UniqueObjectAttributeValue{
 				AttributeName: "key",
 			},
 		},
