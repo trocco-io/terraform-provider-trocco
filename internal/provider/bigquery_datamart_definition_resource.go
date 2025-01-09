@@ -8,6 +8,8 @@ import (
 	"terraform-provider-trocco/internal/provider/models"
 
 	"terraform-provider-trocco/internal/client"
+	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
+	troccoValidator "terraform-provider-trocco/internal/provider/validator"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
@@ -128,7 +130,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						"name": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
-								wrappingDollarValidator{},
+								troccoValidator.WrappingDollarValidator{},
 							},
 							MarkdownDescription: "Custom variable name. It must start and end with `$`",
 						},
@@ -174,7 +176,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						},
 					},
 					PlanModifiers: []planmodifier.Object{
-						&customVariableSettingPlanModifier{},
+						&troccoPlanModifier.CustomVariableSettingPlanModifier{},
 					},
 				},
 			},
@@ -291,7 +293,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						},
 					},
 					PlanModifiers: []planmodifier.Object{
-						&schedulePlanModifier{},
+						&troccoPlanModifier.SchedulePlanModifier{},
 					},
 				},
 				MarkdownDescription: "Schedules to be attached to the datamart definition",
@@ -352,7 +354,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						},
 					},
 					PlanModifiers: []planmodifier.Object{
-						&datamartNotificationPlanModifier{},
+						&troccoPlanModifier.DatamartNotificationPlanModifier{},
 					},
 				},
 				MarkdownDescription: "Notifications to be attached to the datamart definition",

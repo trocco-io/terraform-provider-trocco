@@ -1,4 +1,4 @@
-package provider
+package validator
 
 import (
 	"context"
@@ -8,19 +8,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
-var _ validator.String = wrappingDollarValidator{}
+var _ validator.String = WrappingDollarValidator{}
 
-type wrappingDollarValidator struct{}
+type WrappingDollarValidator struct{}
 
-func (v wrappingDollarValidator) Description(ctx context.Context) string {
+func (v WrappingDollarValidator) Description(ctx context.Context) string {
 	return "value must start and end with `$`"
 }
 
-func (v wrappingDollarValidator) MarkdownDescription(ctx context.Context) string {
+func (v WrappingDollarValidator) MarkdownDescription(ctx context.Context) string {
 	return v.Description(ctx)
 }
 
-func (v wrappingDollarValidator) ValidateString(ctx context.Context, req validator.StringRequest, resp *validator.StringResponse) {
+func (v WrappingDollarValidator) ValidateString(ctx context.Context, req validator.StringRequest, resp *validator.StringResponse) {
 	if req.ConfigValue.IsUnknown() || req.ConfigValue.IsNull() {
 		return
 	}
