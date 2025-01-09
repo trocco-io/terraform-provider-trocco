@@ -314,7 +314,7 @@ Required:
 
 - `connection_id` (Number) The connection id to use for the task
 - `name` (String) The name of the task
-- `task_id` (String) The task id to use for the task
+- `task_id` (String) The Tableau task ID. You can get with the [Tableau API](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref.htm#list_extract_refresh_tasks1).
 
 
 <a id="nestedatt--tasks--trocco_azure_synapse_analytics_datamart_config"></a>

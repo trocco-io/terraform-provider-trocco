@@ -18,7 +18,7 @@ func TableauDataExtractionTaskConfig() schema.Attribute {
 				Required:            true,
 			},
 			"task_id": schema.StringAttribute{
-				MarkdownDescription: "The task id to use for the task",
+				MarkdownDescription: "The Tableau task ID. You can get with the [Tableau API](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref.htm#list_extract_refresh_tasks1).",
 				Required:            true,
 			},
 		},
