@@ -1,8 +1,10 @@
 resource "trocco_connection" "gcs" {
   connection_type = "gcs"
-  name            = "GCS Example"
-  description     = "This is a Google Cloud Storage(GCS) connection example"
 
+  name        = "GCS Example"
+  description = "This is a Google Cloud Storage(GCS) connection example"
+
+  project_id               = "example-project-id"
   service_account_json_key = <<JSON
   {
     "type": "service_account",
@@ -12,6 +14,5 @@ resource "trocco_connection" "gcs" {
   }
   JSON
   service_account_email    = "joe@example-project.iam.gserviceaccount.com"
-  project_id               = "example-project-id"
   application_name         = "example-application-name"
 }
