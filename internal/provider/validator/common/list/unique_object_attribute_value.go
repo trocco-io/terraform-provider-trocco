@@ -9,6 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+var _ validator.List = UniqueObjectAttributeValue{}
+
 type UniqueObjectAttributeValue struct {
 	AttributeName string
 }
@@ -26,6 +28,10 @@ func (v UniqueObjectAttributeValue) ValidateList(
 	req validator.ListRequest,
 	resp *validator.ListResponse,
 ) {
+	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
+		return
+	}
+
 	var objects []types.Object
 	if diags := req.ConfigValue.ElementsAs(ctx, &objects, false); diags.HasError() {
 		resp.Diagnostics.Append(diags...)

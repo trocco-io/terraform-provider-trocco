@@ -1,8 +1,7 @@
 package pipeline_definition
 
 import (
-	// troccoListPlanModifier "terraform-provider-trocco/internal/provider/planmodifier/list"
-	troccoListPlanValidator "terraform-provider-trocco/internal/provider/validator/list"
+	troccoListPlanValidator "terraform-provider-trocco/internal/provider/validator/common/list"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
