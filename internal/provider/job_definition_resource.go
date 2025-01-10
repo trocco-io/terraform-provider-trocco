@@ -115,10 +115,13 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 			"resource_enhancement": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				MarkdownDescription: "Resource size to be used when executing the job. If not specified, the resource size specified in the transfer settings is applied. The value that can be specified varies depending on the connector. (This parameter is available only in the Professional plan.",
 				Validators: []validator.String{
 					stringvalidator.OneOf("medium", "custom_spec", "large", "xlarge"),
 				},
-				MarkdownDescription: "Resource size to be used when executing the job. If not specified, the resource size specified in the transfer settings is applied. The value that can be specified varies depending on the connector. (This parameter is available only in the Professional plan.",
 			},
 			"is_runnable_concurrently": schema.BoolAttribute{
 				Required:            true,
@@ -826,9 +829,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								Optional: true,
 							},
 							"location": schema.StringAttribute{
-								Optional:      true,
-								Computed:      true,
-								PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+								Required: true,
 							},
 							"template_table": schema.StringAttribute{
 								Optional: true,
