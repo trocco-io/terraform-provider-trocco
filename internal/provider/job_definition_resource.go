@@ -212,7 +212,8 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								MarkdownDescription: "ID of MySQL connection",
 							},
 							"input_option_columns": schema.ListNestedAttribute{
-								Required: true,
+								Required:            true,
+								MarkdownDescription: "List of columns to be retrieved and their types",
 								NestedObject: schema.NestedAttributeObject{
 									Attributes: map[string]schema.Attribute{
 										"name": schema.StringAttribute{
@@ -220,9 +221,11 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 											Validators: []validator.String{
 												stringvalidator.UTF8LengthAtLeast(1),
 											},
+											MarkdownDescription: "Column name",
 										},
 										"type": schema.StringAttribute{
-											Required: true,
+											Required:            true,
+											MarkdownDescription: "Column type",
 											Validators: []validator.String{
 												stringvalidator.OneOf("boolean", "long", "timestamp", "double", "string", "json"),
 											},
@@ -296,10 +299,12 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 						},
 					},
 					"gcs_input_option": schema.SingleNestedAttribute{
-						Optional: true,
+						Optional:            true,
+						MarkdownDescription: "Attributes about source GCS",
 						Attributes: map[string]schema.Attribute{
 							"bucket": schema.StringAttribute{
-								Required: true,
+								Required:            true,
+								MarkdownDescription: "Bucket name",
 								Validators: []validator.String{
 									stringvalidator.UTF8LengthAtLeast(1),
 								},
@@ -309,44 +314,55 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								Validators: []validator.String{
 									stringvalidator.UTF8LengthAtLeast(1),
 								},
+								MarkdownDescription: "Path prefix",
 							},
 							"incremental_loading_enabled": schema.BoolAttribute{
-								Required: true,
+								Required:            true,
+								MarkdownDescription: "If it is true, to be incremental loading. If it is false, to be all record loading",
 							},
 							"last_path": schema.StringAttribute{
-								Optional: true,
+								Optional:            true,
+								MarkdownDescription: "Last path transferred. It is only enabled when incremental loading is true. When updating differences, data behind in lexicographic order from the path specified here is transferred. If the form is blank, the data is transferred from the beginning. Do not change this value unless there is a special reason. Duplicate data may occur.",
 							},
 							"stop_when_file_not_found": schema.BoolAttribute{
-								Required: true,
+								Required:            true,
+								MarkdownDescription: "Flag whether the transfer should continue if the file does not exist in the specified path",
 							},
 							"gcs_connection_id": schema.Int64Attribute{
-								Required: true,
+								Required:            true,
+								MarkdownDescription: "Id of GCS connection",
 								Validators: []validator.Int64{
 									int64validator.AtLeast(1),
 								},
 							},
 							"decompression_type": schema.StringAttribute{
-								Optional: true,
+								Optional:            true,
+								MarkdownDescription: "Decompression type",
 								Validators: []validator.String{
 									stringvalidator.OneOf("gzip", "bzip2", "zip", "targz"),
 								},
 							},
 							"parquet_parser": schema.SingleNestedAttribute{
-								Optional: true,
+								Optional:            true,
+								MarkdownDescription: "For files in parquet format, this parameter is required.",
 								Attributes: map[string]schema.Attribute{
 									"columns": schema.ListNestedAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "List of columns to be retrieved and their types",
 										NestedObject: schema.NestedAttributeObject{
 											Attributes: map[string]schema.Attribute{
 												"name": schema.StringAttribute{
-													Required: true,
+													Required:            true,
+													MarkdownDescription: "Column name",
 												},
 												"type": schema.StringAttribute{
-													Required:   true,
-													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+													Required:            true,
+													Validators:          []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+													MarkdownDescription: "Column type",
 												},
 												"format": schema.StringAttribute{
-													Optional: true,
+													Optional:            true,
+													MarkdownDescription: "Format of the column.",
 												},
 											},
 										},
@@ -354,30 +370,37 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								},
 							},
 							"jsonpath_parser": schema.SingleNestedAttribute{
-								Optional: true,
+								Optional:            true,
+								MarkdownDescription: "For files in jsonpath format, this parameter is required.",
 								Attributes: map[string]schema.Attribute{
 									"root": schema.StringAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "JSONPath",
 									},
 									"default_time_zone": schema.StringAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Default time zone",
 									},
 									"columns": schema.ListNestedAttribute{
 										Required: true,
 										NestedObject: schema.NestedAttributeObject{
 											Attributes: map[string]schema.Attribute{
 												"name": schema.StringAttribute{
-													Required: true,
+													Required:            true,
+													MarkdownDescription: "Column name",
 												},
 												"type": schema.StringAttribute{
-													Required:   true,
-													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+													Required:            true,
+													Validators:          []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+													MarkdownDescription: "Column type",
 												},
 												"time_zone": schema.StringAttribute{
-													Optional: true,
+													Optional:            true,
+													MarkdownDescription: "time zone",
 												},
 												"format": schema.StringAttribute{
-													Optional: true,
+													Optional:            true,
+													MarkdownDescription: "Format of the column.",
 												},
 											},
 										},
@@ -385,30 +408,37 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								},
 							},
 							"xml_parser": schema.SingleNestedAttribute{
-								Optional: true,
+								Optional:            true,
+								MarkdownDescription: "For files in xml format, this parameter is required.",
 								Attributes: map[string]schema.Attribute{
 									"root": schema.StringAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Root element",
 									},
 									"columns": schema.ListNestedAttribute{
 										Required: true,
 										NestedObject: schema.NestedAttributeObject{
 											Attributes: map[string]schema.Attribute{
 												"name": schema.StringAttribute{
-													Required: true,
+													Required:            true,
+													MarkdownDescription: "Column name",
 												},
 												"type": schema.StringAttribute{
-													Required:   true,
-													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+													Required:            true,
+													Validators:          []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+													MarkdownDescription: "Column type",
 												},
 												"path": schema.StringAttribute{
-													Required: true,
+													Required:            true,
+													MarkdownDescription: "XPath",
 												},
 												"timezone": schema.StringAttribute{
-													Optional: true,
+													Optional:            true,
+													MarkdownDescription: "time zone",
 												},
 												"format": schema.StringAttribute{
-													Optional: true,
+													Optional:            true,
+													MarkdownDescription: "Format of the column.",
 												},
 											},
 										},
@@ -416,34 +446,43 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								},
 							},
 							"excel_parser": schema.SingleNestedAttribute{
-								Optional: true,
+								MarkdownDescription: "For files in excel format, this parameter is required.",
+								Optional:            true,
 								Attributes: map[string]schema.Attribute{
 									"default_time_zone": schema.StringAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Default time zone",
 									},
 									"sheet_name": schema.StringAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Sheet name",
 									},
 									"skip_header_lines": schema.Int64Attribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Number of header lines to skip",
 									},
 									"columns": schema.ListNestedAttribute{
-										Required: true,
+										MarkdownDescription: "List of columns to be retrieved and their types",
+										Required:            true,
 										NestedObject: schema.NestedAttributeObject{
 											Attributes: map[string]schema.Attribute{
 												"name": schema.StringAttribute{
-													Required: true,
+													Required:            true,
+													MarkdownDescription: "Column name",
 												},
 												"type": schema.StringAttribute{
-													Required:   true,
-													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+													Required:            true,
+													Validators:          []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+													MarkdownDescription: "Column type",
 												},
 												"format": schema.StringAttribute{
-													Optional: true,
+													Optional:            true,
+													MarkdownDescription: "Format of the column.",
 												},
 												"formula_handling": schema.StringAttribute{
-													Required:   true,
-													Validators: []validator.String{stringvalidator.OneOf("cashed_value", "evaluate")},
+													Required:            true,
+													Validators:          []validator.String{stringvalidator.OneOf("cashed_value", "evaluate")},
+													MarkdownDescription: "Formula handling",
 												},
 											},
 										},
@@ -451,27 +490,34 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								},
 							},
 							"ltsv_parser": schema.SingleNestedAttribute{
-								Optional: true,
+								MarkdownDescription: "For files in LTSV format, this parameter is required.",
+								Optional:            true,
 								Attributes: map[string]schema.Attribute{
 									"newline": schema.StringAttribute{
-										Optional: true,
+										Optional:            true,
+										MarkdownDescription: "Newline character",
 									},
 									"charset": schema.StringAttribute{
-										Optional: true,
+										Optional:            true,
+										MarkdownDescription: "Character set",
 									},
 									"columns": schema.ListNestedAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "List of columns to be retrieved and their types",
 										NestedObject: schema.NestedAttributeObject{
 											Attributes: map[string]schema.Attribute{
 												"name": schema.StringAttribute{
-													Required: true,
+													Required:            true,
+													MarkdownDescription: "Column name",
 												},
 												"type": schema.StringAttribute{
-													Required:   true,
-													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean")},
+													Required:            true,
+													Validators:          []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean")},
+													MarkdownDescription: "Column type",
 												},
 												"format": schema.StringAttribute{
-													Optional: true,
+													Optional:            true,
+													MarkdownDescription: "Format of the column.",
 												},
 											},
 										},
@@ -479,36 +525,46 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								},
 							},
 							"jsonl_parser": schema.SingleNestedAttribute{
-								Optional: true,
+								Optional:            true,
+								MarkdownDescription: "For files in JSONL format, this parameter is required",
 								Attributes: map[string]schema.Attribute{
 									"stop_on_invalid_record": schema.BoolAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Flag whether the transfer should stop if an invalid record is found",
 									},
 									"default_time_zone": schema.StringAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Default time zone",
 									},
 									"newline": schema.StringAttribute{
-										Optional: true,
+										Optional:            true,
+										MarkdownDescription: "Newline character",
 									},
 									"charset": schema.StringAttribute{
-										Optional: true,
+										Optional:            true,
+										MarkdownDescription: "Character set",
 									},
 									"columns": schema.ListNestedAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "List of columns to be retrieved and their types",
 										NestedObject: schema.NestedAttributeObject{
 											Attributes: map[string]schema.Attribute{
 												"name": schema.StringAttribute{
-													Required: true,
+													Required:            true,
+													MarkdownDescription: "Column name",
 												},
 												"type": schema.StringAttribute{
-													Required:   true,
-													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean")},
+													Required:            true,
+													MarkdownDescription: "Column type",
+													Validators:          []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean")},
 												},
 												"time_zone": schema.StringAttribute{
-													Optional: true,
+													Optional:            true,
+													MarkdownDescription: "time zone",
 												},
 												"format": schema.StringAttribute{
-													Optional: true,
+													Optional:            true,
+													MarkdownDescription: "Format of the column",
 												},
 											},
 										},
@@ -516,47 +572,61 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								},
 							},
 							"csv_parser": schema.SingleNestedAttribute{
-								Optional: true,
+								Optional:            true,
+								MarkdownDescription: "For files in CSV format, this parameter is required",
 								Attributes: map[string]schema.Attribute{
 									"delimiter": schema.StringAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Delimiter",
 									},
 									"quote": schema.StringAttribute{
-										Optional: true,
+										Optional:            true,
+										MarkdownDescription: "Quote character",
 									},
 									"escape": schema.StringAttribute{
-										Optional: true,
+										Optional:            true,
+										MarkdownDescription: "Escape character",
 									},
 									"skip_header_lines": schema.Int64Attribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Number of header lines to skip",
 									},
 									"null_string_enabled": schema.BoolAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Flag whether or not to set the string to be replaced by NULL",
 									},
 									"null_string": schema.StringAttribute{
-										Optional: true,
+										Optional:            true,
+										MarkdownDescription: "Replacement source string to be converted to NULL",
 									},
 									"trim_if_not_quoted": schema.BoolAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Flag whether or not to remove spaces from the value if it is not quoted",
 									},
 									"quotes_in_quoted_fields": schema.StringAttribute{
-										Required:   true,
-										Validators: []validator.String{stringvalidator.OneOf("ACCEPT_ONLY_RFC4180_ESCAPED", "ACCEPT_STRAY_QUOTES_ASSUMING_NO_DELIMITERS_IN_FIELDS")},
+										Required:            true,
+										MarkdownDescription: "Processing method for irregular quarts",
+										Validators:          []validator.String{stringvalidator.OneOf("ACCEPT_ONLY_RFC4180_ESCAPED", "ACCEPT_STRAY_QUOTES_ASSUMING_NO_DELIMITERS_IN_FIELDS")},
 									},
 									"comment_line_marker": schema.StringAttribute{
-										Optional: true,
+										Optional:            true,
+										MarkdownDescription: "Comment line marker. Skip if this character is at the beginning of a line",
 									},
 									"allow_optional_columns": schema.BoolAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "If true, NULL-complete the missing columns. If false, treat as invalid record.",
 									},
 									"allow_extra_columns": schema.BoolAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "If true, ignore the column. If false, treat as invalid record.",
 									},
 									"max_quoted_size_limit": schema.Int64Attribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Maximum amount of data that can be enclosed in quotation marks.",
 									},
 									"stop_on_invalid_record": schema.BoolAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Flag whether or not to abort the transfer if an invalid record is found.",
 									},
 									"default_time_zone": schema.StringAttribute{
 										Required: true,
@@ -596,7 +666,8 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								Optional: true,
 								Attributes: map[string]schema.Attribute{
 									"match_name": schema.StringAttribute{
-										Optional: true,
+										Optional:            true,
+										MarkdownDescription: "Relative path after decompression (regular expression). If not entered, all data in the compressed file will be transferred.",
 									},
 								},
 							},
@@ -679,7 +750,8 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				Required: true,
 				Attributes: map[string]schema.Attribute{
 					"bigquery_output_option": schema.SingleNestedAttribute{
-						Optional: true,
+						Optional:            true,
+						MarkdownDescription: "Attributes of destination BigQuery settings",
 						Attributes: map[string]schema.Attribute{
 							"dataset": schema.StringAttribute{
 								Required: true,

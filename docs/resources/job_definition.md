@@ -139,7 +139,7 @@ Required:
 
 Optional:
 
-- `gcs_input_option` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
+- `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
 
 <a id="nestedatt--input_option--gcs_input_option"></a>
@@ -147,52 +147,52 @@ Optional:
 
 Required:
 
-- `bucket` (String)
-- `gcs_connection_id` (Number)
-- `incremental_loading_enabled` (Boolean)
-- `path_prefix` (String)
-- `stop_when_file_not_found` (Boolean)
+- `bucket` (String) Bucket name
+- `gcs_connection_id` (Number) Id of GCS connection
+- `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
+- `path_prefix` (String) Path prefix
+- `stop_when_file_not_found` (Boolean) Flag whether the transfer should continue if the file does not exist in the specified path
 
 Optional:
 
-- `csv_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--csv_parser))
+- `csv_parser` (Attributes) For files in CSV format, this parameter is required (see [below for nested schema](#nestedatt--input_option--gcs_input_option--csv_parser))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--custom_variable_settings))
 - `decoder` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--decoder))
-- `decompression_type` (String)
-- `excel_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--excel_parser))
-- `jsonl_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonl_parser))
-- `jsonpath_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonpath_parser))
-- `last_path` (String)
-- `ltsv_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--ltsv_parser))
-- `parquet_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--parquet_parser))
-- `xml_parser` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--xml_parser))
+- `decompression_type` (String) Decompression type
+- `excel_parser` (Attributes) For files in excel format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--gcs_input_option--excel_parser))
+- `jsonl_parser` (Attributes) For files in JSONL format, this parameter is required (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonl_parser))
+- `jsonpath_parser` (Attributes) For files in jsonpath format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonpath_parser))
+- `last_path` (String) Last path transferred. It is only enabled when incremental loading is true. When updating differences, data behind in lexicographic order from the path specified here is transferred. If the form is blank, the data is transferred from the beginning. Do not change this value unless there is a special reason. Duplicate data may occur.
+- `ltsv_parser` (Attributes) For files in LTSV format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--gcs_input_option--ltsv_parser))
+- `parquet_parser` (Attributes) For files in parquet format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--gcs_input_option--parquet_parser))
+- `xml_parser` (Attributes) For files in xml format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--gcs_input_option--xml_parser))
 
 <a id="nestedatt--input_option--gcs_input_option--csv_parser"></a>
 ### Nested Schema for `input_option.gcs_input_option.csv_parser`
 
 Required:
 
-- `allow_extra_columns` (Boolean)
-- `allow_optional_columns` (Boolean)
+- `allow_extra_columns` (Boolean) If true, ignore the column. If false, treat as invalid record.
+- `allow_optional_columns` (Boolean) If true, NULL-complete the missing columns. If false, treat as invalid record.
 - `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--csv_parser--columns))
 - `default_date` (String)
 - `default_time_zone` (String)
-- `delimiter` (String)
-- `max_quoted_size_limit` (Number)
+- `delimiter` (String) Delimiter
+- `max_quoted_size_limit` (Number) Maximum amount of data that can be enclosed in quotation marks.
 - `newline` (String)
-- `null_string_enabled` (Boolean)
-- `quotes_in_quoted_fields` (String)
-- `skip_header_lines` (Number)
-- `stop_on_invalid_record` (Boolean)
-- `trim_if_not_quoted` (Boolean)
+- `null_string_enabled` (Boolean) Flag whether or not to set the string to be replaced by NULL
+- `quotes_in_quoted_fields` (String) Processing method for irregular quarts
+- `skip_header_lines` (Number) Number of header lines to skip
+- `stop_on_invalid_record` (Boolean) Flag whether or not to abort the transfer if an invalid record is found.
+- `trim_if_not_quoted` (Boolean) Flag whether or not to remove spaces from the value if it is not quoted
 
 Optional:
 
 - `charset` (String)
-- `comment_line_marker` (String)
-- `escape` (String)
-- `null_string` (String)
-- `quote` (String)
+- `comment_line_marker` (String) Comment line marker. Skip if this character is at the beginning of a line
+- `escape` (String) Escape character
+- `null_string` (String) Replacement source string to be converted to NULL
+- `quote` (String) Quote character
 
 <a id="nestedatt--input_option--gcs_input_option--csv_parser--columns"></a>
 ### Nested Schema for `input_option.gcs_input_option.csv_parser.columns`
@@ -232,7 +232,7 @@ Optional:
 
 Optional:
 
-- `match_name` (String)
+- `match_name` (String) Relative path after decompression (regular expression). If not entered, all data in the compressed file will be transferred.
 
 
 <a id="nestedatt--input_option--gcs_input_option--excel_parser"></a>
@@ -240,23 +240,23 @@ Optional:
 
 Required:
 
-- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--excel_parser--columns))
-- `default_time_zone` (String)
-- `sheet_name` (String)
-- `skip_header_lines` (Number)
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--gcs_input_option--excel_parser--columns))
+- `default_time_zone` (String) Default time zone
+- `sheet_name` (String) Sheet name
+- `skip_header_lines` (Number) Number of header lines to skip
 
 <a id="nestedatt--input_option--gcs_input_option--excel_parser--columns"></a>
 ### Nested Schema for `input_option.gcs_input_option.excel_parser.columns`
 
 Required:
 
-- `formula_handling` (String)
-- `name` (String)
-- `type` (String)
+- `formula_handling` (String) Formula handling
+- `name` (String) Column name
+- `type` (String) Column type
 
 Optional:
 
-- `format` (String)
+- `format` (String) Format of the column.
 
 
 
@@ -265,27 +265,27 @@ Optional:
 
 Required:
 
-- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonl_parser--columns))
-- `default_time_zone` (String)
-- `stop_on_invalid_record` (Boolean)
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonl_parser--columns))
+- `default_time_zone` (String) Default time zone
+- `stop_on_invalid_record` (Boolean) Flag whether the transfer should stop if an invalid record is found
 
 Optional:
 
-- `charset` (String)
-- `newline` (String)
+- `charset` (String) Character set
+- `newline` (String) Newline character
 
 <a id="nestedatt--input_option--gcs_input_option--jsonl_parser--columns"></a>
 ### Nested Schema for `input_option.gcs_input_option.jsonl_parser.columns`
 
 Required:
 
-- `name` (String)
-- `type` (String)
+- `name` (String) Column name
+- `type` (String) Column type
 
 Optional:
 
-- `format` (String)
-- `time_zone` (String)
+- `format` (String) Format of the column
+- `time_zone` (String) time zone
 
 
 
@@ -295,21 +295,21 @@ Optional:
 Required:
 
 - `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonpath_parser--columns))
-- `default_time_zone` (String)
-- `root` (String)
+- `default_time_zone` (String) Default time zone
+- `root` (String) JSONPath
 
 <a id="nestedatt--input_option--gcs_input_option--jsonpath_parser--columns"></a>
 ### Nested Schema for `input_option.gcs_input_option.jsonpath_parser.columns`
 
 Required:
 
-- `name` (String)
-- `type` (String)
+- `name` (String) Column name
+- `type` (String) Column type
 
 Optional:
 
-- `format` (String)
-- `time_zone` (String)
+- `format` (String) Format of the column.
+- `time_zone` (String) time zone
 
 
 
@@ -318,24 +318,24 @@ Optional:
 
 Required:
 
-- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--ltsv_parser--columns))
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--gcs_input_option--ltsv_parser--columns))
 
 Optional:
 
-- `charset` (String)
-- `newline` (String)
+- `charset` (String) Character set
+- `newline` (String) Newline character
 
 <a id="nestedatt--input_option--gcs_input_option--ltsv_parser--columns"></a>
 ### Nested Schema for `input_option.gcs_input_option.ltsv_parser.columns`
 
 Required:
 
-- `name` (String)
-- `type` (String)
+- `name` (String) Column name
+- `type` (String) Column type
 
 Optional:
 
-- `format` (String)
+- `format` (String) Format of the column.
 
 
 
@@ -344,19 +344,19 @@ Optional:
 
 Required:
 
-- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--parquet_parser--columns))
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--gcs_input_option--parquet_parser--columns))
 
 <a id="nestedatt--input_option--gcs_input_option--parquet_parser--columns"></a>
 ### Nested Schema for `input_option.gcs_input_option.parquet_parser.columns`
 
 Required:
 
-- `name` (String)
-- `type` (String)
+- `name` (String) Column name
+- `type` (String) Column type
 
 Optional:
 
-- `format` (String)
+- `format` (String) Format of the column.
 
 
 
@@ -366,21 +366,21 @@ Optional:
 Required:
 
 - `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--xml_parser--columns))
-- `root` (String)
+- `root` (String) Root element
 
 <a id="nestedatt--input_option--gcs_input_option--xml_parser--columns"></a>
 ### Nested Schema for `input_option.gcs_input_option.xml_parser.columns`
 
 Required:
 
-- `name` (String)
-- `path` (String)
-- `type` (String)
+- `name` (String) Column name
+- `path` (String) XPath
+- `type` (String) Column type
 
 Optional:
 
-- `format` (String)
-- `timezone` (String)
+- `format` (String) Format of the column.
+- `timezone` (String) time zone
 
 
 
@@ -394,7 +394,7 @@ Required:
 - `database` (String) database name
 - `fetch_rows` (Number) Number of records processed by the cursor at one time
 - `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
-- `input_option_columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--mysql_input_option--input_option_columns))
+- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--mysql_input_option--input_option_columns))
 - `mysql_connection_id` (Number) ID of MySQL connection
 - `socket_timeout` (Number) Socket timeout (seconds)
 
@@ -413,8 +413,8 @@ Optional:
 
 Required:
 
-- `name` (String)
-- `type` (String)
+- `name` (String) Column name
+- `type` (String) Column type
 
 
 <a id="nestedatt--input_option--mysql_input_option--custom_variable_settings"></a>
@@ -442,7 +442,7 @@ Optional:
 
 Optional:
 
-- `bigquery_output_option` (Attributes) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
+- `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
 
 <a id="nestedatt--output_option--bigquery_output_option"></a>
 ### Nested Schema for `output_option.bigquery_output_option`
