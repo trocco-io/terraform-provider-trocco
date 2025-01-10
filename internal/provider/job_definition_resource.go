@@ -1322,46 +1322,46 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 }
 
 type jobDefinitionResourceModel struct {
-	ID                        types.Int64                                  `tfsdk:"id"`
-	Name                      types.String                                 `tfsdk:"name"`
-	Description               types.String                                 `tfsdk:"description"`
-	ResourceGroupID           types.Int64                                  `tfsdk:"resource_group_id"`
-	IsRunnableConcurrently    types.Bool                                   `tfsdk:"is_runnable_concurrently"`
-	RetryLimit                types.Int64                                  `tfsdk:"retry_limit"`
-	ResourceEnhancement       types.String                                 `tfsdk:"resource_enhancement"`
-	InputOptionType           types.String                                 `tfsdk:"input_option_type"`
-	InputOption               *job_definitions.InputOption                 `tfsdk:"input_option"`
-	OutputOptionType          types.String                                 `tfsdk:"output_option_type"`
-	OutputOption              *job_definitions.OutputOption                `tfsdk:"output_option"`
-	FilterColumns             []filter.FilterColumn                        `tfsdk:"filter_columns"`
-	FilterRows                *filter.FilterRows                           `tfsdk:"filter_rows"`
-	FilterMasks               []filter.FilterMask                          `tfsdk:"filter_masks"`
-	FilterAddTime             *filter.FilterAddTime                        `tfsdk:"filter_add_time"`
-	FilterGsub                []filter.FilterGsub                          `tfsdk:"filter_gsub"`
-	FilterStringTransforms    []filter.FilterStringTransform               `tfsdk:"filter_string_transforms"`
-	FilterHashes              []filter.FilterHash                          `tfsdk:"filter_hashes"`
-	FilterUnixTimeConversions []filter.FilterUnixTimeConversion            `tfsdk:"filter_unixtime_conversions"`
-	Notifications             *[]job_definitions.JobDefinitionNotification `tfsdk:"notifications"`
-	Schedules                 *[]models.Schedule                           `tfsdk:"schedules"`
-	Labels                    *[]models.LabelModel                         `tfsdk:"labels"`
+	ID                        types.Int64                                 `tfsdk:"id"`
+	Name                      types.String                                `tfsdk:"name"`
+	Description               types.String                                `tfsdk:"description"`
+	ResourceGroupID           types.Int64                                 `tfsdk:"resource_group_id"`
+	IsRunnableConcurrently    types.Bool                                  `tfsdk:"is_runnable_concurrently"`
+	RetryLimit                types.Int64                                 `tfsdk:"retry_limit"`
+	ResourceEnhancement       types.String                                `tfsdk:"resource_enhancement"`
+	InputOptionType           types.String                                `tfsdk:"input_option_type"`
+	InputOption               *job_definitions.InputOption                `tfsdk:"input_option"`
+	OutputOptionType          types.String                                `tfsdk:"output_option_type"`
+	OutputOption              *job_definitions.OutputOption               `tfsdk:"output_option"`
+	FilterColumns             []filter.FilterColumn                       `tfsdk:"filter_columns"`
+	FilterRows                *filter.FilterRows                          `tfsdk:"filter_rows"`
+	FilterMasks               []filter.FilterMask                         `tfsdk:"filter_masks"`
+	FilterAddTime             *filter.FilterAddTime                       `tfsdk:"filter_add_time"`
+	FilterGsub                []filter.FilterGsub                         `tfsdk:"filter_gsub"`
+	FilterStringTransforms    []filter.FilterStringTransform              `tfsdk:"filter_string_transforms"`
+	FilterHashes              []filter.FilterHash                         `tfsdk:"filter_hashes"`
+	FilterUnixTimeConversions []filter.FilterUnixTimeConversion           `tfsdk:"filter_unixtime_conversions"`
+	Notifications             []job_definitions.JobDefinitionNotification `tfsdk:"notifications"`
+	Schedules                 []models.Schedule                           `tfsdk:"schedules"`
+	Labels                    []models.LabelModel                         `tfsdk:"labels"`
 }
 
 func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.CreateJobDefinitionInput {
 	var labels []string
 	if model.Labels != nil {
-		for _, l := range *model.Labels {
+		for _, l := range model.Labels {
 			labels = append(labels, l.Name.ValueString())
 		}
 	}
 	var notifications []job_definitions2.JobDefinitionNotificationInput
 	if model.Notifications != nil {
-		for _, n := range *model.Notifications {
+		for _, n := range model.Notifications {
 			notifications = append(notifications, n.ToInput())
 		}
 	}
 	var schedules []parameters.ScheduleInput
 	if model.Schedules != nil {
-		for _, s := range *model.Schedules {
+		for _, s := range model.Schedules {
 			schedules = append(schedules, s.ToInput())
 		}
 	}
@@ -1478,20 +1478,20 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 func (model *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.UpdateJobDefinitionInput {
 	labels := []string{}
 	if model.Labels != nil {
-		for _, l := range *model.Labels {
+		for _, l := range model.Labels {
 			labels = append(labels, l.Name.ValueString())
 		}
 	}
 	notifications := []job_definitions2.JobDefinitionNotificationInput{}
 	if model.Notifications != nil {
-		for _, n := range *model.Notifications {
+		for _, n := range model.Notifications {
 			notifications = append(notifications, n.ToInput())
 		}
 	}
 
 	schedules := []parameters.ScheduleInput{}
 	if model.Schedules != nil {
-		for _, s := range *model.Schedules {
+		for _, s := range model.Schedules {
 			schedules = append(schedules, s.ToInput())
 		}
 	}

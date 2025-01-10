@@ -15,7 +15,7 @@ type Schedule struct {
 	TimeZone  types.String `tfsdk:"time_zone"`
 }
 
-func NewSchedules(schedules *[]entities.Schedule) *[]Schedule {
+func NewSchedules(schedules *[]entities.Schedule) []Schedule {
 	if schedules == nil {
 		return nil
 	}
@@ -31,7 +31,7 @@ func NewSchedules(schedules *[]entities.Schedule) *[]Schedule {
 		}
 		outputs = append(outputs, schedule)
 	}
-	return &outputs
+	return outputs
 }
 
 func (schedule Schedule) ToInput() parameters.ScheduleInput {

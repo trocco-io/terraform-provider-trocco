@@ -19,7 +19,7 @@ type JobDefinitionNotification struct {
 	Minutes          types.Int64  `tfsdk:"minutes"`
 }
 
-func NewJobDefinitionNotifications(jobDefinitionNotifications *[]job_definitions.JobDefinitionNotification) *[]JobDefinitionNotification {
+func NewJobDefinitionNotifications(jobDefinitionNotifications *[]job_definitions.JobDefinitionNotification) []JobDefinitionNotification {
 	if jobDefinitionNotifications == nil {
 		return nil
 	}
@@ -39,7 +39,7 @@ func NewJobDefinitionNotifications(jobDefinitionNotifications *[]job_definitions
 		}
 		notifications = append(notifications, notification)
 	}
-	return &notifications
+	return notifications
 }
 
 func (notification JobDefinitionNotification) ToInput() job_definitions2.JobDefinitionNotificationInput {

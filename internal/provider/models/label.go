@@ -10,7 +10,7 @@ type LabelModel struct {
 	Name types.String `tfsdk:"name"`
 }
 
-func NewLabels(labels *[]entities.Label) *[]LabelModel {
+func NewLabels(labels *[]entities.Label) []LabelModel {
 	if labels == nil {
 		return nil
 	}
@@ -23,5 +23,5 @@ func NewLabels(labels *[]entities.Label) *[]LabelModel {
 		}
 		outputs = append(outputs, label)
 	}
-	return &outputs
+	return outputs
 }
