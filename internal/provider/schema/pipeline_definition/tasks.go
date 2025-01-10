@@ -15,11 +15,6 @@ func Tasks() schema.Attribute {
 	return schema.ListNestedAttribute{
 		MarkdownDescription: "The tasks of the workflow.",
 		Optional:            true,
-		// PlanModifiers: []planmodifier.List{
-		// 	troccoListPlanModifier.UniqueObjectAttributeValue{
-		// 		AttributeName: "key",
-		// 	},
-		// },
 		Validators: []validator.List{
 			troccoListPlanValidator.UniqueObjectAttributeValue{
 				AttributeName: "key",
