@@ -295,7 +295,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 							},
 						},
 						PlanModifiers: []planmodifier.Object{
-							&mysqlInputOptionPlanModifier{},
+							&MysqlInputOptionPlanModifier{},
 						},
 					},
 					"gcs_input_option": schema.SingleNestedAttribute{

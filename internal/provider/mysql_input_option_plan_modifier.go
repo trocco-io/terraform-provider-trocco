@@ -7,19 +7,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ planmodifier.Object = &mysqlInputOptionPlanModifier{}
+var _ planmodifier.Object = &MysqlInputOptionPlanModifier{}
 
-type mysqlInputOptionPlanModifier struct{}
+type MysqlInputOptionPlanModifier struct{}
 
-func (d *mysqlInputOptionPlanModifier) Description(ctx context.Context) string {
+func (d *MysqlInputOptionPlanModifier) Description(ctx context.Context) string {
 	return "Modifier for validating schedule attributes"
 }
 
-func (d *mysqlInputOptionPlanModifier) MarkdownDescription(ctx context.Context) string {
+func (d *MysqlInputOptionPlanModifier) MarkdownDescription(ctx context.Context) string {
 	return d.Description(ctx)
 }
 
-func (d *mysqlInputOptionPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
+func (d *MysqlInputOptionPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
 	var lastRecord types.String
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("last_record"), &lastRecord)...)
 	if resp.Diagnostics.HasError() {
