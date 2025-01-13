@@ -23,7 +23,6 @@ type BigQueryOutputOptionInput struct {
 	Location                             string                                   `json:"location,omitempty"`
 	TemplateTable                        *parameters.NullableString               `json:"template_table,omitempty"`
 	BigQueryConnectionID                 int64                                    `json:"bigquery_connection_id"`
-	BeforeLoad                           string                                   `json:"before_load"`
 	BigQueryOutputOptionColumnOptions    *[]BigQueryOutputOptionColumnOptionInput `json:"bigquery_output_option_column_options,omitempty"`
 	BigQueryOutputOptionClusteringFields []string                                 `json:"bigquery_output_option_clustering_fields,omitempty"`
 	BigQueryOutputOptionMergeKeys        []string                                 `json:"bigquery_output_option_merge_keys,omitempty"`
@@ -48,7 +47,6 @@ type UpdateBigQueryOutputOptionInput struct {
 	Location                             *string                                  `json:"location,omitempty"`
 	TemplateTable                        *parameters.NullableString               `json:"template_table,omitempty"`
 	BigQueryConnectionID                 *int64                                   `json:"bigquery_connection_id,omitempty"`
-	BeforeLoad                           *string                                  `json:"before_load,omitempty"`
 	BigQueryOutputOptionColumnOptions    *[]BigQueryOutputOptionColumnOptionInput `json:"bigquery_output_option_column_options,omitempty"`
 	BigQueryOutputOptionClusteringFields *[]string                                `json:"bigquery_output_option_clustering_fields,omitempty"`
 	BigQueryOutputOptionMergeKeys        *[]string                                `json:"bigquery_output_option_merge_keys,omitempty"`

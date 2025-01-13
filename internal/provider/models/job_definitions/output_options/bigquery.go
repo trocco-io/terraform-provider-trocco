@@ -25,7 +25,6 @@ type BigQueryOutputOption struct {
 	Location                             types.String                        `tfsdk:"location"`
 	TemplateTable                        types.String                        `tfsdk:"template_table"`
 	BigQueryConnectionID                 types.Int64                         `tfsdk:"bigquery_connection_id"`
-	BeforeLoad                           types.String                        `tfsdk:"before_load"`
 	CustomVariableSettings               *[]models.CustomVariableSetting     `tfsdk:"custom_variable_settings"`
 	BigQueryOutputOptionColumnOptions    *[]bigQueryOutputOptionColumnOption `tfsdk:"bigquery_output_option_column_options"`
 	BigQueryOutputOptionClusteringFields *[]types.String                     `tfsdk:"bigquery_output_option_clustering_fields"`
@@ -64,7 +63,6 @@ func NewBigQueryOutputOption(bigQueryOutputOption *output_options.BigQueryOutput
 		TimePartitioningExpirationMs:         types.Int64PointerValue(bigQueryOutputOption.TimePartitioningExpirationMs),
 		Location:                             types.StringPointerValue(bigQueryOutputOption.Location),
 		TemplateTable:                        types.StringPointerValue(bigQueryOutputOption.TemplateTable),
-		BeforeLoad:                           types.StringValue(bigQueryOutputOption.BeforeLoad),
 		BigQueryConnectionID:                 types.Int64Value(bigQueryOutputOption.BigQueryConnectionID),
 		BigQueryOutputOptionColumnOptions:    newBigqueryOutputOptionColumnOptions(bigQueryOutputOption.BigQueryOutputOptionColumnOptions),
 		BigQueryOutputOptionClusteringFields: newBigQueryOutputOptionClusteringFields(bigQueryOutputOption.BigQueryOutputOptionClusteringFields),
@@ -155,7 +153,6 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.Big
 		Location:                             bigqueryOutputOption.Location.ValueString(),
 		TemplateTable:                        models.NewNullableString(bigqueryOutputOption.TemplateTable),
 		BigQueryConnectionID:                 bigqueryOutputOption.BigQueryConnectionID.ValueInt64(),
-		BeforeLoad:                           bigqueryOutputOption.BeforeLoad.ValueString(),
 		CustomVariableSettings:               models.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
 		BigQueryOutputOptionColumnOptions:    toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOption.BigQueryOutputOptionColumnOptions),
 		BigQueryOutputOptionClusteringFields: clusteringFields,
@@ -202,7 +199,6 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_option
 		Location:                             bigqueryOutputOption.Location.ValueStringPointer(),
 		TemplateTable:                        models.NewNullableString(bigqueryOutputOption.TemplateTable),
 		BigQueryConnectionID:                 bigqueryOutputOption.BigQueryConnectionID.ValueInt64Pointer(),
-		BeforeLoad:                           bigqueryOutputOption.BeforeLoad.ValueStringPointer(),
 		CustomVariableSettings:               models.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
 		BigQueryOutputOptionColumnOptions:    toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOption.BigQueryOutputOptionColumnOptions),
 		BigQueryOutputOptionClusteringFields: &clusteringFields,

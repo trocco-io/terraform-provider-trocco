@@ -16,6 +16,10 @@ type FilterMask struct {
 }
 
 func NewFilterMasks(filterMasks []filterEntities.FilterMask) []FilterMask {
+	if len(filterMasks) == 0 {
+		return nil
+	}
+
 	outputs := make([]FilterMask, 0, len(filterMasks))
 	for _, input := range filterMasks {
 		filterMask := FilterMask{

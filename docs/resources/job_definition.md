@@ -20,7 +20,6 @@ Provides a TROCCO job definitions.
 - `filter_columns` (Attributes List) (see [below for nested schema](#nestedatt--filter_columns))
 - `filter_gsub` (Attributes List) Filter gsub to be attached to the job definition (see [below for nested schema](#nestedatt--filter_gsub))
 - `filter_hashes` (Attributes List) (see [below for nested schema](#nestedatt--filter_hashes))
-- `filter_masks` (Attributes List) Filter masks to be attached to the job definition (see [below for nested schema](#nestedatt--filter_masks))
 - `filter_string_transforms` (Attributes List) (see [below for nested schema](#nestedatt--filter_string_transforms))
 - `filter_unixtime_conversions` (Attributes List) (see [below for nested schema](#nestedatt--filter_unixtime_conversions))
 - `input_option` (Attributes) (see [below for nested schema](#nestedatt--input_option))
@@ -35,6 +34,7 @@ Provides a TROCCO job definitions.
 
 - `description` (String) Description of the job definition. It must be at least 1 character
 - `filter_add_time` (Attributes) (see [below for nested schema](#nestedatt--filter_add_time))
+- `filter_masks` (Attributes List) Filter masks to be attached to the job definition (see [below for nested schema](#nestedatt--filter_masks))
 - `filter_rows` (Attributes) (see [below for nested schema](#nestedatt--filter_rows))
 - `labels` (Attributes Set) Labels to be attached to the job definition (see [below for nested schema](#nestedatt--labels))
 - `notifications` (Attributes Set) Notifications to be attached to the job definition (see [below for nested schema](#nestedatt--notifications))
@@ -95,22 +95,6 @@ Required:
 Required:
 
 - `name` (String)
-
-
-<a id="nestedatt--filter_masks"></a>
-### Nested Schema for `filter_masks`
-
-Required:
-
-- `mask_type` (String)
-- `name` (String)
-
-Optional:
-
-- `end_index` (Number)
-- `length` (Number)
-- `pattern` (String)
-- `start_index` (Number)
 
 
 <a id="nestedatt--filter_string_transforms"></a>
@@ -175,11 +159,11 @@ Required:
 - `allow_extra_columns` (Boolean) If true, ignore the column. If false, treat as invalid record.
 - `allow_optional_columns` (Boolean) If true, NULL-complete the missing columns. If false, treat as invalid record.
 - `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--csv_parser--columns))
-- `default_date` (String)
-- `default_time_zone` (String)
+- `default_date` (String) Default date
+- `default_time_zone` (String) Default time zone
 - `delimiter` (String) Delimiter
 - `max_quoted_size_limit` (Number) Maximum amount of data that can be enclosed in quotation marks.
-- `newline` (String)
+- `newline` (String) Newline character
 - `null_string_enabled` (Boolean) Flag whether or not to set the string to be replaced by NULL
 - `quotes_in_quoted_fields` (String) Processing method for irregular quarts
 - `skip_header_lines` (Number) Number of header lines to skip
@@ -188,7 +172,7 @@ Required:
 
 Optional:
 
-- `charset` (String)
+- `charset` (String) Character set
 - `comment_line_marker` (String) Comment line marker. Skip if this character is at the beginning of a line
 - `escape` (String) Escape character
 - `null_string` (String) Replacement source string to be converted to NULL
@@ -199,13 +183,13 @@ Optional:
 
 Required:
 
-- `name` (String)
-- `type` (String)
+- `name` (String) Column name
+- `type` (String) Column type
 
 Optional:
 
-- `date` (String)
-- `format` (String)
+- `date` (String) Date
+- `format` (String) Format of the column
 
 
 
@@ -449,46 +433,45 @@ Optional:
 
 Required:
 
-- `auto_create_dataset` (Boolean)
-- `auto_create_table` (Boolean)
-- `before_load` (String)
-- `bigquery_connection_id` (Number)
-- `bigquery_output_option_clustering_fields` (List of String)
-- `bigquery_output_option_merge_keys` (List of String)
-- `dataset` (String)
-- `mode` (String)
-- `open_timeout_sec` (Number)
-- `read_timeout_sec` (Number)
-- `retries` (Number)
-- `send_timeout_sec` (Number)
-- `table` (String)
-- `timeout_sec` (Number)
+- `auto_create_dataset` (Boolean) Option for automatic data set generation
+- `auto_create_table` (Boolean) Option for automatic table generation
+- `bigquery_connection_id` (Number) Id of BigQuery connection
+- `bigquery_output_option_clustering_fields` (List of String) Clustered column. Clustering can only be set when creating a new table. A maximum of four clustered columns can be specified.
+- `bigquery_output_option_merge_keys` (List of String) Merge key. The column to be used as the merge key.
+- `dataset` (String) Dataset name
+- `location` (String) Location
+- `mode` (String) Transfer mode
+- `open_timeout_sec` (Number) Timeout to start connection (seconds)
+- `read_timeout_sec` (Number) Read timeout (seconds)
+- `retries` (Number) Number of retries
+- `send_timeout_sec` (Number) Transmission timeout (sec)
+- `table` (String) Table name
+- `timeout_sec` (Number) Time out (seconds)
 
 Optional:
 
 - `bigquery_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--custom_variable_settings))
-- `location` (String)
-- `partitioning_type` (String)
-- `template_table` (String)
-- `time_partitioning_expiration_ms` (Number)
-- `time_partitioning_field` (String)
-- `time_partitioning_type` (String)
+- `partitioning_type` (String) Partitioning type. If params is null, No partitions. ingestion_time: Partitioning by acquisition time. time_unit_column: Partitioning by time unit column
+- `template_table` (String) Template table. Generate schema information for inclusion in Google BigQuery from schema information in this table
+- `time_partitioning_expiration_ms` (Number) Duration of partition(milliseconds). Duration of the partition (in milliseconds). There is no minimum value. The date of the partition plus this integer value is the expiration date. The default value is unspecified (keep forever).
+- `time_partitioning_field` (String) If partitioning_type is time_unit_column, this parameter is required
+- `time_partitioning_type` (String) Time partitioning type. If you specify anything for partitioning_type, this parameter is required
 
 <a id="nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options"></a>
 ### Nested Schema for `output_option.bigquery_output_option.bigquery_output_option_column_options`
 
 Required:
 
-- `mode` (String)
-- `name` (String)
-- `type` (String)
+- `mode` (String) Mode
+- `name` (String) Column name
+- `type` (String) Column type
 
 Optional:
 
-- `description` (String)
-- `timestamp_format` (String)
-- `timezone` (String)
+- `description` (String) Description
+- `timestamp_format` (String) Timestamp format
+- `timezone` (String) Time zone
 
 
 <a id="nestedatt--output_option--bigquery_output_option--custom_variable_settings"></a>
@@ -523,6 +506,22 @@ Optional:
 
 - `time_zone` (String)
 - `timestamp_format` (String)
+
+
+<a id="nestedatt--filter_masks"></a>
+### Nested Schema for `filter_masks`
+
+Required:
+
+- `mask_type` (String)
+- `name` (String)
+
+Optional:
+
+- `end_index` (Number)
+- `length` (Number)
+- `pattern` (String)
+- `start_index` (Number)
 
 
 <a id="nestedatt--filter_rows"></a>

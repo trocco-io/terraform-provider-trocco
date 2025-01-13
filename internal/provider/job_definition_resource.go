@@ -632,33 +632,48 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 										MarkdownDescription: "Flag whether or not to abort the transfer if an invalid record is found.",
 									},
 									"default_time_zone": schema.StringAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Default time zone",
 									},
 									"default_date": schema.StringAttribute{
-										Required: true,
+										Required:            true,
+										MarkdownDescription: "Default date",
 									},
 									"newline": schema.StringAttribute{
 										Required: true,
+										Validators: []validator.String{
+											stringvalidator.
+												OneOf(
+													"CRLF",
+													"LF",
+													"CR",
+												)},
+										MarkdownDescription: "Newline character",
 									},
 									"charset": schema.StringAttribute{
-										Optional: true,
+										Optional:            true,
+										MarkdownDescription: "Character set",
 									},
 									"columns": schema.ListNestedAttribute{
 										Required: true,
 										NestedObject: schema.NestedAttributeObject{
 											Attributes: map[string]schema.Attribute{
 												"name": schema.StringAttribute{
-													Required: true,
+													Required:            true,
+													MarkdownDescription: "Column name",
 												},
 												"type": schema.StringAttribute{
-													Required:   true,
-													Validators: []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean")},
+													Required:            true,
+													Validators:          []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean")},
+													MarkdownDescription: "Column type",
 												},
 												"format": schema.StringAttribute{
-													Optional: true,
+													Optional:            true,
+													MarkdownDescription: "Format of the column",
 												},
 												"date": schema.StringAttribute{
-													Optional: true,
+													Optional:            true,
+													MarkdownDescription: "Date",
 												},
 											},
 										},
@@ -761,120 +776,162 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 								Validators: []validator.String{
 									stringvalidator.UTF8LengthAtLeast(1),
 								},
+								MarkdownDescription: "Dataset name",
 							},
 							"table": schema.StringAttribute{
 								Required: true,
 								Validators: []validator.String{
 									stringvalidator.UTF8LengthAtLeast(1),
 								},
+								MarkdownDescription: "Table name",
 							},
 							"mode": schema.StringAttribute{
 								Required: true,
 								Validators: []validator.String{
 									stringvalidator.OneOf("append", "append_direct", "replace", "delete_in_advance", "merge"),
 								},
+								MarkdownDescription: "Transfer mode",
 							},
 							"auto_create_dataset": schema.BoolAttribute{
-								Required: true,
+								Required:            true,
+								MarkdownDescription: "Option for automatic data set generation",
 							},
 							"auto_create_table": schema.BoolAttribute{
-								Required: true,
+								Required:            true,
+								MarkdownDescription: "Option for automatic table generation",
 							},
 							"open_timeout_sec": schema.Int64Attribute{
 								Required: true,
 								Validators: []validator.Int64{
 									int64validator.AtLeast(1),
 								},
+								MarkdownDescription: "Timeout to start connection (seconds)",
 							},
 							"timeout_sec": schema.Int64Attribute{
 								Required: true,
 								Validators: []validator.Int64{
 									int64validator.AtLeast(1),
 								},
+								MarkdownDescription: "Time out (seconds)",
 							},
 							"send_timeout_sec": schema.Int64Attribute{
 								Required: true,
 								Validators: []validator.Int64{
 									int64validator.AtLeast(1),
 								},
+								MarkdownDescription: "Transmission timeout (sec)",
 							},
 							"read_timeout_sec": schema.Int64Attribute{
 								Required: true,
 								Validators: []validator.Int64{
 									int64validator.AtLeast(1),
 								},
+								MarkdownDescription: "Read timeout (seconds)",
 							},
 							"retries": schema.Int64Attribute{
 								Required: true,
 								Validators: []validator.Int64{
 									int64validator.AtLeast(1),
 								},
+								MarkdownDescription: "Number of retries",
 							},
 							"partitioning_type": schema.StringAttribute{
 								Optional: true,
 								Validators: []validator.String{
 									stringvalidator.OneOf("ingestion_time", "time_unit_column"),
 								},
+								MarkdownDescription: "Partitioning type. If params is null, No partitions. ingestion_time: Partitioning by acquisition time. time_unit_column: Partitioning by time unit column",
 							},
 							"time_partitioning_type": schema.StringAttribute{
 								Optional: true,
 								Validators: []validator.String{
 									stringvalidator.OneOf("HOUR", "DAY", "MONTH", "YEAR"),
 								},
+								MarkdownDescription: "Time partitioning type. If you specify anything for partitioning_type, this parameter is required",
 							},
 							"time_partitioning_field": schema.StringAttribute{
-								Optional: true,
+								Optional:            true,
+								MarkdownDescription: "If partitioning_type is time_unit_column, this parameter is required",
 							},
 							"time_partitioning_expiration_ms": schema.Int64Attribute{
-								Optional: true,
+								Optional:            true,
+								MarkdownDescription: "Duration of partition(milliseconds). Duration of the partition (in milliseconds). There is no minimum value. The date of the partition plus this integer value is the expiration date. The default value is unspecified (keep forever).",
 							},
 							"location": schema.StringAttribute{
-								Required: true,
+								Required:            true,
+								MarkdownDescription: "Location",
 							},
 							"template_table": schema.StringAttribute{
-								Optional: true,
+								Optional:            true,
+								MarkdownDescription: "Template table. Generate schema information for inclusion in Google BigQuery from schema information in this table",
 							},
 							"bigquery_connection_id": schema.Int64Attribute{
 								Required: true,
 								Validators: []validator.Int64{
 									int64validator.AtLeast(1),
 								},
-							},
-							"before_load": schema.StringAttribute{
-								Required: true,
+								MarkdownDescription: "Id of BigQuery connection",
 							},
 							"bigquery_output_option_column_options": schema.ListNestedAttribute{
 								Optional: true,
 								NestedObject: schema.NestedAttributeObject{
 									Attributes: map[string]schema.Attribute{
 										"name": schema.StringAttribute{
-											Required: true,
+											Required:            true,
+											MarkdownDescription: "Column name",
 										},
 										"type": schema.StringAttribute{
 											Required: true,
+											Validators: []validator.String{
+												stringvalidator.OneOf(
+													"BOOLEAN",
+													"INTEGER",
+													"FLOAT",
+													"STRING",
+													"TIMESTAMP",
+													"DATETIME",
+													"DATE",
+													"RECORD",
+													"NUMERIC",
+												),
+											},
+											MarkdownDescription: "Column type",
 										},
 										"mode": schema.StringAttribute{
 											Required: true,
+											Validators: []validator.String{
+												stringvalidator.OneOf(
+													"NULLABLE",
+													"REQUIRED",
+													"REPEATED",
+												),
+											},
+											MarkdownDescription: "Mode",
 										},
 										"timestamp_format": schema.StringAttribute{
-											Optional: true,
+											Optional:            true,
+											MarkdownDescription: "Timestamp format",
 										},
 										"timezone": schema.StringAttribute{
-											Optional: true,
+											Optional:            true,
+											MarkdownDescription: "Time zone",
 										},
 										"description": schema.StringAttribute{
-											Optional: true,
+											Optional:            true,
+											MarkdownDescription: "Description",
 										},
 									},
 								},
 							},
 							"bigquery_output_option_clustering_fields": schema.ListAttribute{
-								Required:    true,
-								ElementType: types.StringType,
+								Required:            true,
+								ElementType:         types.StringType,
+								MarkdownDescription: "Clustered column. Clustering can only be set when creating a new table. A maximum of four clustered columns can be specified.",
 							},
 							"bigquery_output_option_merge_keys": schema.ListAttribute{
-								Required:    true,
-								ElementType: types.StringType,
+								Required:            true,
+								ElementType:         types.StringType,
+								MarkdownDescription: "Merge key. The column to be used as the merge key.",
 							},
 							"custom_variable_settings": schema.ListNestedAttribute{
 								Optional: true,
@@ -1042,7 +1099,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				},
 			},
 			"filter_masks": schema.ListNestedAttribute{
-				Required: true,
+				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{

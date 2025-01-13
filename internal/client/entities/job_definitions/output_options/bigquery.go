@@ -21,7 +21,6 @@ type BigQueryOutputOption struct {
 	Location                             *string                             `json:"location"`
 	TemplateTable                        *string                             `json:"template_table"`
 	BigQueryConnectionID                 int64                               `json:"bigquery_connection_id"`
-	BeforeLoad                           string                              `json:"before_load"`
 	BigQueryOutputOptionColumnOptions    *[]BigQueryOutputOptionColumnOption `json:"bigquery_output_option_column_options"`
 	BigQueryOutputOptionClusteringFields *[]string                           `json:"bigquery_output_option_clustering_fields"`
 	BigQueryOutputOptionMergeKeys        *[]string                           `json:"bigquery_output_option_merge_keys"`
