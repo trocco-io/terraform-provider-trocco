@@ -1,5 +1,5 @@
 resource "trocco_job_definition" "labels" {
-  labels                      = [
+  labels = [
     {
       name = "aaa"
     }

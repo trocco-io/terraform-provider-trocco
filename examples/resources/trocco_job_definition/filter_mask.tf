@@ -1,5 +1,5 @@
 resource "trocco_job_definition" "filter_mask_example" {
-  filter_masks                = [
+  filter_masks = [
     {
       name      = "mask_all_string_col"
       mask_type = "all"

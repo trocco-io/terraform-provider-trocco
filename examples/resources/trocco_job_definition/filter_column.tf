@@ -1,9 +1,9 @@
 
 resource "trocco_job_definition" "filter_column_example" {
-  filter_columns              = [
+  filter_columns = [
     {
       default                      = ""
-      format = "%Y"
+      format                       = "%Y"
       json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
@@ -37,7 +37,7 @@ resource "trocco_job_definition" "filter_column_example" {
       name                         = "json_col"
       src                          = "json_src"
       type                         = "json"
-      json_expand_columns          = [
+      json_expand_columns = [
         {
           json_path = "person.name"
           name      = "json_expand_col"

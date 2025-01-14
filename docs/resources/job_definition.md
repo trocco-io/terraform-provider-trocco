@@ -15,14 +15,14 @@ Provides a TROCCO job definitions.
 
 ```terraform
 resource "trocco_job_definition" "general_example" {
-  name                        = "example tranfer"
-  description                 = "example description"
-  resource_group_id           = 1
-  retry_limit                 = 1
-  is_runnable_concurrently    = true
+  name                     = "example tranfer"
+  description              = "example description"
+  resource_group_id        = 1
+  retry_limit              = 1
+  is_runnable_concurrently = true
 
   # if your account is professional
-  resource_enhancement        = "medium"
+  resource_enhancement = "medium"
 }
 ```
 
@@ -30,10 +30,10 @@ resource "trocco_job_definition" "general_example" {
 
 ```terraform
 resource "trocco_job_definition" "filter_column_example" {
-  filter_columns              = [
+  filter_columns = [
     {
       default                      = ""
-      format = "%Y"
+      format                       = "%Y"
       json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
@@ -67,7 +67,7 @@ resource "trocco_job_definition" "filter_column_example" {
       name                         = "json_col"
       src                          = "json_src"
       type                         = "json"
-      json_expand_columns          = [
+      json_expand_columns = [
         {
           json_path = "person.name"
           name      = "json_expand_col"
@@ -84,8 +84,8 @@ resource "trocco_job_definition" "filter_column_example" {
 
 ```terraform
 resource "trocco_job_definition" "filter_row_example" {
-  filter_rows                 = {
-    condition             = "or"
+  filter_rows = {
+    condition = "or"
     filter_row_conditions = [
       {
         argument = "2"
@@ -101,7 +101,7 @@ resource "trocco_job_definition" "filter_row_example" {
 
 ```terraform
 resource "trocco_job_definition" "filter_mask_example" {
-  filter_masks                = [
+  filter_masks = [
     {
       name      = "mask_all_string_col"
       mask_type = "all"
@@ -133,7 +133,7 @@ resource "trocco_job_definition" "filter_mask_example" {
 
 ```terraform
 resource "trocco_job_definition" "filter_add_time_example" {
-  filter_add_time             = {
+  filter_add_time = {
     column_name      = "time"
     time_zone        = "Asia/Tokyo"
     timestamp_format = "%Y-%m-%d %H:%M:%S.%N"
@@ -146,7 +146,7 @@ resource "trocco_job_definition" "filter_add_time_example" {
 
 ```terraform
 resource "trocco_job_definition" "filter_gsub_example" {
-  filter_gsub                 = [
+  filter_gsub = [
     {
       column_name = "regex_col"
       pattern     = "/regex/"
@@ -161,7 +161,7 @@ resource "trocco_job_definition" "filter_gsub_example" {
 
 ```terraform
 resource "trocco_job_definition" "filter_string_transform_example" {
-  filter_string_transforms                 = [
+  filter_string_transforms = [
     {
       column_name = "transform_col"
       type        = "normalize_nfkc"
@@ -174,7 +174,7 @@ resource "trocco_job_definition" "filter_string_transform_example" {
 
 ```terraform
 resource "trocco_job_definition" "filter_hash_example" {
-  filter_hashes                 = [
+  filter_hashes = [
     {
       name = "hash_col"
     }
@@ -224,10 +224,10 @@ resource "trocco_job_definition" "filter_unixtime_conversion_example" {
 ```terraform
 resource "trocco_job_definition" "csv_parser_example" {
 
-  input_option                  = {
+  input_option = {
     # The example is gcs, but it can be applied to file-based input.
-    gcs_input_option            = {
-      csv_parser              = {
+    gcs_input_option = {
+      csv_parser = {
         delimiter               = ","
         quote                   = "\""
         escape                  = "\""
@@ -245,23 +245,23 @@ resource "trocco_job_definition" "csv_parser_example" {
         default_date            = "1970-01-01"
         newline                 = "CRLF"
         charset                 = "UTF-8"
-        columns                 = [
+        columns = [
           {
-            name                = "id"
-            type                = "long"
+            name = "id"
+            type = "long"
           },
           {
-            name                = "num_col"
-            type                = "long"
+            name = "num_col"
+            type = "long"
           },
           {
-            name                = "str_col"
-            type                = "string"
+            name = "str_col"
+            type = "string"
           },
           {
-            name                = "date_col"
-            type                = "timestamp"
-            format              = "%Y-%m-%d %H:%M:%S.%N %z"
+            name   = "date_col"
+            type   = "timestamp"
+            format = "%Y-%m-%d %H:%M:%S.%N %z"
           }
         ]
       }
@@ -275,27 +275,27 @@ resource "trocco_job_definition" "csv_parser_example" {
 ```terraform
 resource "trocco_job_definition" "jsonl_parser_example" {
 
-  input_option                  = {
+  input_option = {
     # The example is gcs, but it can be applied to file-based input.
-    gcs_input_option            = {
-      "jsonl_parser"            = {
+    gcs_input_option = {
+      "jsonl_parser" = {
         stop_on_invalid_record = true
         default_time_zone      = "UTC"
         newline                = "LF"
         charset                = "UTF-8"
-        columns                 = [
+        columns = [
           {
-            name                = "id"
-            type                = "long"
+            name = "id"
+            type = "long"
           },
           {
-            name                = "str_col"
-            type                = "string"
+            name = "str_col"
+            type = "string"
           },
           {
-            name                = "date_col"
-            type                = "timestamp"
-            format              = "%Y-%m-%d %H:%M:%S.%N %z"
+            name   = "date_col"
+            type   = "timestamp"
+            format = "%Y-%m-%d %H:%M:%S.%N %z"
           }
         ]
       }
@@ -310,24 +310,24 @@ resource "trocco_job_definition" "jsonl_parser_example" {
 ```terraform
 resource "trocco_job_definition" "ltsv_parser_example" {
 
-  input_option                  = {
+  input_option = {
     # The example is gcs, but it can be applied to file-based input.
-    gcs_input_option            = {
-      "ltsv_parser"            = {
-        newline                = "CRLF"
-        charset                = "UTF-8"
-        columns                 = [
+    gcs_input_option = {
+      "ltsv_parser" = {
+        newline = "CRLF"
+        charset = "UTF-8"
+        columns = [
           {
-            name                = "id"
-            type                = "long"
+            name = "id"
+            type = "long"
           },
           {
-            name                = "str_col"
-            type                = "string"
+            name = "str_col"
+            type = "string"
           },
           {
-            name                = "date_col",
-            type                = "timestamp"
+            name = "date_col",
+            type = "timestamp"
           }
         ]
       }
@@ -341,29 +341,29 @@ resource "trocco_job_definition" "ltsv_parser_example" {
 ```terraform
 resource "trocco_job_definition" "excel_parser_example" {
 
-  input_option                  = {
+  input_option = {
     # The example is gcs, but it can be applied to file-based input.
-    gcs_input_option            = {
-      "excel_parser"            = {
-        default_time_zone       = "Asia/Tokyo"
-        sheet_name              = "Sheet1"
-        skip_header_lines       = 1
-        columns                 = [
+    gcs_input_option = {
+      "excel_parser" = {
+        default_time_zone = "Asia/Tokyo"
+        sheet_name        = "Sheet1"
+        skip_header_lines = 1
+        columns = [
           {
-            name                = "id"
-            type                = "long"
-            formula_handling    = "cashed_value"
+            name             = "id"
+            type             = "long"
+            formula_handling = "cashed_value"
           },
           {
-            name                = "str_col"
-            type                = "string"
-            formula_handling    = "cashed_value"
+            name             = "str_col"
+            type             = "string"
+            formula_handling = "cashed_value"
           },
           {
-            name                = "date_col"
-            type                = "timestamp"
-            formula_handling    = "evaluate"
-            format              = "%Y %m %d"
+            name             = "date_col"
+            type             = "timestamp"
+            formula_handling = "evaluate"
+            format           = "%Y %m %d"
           }
         ]
       }
@@ -377,27 +377,27 @@ resource "trocco_job_definition" "excel_parser_example" {
 ```terraform
 resource "trocco_job_definition" "xml_parser_example" {
 
-  input_option                  = {
+  input_option = {
     # The example is gcs, but it can be applied to file-based input.
-    gcs_input_option            = {
-      "xml_parser"            = {
-        root                    = "root"
-        columns                 = [
+    gcs_input_option = {
+      "xml_parser" = {
+        root = "root"
+        columns = [
           {
-            name                = "long_col"
-            type                = "long"
-            path                = "path/to/long_col"
+            name = "long_col"
+            type = "long"
+            path = "path/to/long_col"
           },
           {
-            name                = "str_col"
-            type                = "string"
-            path                = "path/to/str_col"
+            name = "str_col"
+            type = "string"
+            path = "path/to/str_col"
           },
           {
-            name                = "timestamp_col"
-            type                = "timestamp"
-            format              = "%Y-%m-%d %H:%M:%S.%N %z"
-            timezone            = "UTC"
+            name     = "timestamp_col"
+            type     = "timestamp"
+            format   = "%Y-%m-%d %H:%M:%S.%N %z"
+            timezone = "UTC"
           }
         ]
       }
@@ -412,25 +412,25 @@ resource "trocco_job_definition" "xml_parser_example" {
 ```terraform
 resource "trocco_job_definition" "jsonpath_parser_example" {
 
-  input_option                  = {
+  input_option = {
     # The example is gcs, but it can be applied to file-based input.
-    gcs_input_option            = {
-      "jsonpath_parser"            = {
-        root                    = "$root"
-        default_time_zone       = "UTC"
-        columns                 = [
+    gcs_input_option = {
+      "jsonpath_parser" = {
+        root              = "$root"
+        default_time_zone = "UTC"
+        columns = [
           {
-            name                = "long_col"
-            type                = "long"
+            name = "long_col"
+            type = "long"
           },
           {
-            name                = "str_col"
-            type                = "string"
+            name = "str_col"
+            type = "string"
           },
           {
-            name                = "timestamp_col"
-            type                = "timestamp"
-            format              = "%Y-%m-%d %H:%M:%S.%N %z"
+            name   = "timestamp_col"
+            type   = "timestamp"
+            format = "%Y-%m-%d %H:%M:%S.%N %z"
           }
         ]
       }
@@ -444,23 +444,23 @@ resource "trocco_job_definition" "jsonpath_parser_example" {
 ```terraform
 resource "trocco_job_definition" "parquet_parser_example" {
 
-  input_option                  = {
+  input_option = {
     # The example is gcs, but it can be applied to file-based input.
-    gcs_input_option            = {
-      "parquet_parser"            = {
-        columns                 = [
+    gcs_input_option = {
+      "parquet_parser" = {
+        columns = [
           {
-            name                = "long_col"
-            type                = "long"
+            name = "long_col"
+            type = "long"
           },
           {
-            name                = "str_col"
-            type                = "string"
+            name = "str_col"
+            type = "string"
           },
           {
-            name                = "timestamp_col"
-            type                = "timestamp"
-            format              = "%Y-%m-%d %H:%M:%S.%N %z"
+            name   = "timestamp_col"
+            type   = "timestamp"
+            format = "%Y-%m-%d %H:%M:%S.%N %z"
           }
         ]
       }
@@ -474,11 +474,11 @@ resource "trocco_job_definition" "parquet_parser_example" {
 ```terraform
 resource "trocco_job_definition" "decoder_example" {
 
-  input_option                  = {
+  input_option = {
     # The example is gcs, but it can be applied to file-based input.
-    gcs_input_option            = {
-      decoder            = {
-        match_name       = "regex"
+    gcs_input_option = {
+      decoder = {
+        match_name = "regex"
       }
     }
   }
@@ -491,8 +491,8 @@ resource "trocco_job_definition" "decoder_example" {
 
 ```terraform
 resource "trocco_job_definition" "mysql_input_example" {
-  input_option_type             = "mysql"
-  input_option                  = {
+  input_option_type = "mysql"
+  input_option = {
     mysql_input_option = {
       connect_timeout             = 300
       socket_timeout              = 1801
@@ -502,7 +502,7 @@ resource "trocco_job_definition" "mysql_input_example" {
       default_time_zone           = "Asia/Tokyo"
       use_legacy_datetime_code    = false
       mysql_connection_id         = 1 # require your mysql connection id
-      input_option_columns        = [
+      input_option_columns = [
         {
           name = "id"
           type = "long"
@@ -520,7 +520,7 @@ resource "trocco_job_definition" "mysql_input_example" {
           type = "timestamp"
         },
       ]
-      query                       = <<-EOT
+      query = <<-EOT
                 select
                     *
                 from
@@ -535,54 +535,54 @@ resource "trocco_job_definition" "mysql_input_example" {
 
 ```terraform
 resource "trocco_job_definition" "gcs_input_example" {
-  input_option_type             = "gcs"
-  input_option                  = {
-      gcs_input_option = {
-        bucket                      = "test-bucket"
-        path_prefix                 = "path/to/your_file.csv"
-        gcs_connection_id           = 1 # require your gcs connection id
-        incremental_loading_enabled = false
-        stop_when_file_not_found    = true
-        csv_parser = {
-          delimiter               = ","
-          skip_header_lines       = 1
-          trim_if_not_quoted      = false
-          quotes_in_quoted_fields = "ACCEPT_ONLY_RFC4180_ESCAPED"
-          allow_extra_columns     = false
-          allow_optional_columns  = false
-          stop_on_invalid_record  = true
-          default_date            = "1970-01-01"
-          default_time_zone       = "UTC"
-          newline                 = "CRLF"
-          max_quoted_size_limit   = 131072
-          null_string_enabled     = false
-          quote  = "\""
-          escape = "\""
-          null_string         = ""
-          comment_line_marker = ""
-          charset             = "UTF-8"
-          columns = [
-            {
-              name   = "id"
-              type   = "long"
-            },
-            {
-              name = "num_col"
-              type = "long"
-            },
-            {
-              name = "str_col"
-              type = "string"
-            },
-            {
-              name   = "date_col"
-              type   = "timestamp"
-              format = "%Y-%m-%d %H:%M:%S.%N %z"
-            },
-          ]
-        }
+  input_option_type = "gcs"
+  input_option = {
+    gcs_input_option = {
+      bucket                      = "test-bucket"
+      path_prefix                 = "path/to/your_file.csv"
+      gcs_connection_id           = 1 # require your gcs connection id
+      incremental_loading_enabled = false
+      stop_when_file_not_found    = true
+      csv_parser = {
+        delimiter               = ","
+        skip_header_lines       = 1
+        trim_if_not_quoted      = false
+        quotes_in_quoted_fields = "ACCEPT_ONLY_RFC4180_ESCAPED"
+        allow_extra_columns     = false
+        allow_optional_columns  = false
+        stop_on_invalid_record  = true
+        default_date            = "1970-01-01"
+        default_time_zone       = "UTC"
+        newline                 = "CRLF"
+        max_quoted_size_limit   = 131072
+        null_string_enabled     = false
+        quote                   = "\""
+        escape                  = "\""
+        null_string             = ""
+        comment_line_marker     = ""
+        charset                 = "UTF-8"
+        columns = [
+          {
+            name = "id"
+            type = "long"
+          },
+          {
+            name = "num_col"
+            type = "long"
+          },
+          {
+            name = "str_col"
+            type = "string"
+          },
+          {
+            name   = "date_col"
+            type   = "timestamp"
+            format = "%Y-%m-%d %H:%M:%S.%N %z"
+          },
+        ]
       }
     }
+  }
 }
 ```
 
@@ -592,26 +592,26 @@ resource "trocco_job_definition" "gcs_input_example" {
 
 ```terraform
 resource "trocco_job_definition" "bigquery_output_example" {
-  output_option_type             = "bigquery"
-  output_option               = {
+  output_option_type = "bigquery"
+  output_option = {
     bigquery_output_option = {
-      dataset                                    = "test_dataset"
-      table                                      = "test_table"
-      mode                                       = "merge"
-      auto_create_dataset                        = true
-      auto_create_table                          = false
-      timeout_sec                                = 300
-      open_timeout_sec                           = 300
-      read_timeout_sec                           = 300
-      send_timeout_sec                           = 300
-      retries                                    = 0
-      bigquery_connection_id                     = 1 # require your bigquery connection id
-      partitioning_type                          = "time_unit_column"
-      time_partitioning_type                     = "DAY"
-      time_partitioning_field                    = "created_at"
-      time_partitioning_expiration_ms            = 10000
-      location                                   = "US"
-      bigquery_output_option_merge_keys        = [
+      dataset                         = "test_dataset"
+      table                           = "test_table"
+      mode                            = "merge"
+      auto_create_dataset             = true
+      auto_create_table               = false
+      timeout_sec                     = 300
+      open_timeout_sec                = 300
+      read_timeout_sec                = 300
+      send_timeout_sec                = 300
+      retries                         = 0
+      bigquery_connection_id          = 1 # require your bigquery connection id
+      partitioning_type               = "time_unit_column"
+      time_partitioning_type          = "DAY"
+      time_partitioning_field         = "created_at"
+      time_partitioning_expiration_ms = 10000
+      location                        = "US"
+      bigquery_output_option_merge_keys = [
         "id"
       ]
     }
@@ -624,7 +624,7 @@ resource "trocco_job_definition" "bigquery_output_example" {
 
 ```terraform
 resource "trocco_job_definition" "labels" {
-  labels                      = [
+  labels = [
     {
       name = "aaa"
     }
@@ -637,68 +637,68 @@ resource "trocco_job_definition" "labels" {
 
 ```terraform
 resource "trocco_job_definition" "notifications" {
-    notifications               = [
-      {
-        destination_type  = "email"
-        email_id          = 1 # require your email id
-        message           = "email failed"
-        notification_type = "job"
-        notify_when       = "failed"
-      },
-      {
-        destination_type  = "email"
-        email_id          = 1 # require your email id
-        message           = "email1"
-        notification_type = "job"
-        notify_when       = "finished"
-      },
-      {
-        destination_type  = "email"
-        email_id          = 1 # require your email id
-        message           = "record count email skipped"
-        notification_type = "record"
-        record_count      = 10
-        record_operator   = "below"
-        record_type       = "skipped"
-      },
-      {
-        destination_type  = "email"
-        email_id          = 1 # require your email id
-        message           = "time alert email"
-        minutes           = 10
-        notification_type = "exec_time"
-      },
-      {
-        destination_type  = "slack"
-        message           = "record count slack transfer"
-        notification_type = "record"
-        record_count      = 10
-        record_operator   = "below"
-        record_type       = "transfer"
-        slack_channel_id  = 1 # require your slack id
-      },
-      {
-        destination_type  = "slack"
-        message           = "slack 1"
-        notification_type = "job"
-        notify_when       = "finished"
-        slack_channel_id  = 1 # require your slack id
-      },
-      {
-        destination_type  = "slack"
-        message           = "slack failed"
-        notification_type = "job"
-        notify_when       = "failed"
-        slack_channel_id  = 1 # require your slack id
-      },
-      {
-        destination_type  = "slack"
-        message           = "time alert slack"
-        minutes           = 10
-        notification_type = "exec_time"
-        slack_channel_id  = 1 # require your slack id
-      },
-    ]
+  notifications = [
+    {
+      destination_type  = "email"
+      email_id          = 1 # require your email id
+      message           = "email failed"
+      notification_type = "job"
+      notify_when       = "failed"
+    },
+    {
+      destination_type  = "email"
+      email_id          = 1 # require your email id
+      message           = "email1"
+      notification_type = "job"
+      notify_when       = "finished"
+    },
+    {
+      destination_type  = "email"
+      email_id          = 1 # require your email id
+      message           = "record count email skipped"
+      notification_type = "record"
+      record_count      = 10
+      record_operator   = "below"
+      record_type       = "skipped"
+    },
+    {
+      destination_type  = "email"
+      email_id          = 1 # require your email id
+      message           = "time alert email"
+      minutes           = 10
+      notification_type = "exec_time"
+    },
+    {
+      destination_type  = "slack"
+      message           = "record count slack transfer"
+      notification_type = "record"
+      record_count      = 10
+      record_operator   = "below"
+      record_type       = "transfer"
+      slack_channel_id  = 1 # require your slack id
+    },
+    {
+      destination_type  = "slack"
+      message           = "slack 1"
+      notification_type = "job"
+      notify_when       = "finished"
+      slack_channel_id  = 1 # require your slack id
+    },
+    {
+      destination_type  = "slack"
+      message           = "slack failed"
+      notification_type = "job"
+      notify_when       = "failed"
+      slack_channel_id  = 1 # require your slack id
+    },
+    {
+      destination_type  = "slack"
+      message           = "time alert slack"
+      minutes           = 10
+      notification_type = "exec_time"
+      slack_channel_id  = 1 # require your slack id
+    },
+  ]
 }
 ```
 
@@ -706,7 +706,7 @@ resource "trocco_job_definition" "notifications" {
 
 ```terraform
 resource "trocco_job_definition" "schedules" {
-  schedules                   = [
+  schedules = [
     {
       day       = 1
       frequency = "monthly"

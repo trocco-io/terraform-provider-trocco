@@ -1,6 +1,6 @@
 resource "trocco_job_definition" "mysql_input_example" {
-  input_option_type             = "mysql"
-  input_option                  = {
+  input_option_type = "mysql"
+  input_option = {
     mysql_input_option = {
       connect_timeout             = 300
       socket_timeout              = 1801
@@ -10,7 +10,7 @@ resource "trocco_job_definition" "mysql_input_example" {
       default_time_zone           = "Asia/Tokyo"
       use_legacy_datetime_code    = false
       mysql_connection_id         = 1 # require your mysql connection id
-      input_option_columns        = [
+      input_option_columns = [
         {
           name = "id"
           type = "long"
@@ -28,7 +28,7 @@ resource "trocco_job_definition" "mysql_input_example" {
           type = "timestamp"
         },
       ]
-      query                       = <<-EOT
+      query = <<-EOT
                 select
                     *
                 from

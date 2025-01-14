@@ -1,5 +1,5 @@
 resource "trocco_job_definition" "schedules" {
-  schedules                   = [
+  schedules = [
     {
       day       = 1
       frequency = "monthly"

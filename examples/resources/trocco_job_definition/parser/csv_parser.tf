@@ -1,9 +1,9 @@
 resource "trocco_job_definition" "csv_parser_example" {
 
-  input_option                  = {
+  input_option = {
     # The example is gcs, but it can be applied to file-based input.
-    gcs_input_option            = {
-      csv_parser              = {
+    gcs_input_option = {
+      csv_parser = {
         delimiter               = ","
         quote                   = "\""
         escape                  = "\""
@@ -21,23 +21,23 @@ resource "trocco_job_definition" "csv_parser_example" {
         default_date            = "1970-01-01"
         newline                 = "CRLF"
         charset                 = "UTF-8"
-        columns                 = [
+        columns = [
           {
-            name                = "id"
-            type                = "long"
+            name = "id"
+            type = "long"
           },
           {
-            name                = "num_col"
-            type                = "long"
+            name = "num_col"
+            type = "long"
           },
           {
-            name                = "str_col"
-            type                = "string"
+            name = "str_col"
+            type = "string"
           },
           {
-            name                = "date_col"
-            type                = "timestamp"
-            format              = "%Y-%m-%d %H:%M:%S.%N %z"
+            name   = "date_col"
+            type   = "timestamp"
+            format = "%Y-%m-%d %H:%M:%S.%N %z"
           }
         ]
       }
