@@ -1,4 +1,4 @@
-package provider
+package planmodifier
 
 import (
 	"context"
@@ -7,19 +7,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ planmodifier.Object = &gcsInputOptionPlanModifier{}
+var _ planmodifier.Object = &GcsInputOptionPlanModifier{}
 
-type gcsInputOptionPlanModifier struct{}
+type GcsInputOptionPlanModifier struct{}
 
-func (d *gcsInputOptionPlanModifier) Description(ctx context.Context) string {
+func (d *GcsInputOptionPlanModifier) Description(ctx context.Context) string {
 	return "Modifier for validating schedule attributes"
 }
 
-func (d *gcsInputOptionPlanModifier) MarkdownDescription(ctx context.Context) string {
+func (d *GcsInputOptionPlanModifier) MarkdownDescription(ctx context.Context) string {
 	return d.Description(ctx)
 }
 
-func (d *gcsInputOptionPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
+func (d *GcsInputOptionPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
 	var lastPath types.String
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("last_path"), &lastPath)...)
 	if resp.Diagnostics.HasError() {

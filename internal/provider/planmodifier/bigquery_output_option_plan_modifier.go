@@ -1,4 +1,4 @@
-package provider
+package planmodifier
 
 import (
 	"context"
@@ -7,19 +7,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ planmodifier.Object = &bigqueryOutputOptionPlanModifier{}
+var _ planmodifier.Object = &BigqueryOutputOptionPlanModifier{}
 
-type bigqueryOutputOptionPlanModifier struct{}
+type BigqueryOutputOptionPlanModifier struct{}
 
-func (d *bigqueryOutputOptionPlanModifier) Description(ctx context.Context) string {
+func (d *BigqueryOutputOptionPlanModifier) Description(ctx context.Context) string {
 	return "Modifier for validating schedule attributes"
 }
 
-func (d *bigqueryOutputOptionPlanModifier) MarkdownDescription(ctx context.Context) string {
+func (d *BigqueryOutputOptionPlanModifier) MarkdownDescription(ctx context.Context) string {
 	return d.Description(ctx)
 }
 
-func (d *bigqueryOutputOptionPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
+func (d *BigqueryOutputOptionPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
 	var mode types.String
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("mode"), &mode)...)
 	if resp.Diagnostics.HasError() {

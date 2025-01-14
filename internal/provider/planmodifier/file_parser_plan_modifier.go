@@ -1,4 +1,4 @@
-package provider
+package planmodifier
 
 import (
 	"context"
@@ -8,19 +8,19 @@ import (
 	"strconv"
 )
 
-var _ planmodifier.Object = &fileParserPlanModifier{}
+var _ planmodifier.Object = &FileParserPlanModifier{}
 
-type fileParserPlanModifier struct{}
+type FileParserPlanModifier struct{}
 
-func (d *fileParserPlanModifier) Description(ctx context.Context) string {
+func (d *FileParserPlanModifier) Description(ctx context.Context) string {
 	return "Modifier for validating schedule attributes"
 }
 
-func (d *fileParserPlanModifier) MarkdownDescription(ctx context.Context) string {
+func (d *FileParserPlanModifier) MarkdownDescription(ctx context.Context) string {
 	return d.Description(ctx)
 }
 
-func (d *fileParserPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
+func (d *FileParserPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
 	var csvParser types.Object
 	var jsonlParser types.Object
 	var ltsvParser types.Object
