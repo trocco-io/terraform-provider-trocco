@@ -12,7 +12,7 @@ resource "trocco_job_definition" "bigquery_output_example" {
       read_timeout_sec                           = 300
       send_timeout_sec                           = 300
       retries                                    = 0
-      bigquery_connection_id                     = <your bigquery connection id>
+      bigquery_connection_id                     = 1 # require your bigquery connection id
       partitioning_type                          = "time_unit_column"
       time_partitioning_type                     = "DAY"
       time_partitioning_field                    = "created_at"

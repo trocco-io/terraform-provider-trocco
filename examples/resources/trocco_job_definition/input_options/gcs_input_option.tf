@@ -4,7 +4,7 @@ resource "trocco_job_definition" "gcs_input_example" {
       gcs_input_option = {
         bucket                      = "test-bucket"
         path_prefix                 = "path/to/your_file.csv"
-        gcs_connection_id           = <your gcs connection id>
+        gcs_connection_id           = 1 # require your gcs connection id
         incremental_loading_enabled = false
         stop_when_file_not_found    = true
         csv_parser = {

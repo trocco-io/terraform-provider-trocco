@@ -9,7 +9,7 @@ resource "trocco_job_definition" "mysql_input_example" {
       incremental_loading_enabled = false
       default_time_zone           = "Asia/Tokyo"
       use_legacy_datetime_code    = false
-      mysql_connection_id         = <your mysql connection id>
+      mysql_connection_id         = 1 # require your mysql connection id
       input_option_columns        = [
         {
           name = "id"

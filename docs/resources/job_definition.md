@@ -501,7 +501,7 @@ resource "trocco_job_definition" "mysql_input_example" {
       incremental_loading_enabled = false
       default_time_zone           = "Asia/Tokyo"
       use_legacy_datetime_code    = false
-      mysql_connection_id         = <your mysql connection id>
+      mysql_connection_id         = 1 # require your mysql connection id
       input_option_columns        = [
         {
           name = "id"
@@ -540,7 +540,7 @@ resource "trocco_job_definition" "gcs_input_example" {
       gcs_input_option = {
         bucket                      = "test-bucket"
         path_prefix                 = "path/to/your_file.csv"
-        gcs_connection_id           = <your gcs connection id>
+        gcs_connection_id           = 1 # require your gcs connection id
         incremental_loading_enabled = false
         stop_when_file_not_found    = true
         csv_parser = {
@@ -605,7 +605,7 @@ resource "trocco_job_definition" "bigquery_output_example" {
       read_timeout_sec                           = 300
       send_timeout_sec                           = 300
       retries                                    = 0
-      bigquery_connection_id                     = <your bigquery connection id>
+      bigquery_connection_id                     = 1 # require your bigquery connection id
       partitioning_type                          = "time_unit_column"
       time_partitioning_type                     = "DAY"
       time_partitioning_field                    = "created_at"
@@ -640,21 +640,21 @@ resource "trocco_job_definition" "notifications" {
     notifications               = [
       {
         destination_type  = "email"
-        email_id          = <your email id>
+        email_id          = 1 # require your email id
         message           = "email failed"
         notification_type = "job"
         notify_when       = "failed"
       },
       {
         destination_type  = "email"
-        email_id          = <your email id>
+        email_id          = 1 # require your email id
         message           = "email1"
         notification_type = "job"
         notify_when       = "finished"
       },
       {
         destination_type  = "email"
-        email_id          = <your email id>
+        email_id          = 1 # require your email id
         message           = "record count email skipped"
         notification_type = "record"
         record_count      = 10
@@ -663,7 +663,7 @@ resource "trocco_job_definition" "notifications" {
       },
       {
         destination_type  = "email"
-        email_id          = <your email id>
+        email_id          = 1 # require your email id
         message           = "time alert email"
         minutes           = 10
         notification_type = "exec_time"
@@ -675,28 +675,28 @@ resource "trocco_job_definition" "notifications" {
         record_count      = 10
         record_operator   = "below"
         record_type       = "transfer"
-        slack_channel_id  = <your slack id>
+        slack_channel_id  = 1 # require your slack id
       },
       {
         destination_type  = "slack"
         message           = "slack 1"
         notification_type = "job"
         notify_when       = "finished"
-        slack_channel_id  = <your slack id>
+        slack_channel_id  = 1 # require your slack id
       },
       {
         destination_type  = "slack"
         message           = "slack failed"
         notification_type = "job"
         notify_when       = "failed"
-        slack_channel_id  = <your slack id>
+        slack_channel_id  = 1 # require your slack id
       },
       {
         destination_type  = "slack"
         message           = "time alert slack"
         minutes           = 10
         notification_type = "exec_time"
-        slack_channel_id  = <your slack id>
+        slack_channel_id  = 1 # require your slack id
       },
     ]
 }
