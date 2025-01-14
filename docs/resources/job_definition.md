@@ -18,10 +18,6 @@ Provides a TROCCO job definitions.
 ### Required
 
 - `filter_columns` (Attributes List) (see [below for nested schema](#nestedatt--filter_columns))
-- `filter_gsub` (Attributes List) Filter gsub to be attached to the job definition (see [below for nested schema](#nestedatt--filter_gsub))
-- `filter_hashes` (Attributes List) (see [below for nested schema](#nestedatt--filter_hashes))
-- `filter_string_transforms` (Attributes List) (see [below for nested schema](#nestedatt--filter_string_transforms))
-- `filter_unixtime_conversions` (Attributes List) (see [below for nested schema](#nestedatt--filter_unixtime_conversions))
 - `input_option` (Attributes) (see [below for nested schema](#nestedatt--input_option))
 - `input_option_type` (String) Input option type.
 - `is_runnable_concurrently` (Boolean) Specifies whether or not to run a job if another job with the same job definition is running at the time the job is run
@@ -33,9 +29,13 @@ Provides a TROCCO job definitions.
 ### Optional
 
 - `description` (String) Description of the job definition. It must be at least 1 character
-- `filter_add_time` (Attributes) (see [below for nested schema](#nestedatt--filter_add_time))
+- `filter_add_time` (Attributes) Transfer Date Column Setting (see [below for nested schema](#nestedatt--filter_add_time))
+- `filter_gsub` (Attributes List) String Regular Expression Replacement (see [below for nested schema](#nestedatt--filter_gsub))
+- `filter_hashes` (Attributes List) Column hashing (see [below for nested schema](#nestedatt--filter_hashes))
 - `filter_masks` (Attributes List) Filter masks to be attached to the job definition (see [below for nested schema](#nestedatt--filter_masks))
-- `filter_rows` (Attributes) (see [below for nested schema](#nestedatt--filter_rows))
+- `filter_rows` (Attributes) Filter settings (see [below for nested schema](#nestedatt--filter_rows))
+- `filter_string_transforms` (Attributes List) Character string conversion (see [below for nested schema](#nestedatt--filter_string_transforms))
+- `filter_unixtime_conversions` (Attributes List) UNIX time conversion (see [below for nested schema](#nestedatt--filter_unixtime_conversions))
 - `labels` (Attributes Set) Labels to be attached to the job definition (see [below for nested schema](#nestedatt--labels))
 - `notifications` (Attributes Set) Notifications to be attached to the job definition (see [below for nested schema](#nestedatt--notifications))
 - `resource_enhancement` (String) Resource size to be used when executing the job. If not specified, the resource size specified in the transfer settings is applied. The value that can be specified varies depending on the connector. (This parameter is available only in the Professional plan.
@@ -52,70 +52,31 @@ Provides a TROCCO job definitions.
 Required:
 
 - `json_expand_columns` (Attributes List) (see [below for nested schema](#nestedatt--filter_columns--json_expand_columns))
-- `json_expand_enabled` (Boolean)
-- `json_expand_keep_base_column` (Boolean)
-- `name` (String)
-- `src` (String)
-- `type` (String)
+- `json_expand_enabled` (Boolean) Flag whether to expand JSON
+- `json_expand_keep_base_column` (Boolean) Flag whether to keep the base column
+- `name` (String) Column name
+- `src` (String) Column name in source
+- `type` (String) column type
 
 Optional:
 
-- `default` (String)
-- `format` (String)
+- `default` (String) Default value. For existing columns, this value will be inserted only if input is null. For new columns, this value is inserted for all.
+- `format` (String) date/time format
 
 <a id="nestedatt--filter_columns--json_expand_columns"></a>
 ### Nested Schema for `filter_columns.json_expand_columns`
 
 Required:
 
-- `json_path` (String)
-- `name` (String)
-- `type` (String)
+- `json_path` (String) JSON path. To extract id and age from a JSON column such as {'{“id”: 10, “person”: {“age”: 30}}'}, specify id and person.age in the JSON path, respectively.
+- `name` (String) Column name
+- `type` (String) Column type
 
 Optional:
 
-- `format` (String)
-- `timezone` (String)
+- `format` (String) date/time format
+- `timezone` (String) time zone
 
-
-
-<a id="nestedatt--filter_gsub"></a>
-### Nested Schema for `filter_gsub`
-
-Required:
-
-- `column_name` (String)
-- `pattern` (String)
-- `to` (String)
-
-
-<a id="nestedatt--filter_hashes"></a>
-### Nested Schema for `filter_hashes`
-
-Required:
-
-- `name` (String)
-
-
-<a id="nestedatt--filter_string_transforms"></a>
-### Nested Schema for `filter_string_transforms`
-
-Required:
-
-- `column_name` (String)
-- `type` (String)
-
-
-<a id="nestedatt--filter_unixtime_conversions"></a>
-### Nested Schema for `filter_unixtime_conversions`
-
-Required:
-
-- `column_name` (String)
-- `datetime_format` (String)
-- `datetime_timezone` (String)
-- `kind` (String)
-- `unixtime_unit` (String)
 
 
 <a id="nestedatt--input_option"></a>
@@ -499,13 +460,31 @@ Optional:
 
 Required:
 
-- `column_name` (String)
-- `type` (String)
+- `column_name` (String) Column name
+- `type` (String) Column type
 
 Optional:
 
-- `time_zone` (String)
-- `timestamp_format` (String)
+- `time_zone` (String) Time zone
+- `timestamp_format` (String) Timestamp format
+
+
+<a id="nestedatt--filter_gsub"></a>
+### Nested Schema for `filter_gsub`
+
+Required:
+
+- `column_name` (String) Target column name
+- `pattern` (String) Regular expression pattern
+- `to` (String) String to be replaced
+
+
+<a id="nestedatt--filter_hashes"></a>
+### Nested Schema for `filter_hashes`
+
+Required:
+
+- `name` (String) Target column name. Replaces the string in the set column with a hashed version using SHA-256.
 
 
 <a id="nestedatt--filter_masks"></a>
@@ -513,15 +492,15 @@ Optional:
 
 Required:
 
-- `mask_type` (String)
-- `name` (String)
+- `mask_type` (String) Masking type
+- `name` (String) Target column name
 
 Optional:
 
-- `end_index` (Number)
-- `length` (Number)
-- `pattern` (String)
-- `start_index` (Number)
+- `end_index` (Number) Mask end position
+- `length` (Number) Number of mask symbols
+- `pattern` (String) regular expression pattern
+- `start_index` (Number) Mask start position
 
 
 <a id="nestedatt--filter_rows"></a>
@@ -529,7 +508,7 @@ Optional:
 
 Required:
 
-- `condition` (String)
+- `condition` (String) Conditions for applying multiple filtering
 - `filter_row_conditions` (Attributes List) (see [below for nested schema](#nestedatt--filter_rows--filter_row_conditions))
 
 <a id="nestedatt--filter_rows--filter_row_conditions"></a>
@@ -537,10 +516,31 @@ Required:
 
 Required:
 
-- `argument` (String)
-- `column` (String)
-- `operator` (String)
+- `argument` (String) Argument
+- `column` (String) Target column name
+- `operator` (String) Operator
 
+
+
+<a id="nestedatt--filter_string_transforms"></a>
+### Nested Schema for `filter_string_transforms`
+
+Required:
+
+- `column_name` (String) Column name
+- `type` (String) Transformation type
+
+
+<a id="nestedatt--filter_unixtime_conversions"></a>
+### Nested Schema for `filter_unixtime_conversions`
+
+Required:
+
+- `column_name` (String) Target column name
+- `datetime_format` (String) Date and tim format after conversion
+- `datetime_timezone` (String) Time zon after conversion
+- `kind` (String) Conversion Type
+- `unixtime_unit` (String) UNIX time units before conversion
 
 
 <a id="nestedatt--labels"></a>

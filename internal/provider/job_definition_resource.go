@@ -1006,27 +1006,34 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 							Validators: []validator.String{
 								stringvalidator.UTF8LengthAtLeast(1),
 							},
+							MarkdownDescription: "Column name",
 						},
 						"src": schema.StringAttribute{
-							Required: true,
+							Required:            true,
+							MarkdownDescription: "Column name in source",
 						},
 						"type": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json"),
 							},
+							MarkdownDescription: "column type",
 						},
 						"default": schema.StringAttribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "Default value. For existing columns, this value will be inserted only if input is null. For new columns, this value is inserted for all.",
 						},
 						"format": schema.StringAttribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "date/time format",
 						},
 						"json_expand_enabled": schema.BoolAttribute{
-							Required: true,
+							Required:            true,
+							MarkdownDescription: "Flag whether to expand JSON",
 						},
 						"json_expand_keep_base_column": schema.BoolAttribute{
-							Required: true,
+							Required:            true,
+							MarkdownDescription: "Flag whether to keep the base column",
 						},
 						"json_expand_columns": schema.ListNestedAttribute{
 							Required: true,
@@ -1037,24 +1044,29 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 										Validators: []validator.String{
 											stringvalidator.UTF8LengthAtLeast(1),
 										},
+										MarkdownDescription: "Column name",
 									},
 									"json_path": schema.StringAttribute{
 										Required: true,
 										Validators: []validator.String{
 											stringvalidator.UTF8LengthAtLeast(1),
 										},
+										MarkdownDescription: "JSON path. To extract id and age from a JSON column such as {'{“id”: 10, “person”: {“age”: 30}}'}, specify id and person.age in the JSON path, respectively.",
 									},
 									"type": schema.StringAttribute{
 										Required: true,
 										Validators: []validator.String{
 											stringvalidator.OneOf("boolean", "long", "timestamp", "string"),
 										},
+										MarkdownDescription: "Column type",
 									},
 									"format": schema.StringAttribute{
-										Optional: true,
+										Optional:            true,
+										MarkdownDescription: "date/time format",
 									},
 									"timezone": schema.StringAttribute{
-										Optional: true,
+										Optional:            true,
+										MarkdownDescription: "time zone",
 									},
 								},
 							},
@@ -1063,13 +1075,15 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				},
 			},
 			"filter_rows": schema.SingleNestedAttribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "Filter settings",
 				Attributes: map[string]schema.Attribute{
 					"condition": schema.StringAttribute{
 						Required: true,
 						Validators: []validator.String{
 							stringvalidator.OneOf("and", "or"),
 						},
+						MarkdownDescription: "Conditions for applying multiple filtering",
 					},
 					"filter_row_conditions": schema.ListNestedAttribute{
 						Required: true,
@@ -1080,18 +1094,21 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 									Validators: []validator.String{
 										stringvalidator.UTF8LengthAtLeast(1),
 									},
+									MarkdownDescription: "Target column name",
 								},
 								"operator": schema.StringAttribute{
 									Required: true,
 									Validators: []validator.String{
 										stringvalidator.OneOf("greater", "greater_equal", "less", "less_equal", "equal", "not_equal", "start_with", "end_with", "include", "is_null", "is_not_null", "regexp"),
 									},
+									MarkdownDescription: "Operator",
 								},
 								"argument": schema.StringAttribute{
 									Required: true,
 									Validators: []validator.String{
 										stringvalidator.UTF8LengthAtLeast(1),
 									},
+									MarkdownDescription: "Argument",
 								},
 							},
 						},
@@ -1099,7 +1116,8 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				},
 			},
 			"filter_masks": schema.ListNestedAttribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "Filter masks to be attached to the job definition",
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
@@ -1107,53 +1125,64 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 							Validators: []validator.String{
 								stringvalidator.UTF8LengthAtLeast(1),
 							},
+							MarkdownDescription: "Target column name",
 						},
 						"mask_type": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("all", "email", "regex", "substring"),
 							},
+							MarkdownDescription: "Masking type",
 						},
 						"length": schema.Int64Attribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "Number of mask symbols",
 						},
 						"pattern": schema.StringAttribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "regular expression pattern",
 						},
 						"start_index": schema.Int64Attribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "Mask start position",
 						},
 						"end_index": schema.Int64Attribute{
-							Optional: true,
+							Optional:            true,
+							MarkdownDescription: "Mask end position",
 						},
 					},
 				},
-				MarkdownDescription: "Filter masks to be attached to the job definition",
 			},
 			"filter_add_time": schema.SingleNestedAttribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "Transfer Date Column Setting",
 				Attributes: map[string]schema.Attribute{
 					"column_name": schema.StringAttribute{
-						Required: true,
+						Required:            true,
+						MarkdownDescription: "Column name",
 					},
 					"type": schema.StringAttribute{
 						Required: true,
 						Validators: []validator.String{
 							stringvalidator.OneOf("timestamp", "string"),
 						},
+						MarkdownDescription: "Column type",
 					},
 					"timestamp_format": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
+						Optional:            true,
+						Computed:            true,
+						MarkdownDescription: "Timestamp format",
 					},
 					"time_zone": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
+						Optional:            true,
+						Computed:            true,
+						MarkdownDescription: "Time zone",
 					},
 				},
 			},
 			"filter_gsub": schema.ListNestedAttribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "String Regular Expression Replacement",
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"column_name": schema.StringAttribute{
@@ -1161,25 +1190,28 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 							Validators: []validator.String{
 								stringvalidator.UTF8LengthAtLeast(1),
 							},
+							MarkdownDescription: "Target column name",
 						},
 						"pattern": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
 								stringvalidator.UTF8LengthAtLeast(1),
 							},
+							MarkdownDescription: "Regular expression pattern",
 						},
 						"to": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
 								stringvalidator.UTF8LengthAtLeast(1),
 							},
+							MarkdownDescription: "String to be replaced",
 						},
 					},
 				},
-				MarkdownDescription: "Filter gsub to be attached to the job definition",
 			},
 			"filter_string_transforms": schema.ListNestedAttribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "Character string conversion",
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"column_name": schema.StringAttribute{
@@ -1187,18 +1219,21 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 							Validators: []validator.String{
 								stringvalidator.UTF8LengthAtLeast(1),
 							},
+							MarkdownDescription: "Column name",
 						},
 						"type": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("normalize_nfkc"),
 							},
+							MarkdownDescription: "Transformation type",
 						},
 					},
 				},
 			},
 			"filter_hashes": schema.ListNestedAttribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "Column hashing",
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
@@ -1206,12 +1241,14 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 							Validators: []validator.String{
 								stringvalidator.UTF8LengthAtLeast(1),
 							},
+							MarkdownDescription: "Target column name. Replaces the string in the set column with a hashed version using SHA-256.",
 						},
 					},
 				},
 			},
 			"filter_unixtime_conversions": schema.ListNestedAttribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "UNIX time conversion",
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"column_name": schema.StringAttribute{
@@ -1219,24 +1256,29 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 							Validators: []validator.String{
 								stringvalidator.UTF8LengthAtLeast(1),
 							},
+							MarkdownDescription: "Target column name",
 						},
 						"kind": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("unixtime_to_timestamp", "unixtime_to_string", "timestamp_to_unixtime", "string_to_unixtime"),
 							},
+							MarkdownDescription: "Conversion Type",
 						},
 						"unixtime_unit": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf("second", "millisecond", "microsecond", "nanosecond"),
 							},
+							MarkdownDescription: "UNIX time units before conversion",
 						},
 						"datetime_format": schema.StringAttribute{
-							Required: true,
+							Required:            true,
+							MarkdownDescription: "Date and tim format after conversion",
 						},
 						"datetime_timezone": schema.StringAttribute{
-							Required: true,
+							Required:            true,
+							MarkdownDescription: "Time zon after conversion",
 						},
 					},
 				},
