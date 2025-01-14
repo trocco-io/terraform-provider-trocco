@@ -1,0 +1,122 @@
+---
+page_title: "{{.Name}} {{.Type}} - {{.ProviderShortName}}"
+subcategory: ""
+description: |-
+  {{.Description}}
+---
+
+# {{.Name}} ({{.Type}})
+
+{{.Description}}
+
+## Example Usage
+
+### General Setting
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/general_setting.tf"}}
+
+### FilterColumn
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/filter_column.tf"}}
+
+### FilterRow
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/filter_row.tf"}}
+
+### FilterMask
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/filter_mask.tf"}}
+
+### FilterAddTime
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/filter_add_time.tf"}}
+
+### FilterGsub
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/filter_gsub.tf"}}
+
+
+### FilterStringTransform
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/filter_string_transform.tf"}}
+
+### FilterHash
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/filter_hash.tf"}}
+
+### FilterUnixtimeConversions
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/filter_unixtime_conversion.tf"}}
+
+### CsvParser
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/parser/csv_parser.tf"}}
+
+### JsonlParser
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/parser/jsonl_parser.tf"}}
+
+
+### LtsvParser
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/parser/ltsv_parser.tf"}}
+
+### ExcelParser
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/parser/excel_parser.tf"}}
+
+### XmlParser
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/parser/xml_parser.tf"}}
+
+
+### JsonPathParser
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/parser/jsonpath_parser.tf"}}
+
+### ParquetParser
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/parser/parquet_parser.tf"}}
+
+### Decoder
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/decoder.tf"}}
+
+### InputOptions
+
+#### MysqlInputOption
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/input_options/mysql_input_option.tf"}}
+
+#### GcsInputOption(csv format)
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/input_options/gcs_input_option.tf"}}
+
+### OutputOptions
+
+#### BigqueryOutputOption
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/output_options/bigquery_output_option.tf"}}
+
+
+### Label
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/labels.tf"}}
+
+
+### Notification
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/notifications.tf"}}
+
+### Schedule
+
+{{codefile "terraform" "examples/resources/trocco_job_definition/schedules.tf"}}
+
+{{.SchemaMarkdown}}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/trocco_connection/import.sh"}}
+

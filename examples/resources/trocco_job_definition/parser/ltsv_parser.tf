@@ -1,4 +1,4 @@
-resource "trocco_job_definition" "ltcv_parser_example" {
+resource "trocco_job_definition" "ltsv_parser_example" {
 
   input_option                  = {
     # The example is gcs, but it can be applied to file-based input.
