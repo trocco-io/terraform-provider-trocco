@@ -19,12 +19,12 @@ type JobDefinitionNotification struct {
 	Minutes          types.Int64  `tfsdk:"minutes"`
 }
 
-func NewJobDefinitionNotifications(jobDefinitionNotifications *[]job_definitions.JobDefinitionNotification) []JobDefinitionNotification {
+func NewJobDefinitionNotifications(jobDefinitionNotifications []job_definitions.JobDefinitionNotification) []JobDefinitionNotification {
 	if jobDefinitionNotifications == nil {
 		return nil
 	}
-	notifications := make([]JobDefinitionNotification, 0, len(*jobDefinitionNotifications))
-	for _, input := range *jobDefinitionNotifications {
+	notifications := make([]JobDefinitionNotification, 0, len(jobDefinitionNotifications))
+	for _, input := range jobDefinitionNotifications {
 		notification := JobDefinitionNotification{
 			DestinationType:  types.StringValue(input.DestinationType),
 			SlackChannelID:   types.Int64PointerValue(input.SlackChannelID),

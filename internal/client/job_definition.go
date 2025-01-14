@@ -16,28 +16,28 @@ import (
 )
 
 type JobDefinition struct {
-	ID                        int64                                              `json:"id"`
-	Name                      string                                             `json:"name"`
-	Description               *string                                            `json:"description"`
-	ResourceGroupID           *int64                                             `json:"resource_group_id"`
-	IsRunnableConcurrently    *bool                                              `json:"is_runnable_concurrently"`
-	RetryLimit                int64                                              `json:"retry_limit"`
-	ResourceEnhancement       *string                                            `json:"resource_enhancement"`
-	FilterColumns             []filterEntities.FilterColumn                      `json:"filter_columns"`
-	FilterRows                *filterEntities.FilterRows                         `json:"filter_rows"`
-	FilterMasks               []filterEntities.FilterMask                        `json:"filter_masks"`
-	FilterAddTime             *filterEntities.FilterAddTime                      `json:"filter_add_time"`
-	FilterGsub                []filterEntities.FilterGsub                        `json:"filter_gsub"`
-	FilterStringTransforms    []filterEntities.FilterStringTransform             `json:"filter_string_transforms"`
-	FilterHashes              []filterEntities.FilterHash                        `json:"filter_hashes"`
-	FilterUnixTimeConversions []filterEntities.FilterUnixTimeConversion          `json:"filter_unixtime_conversions"`
-	InputOptionType           string                                             `json:"input_option_type"`
-	InputOption               InputOption                                        `json:"input_option"`
-	OutputOptionType          string                                             `json:"output_option_type"`
-	OutputOption              OutputOption                                       `json:"output_option"`
-	Labels                    *[]entities.Label                                  `json:"labels"`
-	Schedules                 *[]entities.Schedule                               `json:"schedules"`
-	Notifications             *[]jobDefinitionEntities.JobDefinitionNotification `json:"notifications"`
+	ID                        int64                                             `json:"id"`
+	Name                      string                                            `json:"name"`
+	Description               *string                                           `json:"description"`
+	ResourceGroupID           *int64                                            `json:"resource_group_id"`
+	IsRunnableConcurrently    *bool                                             `json:"is_runnable_concurrently"`
+	RetryLimit                int64                                             `json:"retry_limit"`
+	ResourceEnhancement       *string                                           `json:"resource_enhancement"`
+	FilterColumns             []filterEntities.FilterColumn                     `json:"filter_columns"`
+	FilterRows                *filterEntities.FilterRows                        `json:"filter_rows"`
+	FilterMasks               []filterEntities.FilterMask                       `json:"filter_masks"`
+	FilterAddTime             *filterEntities.FilterAddTime                     `json:"filter_add_time"`
+	FilterGsub                []filterEntities.FilterGsub                       `json:"filter_gsub"`
+	FilterStringTransforms    []filterEntities.FilterStringTransform            `json:"filter_string_transforms"`
+	FilterHashes              []filterEntities.FilterHash                       `json:"filter_hashes"`
+	FilterUnixTimeConversions []filterEntities.FilterUnixTimeConversion         `json:"filter_unixtime_conversions"`
+	InputOptionType           string                                            `json:"input_option_type"`
+	InputOption               InputOption                                       `json:"input_option"`
+	OutputOptionType          string                                            `json:"output_option_type"`
+	OutputOption              OutputOption                                      `json:"output_option"`
+	Labels                    []entities.Label                                  `json:"labels"`
+	Schedules                 []entities.Schedule                               `json:"schedules"`
+	Notifications             []jobDefinitionEntities.JobDefinitionNotification `json:"notifications"`
 }
 
 type CreateJobDefinitionInput struct {

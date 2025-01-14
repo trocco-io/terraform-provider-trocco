@@ -15,12 +15,12 @@ type Schedule struct {
 	TimeZone  types.String `tfsdk:"time_zone"`
 }
 
-func NewSchedules(schedules *[]entities.Schedule) []Schedule {
+func NewSchedules(schedules []entities.Schedule) []Schedule {
 	if schedules == nil {
 		return nil
 	}
-	outputs := make([]Schedule, 0, len(*schedules))
-	for _, input := range *schedules {
+	outputs := make([]Schedule, 0, len(schedules))
+	for _, input := range schedules {
 		schedule := Schedule{
 			Frequency: types.StringValue(input.Frequency),
 			Minute:    types.Int32Value(input.Minute),

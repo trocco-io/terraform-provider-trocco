@@ -10,13 +10,13 @@ type LabelModel struct {
 	Name types.String `tfsdk:"name"`
 }
 
-func NewLabels(labels *[]entities.Label) []LabelModel {
+func NewLabels(labels []entities.Label) []LabelModel {
 	if labels == nil {
 		return nil
 	}
 
-	outputs := make([]LabelModel, 0, len(*labels))
-	for _, input := range *labels {
+	outputs := make([]LabelModel, 0, len(labels))
+	for _, input := range labels {
 		label := LabelModel{
 			ID:   types.Int64Value(input.ID),
 			Name: types.StringValue(input.Name),
