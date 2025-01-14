@@ -11,7 +11,7 @@ type FilterHash struct {
 }
 
 func NewFilterHashes(filterHashes []filter.FilterHash) []FilterHash {
-	if filterHashes == nil || len(filterHashes) == 0 {
+	if len(filterHashes) == 0 {
 		return nil
 	}
 	outputs := make([]FilterHash, 0, len(filterHashes))

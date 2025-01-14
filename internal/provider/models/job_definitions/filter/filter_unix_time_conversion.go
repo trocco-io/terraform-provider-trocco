@@ -15,7 +15,7 @@ type FilterUnixTimeConversion struct {
 }
 
 func NewFilterUnixTimeConversions(filterUnixTimeConversions []filter.FilterUnixTimeConversion) []FilterUnixTimeConversion {
-	if filterUnixTimeConversions == nil || len(filterUnixTimeConversions) == 0 {
+	if len(filterUnixTimeConversions) == 0 {
 		return nil
 	}
 

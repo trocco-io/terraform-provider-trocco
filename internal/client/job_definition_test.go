@@ -69,16 +69,30 @@ func TestCreateJobDefinition(t *testing.T) {
 
 	c := NewDevTroccoClient("1234567890", s.URL)
 	out, err := c.CreateJobDefinition(&CreateJobDefinitionInput{
-		Name:                      "name",
-		Description:               lo.ToPtr("description"),
-		ResourceGroupID:           lo.ToPtr(parameters.NullableInt64{Value: 9, Valid: true}),
-		IsRunnableConcurrently:    lo.ToPtr(true),
-		RetryLimit:                10,
-		ResourceEnhancement:       lo.ToPtr("medium"),
-		FilterColumns:             []filter2.FilterColumnInput{},
-		FilterRows:                lo.ToPtr(filter2.FilterRowsInput{}),
-		FilterMasks:               []filter2.FilterMaskInput{},
-		FilterAddTime:             lo.ToPtr(filter2.FilterAddTimeInput{}),
+		Name:                   "name",
+		Description:            lo.ToPtr(parameters.NullableString{Value: "description", Valid: true}),
+		ResourceGroupID:        lo.ToPtr(parameters.NullableInt64{Value: 9, Valid: true}),
+		IsRunnableConcurrently: true,
+		RetryLimit:             10,
+		ResourceEnhancement:    lo.ToPtr("medium"),
+		FilterColumns:          []filter2.FilterColumnInput{},
+		FilterRows: lo.ToPtr(parameters.NullableObject[filter2.FilterRowsInput]{
+			Valid: true,
+			Value: &filter2.FilterRowsInput{
+				Condition:           "or",
+				FilterRowConditions: make([]filter2.FilterRowConditionInput, 0),
+			},
+		}),
+		FilterMasks: []filter2.FilterMaskInput{},
+		FilterAddTime: lo.ToPtr(parameters.NullableObject[filter2.FilterAddTimeInput]{
+			Valid: true,
+			Value: &filter2.FilterAddTimeInput{
+				ColumnName:      "col_name",
+				Type:            "string",
+				TimestampFormat: nil,
+				TimeZone:        nil,
+			},
+		}),
 		FilterGsub:                []filter2.FilterGsubInput{},
 		FilterStringTransforms:    []filter2.FilterStringTransformInput{},
 		FilterHashes:              []filter2.FilterHashInput{},
@@ -158,7 +172,7 @@ func TestUpdateJobDefinition(t *testing.T) {
 
 	out, err := c.UpdateJobDefinition(8, &UpdateJobDefinitionInput{
 		Name:                   lo.ToPtr("edit"),
-		Description:            lo.ToPtr("description edit"),
+		Description:            lo.ToPtr(parameters.NullableString{Value: "description edit", Valid: true}),
 		ResourceGroupID:        lo.ToPtr(parameters.NullableInt64{Value: 10, Valid: true}),
 		IsRunnableConcurrently: lo.ToPtr(true),
 		RetryLimit:             lo.ToPtr(int64(11)),

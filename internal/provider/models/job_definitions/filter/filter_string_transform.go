@@ -12,7 +12,7 @@ type FilterStringTransform struct {
 }
 
 func NewFilterStringTransforms(filterStringTransforms []filterEntities.FilterStringTransform) []FilterStringTransform {
-	if filterStringTransforms == nil || len(filterStringTransforms) == 0 {
+	if len(filterStringTransforms) == 0 {
 		return nil
 	}
 

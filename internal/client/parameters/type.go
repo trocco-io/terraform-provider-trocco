@@ -43,7 +43,7 @@ type NullableObject[T any] struct {
 	Valid bool
 }
 
-// MarshalJSON nullの場合は空のオブジェクトをペイロードに乗せます
+// MarshalJSON nullの場合は空のオブジェクトをペイロードに乗せます.
 func (n NullableObject[T]) MarshalJSON() ([]byte, error) {
 	if !n.Valid {
 		return []byte("{}"), nil

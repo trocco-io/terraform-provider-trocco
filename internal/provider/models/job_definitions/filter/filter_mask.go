@@ -16,7 +16,7 @@ type FilterMask struct {
 }
 
 func NewFilterMasks(filterMasks []filterEntities.FilterMask) []FilterMask {
-	if filterMasks == nil || len(filterMasks) == 0 {
+	if len(filterMasks) == 0 {
 		return nil
 	}
 

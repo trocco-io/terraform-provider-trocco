@@ -13,7 +13,7 @@ type FilterGsub struct {
 }
 
 func NewFilterGsub(filterGsubs []filterEntities.FilterGsub) []FilterGsub {
-	if filterGsubs == nil || len(filterGsubs) == 0 {
+	if len(filterGsubs) == 0 {
 		return nil
 	}
 
