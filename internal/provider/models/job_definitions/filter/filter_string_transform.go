@@ -12,6 +12,10 @@ type FilterStringTransform struct {
 }
 
 func NewFilterStringTransforms(filterStringTransforms []filterEntities.FilterStringTransform) []FilterStringTransform {
+	if filterStringTransforms == nil || len(filterStringTransforms) == 0 {
+		return nil
+	}
+
 	outputs := make([]FilterStringTransform, 0, len(filterStringTransforms))
 	for _, input := range filterStringTransforms {
 		filterStringTransform := FilterStringTransform{

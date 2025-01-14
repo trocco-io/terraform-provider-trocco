@@ -1153,7 +1153,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				},
 			},
 			"filter_gsub": schema.ListNestedAttribute{
-				Required: true,
+				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"column_name": schema.StringAttribute{
@@ -1179,7 +1179,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				MarkdownDescription: "Filter gsub to be attached to the job definition",
 			},
 			"filter_string_transforms": schema.ListNestedAttribute{
-				Required: true,
+				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"column_name": schema.StringAttribute{
@@ -1198,7 +1198,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				},
 			},
 			"filter_hashes": schema.ListNestedAttribute{
-				Required: true,
+				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
@@ -1211,7 +1211,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				},
 			},
 			"filter_unixtime_conversions": schema.ListNestedAttribute{
-				Required: true,
+				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"column_name": schema.StringAttribute{

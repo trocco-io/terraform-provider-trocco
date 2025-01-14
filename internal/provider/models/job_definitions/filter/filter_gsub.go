@@ -13,6 +13,10 @@ type FilterGsub struct {
 }
 
 func NewFilterGsub(filterGsubs []filterEntities.FilterGsub) []FilterGsub {
+	if filterGsubs == nil || len(filterGsubs) == 0 {
+		return nil
+	}
+
 	outputs := make([]FilterGsub, 0, len(filterGsubs))
 	for _, input := range filterGsubs {
 		filterGsub := FilterGsub{

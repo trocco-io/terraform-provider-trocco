@@ -15,6 +15,10 @@ type FilterUnixTimeConversion struct {
 }
 
 func NewFilterUnixTimeConversions(filterUnixTimeConversions []filter.FilterUnixTimeConversion) []FilterUnixTimeConversion {
+	if filterUnixTimeConversions == nil || len(filterUnixTimeConversions) == 0 {
+		return nil
+	}
+
 	outputs := make([]FilterUnixTimeConversion, 0, len(filterUnixTimeConversions))
 	for _, input := range filterUnixTimeConversions {
 		filterUnixTimeConversion := FilterUnixTimeConversion{
