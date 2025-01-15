@@ -100,6 +100,9 @@ func (r *pipelineDefinitionResource) Schema(
 				MarkdownDescription: "The description of the pipeline definition",
 				Optional:            true,
 				Computed:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
