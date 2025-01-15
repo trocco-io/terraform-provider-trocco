@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"terraform-provider-trocco/internal/client/entities"
 	"terraform-provider-trocco/internal/client/parameters"
 )
 
@@ -73,19 +72,19 @@ type UpdateDatamartDefinitionOutput struct {
 }
 
 type DatamartDefinition struct {
-	ID                     int64                            `json:"id"`
-	Name                   string                           `json:"name"`
-	Description            *string                          `json:"description"`
-	DataWarehouseType      string                           `json:"data_warehouse_type"`
-	IsRunnableConcurrently bool                             `json:"is_runnable_concurrently"`
-	ResourceGroup          *ResourceGroup                   `json:"resource_group"`
-	CustomVariableSettings []entities.CustomVariableSetting `json:"custom_variable_settings"`
-	DatamartBigqueryOption *DatamartBigqueryOption          `json:"datamart_bigquery_option"`
-	CreatedAt              string                           `json:"created_at"`
-	UpdatedAt              string                           `json:"updated_at"`
-	Notifications          []DatamartNotification           `json:"notifications"`
-	Schedules              []entities.Schedule              `json:"schedules"`
-	Labels                 []entities.Label                 `json:"labels"`
+	ID                     int64                   `json:"id"`
+	Name                   string                  `json:"name"`
+	Description            *string                 `json:"description"`
+	DataWarehouseType      string                  `json:"data_warehouse_type"`
+	IsRunnableConcurrently bool                    `json:"is_runnable_concurrently"`
+	ResourceGroup          *ResourceGroup          `json:"resource_group"`
+	CustomVariableSettings []CustomVariableSetting `json:"custom_variable_settings"`
+	DatamartBigqueryOption *DatamartBigqueryOption `json:"datamart_bigquery_option"`
+	CreatedAt              string                  `json:"created_at"`
+	UpdatedAt              string                  `json:"updated_at"`
+	Notifications          []DatamartNotification  `json:"notifications"`
+	Schedules              []Schedule              `json:"schedules"`
+	Labels                 []Label                 `json:"labels"`
 }
 
 type DatamartBigqueryOption struct {
@@ -111,6 +110,17 @@ type ResourceGroup struct {
 	UpdatedAt   string `json:"updated_at"`
 }
 
+type CustomVariableSetting struct {
+	Name      string  `json:"name"`
+	Type      string  `json:"type"`
+	Value     *string `json:"value"`
+	Quantity  *int    `json:"quantity"`
+	Unit      *string `json:"unit"`
+	Direction *string `json:"direction"`
+	Format    *string `json:"format"`
+	TimeZone  *string `json:"time_zone"`
+}
+
 type DatamartNotification struct {
 	DestinationType  string  `json:"destination_type"`
 	SlackChannelID   *int64  `json:"slack_channel_id"`
@@ -120,6 +130,24 @@ type DatamartNotification struct {
 	RecordCount      *int64  `json:"record_count"`
 	RecordOperator   *string `json:"record_operator"`
 	Message          string  `json:"message"`
+}
+
+type Schedule struct {
+	Frequency string `json:"frequency"`
+	Minute    int    `json:"minute"`
+	Hour      *int   `json:"hour"`
+	Day       *int   `json:"day"`
+	DayOfWeek *int   `json:"day_of_week"`
+	TimeZone  string `json:"time_zone"`
+}
+
+type Label struct {
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Color       string `json:"color"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
 }
 
 func (client *TroccoClient) GetDatamartDefinition(id int64) (*GetDatamartDefinitionOutput, error) {
@@ -153,7 +181,7 @@ type CreateDatamartDefinitionInput struct {
 	ResourceGroupID        *int64                             `json:"resource_group_id,omitempty"`
 	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
 	DatamartBigqueryOption *CreateDatamartBigqueryOptionInput `json:"datamart_bigquery_option,omitempty"`
-	Schedules              *[]parameters.ScheduleInput        `json:"schedules,omitempty"`
+	Schedules              *[]ScheduleInput                   `json:"schedules,omitempty"`
 	Notifications          *[]DatamartNotificationInput       `json:"notifications,omitempty"`
 	Labels                 *[]string                          `json:"labels,omitempty"`
 }
@@ -186,7 +214,7 @@ func (input *CreateDatamartDefinitionInput) SetDatamartBigqueryOption(datamartBi
 	input.DatamartBigqueryOption = &datamartBigqueryOption
 }
 
-func (input *CreateDatamartDefinitionInput) SetSchedules(schedules []parameters.ScheduleInput) {
+func (input *CreateDatamartDefinitionInput) SetSchedules(schedules []ScheduleInput) {
 	input.Schedules = &schedules
 }
 
@@ -331,7 +359,7 @@ type UpdateDatamartDefinitionInput struct {
 	ResourceGroupID        *parameters.NullableInt64          `json:"resource_group_id,omitempty"`
 	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
 	DatamartBigqueryOption *UpdateDatamartBigqueryOptionInput `json:"datamart_bigquery_option,omitempty"`
-	Schedules              *[]parameters.ScheduleInput        `json:"schedules,omitempty"`
+	Schedules              *[]ScheduleInput                   `json:"schedules,omitempty"`
 	Notifications          *[]DatamartNotificationInput       `json:"notifications,omitempty"`
 	Labels                 *[]string                          `json:"labels,omitempty"`
 }
@@ -369,7 +397,7 @@ func (input *UpdateDatamartDefinitionInput) SetDatamartBigqueryOption(datamartBi
 	input.DatamartBigqueryOption = &datamartBigqueryOption
 }
 
-func (input *UpdateDatamartDefinitionInput) SetSchedules(schedules []parameters.ScheduleInput) {
+func (input *UpdateDatamartDefinitionInput) SetSchedules(schedules []ScheduleInput) {
 	input.Schedules = &schedules
 }
 
@@ -456,11 +484,20 @@ func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLocationEmpt
 	datamartBigqueryOption.Location = &parameters.NullableString{Valid: false}
 }
 
+type ScheduleInput struct {
+	Frequency string `json:"frequency"`
+	Minute    int    `json:"minute"`
+	Hour      *int   `json:"hour,omitempty"`
+	Day       *int   `json:"day,omitempty"`
+	DayOfWeek *int   `json:"day_of_week,omitempty"`
+	TimeZone  string `json:"time_zone"`
+}
+
 func NewHourlyScheduleInput(
-	minute int32,
+	minute int,
 	timeZone string,
-) parameters.ScheduleInput {
-	return parameters.ScheduleInput{
+) ScheduleInput {
+	return ScheduleInput{
 		Frequency: "hourly",
 		Minute:    minute,
 		TimeZone:  timeZone,
@@ -468,11 +505,11 @@ func NewHourlyScheduleInput(
 }
 
 func NewDailyScheduleInput(
-	hour int32,
-	minute int32,
+	hour int,
+	minute int,
 	timeZone string,
-) parameters.ScheduleInput {
-	return parameters.ScheduleInput{
+) ScheduleInput {
+	return ScheduleInput{
 		Frequency: "daily",
 		Hour:      &hour,
 		Minute:    minute,
@@ -481,12 +518,12 @@ func NewDailyScheduleInput(
 }
 
 func NewWeeklyScheduleInput(
-	dayOfWeek int32,
-	hour int32,
-	minute int32,
+	dayOfWeek int,
+	hour int,
+	minute int,
 	timeZone string,
-) parameters.ScheduleInput {
-	return parameters.ScheduleInput{
+) ScheduleInput {
+	return ScheduleInput{
 		Frequency: "weekly",
 		DayOfWeek: &dayOfWeek,
 		Hour:      &hour,
@@ -496,12 +533,12 @@ func NewWeeklyScheduleInput(
 }
 
 func NewMonthlyScheduleInput(
-	day int32,
-	hour int32,
-	minute int32,
+	day int,
+	hour int,
+	minute int,
 	timeZone string,
-) parameters.ScheduleInput {
-	return parameters.ScheduleInput{
+) ScheduleInput {
+	return ScheduleInput{
 		Frequency: "monthly",
 		Day:       &day,
 		Hour:      &hour,
