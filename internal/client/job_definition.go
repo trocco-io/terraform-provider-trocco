@@ -92,13 +92,13 @@ type InputOption struct {
 }
 
 type InputOptionInput struct {
-	MySQLInputOption *input_options.MySQLInputOptionInput `json:"mysql_input_option,omitempty"`
-	GcsInputOption   *input_options.GcsInputOptionInput   `json:"gcs_input_option,omitempty"`
+	MySQLInputOption *parameters.NullableObject[input_options.MySQLInputOptionInput] `json:"mysql_input_option,omitempty"`
+	GcsInputOption   *parameters.NullableObject[input_options.GcsInputOptionInput]   `json:"gcs_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
-	MySQLInputOption *input_options.UpdateMySQLInputOptionInput `json:"mysql_input_option,omitempty"`
-	GcsInputOption   *input_options.UpdateGcsInputOptionInput   `json:"gcs_input_option,omitempty"`
+	MySQLInputOption *parameters.NullableObject[input_options.UpdateMySQLInputOptionInput] `json:"mysql_input_option,omitempty"`
+	GcsInputOption   *parameters.NullableObject[input_options.UpdateGcsInputOptionInput]   `json:"gcs_input_option,omitempty"`
 }
 
 type OutputOption struct {
@@ -106,11 +106,11 @@ type OutputOption struct {
 }
 
 type OutputOptionInput struct {
-	BigQueryOutputOption *output_options.BigQueryOutputOptionInput `json:"bigquery_output_option,omitempty"`
+	BigQueryOutputOption *parameters.NullableObject[output_options.BigQueryOutputOptionInput] `json:"bigquery_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
-	BigQueryOutputOption *output_options.UpdateBigQueryOutputOptionInput `json:"bigquery_output_option,omitempty"`
+	BigQueryOutputOption *parameters.NullableObject[output_options.UpdateBigQueryOutputOptionInput] `json:"bigquery_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {

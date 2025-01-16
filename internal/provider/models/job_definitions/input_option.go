@@ -2,7 +2,7 @@ package job_definitions
 
 import (
 	"terraform-provider-trocco/internal/client"
-	input_options2 "terraform-provider-trocco/internal/client/parameters/job_definitions/input_options"
+	"terraform-provider-trocco/internal/provider/models"
 	"terraform-provider-trocco/internal/provider/models/job_definitions/input_options"
 )
 
@@ -20,34 +20,14 @@ func NewInputOption(inputOption client.InputOption) *InputOption {
 
 func (inputOption InputOption) ToInput() client.InputOptionInput {
 	return client.InputOptionInput{
-		GcsInputOption: func() *input_options2.GcsInputOptionInput {
-			if inputOption.GcsInputOption == nil {
-				return nil
-			}
-			return inputOption.GcsInputOption.ToInput()
-		}(),
-		MySQLInputOption: func() *input_options2.MySQLInputOptionInput {
-			if inputOption.MySQLInputOption == nil {
-				return nil
-			}
-			return inputOption.MySQLInputOption.ToInput()
-		}(),
+		GcsInputOption:   models.WrapObject(inputOption.GcsInputOption.ToInput()),
+		MySQLInputOption: models.WrapObject(inputOption.MySQLInputOption.ToInput()),
 	}
 }
 
 func (inputOption InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
 	return &client.UpdateInputOptionInput{
-		GcsInputOption: func() *input_options2.UpdateGcsInputOptionInput {
-			if inputOption.GcsInputOption == nil {
-				return nil
-			}
-			return inputOption.GcsInputOption.ToUpdateInput()
-		}(),
-		MySQLInputOption: func() *input_options2.UpdateMySQLInputOptionInput {
-			if inputOption.MySQLInputOption == nil {
-				return nil
-			}
-			return inputOption.MySQLInputOption.ToUpdateInput()
-		}(),
+		GcsInputOption:   models.WrapObject(inputOption.GcsInputOption.ToUpdateInput()),
+		MySQLInputOption: models.WrapObject(inputOption.MySQLInputOption.ToUpdateInput()),
 	}
 }
