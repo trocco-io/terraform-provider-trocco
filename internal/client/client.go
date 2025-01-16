@@ -67,8 +67,8 @@ func NewDevTroccoClient(apiKey, baseURL string) *TroccoClient {
 }
 
 type ErrorOutput struct {
-	Error   string `json:"error"`   // 500 internal server error
-	Message string `json:"message"` // 400 bad request
+	Error   string `json:"error"`
+	Message string `json:"message"`
 }
 
 func (client *TroccoClient) do(
@@ -109,10 +109,9 @@ func (client *TroccoClient) do(
 
 		if errorOutput.Error != "" {
 			return fmt.Errorf("%s", errorOutput.Error)
-		} else if errorOutput.Message != "" {
+		}
+		if errorOutput.Message != "" {
 			return fmt.Errorf("%s", errorOutput.Message)
-		} else {
-			return fmt.Errorf("status code is %s", resp.Status)
 		}
 	}
 	if output == nil {
