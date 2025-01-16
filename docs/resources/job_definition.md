@@ -752,7 +752,7 @@ resource "trocco_job_definition" "schedules" {
 
 ### Optional
 
-- `description` (String) Description of the job definition. It must be at least 1 character
+- `description` (String) Description of the job definition.
 - `filter_add_time` (Attributes) Transfer Date Column Setting (see [below for nested schema](#nestedatt--filter_add_time))
 - `filter_gsub` (Attributes List) String Regular Expression Replacement (see [below for nested schema](#nestedatt--filter_gsub))
 - `filter_hashes` (Attributes List) Column hashing (see [below for nested schema](#nestedatt--filter_hashes))
