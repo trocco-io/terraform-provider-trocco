@@ -61,25 +61,3 @@ func (jsonpathParser *JsonpathParser) ToJsonpathParserInput() *params.JsonpathPa
 		Columns:         columns,
 	}
 }
-
-func ToJsonPathParserModel(jsonpathParserInput *job_definitions.JsonpathParser) *JsonpathParser {
-	if jsonpathParserInput == nil {
-		return nil
-	}
-
-	columns := make([]JsonpathParserColumn, 0, len(jsonpathParserInput.Columns))
-	for _, input := range jsonpathParserInput.Columns {
-		column := JsonpathParserColumn{
-			Name:     types.StringValue(input.Name),
-			Type:     types.StringValue(input.Type),
-			TimeZone: types.StringPointerValue(input.TimeZone),
-			Format:   types.StringPointerValue(input.Format),
-		}
-		columns = append(columns, column)
-	}
-	return &JsonpathParser{
-		Root:            types.StringValue(jsonpathParserInput.Root),
-		DefaultTimeZone: types.StringValue(jsonpathParserInput.DefaultTimeZone),
-		Columns:         columns,
-	}
-}

@@ -64,25 +64,3 @@ func (excelParser *ExcelParser) ToExcelParserInput() *params.ExcelParserInput {
 		Columns:         columns,
 	}
 }
-
-func ToExcelParserModel(excelParser *job_definitions.ExcelParser) *ExcelParser {
-	if excelParser == nil {
-		return nil
-	}
-	columns := make([]ExcelParserColumn, 0, len(excelParser.Columns))
-	for _, input := range excelParser.Columns {
-		column := ExcelParserColumn{
-			Name:            types.StringValue(input.Name),
-			Type:            types.StringValue(input.Type),
-			Format:          types.StringPointerValue(input.Format),
-			FormulaHandling: types.StringValue(input.FormulaHandling),
-		}
-		columns = append(columns, column)
-	}
-	return &ExcelParser{
-		DefaultTimeZone: types.StringValue(excelParser.DefaultTimeZone),
-		SheetName:       types.StringValue(excelParser.SheetName),
-		SkipHeaderLines: types.Int64Value(excelParser.SkipHeaderLines),
-		Columns:         columns,
-	}
-}

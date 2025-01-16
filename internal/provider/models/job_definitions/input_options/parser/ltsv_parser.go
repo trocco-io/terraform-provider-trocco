@@ -59,23 +59,3 @@ func (ltsvParser *LtsvParser) ToLtsvParserInput() *params.LtsvParserInput {
 		Columns: columns,
 	}
 }
-
-func ToLtsvParserModel(ltsvParser *job_definitions.LtsvParser) *LtsvParser {
-	if ltsvParser == nil {
-		return nil
-	}
-	columns := make([]LtsvParserColumn, 0, len(ltsvParser.Columns))
-	for _, input := range ltsvParser.Columns {
-		column := LtsvParserColumn{
-			Name:   types.StringValue(input.Name),
-			Type:   types.StringValue(input.Type),
-			Format: types.StringPointerValue(input.Format),
-		}
-		columns = append(columns, column)
-	}
-	return &LtsvParser{
-		Newline: types.StringPointerValue(ltsvParser.Newline),
-		Charset: types.StringPointerValue(ltsvParser.Charset),
-		Columns: columns,
-	}
-}

@@ -62,22 +62,3 @@ func (xmlParser *XmlParser) ToXmlParserInput() *params.XmlParserInput {
 		Columns: columns,
 	}
 }
-
-func ToXmlParserModel(xmlParser *job_definitions.XmlParser) *XmlParser {
-	if xmlParser == nil {
-		return nil
-	}
-	columns := make([]XmlParserColumn, 0, len(xmlParser.Columns))
-	for _, input := range xmlParser.Columns {
-		column := XmlParserColumn{
-			Name: types.StringValue(input.Name),
-			Type: types.StringValue(input.Type),
-		}
-		columns = append(columns, column)
-	}
-
-	return &XmlParser{
-		Root:    types.StringValue(xmlParser.Root),
-		Columns: columns,
-	}
-}
