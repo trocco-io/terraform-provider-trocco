@@ -3,7 +3,7 @@ package parser
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
-	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
+	params "terraform-provider-trocco/internal/client/parameters/job_definitions"
 )
 
 type ExcelParser struct {
@@ -42,13 +42,13 @@ func NewExcelParser(excelParser *job_definitions.ExcelParser) *ExcelParser {
 	}
 }
 
-func (excelParser *ExcelParser) ToExcelParserInput() *job_definitions2.ExcelParserInput {
+func (excelParser *ExcelParser) ToExcelParserInput() *params.ExcelParserInput {
 	if excelParser == nil {
 		return nil
 	}
-	columns := make([]job_definitions2.ExcelParserColumnInput, 0, len(excelParser.Columns))
+	columns := make([]params.ExcelParserColumnInput, 0, len(excelParser.Columns))
 	for _, input := range excelParser.Columns {
-		column := job_definitions2.ExcelParserColumnInput{
+		column := params.ExcelParserColumnInput{
 			Name:            input.Name.ValueString(),
 			Type:            input.Type.ValueString(),
 			Format:          input.Format.ValueStringPointer(),
@@ -57,7 +57,7 @@ func (excelParser *ExcelParser) ToExcelParserInput() *job_definitions2.ExcelPars
 		columns = append(columns, column)
 	}
 
-	return &job_definitions2.ExcelParserInput{
+	return &params.ExcelParserInput{
 		DefaultTimeZone: excelParser.DefaultTimeZone.ValueString(),
 		SheetName:       excelParser.SheetName.ValueString(),
 		SkipHeaderLines: excelParser.SkipHeaderLines.ValueInt64(),

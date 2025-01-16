@@ -3,7 +3,7 @@ package parser
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
-	jobdefinitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
+	params "terraform-provider-trocco/internal/client/parameters/job_definitions"
 )
 
 type JsonpathParser struct {
@@ -40,13 +40,13 @@ func NewJsonPathParser(jsonpathParser *job_definitions.JsonpathParser) *Jsonpath
 	}
 }
 
-func (jsonpathParser *JsonpathParser) ToJsonpathParserInput() *jobdefinitions2.JsonpathParserInput {
+func (jsonpathParser *JsonpathParser) ToJsonpathParserInput() *params.JsonpathParserInput {
 	if jsonpathParser == nil {
 		return nil
 	}
-	columns := make([]jobdefinitions2.JsonpathParserColumnInput, 0, len(jsonpathParser.Columns))
+	columns := make([]params.JsonpathParserColumnInput, 0, len(jsonpathParser.Columns))
 	for _, input := range jsonpathParser.Columns {
-		column := jobdefinitions2.JsonpathParserColumnInput{
+		column := params.JsonpathParserColumnInput{
 			Name:     input.Name.ValueString(),
 			Type:     input.Type.ValueString(),
 			TimeZone: input.TimeZone.ValueStringPointer(),
@@ -55,7 +55,7 @@ func (jsonpathParser *JsonpathParser) ToJsonpathParserInput() *jobdefinitions2.J
 		columns = append(columns, column)
 	}
 
-	return &jobdefinitions2.JsonpathParserInput{
+	return &params.JsonpathParserInput{
 		Root:            jsonpathParser.Root.ValueString(),
 		DefaultTimeZone: jsonpathParser.DefaultTimeZone.ValueString(),
 		Columns:         columns,

@@ -3,7 +3,7 @@ package job_definitions
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
-	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
+	params "terraform-provider-trocco/internal/client/parameters/job_definitions"
 )
 
 type JobDefinitionNotification struct {
@@ -42,8 +42,8 @@ func NewJobDefinitionNotifications(jobDefinitionNotifications []job_definitions.
 	return notifications
 }
 
-func (notification JobDefinitionNotification) ToInput() job_definitions2.JobDefinitionNotificationInput {
-	input := job_definitions2.JobDefinitionNotificationInput{
+func (notification JobDefinitionNotification) ToInput() params.JobDefinitionNotificationInput {
+	input := params.JobDefinitionNotificationInput{
 		DestinationType:  notification.DestinationType.ValueString(),
 		SlackChannelID:   notification.SlackChannelID.ValueInt64Pointer(),
 		EmailID:          notification.EmailID.ValueInt64Pointer(),

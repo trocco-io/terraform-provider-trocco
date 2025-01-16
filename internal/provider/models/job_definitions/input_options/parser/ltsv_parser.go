@@ -3,7 +3,7 @@ package parser
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
-	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
+	params "terraform-provider-trocco/internal/client/parameters/job_definitions"
 	"terraform-provider-trocco/internal/provider/models"
 )
 
@@ -39,13 +39,13 @@ func NewLtsvParser(ltsvParser *job_definitions.LtsvParser) *LtsvParser {
 	}
 }
 
-func (ltsvParser *LtsvParser) ToLtsvParserInput() *job_definitions2.LtsvParserInput {
+func (ltsvParser *LtsvParser) ToLtsvParserInput() *params.LtsvParserInput {
 	if ltsvParser == nil {
 		return nil
 	}
-	columns := make([]job_definitions2.LtsvParserColumnInput, 0, len(ltsvParser.Columns))
+	columns := make([]params.LtsvParserColumnInput, 0, len(ltsvParser.Columns))
 	for _, input := range ltsvParser.Columns {
-		column := job_definitions2.LtsvParserColumnInput{
+		column := params.LtsvParserColumnInput{
 			Name:   input.Name.ValueString(),
 			Type:   input.Type.ValueString(),
 			Format: input.Format.ValueStringPointer(),
@@ -53,7 +53,7 @@ func (ltsvParser *LtsvParser) ToLtsvParserInput() *job_definitions2.LtsvParserIn
 		columns = append(columns, column)
 	}
 
-	return &job_definitions2.LtsvParserInput{
+	return &params.LtsvParserInput{
 		Newline: models.NewNullableString(ltsvParser.Newline),
 		Charset: models.NewNullableString(ltsvParser.Charset),
 		Columns: columns,

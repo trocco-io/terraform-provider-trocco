@@ -16,8 +16,8 @@ import (
 	"strconv"
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/client/parameters"
-	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
-	filter2 "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
+	params "terraform-provider-trocco/internal/client/parameters/job_definitions"
+	filterParameters "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
 	"terraform-provider-trocco/internal/provider/models"
 	"terraform-provider-trocco/internal/provider/models/job_definitions"
 	"terraform-provider-trocco/internal/provider/models/job_definitions/filter"
@@ -201,7 +201,7 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 			labels = append(labels, l.Name.ValueString())
 		}
 	}
-	var notifications []job_definitions2.JobDefinitionNotificationInput
+	var notifications []params.JobDefinitionNotificationInput
 	if model.Notifications != nil {
 		for _, n := range model.Notifications {
 			notifications = append(notifications, n.ToInput())
@@ -214,34 +214,34 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 		}
 	}
 
-	var filterColumns []filter2.FilterColumnInput
+	var filterColumns []filterParameters.FilterColumnInput
 	if model.FilterColumns != nil {
 		for _, f := range model.FilterColumns {
 			filterColumns = append(filterColumns, f.ToInput())
 		}
 	}
 
-	var filterMasks []filter2.FilterMaskInput
+	var filterMasks []filterParameters.FilterMaskInput
 	for _, f := range model.FilterMasks {
 		filterMasks = append(filterMasks, f.ToInput())
 	}
 
-	var filterGsub []filter2.FilterGsubInput
+	var filterGsub []filterParameters.FilterGsubInput
 	for _, f := range model.FilterGsub {
 		filterGsub = append(filterGsub, f.ToInput())
 	}
 
-	var filterStringTransforms []filter2.FilterStringTransformInput
+	var filterStringTransforms []filterParameters.FilterStringTransformInput
 	for _, f := range model.FilterStringTransforms {
 		filterStringTransforms = append(filterStringTransforms, f.ToInput())
 	}
 
-	var filterHashes []filter2.FilterHashInput
+	var filterHashes []filterParameters.FilterHashInput
 	for _, f := range model.FilterHashes {
 		filterHashes = append(filterHashes, f.ToInput())
 	}
 
-	var filterUnixTimeconversions []filter2.FilterUnixTimeConversionInput
+	var filterUnixTimeconversions []filterParameters.FilterUnixTimeConversionInput
 	for _, f := range model.FilterUnixTimeConversions {
 		filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
 	}
@@ -330,7 +330,7 @@ func (model *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Up
 			labels = append(labels, l.Name.ValueString())
 		}
 	}
-	notifications := []job_definitions2.JobDefinitionNotificationInput{}
+	notifications := []params.JobDefinitionNotificationInput{}
 	if model.Notifications != nil {
 		for _, n := range model.Notifications {
 			notifications = append(notifications, n.ToInput())
@@ -344,34 +344,34 @@ func (model *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Up
 		}
 	}
 
-	filterColumns := []filter2.FilterColumnInput{}
+	filterColumns := []filterParameters.FilterColumnInput{}
 	if model.FilterColumns != nil {
 		for _, f := range model.FilterColumns {
 			filterColumns = append(filterColumns, f.ToInput())
 		}
 	}
 
-	filterMasks := []filter2.FilterMaskInput{}
+	filterMasks := []filterParameters.FilterMaskInput{}
 	for _, f := range model.FilterMasks {
 		filterMasks = append(filterMasks, f.ToInput())
 	}
 
-	filterGsub := []filter2.FilterGsubInput{}
+	filterGsub := []filterParameters.FilterGsubInput{}
 	for _, f := range model.FilterGsub {
 		filterGsub = append(filterGsub, f.ToInput())
 	}
 
-	filterStringTransforms := []filter2.FilterStringTransformInput{}
+	filterStringTransforms := []filterParameters.FilterStringTransformInput{}
 	for _, f := range model.FilterStringTransforms {
 		filterStringTransforms = append(filterStringTransforms, f.ToInput())
 	}
 
-	filterHashes := []filter2.FilterHashInput{}
+	filterHashes := []filterParameters.FilterHashInput{}
 	for _, f := range model.FilterHashes {
 		filterHashes = append(filterHashes, f.ToInput())
 	}
 
-	filterUnixTimeconversions := []filter2.FilterUnixTimeConversionInput{}
+	filterUnixTimeconversions := []filterParameters.FilterUnixTimeConversionInput{}
 	for _, f := range model.FilterUnixTimeConversions {
 		filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
 	}

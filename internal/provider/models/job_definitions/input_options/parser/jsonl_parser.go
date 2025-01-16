@@ -3,7 +3,7 @@ package parser
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
-	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
+	param "terraform-provider-trocco/internal/client/parameters/job_definitions"
 	"terraform-provider-trocco/internal/provider/models"
 )
 
@@ -45,13 +45,13 @@ func NewJsonlParser(jsonlParser *job_definitions.JsonlParser) *JsonlParser {
 	}
 }
 
-func (jsonlParser *JsonlParser) ToJsonlParserInput() *job_definitions2.JsonlParserInput {
+func (jsonlParser *JsonlParser) ToJsonlParserInput() *param.JsonlParserInput {
 	if jsonlParser == nil {
 		return nil
 	}
-	columns := make([]job_definitions2.JsonlParserColumnInput, 0, len(jsonlParser.Columns))
+	columns := make([]param.JsonlParserColumnInput, 0, len(jsonlParser.Columns))
 	for _, input := range jsonlParser.Columns {
-		column := job_definitions2.JsonlParserColumnInput{
+		column := param.JsonlParserColumnInput{
 			Name:     input.Name.ValueString(),
 			Type:     input.Type.ValueString(),
 			TimeZone: input.TimeZone.ValueStringPointer(),
@@ -60,7 +60,7 @@ func (jsonlParser *JsonlParser) ToJsonlParserInput() *job_definitions2.JsonlPars
 		columns = append(columns, column)
 	}
 
-	return &job_definitions2.JsonlParserInput{
+	return &param.JsonlParserInput{
 		StopOnInvalidRecord: jsonlParser.StopOnInvalidRecord.ValueBool(),
 		DefaultTimeZone:     jsonlParser.DefaultTimeZone.ValueString(),
 		Newline:             models.NewNullableString(jsonlParser.Newline),

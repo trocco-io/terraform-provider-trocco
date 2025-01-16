@@ -3,7 +3,7 @@ package parser
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
-	job_definitions2 "terraform-provider-trocco/internal/client/parameters/job_definitions"
+	params "terraform-provider-trocco/internal/client/parameters/job_definitions"
 	"terraform-provider-trocco/internal/provider/models"
 )
 
@@ -71,13 +71,13 @@ func NewCsvParser(csvParser *job_definitions.CsvParser) *CsvParser {
 	}
 }
 
-func (csvParser *CsvParser) ToCsvParserInput() *job_definitions2.CsvParserInput {
+func (csvParser *CsvParser) ToCsvParserInput() *params.CsvParserInput {
 	if csvParser == nil {
 		return nil
 	}
-	columns := make([]job_definitions2.CsvParserColumnInput, 0, len(csvParser.Columns))
+	columns := make([]params.CsvParserColumnInput, 0, len(csvParser.Columns))
 	for _, input := range csvParser.Columns {
-		column := job_definitions2.CsvParserColumnInput{
+		column := params.CsvParserColumnInput{
 			Name:   input.Name.ValueString(),
 			Type:   input.Type.ValueString(),
 			Format: input.Format.ValueStringPointer(),
@@ -86,7 +86,7 @@ func (csvParser *CsvParser) ToCsvParserInput() *job_definitions2.CsvParserInput 
 		columns = append(columns, column)
 	}
 
-	return &job_definitions2.CsvParserInput{
+	return &params.CsvParserInput{
 		Delimiter:            csvParser.Delimiter.ValueString(),
 		Quote:                models.NewNullableString(csvParser.Quote),
 		Escape:               models.NewNullableString(csvParser.Escape),
