@@ -7,7 +7,7 @@ import (
 	model "terraform-provider-trocco/internal/provider/model/team"
 )
 
-var _ validator.List = AtLeastOneTeamAdminValidator{}
+var _ validator.Set = AtLeastOneTeamAdminValidator{}
 
 type AtLeastOneTeamAdminValidator struct{}
 
@@ -20,7 +20,7 @@ func (v AtLeastOneTeamAdminValidator) MarkdownDescription(ctx context.Context) s
 
 }
 
-func (v AtLeastOneTeamAdminValidator) ValidateList(ctx context.Context, req validator.ListRequest, resp *validator.ListResponse) {
+func (v AtLeastOneTeamAdminValidator) ValidateSet(ctx context.Context, req validator.SetRequest, resp *validator.SetResponse) {
 	if req.ConfigValue.IsUnknown() || req.ConfigValue.IsNull() {
 		return
 	}
