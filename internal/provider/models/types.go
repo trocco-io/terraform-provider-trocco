@@ -25,6 +25,6 @@ func NewNullableString(v types.String) *parameters.NullableString {
 	return &parameters.NullableString{Valid: !v.IsNull(), Value: v.ValueString()}
 }
 
-func NewNullableObject[T any](v *T) *parameters.NullableObject[T] {
+func WrapObject[T any](v *T) *parameters.NullableObject[T] {
 	return &parameters.NullableObject[T]{Valid: v != nil, Value: v}
 }
