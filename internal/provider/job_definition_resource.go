@@ -101,7 +101,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 			},
 			"description": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Description of the job definition. It must be at least 1 character",
+				MarkdownDescription: "Description of the job definition.",
 			},
 			"resource_group_id": schema.Int64Attribute{
 				Optional: true,
