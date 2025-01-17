@@ -2,6 +2,7 @@ package pipeline_definition
 
 import (
 	troccoListPlanValidator "terraform-provider-trocco/internal/provider/validator/common/list"
+	troccoPipelineDefinitionValidator "terraform-provider-trocco/internal/provider/validator/pipeline_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -18,6 +19,7 @@ func Tasks() schema.Attribute {
 			troccoListPlanValidator.UniqueObjectAttributeValue{
 				AttributeName: "key",
 			},
+			troccoPipelineDefinitionValidator.TaskConfig{},
 		},
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
