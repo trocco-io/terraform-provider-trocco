@@ -1,4 +1,3 @@
-
 resource "trocco_job_definition" "mysql_to_bigquery_example" {
   name                     = "mysql_to_bigquery_example"
   description              = ""

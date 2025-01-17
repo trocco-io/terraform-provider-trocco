@@ -1,4 +1,3 @@
-
 resource "trocco_job_definition" "gcs_to_bigquery_example" {
   name                     = "example_gcs_to_bigquery"
   description              = ""
