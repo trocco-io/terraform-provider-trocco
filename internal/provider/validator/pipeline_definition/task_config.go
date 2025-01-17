@@ -56,7 +56,15 @@ func (v TaskConfig) ValidateList(
 	}
 
 	for _, object := range objects {
-		currentTaskTypeValue := object.Attributes()["type"].(types.String).ValueString()
+		currentTaskTypeAttribute, ok := object.Attributes()["type"].(types.String)
+		if !ok {
+			resp.Diagnostics.AddError(
+				"Invalid Task Type",
+				"Task type is invalid",
+			)
+		}
+
+		currentTaskTypeValue := currentTaskTypeAttribute.ValueString()
 
 		if !lo.Contains(lo.Keys(taskConfigKeys), currentTaskTypeValue) {
 			resp.Diagnostics.AddError(
