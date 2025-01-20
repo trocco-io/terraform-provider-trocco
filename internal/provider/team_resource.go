@@ -72,10 +72,10 @@ func (r *teamResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Optional:            true,
 				MarkdownDescription: "The description of the team.",
 			},
-			"members": schema.ListNestedAttribute{
+			"members": schema.SetNestedAttribute{
 				Required:            true,
 				MarkdownDescription: "The members of the team. At least one `team_admin` is required.",
-				Validators: []validator.List{
+				Validators: []validator.Set{
 					troccoValidator.AtLeastOneTeamAdminValidator{},
 				},
 				NestedObject: schema.NestedAttributeObject{
