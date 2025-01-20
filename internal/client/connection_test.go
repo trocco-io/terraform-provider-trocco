@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"terraform-provider-trocco/internal/client/parameters"
+	"terraform-provider-trocco/internal/client/parameter"
 	"testing"
 
 	"github.com/samber/lo"
@@ -109,7 +109,7 @@ func TestCreateConnection(t *testing.T) {
 	out, err := c.CreateConnection("bigquery", &CreateConnectionInput{
 		Name:        "Foo",
 		Description: lo.ToPtr("The quick brown fox jumps over the lazy dog."),
-		ResourceGroupID: lo.ToPtr(parameters.NullableInt64{
+		ResourceGroupID: lo.ToPtr(parameter.NullableInt64{
 			Valid: true,
 			Value: int64(42),
 		}),
@@ -147,7 +147,7 @@ func TestUpdateConnection(t *testing.T) {
 	out, err := c.UpdateConnection("bigquery", 8, &UpdateConnectionInput{
 		Name:        lo.ToPtr("Foo"),
 		Description: lo.ToPtr("The quick brown fox jumps over the lazy dog."),
-		ResourceGroupID: lo.ToPtr(parameters.NullableInt64{
+		ResourceGroupID: lo.ToPtr(parameter.NullableInt64{
 			Valid: true,
 			Value: int64(42),
 		}),

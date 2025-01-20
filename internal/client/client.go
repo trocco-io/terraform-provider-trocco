@@ -82,6 +82,7 @@ func (client *TroccoClient) do(
 		}
 		reqBody = bytes.NewBuffer(b)
 	}
+
 	url := client.BaseURL + path
 	req, err := http.NewRequest(method, url, reqBody)
 	if err != nil {
@@ -118,6 +119,7 @@ func (client *TroccoClient) do(
 		return nil
 	}
 	respBody, err := io.ReadAll(resp.Body)
+
 	if err != nil {
 		return err
 	}
