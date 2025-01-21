@@ -41,6 +41,7 @@ func HTTPRequestTaskConfig() schema.Attribute {
 						"value": schema.StringAttribute{
 							MarkdownDescription: "The value of the header",
 							Required:            true,
+							Sensitive:           true,
 						},
 						"masking": schema.BoolAttribute{
 							MarkdownDescription: "Whether to mask the value of the header",
@@ -60,6 +61,7 @@ func HTTPRequestTaskConfig() schema.Attribute {
 						"value": schema.StringAttribute{
 							MarkdownDescription: "The value of the parameter",
 							Required:            true,
+							Sensitive:           true,
 						},
 						"masking": schema.BoolAttribute{
 							MarkdownDescription: "Whether to mask the value of the parameter",
