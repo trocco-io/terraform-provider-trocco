@@ -745,7 +745,7 @@ Optional:
 Required:
 
 - `key` (String) The key of the header
-- `value` (String) The value of the header
+- `value` (String, Sensitive) The value of the header
 
 Optional:
 
@@ -758,7 +758,7 @@ Optional:
 Required:
 
 - `key` (String) The key of the parameter
-- `value` (String) The value of the parameter
+- `value` (String, Sensitive) The value of the parameter
 
 Optional:
 
