@@ -7,7 +7,7 @@ type HTTPRequestTaskConfig struct {
 	URL               string             `json:"url"`
 	RequestBody       *string            `json:"request_body"`
 	RequestHeaders    []RequestHeader    `json:"request_headers"`
-	RequestParameters []RequestParameter `json:"request_parameter"`
+	RequestParameters []RequestParameter `json:"request_parameters"`
 	CustomVariables   []CustomVariable   `json:"custom_variables"`
 }
 

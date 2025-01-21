@@ -719,7 +719,7 @@ Optional:
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--http_request_config--custom_variables))
 - `request_body` (String) The body of the request
 - `request_headers` (Attributes List) The headers to send with the request (see [below for nested schema](#nestedatt--tasks--http_request_config--request_headers))
-- `request_parameter` (Attributes List) (see [below for nested schema](#nestedatt--tasks--http_request_config--request_parameter))
+- `request_parameters` (Attributes List) (see [below for nested schema](#nestedatt--tasks--http_request_config--request_parameters))
 
 <a id="nestedatt--tasks--http_request_config--custom_variables"></a>
 ### Nested Schema for `tasks.http_request_config.custom_variables`
@@ -752,8 +752,8 @@ Optional:
 - `masking` (Boolean) Whether to mask the value of the header
 
 
-<a id="nestedatt--tasks--http_request_config--request_parameter"></a>
-### Nested Schema for `tasks.http_request_config.request_parameter`
+<a id="nestedatt--tasks--http_request_config--request_parameters"></a>
+### Nested Schema for `tasks.http_request_config.request_parameters`
 
 Required:
 

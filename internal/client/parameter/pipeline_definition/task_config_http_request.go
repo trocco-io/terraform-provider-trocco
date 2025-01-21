@@ -11,7 +11,7 @@ type HTTPRequestTaskConfig struct {
 	URL               string             `json:"url,omitempty"`
 	RequestBody       *string            `json:"request_body,omitempty"`
 	RequestHeaders    []RequestHeader    `json:"request_headers,omitempty"`
-	RequestParameters []RequestParameter `json:"request_parameter,omitempty"`
+	RequestParameters []RequestParameter `json:"request_parameters,omitempty"`
 	CustomVariables   []CustomVariable   `json:"custom_variables,omitempty"`
 }
 

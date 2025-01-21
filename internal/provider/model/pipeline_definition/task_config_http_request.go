@@ -16,7 +16,7 @@ type HTTPRequestTaskConfig struct {
 	URL               types.String            `tfsdk:"url"`
 	RequestBody       types.String            `tfsdk:"request_body"`
 	RequestHeaders    []*HTTPRequestHeader    `tfsdk:"request_headers"`
-	RequestParameters []*HTTPRequestParameter `tfsdk:"request_parameter"`
+	RequestParameters []*HTTPRequestParameter `tfsdk:"request_parameters"`
 	CustomVariables   []CustomVariable        `tfsdk:"custom_variables"`
 }
 

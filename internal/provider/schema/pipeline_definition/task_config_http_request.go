@@ -50,7 +50,7 @@ func HTTPRequestTaskConfig() schema.Attribute {
 					},
 				},
 			},
-			"request_parameter": schema.ListNestedAttribute{
+			"request_parameters": schema.ListNestedAttribute{
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
