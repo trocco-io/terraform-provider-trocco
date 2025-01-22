@@ -2,9 +2,8 @@ package pipeline_definition
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 )
 
 func CustomVariableLoop() schema.Attribute {
@@ -20,25 +19,19 @@ func CustomVariableLoop() schema.Attribute {
 				MarkdownDescription: "Whether parallel execution is allowed",
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.UseStateForUnknown(),
-				},
+				Default:             booldefault.StaticBool(false),
 			},
 			"is_stopped_on_errors": schema.BoolAttribute{
 				MarkdownDescription: "Whether the loop is stopped on errors",
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.UseStateForUnknown(),
-				},
+				Default:             booldefault.StaticBool(true),
 			},
 			"max_errors": schema.Int64Attribute{
 				MarkdownDescription: "The maximum number of errors",
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
-				},
+				Default:             int64default.StaticInt64(0),
 			},
 			"string_config":    StringCustomVariableLoopConfig(),
 			"period_config":    PeriodCustomVariableLoopConfig(),

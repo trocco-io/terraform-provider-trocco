@@ -13,10 +13,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -100,20 +101,13 @@ func (r *pipelineDefinitionResource) Schema(
 				MarkdownDescription: "The description of the pipeline definition",
 				Optional:            true,
 				Computed:            true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
-				},
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
+				Default:             stringdefault.StaticString(""),
 			},
 			"max_task_parallelism": schema.Int64Attribute{
 				MarkdownDescription: "The maximum number of tasks that the pipeline can run in parallel",
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
-				},
+				Default:             int64default.StaticInt64(1),
 				Validators: []validator.Int64{
 					int64validator.AtLeast(0),
 					int64validator.AtMost(10),
@@ -123,9 +117,7 @@ func (r *pipelineDefinitionResource) Schema(
 				MarkdownDescription: "The maximum time in minutes that the pipeline can run",
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
-				},
+				Default:             int64default.StaticInt64(0),
 				Validators: []validator.Int64{
 					int64validator.AtLeast(0),
 				},
@@ -134,9 +126,7 @@ func (r *pipelineDefinitionResource) Schema(
 				MarkdownDescription: "The maximum number of retries that the pipeline can have",
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
-				},
+				Default:             int64default.StaticInt64(0),
 				Validators: []validator.Int64{
 					int64validator.AtLeast(0),
 					int64validator.AtMost(10),
@@ -146,9 +136,7 @@ func (r *pipelineDefinitionResource) Schema(
 				MarkdownDescription: "The minimum time in minutes between retries",
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
-				},
+				Default:             int64default.StaticInt64(0),
 				Validators: []validator.Int64{
 					int64validator.AtLeast(0),
 					int64validator.AtMost(10),
@@ -158,17 +146,13 @@ func (r *pipelineDefinitionResource) Schema(
 				MarkdownDescription: "Weather to skip execution of the pipeline if it is already running",
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.UseStateForUnknown(),
-				},
+				Default:             booldefault.StaticBool(true),
 			},
 			"is_stopped_on_errors": schema.BoolAttribute{
 				MarkdownDescription: "Weather to stop the pipeline if any task fails",
 				Optional:            true,
 				Computed:            true,
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.UseStateForUnknown(),
-				},
+				Default:             booldefault.StaticBool(true),
 			},
 			"labels":            pds.Labels(),
 			"notifications":     pds.Notifications(),
