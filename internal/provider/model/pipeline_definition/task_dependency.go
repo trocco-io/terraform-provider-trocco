@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"strconv"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
@@ -35,9 +36,21 @@ func NewTaskDependency(en *we.TaskDependency, keys map[int64]types.String) *Task
 		return nil
 	}
 
+	// The keys are data that exist only in the provider, so they does not exist on import.
+	// In this case, the provider uses the task identifiers as the keys.
+	var source types.String
+	var destination types.String
+	if len(keys) == 0 {
+		source = types.StringValue(strconv.FormatInt(en.Source, 10))
+		destination = types.StringValue(strconv.FormatInt(en.Destination, 10))
+	} else {
+		source = keys[en.Source]
+		destination = keys[en.Destination]
+	}
+
 	return &TaskDependency{
-		Source:      keys[en.Source],
-		Destination: keys[en.Destination],
+		Source:      source,
+		Destination: destination,
 	}
 }
 
