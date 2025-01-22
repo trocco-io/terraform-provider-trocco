@@ -30,11 +30,19 @@ func (d *FilterColumnPlanModifier) PlanModifyObject(ctx context.Context, req pla
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	var jsonExpandKeepBaseColumn types.Bool
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("json_expand_keep_base_column"), &jsonExpandKeepBaseColumn)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	if jsonExpandEnabled.ValueBool() && typeProp.ValueString() != "json" {
 		addFilterColumnAttributeError(req, resp, "If json_expand_enabled is true, type must be json.")
 	}
 
+	if !jsonExpandEnabled.ValueBool() && jsonExpandKeepBaseColumn.ValueBool() {
+		addFilterColumnAttributeError(req, resp, "If json_expand_enabled is false, json_expand_keep_base_column must be false.")
+	}
 }
 
 func addFilterColumnAttributeError(req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse, message string) {
