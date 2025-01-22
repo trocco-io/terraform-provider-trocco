@@ -21,7 +21,14 @@ resource "trocco_connection" "bigquery" {
   description = "This is a BigQuery connection example"
 
   project_id               = "example"
-  service_account_json_key = "{\"type\":\"service_account\", ...}"
+  service_account_json_key = <<JSON
+  {
+    "type": "service_account",
+    "project_id": "example-project-id",
+    "private_key_id": "example-private-key-id",
+    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
+  }
+  JSON
 }
 ```
 
@@ -46,19 +53,21 @@ resource "trocco_connection" "snowflake" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery` or `snowflake`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake` or `gcs`.
 - `name` (String) The name of the connection.
 
 ### Optional
 
+- `application_name` (String) GCS: Application name.
 - `auth_method` (String) Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`.
 - `description` (String) The description of the connection.
 - `host` (String) Snowflake: The host of a Snowflake account.
 - `password` (String, Sensitive) Snowflake: The password for the Snowflake user.
 - `private_key` (String, Sensitive) Snowflake: A private key for the Snowflake user.
-- `project_id` (String) BigQuery: A GCP project ID.
+- `project_id` (String) BigQuery, GCS: A GCP project ID.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
 - `role` (String) Snowflake: A role attached to the Snowflake user.
+- `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery: A GCP service account key.
 - `user_name` (String) Snowflake: The name of a Snowflake user.
 
