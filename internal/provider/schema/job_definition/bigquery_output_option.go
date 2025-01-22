@@ -4,7 +4,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
@@ -30,50 +33,66 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Table name",
 			},
 			"mode": schema.StringAttribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
+				Default:  stringdefault.StaticString("append"),
 				Validators: []validator.String{
 					stringvalidator.OneOf("append", "append_direct", "replace", "delete_in_advance", "merge"),
 				},
 				MarkdownDescription: "Transfer mode",
 			},
 			"auto_create_dataset": schema.BoolAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(false),
 				MarkdownDescription: "Option for automatic data set generation",
 			},
 			"auto_create_table": schema.BoolAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(false),
 				MarkdownDescription: "Option for automatic table generation",
 			},
 			"open_timeout_sec": schema.Int64Attribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
+				Default:  int64default.StaticInt64(300),
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
 				MarkdownDescription: "Timeout to start connection (seconds)",
 			},
 			"timeout_sec": schema.Int64Attribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
+				Default:  int64default.StaticInt64(300),
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
 				MarkdownDescription: "Time out (seconds)",
 			},
 			"send_timeout_sec": schema.Int64Attribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
+				Default:  int64default.StaticInt64(300),
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
 				MarkdownDescription: "Transmission timeout (sec)",
 			},
 			"read_timeout_sec": schema.Int64Attribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
+				Default:  int64default.StaticInt64(300),
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
 				MarkdownDescription: "Read timeout (seconds)",
 			},
 			"retries": schema.Int64Attribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
+				Default:  int64default.StaticInt64(5),
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
@@ -102,7 +121,9 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Duration of partition(milliseconds). Duration of the partition (in milliseconds). There is no minimum value. The date of the partition plus this integer value is the expiration date. The default value is unspecified (keep forever).",
 			},
 			"location": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
+				Default:             stringdefault.StaticString("US"),
 				MarkdownDescription: "Location",
 			},
 			"template_table": schema.StringAttribute{

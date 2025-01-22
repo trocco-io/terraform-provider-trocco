@@ -3,6 +3,8 @@ package parser
 import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -12,7 +14,9 @@ func ExcelParserSchema() schema.Attribute {
 		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"default_time_zone": schema.StringAttribute{
-				Required:            true,
+				Computed:            true,
+				Optional:            true,
+				Default:             stringdefault.StaticString("Asia/Tokyo"),
 				MarkdownDescription: "Default time zone",
 			},
 			"sheet_name": schema.StringAttribute{
@@ -20,7 +24,9 @@ func ExcelParserSchema() schema.Attribute {
 				MarkdownDescription: "Sheet name",
 			},
 			"skip_header_lines": schema.Int64Attribute{
-				Required:            true,
+				Computed:            true,
+				Optional:            true,
+				Default:             int64default.StaticInt64(1),
 				MarkdownDescription: "Number of header lines to skip",
 			},
 			"columns": schema.ListNestedAttribute{

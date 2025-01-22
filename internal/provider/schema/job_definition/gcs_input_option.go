@@ -4,6 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
@@ -30,7 +31,9 @@ func GcsInputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Path prefix",
 			},
 			"incremental_loading_enabled": schema.BoolAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(false),
 				MarkdownDescription: "If it is true, to be incremental loading. If it is false, to be all record loading",
 			},
 			"last_path": schema.StringAttribute{
@@ -38,7 +41,9 @@ func GcsInputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Last path transferred. It is only enabled when incremental loading is true. When updating differences, data behind in lexicographic order from the path specified here is transferred. If the form is blank, the data is transferred from the beginning. Do not change this value unless there is a special reason. Duplicate data may occur.",
 			},
 			"stop_when_file_not_found": schema.BoolAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(false),
 				MarkdownDescription: "Flag whether the transfer should continue if the file does not exist in the specified path",
 			},
 			"gcs_connection_id": schema.Int64Attribute{

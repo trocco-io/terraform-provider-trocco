@@ -3,6 +3,7 @@ package filters
 import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -20,7 +21,9 @@ func FilterStringTransformsSchema() schema.Attribute {
 					MarkdownDescription: "Column name",
 				},
 				"type": schema.StringAttribute{
-					Required: true,
+					Optional: true,
+					Computed: true,
+					Default:  stringdefault.StaticString("normalize_nfkc"),
 					Validators: []validator.String{
 						stringvalidator.OneOf("normalize_nfkc"),
 					},

@@ -8,6 +8,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -122,11 +124,15 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				},
 			},
 			"is_runnable_concurrently": schema.BoolAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(false),
 				MarkdownDescription: "Specifies whether or not to run a job if another job with the same job definition is running at the time the job is run",
 			},
 			"retry_limit": schema.Int64Attribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
+				Default:  int64default.StaticInt64(0),
 				Validators: []validator.Int64{
 					int64validator.Between(0, 10),
 				},
