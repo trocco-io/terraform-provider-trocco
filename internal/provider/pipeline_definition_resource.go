@@ -139,7 +139,6 @@ func (r *pipelineDefinitionResource) Schema(
 				Default:             int64default.StaticInt64(0),
 				Validators: []validator.Int64{
 					int64validator.AtLeast(0),
-					int64validator.AtMost(10),
 				},
 			},
 			"is_concurrent_execution_skipped": schema.BoolAttribute{
