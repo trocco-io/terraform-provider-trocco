@@ -35,7 +35,7 @@ func (d *OutputOptionPlanModifier) PlanModifyObject(ctx context.Context, req pla
 	// Check if output_option contains only attributes that start with output_option_type
 	for attrName := range outputOption.Attributes() {
 		if !outputOption.Attributes()[attrName].IsNull() && (outputOptionType.ValueString()+"_output_option") != attrName {
-			addOutputOptionAttributeError(req, resp, fmt.Sprintf("contains invalid attribute in output_option. attribute name: %s", attrName))
+			addOutputOptionAttributeError(req, resp, fmt.Sprintf("Attribute output_option contains invalid attribute in output_option. attribute name: %s", attrName))
 			return
 		}
 	}

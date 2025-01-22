@@ -35,7 +35,7 @@ func (d *InputOptionPlanModifier) PlanModifyObject(ctx context.Context, req plan
 	// Check if input_option contains only attributes that start with input_option_type
 	for attrName := range inputOption.Attributes() {
 		if !inputOption.Attributes()[attrName].IsNull() && (inputOptionType.ValueString()+"_input_option") != attrName {
-			addInputOptionAttributeError(req, resp, fmt.Sprintf("contains invalid attribute in input_option. attribute name: %s", attrName))
+			addInputOptionAttributeError(req, resp, fmt.Sprintf("Attribute input_option contains invalid attribute in input_option. attribute name: %s", attrName))
 			return
 		}
 	}
