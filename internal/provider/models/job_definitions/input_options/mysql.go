@@ -1,10 +1,11 @@
 package input_options
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions/input_options"
-	input_options2 "terraform-provider-trocco/internal/client/parameters/job_definitions/input_options"
+	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definitions/input_options"
 	"terraform-provider-trocco/internal/provider/models"
+
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type MySQLInputOption struct {

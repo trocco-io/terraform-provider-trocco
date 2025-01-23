@@ -1,9 +1,10 @@
 package models
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities"
-	"terraform-provider-trocco/internal/client/parameters"
+	"terraform-provider-trocco/internal/client/parameter"
+
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type CustomVariableSetting struct {
@@ -44,13 +45,13 @@ func NewCustomVariableSettings(customVariableSettings *[]entities.CustomVariable
 	return &settings
 }
 
-func ToCustomVariableSettingInputs(settings *[]CustomVariableSetting) *[]parameters.CustomVariableSettingInput {
+func ToCustomVariableSettingInputs(settings *[]CustomVariableSetting) *[]parameter.CustomVariableSettingInput {
 	if settings == nil {
 		return nil
 	}
-	inputs := make([]parameters.CustomVariableSettingInput, 0, len(*settings))
+	inputs := make([]parameter.CustomVariableSettingInput, 0, len(*settings))
 	for _, setting := range *settings {
-		inputs = append(inputs, parameters.CustomVariableSettingInput{
+		inputs = append(inputs, parameter.CustomVariableSettingInput{
 			Name:      setting.Name.ValueString(),
 			Type:      setting.Type.ValueString(),
 			Value:     setting.Value.ValueStringPointer(),

@@ -1,9 +1,10 @@
 package input_options
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
-	parmas "terraform-provider-trocco/internal/client/parameters/job_definitions"
+	parmas "terraform-provider-trocco/internal/client/parameter/job_definitions"
+
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type Decoder struct {

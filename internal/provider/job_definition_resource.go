@@ -3,6 +3,17 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"terraform-provider-trocco/internal/client"
+	"terraform-provider-trocco/internal/client/parameter"
+	params "terraform-provider-trocco/internal/client/parameter/job_definitions"
+	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
+	"terraform-provider-trocco/internal/provider/models"
+	"terraform-provider-trocco/internal/provider/models/job_definitions"
+	"terraform-provider-trocco/internal/provider/models/job_definitions/filter"
+	"terraform-provider-trocco/internal/provider/schema/job_definition"
+	"terraform-provider-trocco/internal/provider/schema/job_definition/filters"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -15,16 +26,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"strconv"
-	"terraform-provider-trocco/internal/client"
-	"terraform-provider-trocco/internal/client/parameters"
-	params "terraform-provider-trocco/internal/client/parameters/job_definitions"
-	filterParameters "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
-	"terraform-provider-trocco/internal/provider/models"
-	"terraform-provider-trocco/internal/provider/models/job_definitions"
-	"terraform-provider-trocco/internal/provider/models/job_definitions/filter"
-	"terraform-provider-trocco/internal/provider/schema/job_definition"
-	"terraform-provider-trocco/internal/provider/schema/job_definition/filters"
 )
 
 var (
@@ -213,7 +214,7 @@ func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Cr
 			notifications = append(notifications, n.ToInput())
 		}
 	}
-	var schedules []parameters.ScheduleInput
+	var schedules []parameter.ScheduleInput
 	if model.Schedules != nil {
 		for _, s := range model.Schedules {
 			schedules = append(schedules, s.ToInput())
@@ -343,7 +344,7 @@ func (model *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Up
 		}
 	}
 
-	schedules := []parameters.ScheduleInput{}
+	schedules := []parameter.ScheduleInput{}
 	if model.Schedules != nil {
 		for _, s := range model.Schedules {
 			schedules = append(schedules, s.ToInput())

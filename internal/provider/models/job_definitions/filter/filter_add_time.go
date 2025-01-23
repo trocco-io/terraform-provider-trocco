@@ -1,10 +1,11 @@
 package filter
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	filterEntities "terraform-provider-trocco/internal/client/entities/job_definitions/filter"
-	filter2 "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
+	filter2 "terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
 	"terraform-provider-trocco/internal/provider/models"
+
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type FilterAddTime struct {

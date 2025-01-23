@@ -1,10 +1,11 @@
 package parser
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
-	param "terraform-provider-trocco/internal/client/parameters/job_definitions"
+	param "terraform-provider-trocco/internal/client/parameter/job_definitions"
 	"terraform-provider-trocco/internal/provider/models"
+
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type JsonlParser struct {

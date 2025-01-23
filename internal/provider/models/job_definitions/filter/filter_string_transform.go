@@ -1,9 +1,10 @@
 package filter
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	filterEntities "terraform-provider-trocco/internal/client/entities/job_definitions/filter"
-	"terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
+	"terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
+
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type FilterStringTransform struct {

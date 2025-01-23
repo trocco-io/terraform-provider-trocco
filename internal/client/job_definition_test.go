@@ -2,15 +2,16 @@ package client
 
 import (
 	"encoding/json"
-	"github.com/samber/lo"
 	"net/http"
 	"net/http/httptest"
 	"terraform-provider-trocco/internal/client/entities"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
 	"terraform-provider-trocco/internal/client/entities/job_definitions/filter"
-	"terraform-provider-trocco/internal/client/parameters"
-	filter2 "terraform-provider-trocco/internal/client/parameters/job_definitions/filter"
+	"terraform-provider-trocco/internal/client/parameter"
+	filter2 "terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
 	"testing"
+
+	"github.com/samber/lo"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -70,13 +71,13 @@ func TestCreateJobDefinition(t *testing.T) {
 	c := NewDevTroccoClient("1234567890", s.URL)
 	out, err := c.CreateJobDefinition(&CreateJobDefinitionInput{
 		Name:                   "name",
-		Description:            lo.ToPtr(parameters.NullableString{Value: "description", Valid: true}),
-		ResourceGroupID:        lo.ToPtr(parameters.NullableInt64{Value: 9, Valid: true}),
+		Description:            lo.ToPtr(parameter.NullableString{Value: "description", Valid: true}),
+		ResourceGroupID:        lo.ToPtr(parameter.NullableInt64{Value: 9, Valid: true}),
 		IsRunnableConcurrently: true,
 		RetryLimit:             10,
 		ResourceEnhancement:    lo.ToPtr("medium"),
 		FilterColumns:          []filter2.FilterColumnInput{},
-		FilterRows: lo.ToPtr(parameters.NullableObject[filter2.FilterRowsInput]{
+		FilterRows: lo.ToPtr(parameter.NullableObject[filter2.FilterRowsInput]{
 			Valid: true,
 			Value: &filter2.FilterRowsInput{
 				Condition:           "or",
@@ -84,7 +85,7 @@ func TestCreateJobDefinition(t *testing.T) {
 			},
 		}),
 		FilterMasks: []filter2.FilterMaskInput{},
-		FilterAddTime: lo.ToPtr(parameters.NullableObject[filter2.FilterAddTimeInput]{
+		FilterAddTime: lo.ToPtr(parameter.NullableObject[filter2.FilterAddTimeInput]{
 			Valid: true,
 			Value: &filter2.FilterAddTimeInput{
 				ColumnName:      "col_name",
@@ -172,8 +173,8 @@ func TestUpdateJobDefinition(t *testing.T) {
 
 	out, err := c.UpdateJobDefinition(8, &UpdateJobDefinitionInput{
 		Name:                   lo.ToPtr("edit"),
-		Description:            lo.ToPtr(parameters.NullableString{Value: "description edit", Valid: true}),
-		ResourceGroupID:        lo.ToPtr(parameters.NullableInt64{Value: 10, Valid: true}),
+		Description:            lo.ToPtr(parameter.NullableString{Value: "description edit", Valid: true}),
+		ResourceGroupID:        lo.ToPtr(parameter.NullableInt64{Value: 10, Valid: true}),
 		IsRunnableConcurrently: lo.ToPtr(true),
 		RetryLimit:             lo.ToPtr(int64(11)),
 		ResourceEnhancement:    lo.ToPtr("medium"),

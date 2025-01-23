@@ -1,30 +1,31 @@
 package models
 
 import (
+	"terraform-provider-trocco/internal/client/parameter"
+
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"terraform-provider-trocco/internal/client/parameters"
 )
 
-func NewNullableBool(v types.Bool) *parameters.NullableBool {
+func NewNullableBool(v types.Bool) *parameter.NullableBool {
 	if v.IsUnknown() {
 		return nil
 	}
-	return &parameters.NullableBool{Valid: !v.IsNull(), Value: v.ValueBool()}
+	return &parameter.NullableBool{Valid: !v.IsNull(), Value: v.ValueBool()}
 }
-func NewNullableInt64(v types.Int64) *parameters.NullableInt64 {
+func NewNullableInt64(v types.Int64) *parameter.NullableInt64 {
 	if v.IsUnknown() {
 		return nil
 	}
-	return &parameters.NullableInt64{Valid: !v.IsNull(), Value: v.ValueInt64()}
-}
-
-func NewNullableString(v types.String) *parameters.NullableString {
-	if v.IsUnknown() {
-		return nil
-	}
-	return &parameters.NullableString{Valid: !v.IsNull(), Value: v.ValueString()}
+	return &parameter.NullableInt64{Valid: !v.IsNull(), Value: v.ValueInt64()}
 }
 
-func WrapObject[T any](v *T) *parameters.NullableObject[T] {
-	return &parameters.NullableObject[T]{Valid: v != nil, Value: v}
+func NewNullableString(v types.String) *parameter.NullableString {
+	if v.IsUnknown() {
+		return nil
+	}
+	return &parameter.NullableString{Valid: !v.IsNull(), Value: v.ValueString()}
+}
+
+func WrapObject[T any](v *T) *parameter.NullableObject[T] {
+	return &parameter.NullableObject[T]{Valid: v != nil, Value: v}
 }
