@@ -498,7 +498,7 @@ func (r *connectionResource) ValidateConfig(
 	}
 
 	if plan.ConnectionType.ValueString() == "bigquery" {
-		if plan.ServiceAccountJSONKey.ValueString() == "" {
+		if plan.ServiceAccountJSONKey.IsNull() {
 			resp.Diagnostics.AddError(
 				"service_account_json_key",
 				"Service account JSON key is required for BigQuery connection.",
@@ -507,35 +507,35 @@ func (r *connectionResource) ValidateConfig(
 	}
 
 	if plan.ConnectionType.ValueString() == "snowflake" {
-		if plan.Host.ValueString() == "" {
+		if plan.Host.IsNull() {
 			resp.Diagnostics.AddError(
 				"host",
 				"Host is required for Snowflake connection.",
 			)
 		}
 
-		if plan.UserName.ValueString() == "" {
+		if plan.UserName.IsNull() {
 			resp.Diagnostics.AddError(
 				"user_name",
 				"User name is required for Snowflake connection.",
 			)
 		}
 
-		if plan.AuthMethod.ValueString() == "" {
+		if plan.AuthMethod.IsNull() {
 			resp.Diagnostics.AddError(
 				"auth_method",
 				"Auth method is required for Snowflake connection.",
 			)
 		}
 
-		if plan.AuthMethod.ValueString() == "key_pair" && plan.PrivateKey.ValueString() == "" {
+		if plan.AuthMethod.ValueString() == "key_pair" && plan.PrivateKey.IsNull() {
 			resp.Diagnostics.AddError(
 				"private_key",
 				"Private key is required for Snowflake connection with key pair authentication.",
 			)
 		}
 
-		if plan.AuthMethod.ValueString() == "user_password" && plan.Password.ValueString() == "" {
+		if plan.AuthMethod.ValueString() == "user_password" && plan.Password.IsNull() {
 			resp.Diagnostics.AddError(
 				"password",
 				"Password is required for Snowflake connection with user password authentication.",
@@ -544,14 +544,14 @@ func (r *connectionResource) ValidateConfig(
 	}
 
 	if plan.ConnectionType.ValueString() == "gcs" {
-		if plan.ApplicationName.ValueString() == "" {
+		if plan.ApplicationName.IsNull() {
 			resp.Diagnostics.AddError(
 				"application_name",
 				"Application name is required for GCS connection.",
 			)
 		}
 
-		if plan.ServiceAccountEmail.ValueString() == "" {
+		if plan.ServiceAccountEmail.IsNull() {
 			resp.Diagnostics.AddError(
 				"service_account_email",
 				"Service account email is required for GCS connection.",
