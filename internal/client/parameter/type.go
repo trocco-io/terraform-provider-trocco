@@ -37,3 +37,16 @@ func (n NullableBool) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(n.Value)
 }
+
+type NullableObject[T any] struct {
+	Value *T
+	Valid bool
+}
+
+// MarshalJSON nullの場合は空のオブジェクトをペイロードに乗せます.
+func (n NullableObject[T]) MarshalJSON() ([]byte, error) {
+	if !n.Valid {
+		return []byte("{}"), nil
+	}
+	return json.Marshal(n.Value)
+}
