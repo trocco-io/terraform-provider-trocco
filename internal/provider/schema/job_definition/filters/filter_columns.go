@@ -3,6 +3,7 @@ package filters
 import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
@@ -40,15 +41,19 @@ func FilterColumnsSchema() schema.Attribute {
 					MarkdownDescription: "date/time format",
 				},
 				"json_expand_enabled": schema.BoolAttribute{
-					Required:            true,
+					Optional:            true,
+					Computed:            true,
+					Default:             booldefault.StaticBool(false),
 					MarkdownDescription: "Flag whether to expand JSON",
 				},
 				"json_expand_keep_base_column": schema.BoolAttribute{
-					Required:            true,
+					Optional:            true,
+					Computed:            true,
+					Default:             booldefault.StaticBool(false),
 					MarkdownDescription: "Flag whether to keep the base column",
 				},
 				"json_expand_columns": schema.ListNestedAttribute{
-					Required: true,
+					Optional: true,
 					NestedObject: schema.NestedAttributeObject{
 						Attributes: map[string]schema.Attribute{
 							"name": schema.StringAttribute{

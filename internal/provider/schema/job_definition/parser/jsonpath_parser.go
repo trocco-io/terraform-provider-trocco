@@ -3,6 +3,7 @@ package parser
 import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -16,7 +17,9 @@ func JsonpathParserSchema() schema.Attribute {
 				MarkdownDescription: "JSONPath",
 			},
 			"default_time_zone": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
+				Default:             stringdefault.StaticString("UTC"),
 				MarkdownDescription: "Default time zone",
 			},
 			"columns": schema.ListNestedAttribute{

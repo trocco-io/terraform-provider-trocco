@@ -35,6 +35,11 @@ func (d *FilterColumnPlanModifier) PlanModifyObject(ctx context.Context, req pla
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	var jsonExpandColumns types.List
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("json_expand_columns"), &jsonExpandColumns)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	if jsonExpandEnabled.ValueBool() && typeProp.ValueString() != "json" {
 		addFilterColumnAttributeError(req, resp, "If json_expand_enabled is true, type must be json.")
@@ -42,6 +47,14 @@ func (d *FilterColumnPlanModifier) PlanModifyObject(ctx context.Context, req pla
 
 	if !jsonExpandEnabled.ValueBool() && jsonExpandKeepBaseColumn.ValueBool() {
 		addFilterColumnAttributeError(req, resp, "If json_expand_enabled is false, json_expand_keep_base_column must be false.")
+	}
+
+	if !jsonExpandEnabled.ValueBool() && !jsonExpandColumns.IsNull() {
+		addFilterColumnAttributeError(req, resp, "If json_expand_enabled is false, json_expand_columns must be null.")
+	}
+
+	if jsonExpandEnabled.ValueBool() && len(jsonExpandColumns.Elements()) < 1 {
+		addFilterColumnAttributeError(req, resp, "If json_expand_enabled is true, json_expand_columns must not be empty.")
 	}
 }
 

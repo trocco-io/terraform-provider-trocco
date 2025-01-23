@@ -3,6 +3,7 @@ package parser
 import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -13,6 +14,8 @@ func LtsvParserSchema() schema.Attribute {
 		Attributes: map[string]schema.Attribute{
 			"newline": schema.StringAttribute{
 				Optional:            true,
+				Computed:            true,
+				Default:             stringdefault.StaticString("CRLF"),
 				MarkdownDescription: "Newline character",
 			},
 			"charset": schema.StringAttribute{

@@ -961,11 +961,9 @@ resource "trocco_job_definition" "schedules" {
 - `filter_columns` (Attributes List) (see [below for nested schema](#nestedatt--filter_columns))
 - `input_option` (Attributes) (see [below for nested schema](#nestedatt--input_option))
 - `input_option_type` (String) Input option type.
-- `is_runnable_concurrently` (Boolean) Specifies whether or not to run a job if another job with the same job definition is running at the time the job is run
 - `name` (String) Name of the job definition. It must be less than 256 characters
 - `output_option` (Attributes) (see [below for nested schema](#nestedatt--output_option))
 - `output_option_type` (String) Output option type.
-- `retry_limit` (Number) Maximum number of retries. if set 0, the job will not be retried
 
 ### Optional
 
@@ -977,10 +975,12 @@ resource "trocco_job_definition" "schedules" {
 - `filter_rows` (Attributes) Filter settings (see [below for nested schema](#nestedatt--filter_rows))
 - `filter_string_transforms` (Attributes List) Character string conversion (see [below for nested schema](#nestedatt--filter_string_transforms))
 - `filter_unixtime_conversions` (Attributes List) UNIX time conversion (see [below for nested schema](#nestedatt--filter_unixtime_conversions))
+- `is_runnable_concurrently` (Boolean) Specifies whether or not to run a job if another job with the same job definition is running at the time the job is run
 - `labels` (Attributes Set) Labels to be attached to the job definition (see [below for nested schema](#nestedatt--labels))
 - `notifications` (Attributes Set) Notifications to be attached to the job definition (see [below for nested schema](#nestedatt--notifications))
 - `resource_enhancement` (String) Resource size to be used when executing the job. If not specified, the resource size specified in the transfer settings is applied. The value that can be specified varies depending on the connector. (This parameter is available only in the Professional plan.
 - `resource_group_id` (Number) ID of the resource group to which the job definition belongs
+- `retry_limit` (Number) Maximum number of retries. if set 0, the job will not be retried
 - `schedules` (Attributes Set) Schedules to be attached to the job definition (see [below for nested schema](#nestedatt--schedules))
 
 ### Read-Only
@@ -992,9 +992,6 @@ resource "trocco_job_definition" "schedules" {
 
 Required:
 
-- `json_expand_columns` (Attributes List) (see [below for nested schema](#nestedatt--filter_columns--json_expand_columns))
-- `json_expand_enabled` (Boolean) Flag whether to expand JSON
-- `json_expand_keep_base_column` (Boolean) Flag whether to keep the base column
 - `name` (String) Column name
 - `src` (String) Column name in source
 - `type` (String) column type
@@ -1003,6 +1000,9 @@ Optional:
 
 - `default` (String) Default value. For existing columns, this value will be inserted only if input is null. For new columns, this value is inserted for all.
 - `format` (String) date/time format
+- `json_expand_columns` (Attributes List) (see [below for nested schema](#nestedatt--filter_columns--json_expand_columns))
+- `json_expand_enabled` (Boolean) Flag whether to expand JSON
+- `json_expand_keep_base_column` (Boolean) Flag whether to keep the base column
 
 <a id="nestedatt--filter_columns--json_expand_columns"></a>
 ### Nested Schema for `filter_columns.json_expand_columns`
@@ -1035,9 +1035,7 @@ Required:
 
 - `bucket` (String) Bucket name
 - `gcs_connection_id` (Number) Id of GCS connection
-- `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
 - `path_prefix` (String) Path prefix
-- `stop_when_file_not_found` (Boolean) Flag whether the transfer should continue if the file does not exist in the specified path
 
 Optional:
 
@@ -1046,11 +1044,13 @@ Optional:
 - `decoder` (Attributes) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--decoder))
 - `decompression_type` (String) Decompression type
 - `excel_parser` (Attributes) For files in excel format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--gcs_input_option--excel_parser))
+- `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
 - `jsonl_parser` (Attributes) For files in JSONL format, this parameter is required (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonl_parser))
 - `jsonpath_parser` (Attributes) For files in jsonpath format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonpath_parser))
 - `last_path` (String) Last path transferred. It is only enabled when incremental loading is true. When updating differences, data behind in lexicographic order from the path specified here is transferred. If the form is blank, the data is transferred from the beginning. Do not change this value unless there is a special reason. Duplicate data may occur.
 - `ltsv_parser` (Attributes) For files in LTSV format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--gcs_input_option--ltsv_parser))
 - `parquet_parser` (Attributes) For files in parquet format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--gcs_input_option--parquet_parser))
+- `stop_when_file_not_found` (Boolean) Flag whether the transfer should continue if the file does not exist in the specified path
 - `xml_parser` (Attributes) For files in xml format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--gcs_input_option--xml_parser))
 
 <a id="nestedatt--input_option--gcs_input_option--csv_parser"></a>
@@ -1058,27 +1058,27 @@ Optional:
 
 Required:
 
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--csv_parser--columns))
+
+Optional:
+
 - `allow_extra_columns` (Boolean) If true, ignore the column. If false, treat as invalid record.
 - `allow_optional_columns` (Boolean) If true, NULL-complete the missing columns. If false, treat as invalid record.
-- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--csv_parser--columns))
+- `charset` (String) Character set
+- `comment_line_marker` (String) Comment line marker. Skip if this character is at the beginning of a line
 - `default_date` (String) Default date
 - `default_time_zone` (String) Default time zone
 - `delimiter` (String) Delimiter
+- `escape` (String) Escape character
 - `max_quoted_size_limit` (Number) Maximum amount of data that can be enclosed in quotation marks.
 - `newline` (String) Newline character
+- `null_string` (String) Replacement source string to be converted to NULL
 - `null_string_enabled` (Boolean) Flag whether or not to set the string to be replaced by NULL
+- `quote` (String) Quote character
 - `quotes_in_quoted_fields` (String) Processing method for irregular quarts
 - `skip_header_lines` (Number) Number of header lines to skip
 - `stop_on_invalid_record` (Boolean) Flag whether or not to abort the transfer if an invalid record is found.
 - `trim_if_not_quoted` (Boolean) Flag whether or not to remove spaces from the value if it is not quoted
-
-Optional:
-
-- `charset` (String) Character set
-- `comment_line_marker` (String) Comment line marker. Skip if this character is at the beginning of a line
-- `escape` (String) Escape character
-- `null_string` (String) Replacement source string to be converted to NULL
-- `quote` (String) Quote character
 
 <a id="nestedatt--input_option--gcs_input_option--csv_parser--columns"></a>
 ### Nested Schema for `input_option.gcs_input_option.csv_parser.columns`
@@ -1127,8 +1127,11 @@ Optional:
 Required:
 
 - `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--gcs_input_option--excel_parser--columns))
-- `default_time_zone` (String) Default time zone
 - `sheet_name` (String) Sheet name
+
+Optional:
+
+- `default_time_zone` (String) Default time zone
 - `skip_header_lines` (Number) Number of header lines to skip
 
 <a id="nestedatt--input_option--gcs_input_option--excel_parser--columns"></a>
@@ -1152,13 +1155,13 @@ Optional:
 Required:
 
 - `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonl_parser--columns))
-- `default_time_zone` (String) Default time zone
-- `stop_on_invalid_record` (Boolean) Flag whether the transfer should stop if an invalid record is found
 
 Optional:
 
 - `charset` (String) Character set
+- `default_time_zone` (String) Default time zone
 - `newline` (String) Newline character
+- `stop_on_invalid_record` (Boolean) Flag whether the transfer should stop if an invalid record is found
 
 <a id="nestedatt--input_option--gcs_input_option--jsonl_parser--columns"></a>
 ### Nested Schema for `input_option.gcs_input_option.jsonl_parser.columns`
@@ -1181,8 +1184,11 @@ Optional:
 Required:
 
 - `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--gcs_input_option--jsonpath_parser--columns))
-- `default_time_zone` (String) Default time zone
 - `root` (String) JSONPath
+
+Optional:
+
+- `default_time_zone` (String) Default time zone
 
 <a id="nestedatt--input_option--gcs_input_option--jsonpath_parser--columns"></a>
 ### Nested Schema for `input_option.gcs_input_option.jsonpath_parser.columns`
@@ -1276,21 +1282,21 @@ Optional:
 
 Required:
 
-- `connect_timeout` (Number) Connection timeout (sec)
 - `database` (String) database name
-- `fetch_rows` (Number) Number of records processed by the cursor at one time
-- `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
 - `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--mysql_input_option--input_option_columns))
 - `mysql_connection_id` (Number) ID of MySQL connection
-- `socket_timeout` (Number) Socket timeout (seconds)
 
 Optional:
 
+- `connect_timeout` (Number) Connection timeout (sec)
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--mysql_input_option--custom_variable_settings))
 - `default_time_zone` (String) Default time zone. enter the server-side time zone setting for MySQL. If the time zone is set to Japan, enter “Asia/Tokyo”.
+- `fetch_rows` (Number) Number of records processed by the cursor at one time
 - `incremental_columns` (String) Columns to determine incremental data
+- `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
 - `last_record` (String) Last record transferred. The value of the column specified here is stored in “Last Transferred Record” for each transfer, and for the second and subsequent transfers, only records for which the value of the “Column for Determining Incremental Data” is greater than the value of the previous transfer (= “Last Transferred Record”) are transferred. If you wish to specify multiple columns, specify them separated by commas. If not specified, the primary key is used.
 - `query` (String) If you want to use all record loading, specify it.
+- `socket_timeout` (Number) Socket timeout (seconds)
 - `table` (String) table name. If you want to use incremental loading, specify it.
 - `use_legacy_datetime_code` (Boolean) Legacy time code setting. setting the useLegacyDatetimeCode option in the JDBC driver
 
@@ -1335,30 +1341,30 @@ Optional:
 
 Required:
 
-- `auto_create_dataset` (Boolean) Option for automatic data set generation
-- `auto_create_table` (Boolean) Option for automatic table generation
 - `bigquery_connection_id` (Number) Id of BigQuery connection
 - `bigquery_output_option_clustering_fields` (List of String) Clustered column. Clustering can only be set when creating a new table. A maximum of four clustered columns can be specified.
 - `bigquery_output_option_merge_keys` (List of String) Merge key. The column to be used as the merge key.
 - `dataset` (String) Dataset name
-- `location` (String) Location
-- `mode` (String) Transfer mode
-- `open_timeout_sec` (Number) Timeout to start connection (seconds)
-- `read_timeout_sec` (Number) Read timeout (seconds)
-- `retries` (Number) Number of retries
-- `send_timeout_sec` (Number) Transmission timeout (sec)
 - `table` (String) Table name
-- `timeout_sec` (Number) Time out (seconds)
 
 Optional:
 
+- `auto_create_dataset` (Boolean) Option for automatic data set generation
+- `auto_create_table` (Boolean) Option for automatic table generation
 - `bigquery_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--custom_variable_settings))
+- `location` (String) Location
+- `mode` (String) Transfer mode
+- `open_timeout_sec` (Number) Timeout to start connection (seconds)
 - `partitioning_type` (String) Partitioning type. If params is null, No partitions. ingestion_time: Partitioning by acquisition time. time_unit_column: Partitioning by time unit column
+- `read_timeout_sec` (Number) Read timeout (seconds)
+- `retries` (Number) Number of retries
+- `send_timeout_sec` (Number) Transmission timeout (sec)
 - `template_table` (String) Template table. Generate schema information for inclusion in Google BigQuery from schema information in this table
 - `time_partitioning_expiration_ms` (Number) Duration of partition(milliseconds). Duration of the partition (in milliseconds). There is no minimum value. The date of the partition plus this integer value is the expiration date. The default value is unspecified (keep forever).
 - `time_partitioning_field` (String) If partitioning_type is time_unit_column, this parameter is required
 - `time_partitioning_type` (String) Time partitioning type. If you specify anything for partitioning_type, this parameter is required
+- `timeout_sec` (Number) Time out (seconds)
 
 <a id="nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options"></a>
 ### Nested Schema for `output_option.bigquery_output_option.bigquery_output_option_column_options`
@@ -1469,6 +1475,9 @@ Required:
 Required:
 
 - `column_name` (String) Column name
+
+Optional:
+
 - `type` (String) Transformation type
 
 
