@@ -34,7 +34,7 @@ resource "trocco_team" "example" {
 
 ### Required
 
-- `members` (Attributes List) The members of the team. At least one `team_admin` is required. (see [below for nested schema](#nestedatt--members))
+- `members` (Attributes Set) The members of the team. At least one `team_admin` is required. (see [below for nested schema](#nestedatt--members))
 - `name` (String) The name of the team.
 
 ### Optional

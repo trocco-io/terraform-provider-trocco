@@ -67,7 +67,8 @@ func NewDevTroccoClient(apiKey, baseURL string) *TroccoClient {
 }
 
 type ErrorOutput struct {
-	Error string `json:"error"`
+	Error   string `json:"error"`
+	Message string `json:"message"`
 }
 
 func (client *TroccoClient) do(
@@ -106,7 +107,13 @@ func (client *TroccoClient) do(
 		if err != nil {
 			return fmt.Errorf("%s", resp.Status)
 		}
-		return fmt.Errorf("%s", errorOutput.Error)
+
+		if errorOutput.Error != "" {
+			return fmt.Errorf("%s", errorOutput.Error)
+		}
+		if errorOutput.Message != "" {
+			return fmt.Errorf("%s", errorOutput.Message)
+		}
 	}
 	if output == nil {
 		return nil
