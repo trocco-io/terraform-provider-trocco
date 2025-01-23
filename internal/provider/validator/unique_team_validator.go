@@ -27,17 +27,17 @@ func (v UniqueTeamValidator) ValidateSet(ctx context.Context, request validator.
 		return
 	}
 
-	for i, teamID := range teamIDs {
-		for j, otherTeamID := range teamIDs {
+	for i, teamI := range teamIDs {
+		for j, teamJ := range teamIDs {
 			if i == j {
 				continue
 			}
 
-			if teamID.TeamID == otherTeamID.TeamID {
+			if teamI.TeamID == teamJ.TeamID {
 				response.Diagnostics.AddAttributeError(
 					request.Path,
 					"Duplicate Team ID",
-					fmt.Sprintf("Team ID %q is duplicated in the list.", teamID.TeamID),
+					fmt.Sprintf("Team ID %q is duplicated in the list.", teamI.TeamID),
 				)
 				return
 			}
