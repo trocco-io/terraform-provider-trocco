@@ -28,7 +28,7 @@ type jsonExpandColumn struct {
 func NewFilterColumns(filterColumns []filter.FilterColumn) []FilterColumn {
 	outputs := make([]FilterColumn, 0, len(filterColumns))
 	for _, input := range filterColumns {
-		expandColumns := make([]jsonExpandColumn, 0, len(input.JSONExpandColumns))
+		var expandColumns []jsonExpandColumn
 		for _, input := range input.JSONExpandColumns {
 			column := jsonExpandColumn{
 				Name:     types.StringValue(input.Name),
