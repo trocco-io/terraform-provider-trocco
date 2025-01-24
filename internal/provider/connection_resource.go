@@ -191,7 +191,6 @@ func (r *connectionResource) Schema(
 			// BigQuery Fields
 			"project_id": schema.StringAttribute{
 				MarkdownDescription: "BigQuery, GCS: A GCP project ID.",
-				Computed:            true,
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
@@ -255,7 +254,6 @@ func (r *connectionResource) Schema(
 			// GCS Fields
 			"application_name": schema.StringAttribute{
 				MarkdownDescription: "GCS: Application name.",
-				Computed:            true,
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
@@ -503,6 +501,12 @@ func (r *connectionResource) ValidateConfig(
 				"Service account JSON key is required for BigQuery connection.",
 			)
 		}
+		if plan.ProjectID.IsNull() {
+			resp.Diagnostics.AddError(
+				"project_id",
+				"Project ID is required for BigQuery connection.",
+			)
+		}
 	}
 
 	if plan.ConnectionType.ValueString() == "snowflake" {
@@ -554,6 +558,12 @@ func (r *connectionResource) ValidateConfig(
 			resp.Diagnostics.AddError(
 				"service_account_email",
 				"Service account email is required for GCS connection.",
+			)
+		}
+		if plan.ProjectID.IsNull() {
+			resp.Diagnostics.AddError(
+				"project_id",
+				"Project ID is required for GCS connection.",
 			)
 		}
 	}
