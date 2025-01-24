@@ -2,7 +2,7 @@ package job_definitions
 
 import (
 	"terraform-provider-trocco/internal/client"
-	"terraform-provider-trocco/internal/provider/models"
+	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/models/job_definitions/output_options"
 )
 
@@ -16,14 +16,14 @@ func NewOutputOption(outputOption client.OutputOption) *OutputOption {
 	}
 }
 
-func (outputOption OutputOption) ToInput() client.OutputOptionInput {
+func (o OutputOption) ToInput() client.OutputOptionInput {
 	return client.OutputOptionInput{
-		BigQueryOutputOption: models.WrapObject(outputOption.BigQueryOutputOption.ToInput()),
+		BigQueryOutputOption: model.WrapObject(o.BigQueryOutputOption.ToInput()),
 	}
 }
 
-func (outputOption OutputOption) ToUpdateInput() *client.UpdateOutputOptionInput {
+func (o OutputOption) ToUpdateInput() *client.UpdateOutputOptionInput {
 	return &client.UpdateOutputOptionInput{
-		BigQueryOutputOption: models.WrapObject(outputOption.BigQueryOutputOption.ToUpdateInput()),
+		BigQueryOutputOption: model.WrapObject(o.BigQueryOutputOption.ToUpdateInput()),
 	}
 }

@@ -3,6 +3,7 @@ package input_options
 import (
 	"terraform-provider-trocco/internal/client/entities/job_definitions/input_options"
 	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definitions/input_options"
+	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/models"
 	"terraform-provider-trocco/internal/provider/models/job_definitions/input_options/parser"
 
@@ -62,9 +63,9 @@ func (gcsInputOption *GcsInputOption) ToInput() *input_options2.GcsInputOptionIn
 		Bucket:                    gcsInputOption.Bucket.ValueString(),
 		PathPrefix:                gcsInputOption.PathPrefix.ValueString(),
 		IncrementalLoadingEnabled: gcsInputOption.IncrementalLoadingEnabled.ValueBool(),
-		LastPath:                  models.NewNullableString(gcsInputOption.LastPath),
+		LastPath:                  model.NewNullableString(gcsInputOption.LastPath),
 		StopWhenFileNotFound:      gcsInputOption.StopWhenFileNotFound.ValueBool(),
-		DecompressionType:         models.NewNullableString(gcsInputOption.DecompressionType),
+		DecompressionType:         model.NewNullableString(gcsInputOption.DecompressionType),
 		CsvParser:                 gcsInputOption.CsvParser.ToCsvParserInput(),
 		JsonlParser:               gcsInputOption.JsonlParser.ToJsonlParserInput(),
 		JsonpathParser:            gcsInputOption.JsonpathParser.ToJsonpathParserInput(),
@@ -87,9 +88,9 @@ func (gcsInputOption *GcsInputOption) ToUpdateInput() *input_options2.UpdateGcsI
 		Bucket:                    gcsInputOption.Bucket.ValueStringPointer(),
 		PathPrefix:                gcsInputOption.PathPrefix.ValueStringPointer(),
 		IncrementalLoadingEnabled: gcsInputOption.IncrementalLoadingEnabled.ValueBoolPointer(),
-		LastPath:                  models.NewNullableString(gcsInputOption.LastPath),
+		LastPath:                  model.NewNullableString(gcsInputOption.LastPath),
 		StopWhenFileNotFound:      gcsInputOption.StopWhenFileNotFound.ValueBoolPointer(),
-		DecompressionType:         models.NewNullableString(gcsInputOption.DecompressionType),
+		DecompressionType:         model.NewNullableString(gcsInputOption.DecompressionType),
 		CsvParser:                 gcsInputOption.CsvParser.ToCsvParserInput(),
 		JsonlParser:               gcsInputOption.JsonlParser.ToJsonlParserInput(),
 		JsonpathParser:            gcsInputOption.JsonpathParser.ToJsonpathParserInput(),

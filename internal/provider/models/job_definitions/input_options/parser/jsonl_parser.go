@@ -3,7 +3,7 @@ package parser
 import (
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
 	param "terraform-provider-trocco/internal/client/parameter/job_definitions"
-	"terraform-provider-trocco/internal/provider/models"
+	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -64,8 +64,8 @@ func (jsonlParser *JsonlParser) ToJsonlParserInput() *param.JsonlParserInput {
 	return &param.JsonlParserInput{
 		StopOnInvalidRecord: jsonlParser.StopOnInvalidRecord.ValueBool(),
 		DefaultTimeZone:     jsonlParser.DefaultTimeZone.ValueString(),
-		Newline:             models.NewNullableString(jsonlParser.Newline),
-		Charset:             models.NewNullableString(jsonlParser.Charset),
+		Newline:             model.NewNullableString(jsonlParser.Newline),
+		Charset:             model.NewNullableString(jsonlParser.Charset),
 		Columns:             columns,
 	}
 }

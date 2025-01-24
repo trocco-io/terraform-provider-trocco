@@ -3,7 +3,7 @@ package parser
 import (
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
 	params "terraform-provider-trocco/internal/client/parameter/job_definitions"
-	"terraform-provider-trocco/internal/provider/models"
+	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -89,14 +89,14 @@ func (csvParser *CsvParser) ToCsvParserInput() *params.CsvParserInput {
 
 	return &params.CsvParserInput{
 		Delimiter:            csvParser.Delimiter.ValueString(),
-		Quote:                models.NewNullableString(csvParser.Quote),
-		Escape:               models.NewNullableString(csvParser.Escape),
+		Quote:                model.NewNullableString(csvParser.Quote),
+		Escape:               model.NewNullableString(csvParser.Escape),
 		SkipHeaderLines:      csvParser.SkipHeaderLines.ValueInt64(),
 		NullStringEnabled:    csvParser.NullStringEnabled.ValueBool(),
-		NullString:           models.NewNullableString(csvParser.NullString),
+		NullString:           model.NewNullableString(csvParser.NullString),
 		TrimIfNotQuoted:      csvParser.TrimIfNotQuoted.ValueBool(),
 		QuotesInQuotedFields: csvParser.QuotesInQuotedFields.ValueString(),
-		CommentLineMarker:    models.NewNullableString(csvParser.CommentLineMarker),
+		CommentLineMarker:    model.NewNullableString(csvParser.CommentLineMarker),
 		AllowOptionalColumns: csvParser.AllowOptionalColumns.ValueBool(),
 		AllowExtraColumns:    csvParser.AllowExtraColumns.ValueBool(),
 		MaxQuotedSizeLimit:   csvParser.MaxQuotedSizeLimit.ValueInt64(),
@@ -104,7 +104,7 @@ func (csvParser *CsvParser) ToCsvParserInput() *params.CsvParserInput {
 		DefaultTimeZone:      csvParser.DefaultTimeZone.ValueString(),
 		DefaultDate:          csvParser.DefaultDate.ValueString(),
 		Newline:              csvParser.Newline.ValueString(),
-		Charset:              models.NewNullableString(csvParser.Charset),
+		Charset:              model.NewNullableString(csvParser.Charset),
 		Columns:              columns,
 	}
 }

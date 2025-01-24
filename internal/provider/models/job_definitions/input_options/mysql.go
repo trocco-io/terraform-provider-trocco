@@ -3,6 +3,7 @@ package input_options
 import (
 	"terraform-provider-trocco/internal/client/entities/job_definitions/input_options"
 	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definitions/input_options"
+	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -75,15 +76,15 @@ func (mysqlInputOption *MySQLInputOption) ToInput() *input_options2.MySQLInputOp
 
 	return &input_options2.MySQLInputOptionInput{
 		Database:                  mysqlInputOption.Database.ValueString(),
-		Table:                     models.NewNullableString(mysqlInputOption.Table),
-		Query:                     models.NewNullableString(mysqlInputOption.Query),
-		IncrementalColumns:        models.NewNullableString(mysqlInputOption.IncrementalColumns),
-		LastRecord:                models.NewNullableString(mysqlInputOption.LastRecord),
+		Table:                     model.NewNullableString(mysqlInputOption.Table),
+		Query:                     model.NewNullableString(mysqlInputOption.Query),
+		IncrementalColumns:        model.NewNullableString(mysqlInputOption.IncrementalColumns),
+		LastRecord:                model.NewNullableString(mysqlInputOption.LastRecord),
 		IncrementalLoadingEnabled: mysqlInputOption.IncrementalLoadingEnabled.ValueBool(),
 		FetchRows:                 mysqlInputOption.FetchRows.ValueInt64(),
 		ConnectTimeout:            mysqlInputOption.ConnectTimeout.ValueInt64(),
 		SocketTimeout:             mysqlInputOption.SocketTimeout.ValueInt64(),
-		DefaultTimeZone:           models.NewNullableString(mysqlInputOption.DefaultTimeZone),
+		DefaultTimeZone:           model.NewNullableString(mysqlInputOption.DefaultTimeZone),
 		UseLegacyDatetimeCode:     mysqlInputOption.UseLegacyDatetimeCode.ValueBool(),
 		MySQLConnectionID:         mysqlInputOption.MySQLConnectionID.ValueInt64(),
 		InputOptionColumns:        toInputOptionColumnsInput(mysqlInputOption.InputOptionColumns),
@@ -100,15 +101,15 @@ func (mysqlInputOption *MySQLInputOption) ToUpdateInput() *input_options2.Update
 
 	return &input_options2.UpdateMySQLInputOptionInput{
 		Database:                  mysqlInputOption.Database.ValueStringPointer(),
-		Table:                     models.NewNullableString(mysqlInputOption.Table),
-		Query:                     models.NewNullableString(mysqlInputOption.Query),
-		IncrementalColumns:        models.NewNullableString(mysqlInputOption.IncrementalColumns),
-		LastRecord:                models.NewNullableString(mysqlInputOption.LastRecord),
+		Table:                     model.NewNullableString(mysqlInputOption.Table),
+		Query:                     model.NewNullableString(mysqlInputOption.Query),
+		IncrementalColumns:        model.NewNullableString(mysqlInputOption.IncrementalColumns),
+		LastRecord:                model.NewNullableString(mysqlInputOption.LastRecord),
 		IncrementalLoadingEnabled: mysqlInputOption.IncrementalLoadingEnabled.ValueBoolPointer(),
 		FetchRows:                 mysqlInputOption.FetchRows.ValueInt64Pointer(),
 		ConnectTimeout:            mysqlInputOption.ConnectTimeout.ValueInt64Pointer(),
 		SocketTimeout:             mysqlInputOption.SocketTimeout.ValueInt64Pointer(),
-		DefaultTimeZone:           models.NewNullableString(mysqlInputOption.DefaultTimeZone),
+		DefaultTimeZone:           model.NewNullableString(mysqlInputOption.DefaultTimeZone),
 		UseLegacyDatetimeCode:     mysqlInputOption.UseLegacyDatetimeCode.ValueBoolPointer(),
 		MySQLConnectionID:         mysqlInputOption.MySQLConnectionID.ValueInt64Pointer(),
 		InputOptionColumns:        &inputOptionColumns,

@@ -3,7 +3,7 @@ package parser
 import (
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
 	params "terraform-provider-trocco/internal/client/parameter/job_definitions"
-	"terraform-provider-trocco/internal/provider/models"
+	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -55,8 +55,8 @@ func (ltsvParser *LtsvParser) ToLtsvParserInput() *params.LtsvParserInput {
 	}
 
 	return &params.LtsvParserInput{
-		Newline: models.NewNullableString(ltsvParser.Newline),
-		Charset: models.NewNullableString(ltsvParser.Charset),
+		Newline: model.NewNullableString(ltsvParser.Newline),
+		Charset: model.NewNullableString(ltsvParser.Charset),
 		Columns: columns,
 	}
 }

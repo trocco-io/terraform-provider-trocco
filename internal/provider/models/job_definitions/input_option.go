@@ -2,7 +2,7 @@ package job_definitions
 
 import (
 	"terraform-provider-trocco/internal/client"
-	"terraform-provider-trocco/internal/provider/models"
+	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/models/job_definitions/input_options"
 )
 
@@ -18,16 +18,16 @@ func NewInputOption(inputOption client.InputOption) *InputOption {
 	}
 }
 
-func (inputOption InputOption) ToInput() client.InputOptionInput {
+func (o InputOption) ToInput() client.InputOptionInput {
 	return client.InputOptionInput{
-		GcsInputOption:   models.WrapObject(inputOption.GcsInputOption.ToInput()),
-		MySQLInputOption: models.WrapObject(inputOption.MySQLInputOption.ToInput()),
+		GcsInputOption:   model.WrapObject(o.GcsInputOption.ToInput()),
+		MySQLInputOption: model.WrapObject(o.MySQLInputOption.ToInput()),
 	}
 }
 
-func (inputOption InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
+func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
 	return &client.UpdateInputOptionInput{
-		GcsInputOption:   models.WrapObject(inputOption.GcsInputOption.ToUpdateInput()),
-		MySQLInputOption: models.WrapObject(inputOption.MySQLInputOption.ToUpdateInput()),
+		GcsInputOption:   model.WrapObject(o.GcsInputOption.ToUpdateInput()),
+		MySQLInputOption: model.WrapObject(o.MySQLInputOption.ToUpdateInput()),
 	}
 }

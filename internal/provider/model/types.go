@@ -1,4 +1,4 @@
-package models
+package model
 
 import (
 	"terraform-provider-trocco/internal/client/parameter"
@@ -28,4 +28,8 @@ func NewNullableString(v types.String) *parameter.NullableString {
 	}
 
 	return &parameter.NullableString{Valid: !v.IsNull(), Value: v.ValueString()}
+}
+
+func WrapObject[T any](v *T) *parameter.NullableObject[T] {
+	return &parameter.NullableObject[T]{Valid: v != nil, Value: v}
 }

@@ -3,7 +3,7 @@ package filter
 import (
 	filterEntities "terraform-provider-trocco/internal/client/entities/job_definitions/filter"
 	filter2 "terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
-	"terraform-provider-trocco/internal/provider/models"
+	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -27,15 +27,15 @@ func NewFilterAddTime(filterAddTime *filterEntities.FilterAddTime) *FilterAddTim
 	}
 }
 
-func (filterAddTime *FilterAddTime) ToInput() *filter2.FilterAddTimeInput {
-	if filterAddTime == nil {
+func (t *FilterAddTime) ToInput() *filter2.FilterAddTimeInput {
+	if t == nil {
 		return nil
 	}
 
 	return &filter2.FilterAddTimeInput{
-		ColumnName:      filterAddTime.ColumnName.ValueString(),
-		Type:            filterAddTime.Type.ValueString(),
-		TimestampFormat: models.NewNullableString(filterAddTime.TimestampFormat),
-		TimeZone:        models.NewNullableString(filterAddTime.TimeZone),
+		ColumnName:      t.ColumnName.ValueString(),
+		Type:            t.Type.ValueString(),
+		TimestampFormat: model.NewNullableString(t.TimestampFormat),
+		TimeZone:        model.NewNullableString(t.TimeZone),
 	}
 }

@@ -3,6 +3,7 @@ package output_options
 import (
 	"terraform-provider-trocco/internal/client/entities/job_definitions/output_options"
 	output_options2 "terraform-provider-trocco/internal/client/parameter/job_definitions/output_options"
+	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -147,12 +148,12 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.Big
 		ReadTimeoutSec:                       bigqueryOutputOption.ReadTimeoutSec.ValueInt64(),
 		Retries:                              bigqueryOutputOption.Retries.ValueInt64(),
 		Mode:                                 bigqueryOutputOption.Mode.ValueString(),
-		PartitioningType:                     models.NewNullableString(bigqueryOutputOption.PartitioningType),
-		TimePartitioningType:                 models.NewNullableString(bigqueryOutputOption.TimePartitioningType),
-		TimePartitioningField:                models.NewNullableString(bigqueryOutputOption.TimePartitioningField),
-		TimePartitioningExpirationMs:         models.NewNullableInt64(bigqueryOutputOption.TimePartitioningExpirationMs),
+		PartitioningType:                     model.NewNullableString(bigqueryOutputOption.PartitioningType),
+		TimePartitioningType:                 model.NewNullableString(bigqueryOutputOption.TimePartitioningType),
+		TimePartitioningField:                model.NewNullableString(bigqueryOutputOption.TimePartitioningField),
+		TimePartitioningExpirationMs:         model.NewNullableInt64(bigqueryOutputOption.TimePartitioningExpirationMs),
 		Location:                             bigqueryOutputOption.Location.ValueString(),
-		TemplateTable:                        models.NewNullableString(bigqueryOutputOption.TemplateTable),
+		TemplateTable:                        model.NewNullableString(bigqueryOutputOption.TemplateTable),
 		BigQueryConnectionID:                 bigqueryOutputOption.BigQueryConnectionID.ValueInt64(),
 		CustomVariableSettings:               models.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
 		BigQueryOutputOptionColumnOptions:    toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOption.BigQueryOutputOptionColumnOptions),
@@ -193,12 +194,12 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_option
 		ReadTimeoutSec:                       bigqueryOutputOption.ReadTimeoutSec.ValueInt64Pointer(),
 		Retries:                              bigqueryOutputOption.Retries.ValueInt64Pointer(),
 		Mode:                                 bigqueryOutputOption.Mode.ValueStringPointer(),
-		PartitioningType:                     models.NewNullableString(bigqueryOutputOption.PartitioningType),
-		TimePartitioningType:                 models.NewNullableString(bigqueryOutputOption.TimePartitioningType),
-		TimePartitioningField:                models.NewNullableString(bigqueryOutputOption.TimePartitioningField),
-		TimePartitioningExpirationMs:         models.NewNullableInt64(bigqueryOutputOption.TimePartitioningExpirationMs),
+		PartitioningType:                     model.NewNullableString(bigqueryOutputOption.PartitioningType),
+		TimePartitioningType:                 model.NewNullableString(bigqueryOutputOption.TimePartitioningType),
+		TimePartitioningField:                model.NewNullableString(bigqueryOutputOption.TimePartitioningField),
+		TimePartitioningExpirationMs:         model.NewNullableInt64(bigqueryOutputOption.TimePartitioningExpirationMs),
 		Location:                             bigqueryOutputOption.Location.ValueStringPointer(),
-		TemplateTable:                        models.NewNullableString(bigqueryOutputOption.TemplateTable),
+		TemplateTable:                        model.NewNullableString(bigqueryOutputOption.TemplateTable),
 		BigQueryConnectionID:                 bigqueryOutputOption.BigQueryConnectionID.ValueInt64Pointer(),
 		CustomVariableSettings:               models.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
 		BigQueryOutputOptionColumnOptions:    toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOption.BigQueryOutputOptionColumnOptions),
