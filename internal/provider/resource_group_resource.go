@@ -106,7 +106,7 @@ func (r *resourceGroupResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	input := client.CreateResourceGroupInput{
-		Name:        plan.Name.ValueString(),
+		Name:        plan.Name.ValueStringPointer(),
 		Description: plan.Description.ValueStringPointer(),
 		Teams:     []client.TeamRoleInput{},
 	}
@@ -183,7 +183,7 @@ func (r *resourceGroupResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	input := client.UpdateResourceGroupInput{
-		Name:        *plan.Name.ValueStringPointer(),
+		Name:        plan.Name.ValueStringPointer(),
 		Description: plan.Description.ValueStringPointer(),
 		Teams:     []client.TeamRoleInput{},
 	}
