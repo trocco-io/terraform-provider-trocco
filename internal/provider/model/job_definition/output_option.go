@@ -3,7 +3,7 @@ package job_definitions
 import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
-	"terraform-provider-trocco/internal/provider/model/job_definitions/output_options"
+	output_options "terraform-provider-trocco/internal/provider/model/job_definition/output_option"
 )
 
 type OutputOption struct {
