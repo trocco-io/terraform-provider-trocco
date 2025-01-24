@@ -1,7 +1,7 @@
 package model
 
 import (
-	"terraform-provider-trocco/internal/client/entities"
+	"terraform-provider-trocco/internal/client/entity"
 	"terraform-provider-trocco/internal/client/parameter"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -18,7 +18,7 @@ type CustomVariableSetting struct {
 	TimeZone  types.String `tfsdk:"time_zone"`
 }
 
-func NewCustomVariableSetting(customVariableSetting *entities.CustomVariableSetting) *CustomVariableSetting {
+func NewCustomVariableSetting(customVariableSetting *entity.CustomVariableSetting) *CustomVariableSetting {
 	if customVariableSetting == nil {
 		return nil
 	}
@@ -34,7 +34,7 @@ func NewCustomVariableSetting(customVariableSetting *entities.CustomVariableSett
 	}
 }
 
-func NewCustomVariableSettings(customVariableSettings *[]entities.CustomVariableSetting) *[]CustomVariableSetting {
+func NewCustomVariableSettings(customVariableSettings *[]entity.CustomVariableSetting) *[]CustomVariableSetting {
 	if customVariableSettings == nil {
 		return nil
 	}
@@ -65,7 +65,7 @@ func ToCustomVariableSettingInputs(settings *[]CustomVariableSetting) *[]paramet
 	return &inputs
 }
 
-func CustomVariableEntitiesToModels(customVariables *[]entities.CustomVariableSetting) *[]CustomVariableSetting {
+func CustomVariableEntitiesToModels(customVariables *[]entity.CustomVariableSetting) *[]CustomVariableSetting {
 	if customVariables == nil {
 		return nil
 	}

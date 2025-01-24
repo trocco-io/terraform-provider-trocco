@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"terraform-provider-trocco/internal/client/entities"
 	"terraform-provider-trocco/internal/client/entities/job_definitions"
 	"terraform-provider-trocco/internal/client/entities/job_definitions/filter"
+	"terraform-provider-trocco/internal/client/entity"
 	"terraform-provider-trocco/internal/client/parameter"
 	filter2 "terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
 	"testing"
@@ -127,8 +127,8 @@ func TestCreateJobDefinition(t *testing.T) {
 	assert.Equal(t, "mysql", out.OutputOptionType)
 	assert.Equal(t, InputOption{}, out.InputOption)
 	assert.Equal(t, OutputOption{}, out.OutputOption)
-	assert.Equal(t, []entities.Label(nil), out.Labels)
-	assert.Equal(t, []entities.Schedule(nil), out.Schedules)
+	assert.Equal(t, []entity.Label(nil), out.Labels)
+	assert.Equal(t, []entity.Schedule(nil), out.Schedules)
 	assert.Equal(t, []job_definitions.JobDefinitionNotification(nil), out.Notifications)
 }
 
@@ -200,8 +200,8 @@ func TestUpdateJobDefinition(t *testing.T) {
 	assert.Equal(t, "mysql", out.OutputOptionType)
 	assert.Equal(t, InputOption{}, out.InputOption)
 	assert.Equal(t, OutputOption{}, out.OutputOption)
-	assert.Equal(t, []entities.Label(nil), out.Labels)
-	assert.Equal(t, []entities.Schedule(nil), out.Schedules)
+	assert.Equal(t, []entity.Label(nil), out.Labels)
+	assert.Equal(t, []entity.Schedule(nil), out.Schedules)
 	assert.Equal(t, []job_definitions.JobDefinitionNotification(nil), out.Notifications)
 }
 
@@ -267,7 +267,7 @@ func TestGetJobDefinition(t *testing.T) {
 	assert.Equal(t, "mysql", out.OutputOptionType)
 	assert.Equal(t, InputOption{}, out.InputOption)
 	assert.Equal(t, OutputOption{}, out.OutputOption)
-	assert.Equal(t, []entities.Label(nil), out.Labels)
-	assert.Equal(t, []entities.Schedule(nil), out.Schedules)
+	assert.Equal(t, []entity.Label(nil), out.Labels)
+	assert.Equal(t, []entity.Schedule(nil), out.Schedules)
 	assert.Equal(t, []job_definitions.JobDefinitionNotification(nil), out.Notifications)
 }

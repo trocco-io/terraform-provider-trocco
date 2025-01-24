@@ -1,4 +1,4 @@
-package entities
+package entity
 
 type CustomVariableSetting struct {
 	Name      string  `json:"name"`

@@ -1,4 +1,4 @@
-package entities
+package entity
 
 type Schedule struct {
 	Frequency string `json:"frequency"`

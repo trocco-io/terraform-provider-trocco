@@ -1,7 +1,7 @@
 package model
 
 import (
-	"terraform-provider-trocco/internal/client/entities"
+	"terraform-provider-trocco/internal/client/entity"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -11,7 +11,7 @@ type LabelModel struct {
 	Name types.String `tfsdk:"name"`
 }
 
-func NewLabels(labels []entities.Label) []LabelModel {
+func NewLabels(labels []entity.Label) []LabelModel {
 	if labels == nil {
 		return nil
 	}

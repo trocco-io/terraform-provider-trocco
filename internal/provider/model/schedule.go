@@ -1,7 +1,7 @@
 package model
 
 import (
-	"terraform-provider-trocco/internal/client/entities"
+	"terraform-provider-trocco/internal/client/entity"
 	"terraform-provider-trocco/internal/client/parameter"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -16,7 +16,7 @@ type Schedule struct {
 	TimeZone  types.String `tfsdk:"time_zone"`
 }
 
-func NewSchedules(schedules []entities.Schedule) []Schedule {
+func NewSchedules(schedules []entity.Schedule) []Schedule {
 	if schedules == nil {
 		return nil
 	}
