@@ -1,5 +1,4 @@
 resource "trocco_job_definition" "csv_parser_example" {
-
   input_option = {
     # The example is gcs, but it can be applied to file-based input.
     gcs_input_option = {

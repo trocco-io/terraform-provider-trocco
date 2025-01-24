@@ -29,10 +29,10 @@ resource "trocco_job_definition" "mysql_input_example" {
         },
       ]
       query = <<-EOT
-                select
-                    *
-                from
-                    example_table;
+        select
+            *
+        from
+            example_table;
       EOT
     }
   }

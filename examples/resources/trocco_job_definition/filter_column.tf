@@ -1,4 +1,3 @@
-
 resource "trocco_job_definition" "filter_column_example" {
   filter_columns = [
     {
@@ -48,4 +47,3 @@ resource "trocco_job_definition" "filter_column_example" {
     }
   ]
 }
-

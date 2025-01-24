@@ -440,7 +440,6 @@ resource "trocco_job_definition" "filter_unixtime_conversion_example" {
 
 ```terraform
 resource "trocco_job_definition" "csv_parser_example" {
-
   input_option = {
     # The example is gcs, but it can be applied to file-based input.
     gcs_input_option = {
@@ -491,7 +490,6 @@ resource "trocco_job_definition" "csv_parser_example" {
 
 ```terraform
 resource "trocco_job_definition" "jsonl_parser_example" {
-
   input_option = {
     # The example is gcs, but it can be applied to file-based input.
     gcs_input_option = {
@@ -526,7 +524,6 @@ resource "trocco_job_definition" "jsonl_parser_example" {
 
 ```terraform
 resource "trocco_job_definition" "ltsv_parser_example" {
-
   input_option = {
     # The example is gcs, but it can be applied to file-based input.
     gcs_input_option = {
@@ -557,7 +554,6 @@ resource "trocco_job_definition" "ltsv_parser_example" {
 
 ```terraform
 resource "trocco_job_definition" "excel_parser_example" {
-
   input_option = {
     # The example is gcs, but it can be applied to file-based input.
     gcs_input_option = {
@@ -593,7 +589,6 @@ resource "trocco_job_definition" "excel_parser_example" {
 
 ```terraform
 resource "trocco_job_definition" "xml_parser_example" {
-
   input_option = {
     # The example is gcs, but it can be applied to file-based input.
     gcs_input_option = {
@@ -628,7 +623,6 @@ resource "trocco_job_definition" "xml_parser_example" {
 
 ```terraform
 resource "trocco_job_definition" "jsonpath_parser_example" {
-
   input_option = {
     # The example is gcs, but it can be applied to file-based input.
     gcs_input_option = {
@@ -660,7 +654,6 @@ resource "trocco_job_definition" "jsonpath_parser_example" {
 
 ```terraform
 resource "trocco_job_definition" "parquet_parser_example" {
-
   input_option = {
     # The example is gcs, but it can be applied to file-based input.
     gcs_input_option = {
@@ -738,10 +731,10 @@ resource "trocco_job_definition" "mysql_input_example" {
         },
       ]
       query = <<-EOT
-                select
-                    *
-                from
-                    example_table;
+        select
+            *
+        from
+            example_table;
       EOT
     }
   }
