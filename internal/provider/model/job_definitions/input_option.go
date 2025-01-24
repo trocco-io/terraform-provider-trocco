@@ -3,7 +3,7 @@ package job_definitions
 import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
-	"terraform-provider-trocco/internal/provider/models/job_definitions/input_options"
+	"terraform-provider-trocco/internal/provider/model/job_definitions/input_options"
 )
 
 type InputOption struct {

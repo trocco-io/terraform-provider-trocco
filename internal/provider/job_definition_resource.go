@@ -9,8 +9,8 @@ import (
 	params "terraform-provider-trocco/internal/client/parameter/job_definitions"
 	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
 	"terraform-provider-trocco/internal/provider/model"
-	"terraform-provider-trocco/internal/provider/models/job_definitions"
-	"terraform-provider-trocco/internal/provider/models/job_definitions/filter"
+	"terraform-provider-trocco/internal/provider/model/job_definitions"
+	"terraform-provider-trocco/internal/provider/model/job_definitions/filter"
 	"terraform-provider-trocco/internal/provider/schema/job_definition"
 	"terraform-provider-trocco/internal/provider/schema/job_definition/filters"
 

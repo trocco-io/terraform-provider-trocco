@@ -4,7 +4,7 @@ import (
 	"terraform-provider-trocco/internal/client/entities/job_definitions/input_options"
 	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definitions/input_options"
 	"terraform-provider-trocco/internal/provider/model"
-	"terraform-provider-trocco/internal/provider/models/job_definitions/input_options/parser"
+	"terraform-provider-trocco/internal/provider/model/job_definitions/input_options/parser"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
