@@ -8,7 +8,7 @@ import (
 	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	"terraform-provider-trocco/internal/client/entity/job_definition/filter"
 	"terraform-provider-trocco/internal/client/parameter"
-	filter2 "terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
+	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 	"testing"
 
 	"github.com/samber/lo"

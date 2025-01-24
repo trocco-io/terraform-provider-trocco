@@ -2,7 +2,7 @@ package filter
 
 import (
 	filterEntities "terraform-provider-trocco/internal/client/entity/job_definition/filter"
-	filter2 "terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
+	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"

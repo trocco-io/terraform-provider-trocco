@@ -9,10 +9,10 @@ import (
 	inputOptionEntitites "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
 	outputOptionEntitites "terraform-provider-trocco/internal/client/entity/job_definition/output_option"
 	"terraform-provider-trocco/internal/client/parameter"
-	"terraform-provider-trocco/internal/client/parameter/job_definitions"
-	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
-	"terraform-provider-trocco/internal/client/parameter/job_definitions/input_options"
-	"terraform-provider-trocco/internal/client/parameter/job_definitions/output_options"
+	job_definitions "terraform-provider-trocco/internal/client/parameter/job_definition"
+	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
+	"terraform-provider-trocco/internal/client/parameter/job_definition/input_options"
+	"terraform-provider-trocco/internal/client/parameter/job_definition/output_options"
 )
 
 type JobDefinition struct {

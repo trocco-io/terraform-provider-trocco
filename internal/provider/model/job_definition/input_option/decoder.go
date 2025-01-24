@@ -2,7 +2,7 @@ package input_options
 
 import (
 	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
-	parmas "terraform-provider-trocco/internal/client/parameter/job_definitions"
+	parmas "terraform-provider-trocco/internal/client/parameter/job_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
