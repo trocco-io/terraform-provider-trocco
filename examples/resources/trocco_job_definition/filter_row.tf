@@ -10,5 +10,3 @@ resource "trocco_job_definition" "filter_row_example" {
     ]
   }
 }
-
-

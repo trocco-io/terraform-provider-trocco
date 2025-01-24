@@ -6,11 +6,11 @@ import (
 	"strconv"
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/client/parameter"
-	params "terraform-provider-trocco/internal/client/parameter/job_definitions"
-	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
-	"terraform-provider-trocco/internal/provider/models"
-	"terraform-provider-trocco/internal/provider/models/job_definitions"
-	"terraform-provider-trocco/internal/provider/models/job_definitions/filter"
+	params "terraform-provider-trocco/internal/client/parameter/job_definition"
+	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
+	"terraform-provider-trocco/internal/provider/model"
+	job_definitions "terraform-provider-trocco/internal/provider/model/job_definition"
+	"terraform-provider-trocco/internal/provider/model/job_definition/filter"
 	"terraform-provider-trocco/internal/provider/schema/job_definition"
 	"terraform-provider-trocco/internal/provider/schema/job_definition/filters"
 
@@ -197,81 +197,81 @@ type jobDefinitionResourceModel struct {
 	FilterHashes              []filter.FilterHash                         `tfsdk:"filter_hashes"`
 	FilterUnixTimeConversions []filter.FilterUnixTimeConversion           `tfsdk:"filter_unixtime_conversions"`
 	Notifications             []job_definitions.JobDefinitionNotification `tfsdk:"notifications"`
-	Schedules                 []models.Schedule                           `tfsdk:"schedules"`
-	Labels                    []models.LabelModel                         `tfsdk:"labels"`
+	Schedules                 []model.Schedule                            `tfsdk:"schedules"`
+	Labels                    []model.LabelModel                          `tfsdk:"labels"`
 }
 
-func (model *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.CreateJobDefinitionInput {
+func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.CreateJobDefinitionInput {
 	var labels []string
-	if model.Labels != nil {
-		for _, l := range model.Labels {
+	if m.Labels != nil {
+		for _, l := range m.Labels {
 			labels = append(labels, l.Name.ValueString())
 		}
 	}
 	var notifications []params.JobDefinitionNotificationInput
-	if model.Notifications != nil {
-		for _, n := range model.Notifications {
+	if m.Notifications != nil {
+		for _, n := range m.Notifications {
 			notifications = append(notifications, n.ToInput())
 		}
 	}
 	var schedules []parameter.ScheduleInput
-	if model.Schedules != nil {
-		for _, s := range model.Schedules {
+	if m.Schedules != nil {
+		for _, s := range m.Schedules {
 			schedules = append(schedules, s.ToInput())
 		}
 	}
 
 	var filterColumns []filterParameters.FilterColumnInput
-	if model.FilterColumns != nil {
-		for _, f := range model.FilterColumns {
+	if m.FilterColumns != nil {
+		for _, f := range m.FilterColumns {
 			filterColumns = append(filterColumns, f.ToInput())
 		}
 	}
 
 	var filterMasks []filterParameters.FilterMaskInput
-	for _, f := range model.FilterMasks {
+	for _, f := range m.FilterMasks {
 		filterMasks = append(filterMasks, f.ToInput())
 	}
 
 	var filterGsub []filterParameters.FilterGsubInput
-	for _, f := range model.FilterGsub {
+	for _, f := range m.FilterGsub {
 		filterGsub = append(filterGsub, f.ToInput())
 	}
 
 	var filterStringTransforms []filterParameters.FilterStringTransformInput
-	for _, f := range model.FilterStringTransforms {
+	for _, f := range m.FilterStringTransforms {
 		filterStringTransforms = append(filterStringTransforms, f.ToInput())
 	}
 
 	var filterHashes []filterParameters.FilterHashInput
-	for _, f := range model.FilterHashes {
+	for _, f := range m.FilterHashes {
 		filterHashes = append(filterHashes, f.ToInput())
 	}
 
 	var filterUnixTimeconversions []filterParameters.FilterUnixTimeConversionInput
-	for _, f := range model.FilterUnixTimeConversions {
+	for _, f := range m.FilterUnixTimeConversions {
 		filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
 	}
 
 	return &client.CreateJobDefinitionInput{
-		Name:                      model.Name.ValueString(),
-		Description:               models.NewNullableString(model.Description),
-		ResourceGroupID:           models.NewNullableInt64(model.ResourceGroupID),
-		IsRunnableConcurrently:    model.IsRunnableConcurrently.ValueBool(),
-		RetryLimit:                model.RetryLimit.ValueInt64(),
-		ResourceEnhancement:       model.ResourceEnhancement.ValueStringPointer(),
+		Name:                      m.Name.ValueString(),
+		Description:               model.NewNullableString(m.Description),
+		ResourceGroupID:           model.NewNullableInt64(m.ResourceGroupID),
+		IsRunnableConcurrently:    m.IsRunnableConcurrently.ValueBool(),
+		RetryLimit:                m.RetryLimit.ValueInt64(),
+		ResourceEnhancement:       m.ResourceEnhancement.ValueStringPointer(),
 		FilterColumns:             filterColumns,
-		FilterRows:                models.WrapObject(model.FilterRows.ToInput()),
+		FilterRows:                model.WrapObject(m.FilterRows.ToInput()),
 		FilterMasks:               filterMasks,
-		FilterAddTime:             models.WrapObject(model.FilterAddTime.ToInput()),
+		FilterAddTime:             model.WrapObject(m.FilterAddTime.ToInput()),
 		FilterGsub:                filterGsub,
 		FilterStringTransforms:    filterStringTransforms,
 		FilterHashes:              filterHashes,
 		FilterUnixTimeConversions: filterUnixTimeconversions,
-		InputOptionType:           model.InputOptionType.ValueString(),
-		InputOption:               model.InputOption.ToInput(),
-		OutputOptionType:          model.OutputOptionType.ValueString(),
-		OutputOption:              model.OutputOption.ToInput(),
+		InputOptionType:           m.InputOptionType.ValueString(),
+		InputOption:               m.InputOption.ToInput(),
+		OutputOptionType:          m.OutputOptionType.ValueString(),
+		OutputOption:              m.OutputOption.ToInput(),
 		Labels:                    labels,
 		Schedules:                 schedules,
 		Notifications:             notifications,
@@ -324,82 +324,82 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		FilterHashes:              filter.NewFilterHashes(jobDefinition.FilterHashes),
 		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
 		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
-		Schedules:                 models.NewSchedules(jobDefinition.Schedules),
-		Labels:                    models.NewLabels(jobDefinition.Labels),
+		Schedules:                 model.NewSchedules(jobDefinition.Schedules),
+		Labels:                    model.NewLabels(jobDefinition.Labels),
 	}
 	response.Diagnostics.Append(response.State.Set(ctx, newState)...)
 }
 
-func (model *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.UpdateJobDefinitionInput {
+func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.UpdateJobDefinitionInput {
 	labels := []string{}
-	if model.Labels != nil {
-		for _, l := range model.Labels {
+	if m.Labels != nil {
+		for _, l := range m.Labels {
 			labels = append(labels, l.Name.ValueString())
 		}
 	}
 	notifications := []params.JobDefinitionNotificationInput{}
-	if model.Notifications != nil {
-		for _, n := range model.Notifications {
+	if m.Notifications != nil {
+		for _, n := range m.Notifications {
 			notifications = append(notifications, n.ToInput())
 		}
 	}
 
 	schedules := []parameter.ScheduleInput{}
-	if model.Schedules != nil {
-		for _, s := range model.Schedules {
+	if m.Schedules != nil {
+		for _, s := range m.Schedules {
 			schedules = append(schedules, s.ToInput())
 		}
 	}
 
 	filterColumns := []filterParameters.FilterColumnInput{}
-	if model.FilterColumns != nil {
-		for _, f := range model.FilterColumns {
+	if m.FilterColumns != nil {
+		for _, f := range m.FilterColumns {
 			filterColumns = append(filterColumns, f.ToInput())
 		}
 	}
 
 	filterMasks := []filterParameters.FilterMaskInput{}
-	for _, f := range model.FilterMasks {
+	for _, f := range m.FilterMasks {
 		filterMasks = append(filterMasks, f.ToInput())
 	}
 
 	filterGsub := []filterParameters.FilterGsubInput{}
-	for _, f := range model.FilterGsub {
+	for _, f := range m.FilterGsub {
 		filterGsub = append(filterGsub, f.ToInput())
 	}
 
 	filterStringTransforms := []filterParameters.FilterStringTransformInput{}
-	for _, f := range model.FilterStringTransforms {
+	for _, f := range m.FilterStringTransforms {
 		filterStringTransforms = append(filterStringTransforms, f.ToInput())
 	}
 
 	filterHashes := []filterParameters.FilterHashInput{}
-	for _, f := range model.FilterHashes {
+	for _, f := range m.FilterHashes {
 		filterHashes = append(filterHashes, f.ToInput())
 	}
 
 	filterUnixTimeconversions := []filterParameters.FilterUnixTimeConversionInput{}
-	for _, f := range model.FilterUnixTimeConversions {
+	for _, f := range m.FilterUnixTimeConversions {
 		filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
 	}
 
 	return &client.UpdateJobDefinitionInput{
-		Name:                      model.Name.ValueStringPointer(),
-		Description:               models.NewNullableString(model.Description),
-		ResourceGroupID:           models.NewNullableInt64(model.ResourceGroupID),
-		IsRunnableConcurrently:    model.IsRunnableConcurrently.ValueBoolPointer(),
-		RetryLimit:                model.RetryLimit.ValueInt64Pointer(),
-		ResourceEnhancement:       model.ResourceEnhancement.ValueStringPointer(),
+		Name:                      m.Name.ValueStringPointer(),
+		Description:               model.NewNullableString(m.Description),
+		ResourceGroupID:           model.NewNullableInt64(m.ResourceGroupID),
+		IsRunnableConcurrently:    m.IsRunnableConcurrently.ValueBoolPointer(),
+		RetryLimit:                m.RetryLimit.ValueInt64Pointer(),
+		ResourceEnhancement:       m.ResourceEnhancement.ValueStringPointer(),
 		FilterColumns:             &filterColumns,
-		FilterRows:                models.WrapObject(model.FilterRows.ToInput()),
+		FilterRows:                model.WrapObject(m.FilterRows.ToInput()),
 		FilterMasks:               &filterMasks,
-		FilterAddTime:             models.WrapObject(model.FilterAddTime.ToInput()),
+		FilterAddTime:             model.WrapObject(m.FilterAddTime.ToInput()),
 		FilterGsub:                &filterGsub,
 		FilterStringTransforms:    &filterStringTransforms,
 		FilterHashes:              &filterHashes,
 		FilterUnixTimeConversions: &filterUnixTimeconversions,
-		InputOption:               model.InputOption.ToUpdateInput(),
-		OutputOption:              model.OutputOption.ToUpdateInput(),
+		InputOption:               m.InputOption.ToUpdateInput(),
+		OutputOption:              m.OutputOption.ToUpdateInput(),
 		Labels:                    &labels,
 		Schedules:                 &schedules,
 		Notifications:             &notifications,
@@ -449,8 +449,8 @@ func (r *jobDefinitionResource) Create(
 		FilterHashes:              filter.NewFilterHashes(jobDefinition.FilterHashes),
 		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
 		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
-		Schedules:                 models.NewSchedules(jobDefinition.Schedules),
-		Labels:                    models.NewLabels(jobDefinition.Labels),
+		Schedules:                 model.NewSchedules(jobDefinition.Schedules),
+		Labels:                    model.NewLabels(jobDefinition.Labels),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -496,8 +496,8 @@ func (r *jobDefinitionResource) Read(
 		FilterHashes:              filter.NewFilterHashes(jobDefinition.FilterHashes),
 		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
 		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
-		Schedules:                 models.NewSchedules(jobDefinition.Schedules),
-		Labels:                    models.NewLabels(jobDefinition.Labels),
+		Schedules:                 model.NewSchedules(jobDefinition.Schedules),
+		Labels:                    model.NewLabels(jobDefinition.Labels),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }

@@ -3,16 +3,16 @@ package client
 import (
 	"fmt"
 	"net/http"
-	"terraform-provider-trocco/internal/client/entities"
-	jobDefinitionEntities "terraform-provider-trocco/internal/client/entities/job_definitions"
-	filterEntities "terraform-provider-trocco/internal/client/entities/job_definitions/filter"
-	inputOptionEntitites "terraform-provider-trocco/internal/client/entities/job_definitions/input_options"
-	outputOptionEntitites "terraform-provider-trocco/internal/client/entities/job_definitions/output_options"
+	"terraform-provider-trocco/internal/client/entity"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
+	filterEntities "terraform-provider-trocco/internal/client/entity/job_definition/filter"
+	inputOptionEntitites "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	outputOptionEntitites "terraform-provider-trocco/internal/client/entity/job_definition/output_option"
 	"terraform-provider-trocco/internal/client/parameter"
-	"terraform-provider-trocco/internal/client/parameter/job_definitions"
-	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
-	"terraform-provider-trocco/internal/client/parameter/job_definitions/input_options"
-	"terraform-provider-trocco/internal/client/parameter/job_definitions/output_options"
+	job_definitions "terraform-provider-trocco/internal/client/parameter/job_definition"
+	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
+	input_options "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	output_options "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
 )
 
 type JobDefinition struct {
@@ -35,8 +35,8 @@ type JobDefinition struct {
 	InputOption               InputOption                                       `json:"input_option"`
 	OutputOptionType          string                                            `json:"output_option_type"`
 	OutputOption              OutputOption                                      `json:"output_option"`
-	Labels                    []entities.Label                                  `json:"labels"`
-	Schedules                 []entities.Schedule                               `json:"schedules"`
+	Labels                    []entity.Label                                    `json:"labels"`
+	Schedules                 []entity.Schedule                                 `json:"schedules"`
 	Notifications             []jobDefinitionEntities.JobDefinitionNotification `json:"notifications"`
 }
 
