@@ -9,7 +9,6 @@ import (
 	params "terraform-provider-trocco/internal/client/parameter/job_definitions"
 	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definitions/filter"
 	"terraform-provider-trocco/internal/provider/model"
-	"terraform-provider-trocco/internal/provider/models"
 	"terraform-provider-trocco/internal/provider/models/job_definitions"
 	"terraform-provider-trocco/internal/provider/models/job_definitions/filter"
 	"terraform-provider-trocco/internal/provider/schema/job_definition"
@@ -198,8 +197,8 @@ type jobDefinitionResourceModel struct {
 	FilterHashes              []filter.FilterHash                         `tfsdk:"filter_hashes"`
 	FilterUnixTimeConversions []filter.FilterUnixTimeConversion           `tfsdk:"filter_unixtime_conversions"`
 	Notifications             []job_definitions.JobDefinitionNotification `tfsdk:"notifications"`
-	Schedules                 []models.Schedule                           `tfsdk:"schedules"`
-	Labels                    []models.LabelModel                         `tfsdk:"labels"`
+	Schedules                 []model.Schedule                            `tfsdk:"schedules"`
+	Labels                    []model.LabelModel                          `tfsdk:"labels"`
 }
 
 func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.CreateJobDefinitionInput {
@@ -325,8 +324,8 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		FilterHashes:              filter.NewFilterHashes(jobDefinition.FilterHashes),
 		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
 		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
-		Schedules:                 models.NewSchedules(jobDefinition.Schedules),
-		Labels:                    models.NewLabels(jobDefinition.Labels),
+		Schedules:                 model.NewSchedules(jobDefinition.Schedules),
+		Labels:                    model.NewLabels(jobDefinition.Labels),
 	}
 	response.Diagnostics.Append(response.State.Set(ctx, newState)...)
 }
@@ -450,8 +449,8 @@ func (r *jobDefinitionResource) Create(
 		FilterHashes:              filter.NewFilterHashes(jobDefinition.FilterHashes),
 		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
 		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
-		Schedules:                 models.NewSchedules(jobDefinition.Schedules),
-		Labels:                    models.NewLabels(jobDefinition.Labels),
+		Schedules:                 model.NewSchedules(jobDefinition.Schedules),
+		Labels:                    model.NewLabels(jobDefinition.Labels),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -497,8 +496,8 @@ func (r *jobDefinitionResource) Read(
 		FilterHashes:              filter.NewFilterHashes(jobDefinition.FilterHashes),
 		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
 		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
-		Schedules:                 models.NewSchedules(jobDefinition.Schedules),
-		Labels:                    models.NewLabels(jobDefinition.Labels),
+		Schedules:                 model.NewSchedules(jobDefinition.Schedules),
+		Labels:                    model.NewLabels(jobDefinition.Labels),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }

@@ -4,7 +4,6 @@ import (
 	"terraform-provider-trocco/internal/client/entities/job_definitions/output_options"
 	output_options2 "terraform-provider-trocco/internal/client/parameter/job_definitions/output_options"
 	"terraform-provider-trocco/internal/provider/model"
-	"terraform-provider-trocco/internal/provider/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -27,7 +26,7 @@ type BigQueryOutputOption struct {
 	Location                             types.String                        `tfsdk:"location"`
 	TemplateTable                        types.String                        `tfsdk:"template_table"`
 	BigQueryConnectionID                 types.Int64                         `tfsdk:"bigquery_connection_id"`
-	CustomVariableSettings               *[]models.CustomVariableSetting     `tfsdk:"custom_variable_settings"`
+	CustomVariableSettings               *[]model.CustomVariableSetting      `tfsdk:"custom_variable_settings"`
 	BigQueryOutputOptionColumnOptions    *[]bigQueryOutputOptionColumnOption `tfsdk:"bigquery_output_option_column_options"`
 	BigQueryOutputOptionClusteringFields *[]types.String                     `tfsdk:"bigquery_output_option_clustering_fields"`
 	BigQueryOutputOptionMergeKeys        *[]types.String                     `tfsdk:"bigquery_output_option_merge_keys"`
@@ -48,7 +47,7 @@ func NewBigQueryOutputOption(bigQueryOutputOption *output_options.BigQueryOutput
 	}
 
 	return &BigQueryOutputOption{
-		CustomVariableSettings:               models.NewCustomVariableSettings(bigQueryOutputOption.CustomVariableSettings),
+		CustomVariableSettings:               model.NewCustomVariableSettings(bigQueryOutputOption.CustomVariableSettings),
 		Dataset:                              types.StringValue(bigQueryOutputOption.Dataset),
 		Table:                                types.StringValue(bigQueryOutputOption.Table),
 		AutoCreateDataset:                    types.BoolValue(bigQueryOutputOption.AutoCreateDataset),
@@ -155,7 +154,7 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.Big
 		Location:                             bigqueryOutputOption.Location.ValueString(),
 		TemplateTable:                        model.NewNullableString(bigqueryOutputOption.TemplateTable),
 		BigQueryConnectionID:                 bigqueryOutputOption.BigQueryConnectionID.ValueInt64(),
-		CustomVariableSettings:               models.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
+		CustomVariableSettings:               model.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
 		BigQueryOutputOptionColumnOptions:    toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOption.BigQueryOutputOptionColumnOptions),
 		BigQueryOutputOptionClusteringFields: clusteringFields,
 		BigQueryOutputOptionMergeKeys:        mergeKeys,
@@ -201,7 +200,7 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_option
 		Location:                             bigqueryOutputOption.Location.ValueStringPointer(),
 		TemplateTable:                        model.NewNullableString(bigqueryOutputOption.TemplateTable),
 		BigQueryConnectionID:                 bigqueryOutputOption.BigQueryConnectionID.ValueInt64Pointer(),
-		CustomVariableSettings:               models.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
+		CustomVariableSettings:               model.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
 		BigQueryOutputOptionColumnOptions:    toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOption.BigQueryOutputOptionColumnOptions),
 		BigQueryOutputOptionClusteringFields: &clusteringFields,
 		BigQueryOutputOptionMergeKeys:        &mergeKeys,

@@ -4,26 +4,25 @@ import (
 	"terraform-provider-trocco/internal/client/entities/job_definitions/input_options"
 	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definitions/input_options"
 	"terraform-provider-trocco/internal/provider/model"
-	"terraform-provider-trocco/internal/provider/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type MySQLInputOption struct {
-	Database                  types.String                    `tfsdk:"database"`
-	Table                     types.String                    `tfsdk:"table"`
-	Query                     types.String                    `tfsdk:"query"`
-	IncrementalColumns        types.String                    `tfsdk:"incremental_columns"`
-	LastRecord                types.String                    `tfsdk:"last_record"`
-	IncrementalLoadingEnabled types.Bool                      `tfsdk:"incremental_loading_enabled"`
-	FetchRows                 types.Int64                     `tfsdk:"fetch_rows"`
-	ConnectTimeout            types.Int64                     `tfsdk:"connect_timeout"`
-	SocketTimeout             types.Int64                     `tfsdk:"socket_timeout"`
-	DefaultTimeZone           types.String                    `tfsdk:"default_time_zone"`
-	UseLegacyDatetimeCode     types.Bool                      `tfsdk:"use_legacy_datetime_code"`
-	MySQLConnectionID         types.Int64                     `tfsdk:"mysql_connection_id"`
-	InputOptionColumns        []InputOptionColumn             `tfsdk:"input_option_columns"`
-	CustomVariableSettings    *[]models.CustomVariableSetting `tfsdk:"custom_variable_settings"`
+	Database                  types.String                   `tfsdk:"database"`
+	Table                     types.String                   `tfsdk:"table"`
+	Query                     types.String                   `tfsdk:"query"`
+	IncrementalColumns        types.String                   `tfsdk:"incremental_columns"`
+	LastRecord                types.String                   `tfsdk:"last_record"`
+	IncrementalLoadingEnabled types.Bool                     `tfsdk:"incremental_loading_enabled"`
+	FetchRows                 types.Int64                    `tfsdk:"fetch_rows"`
+	ConnectTimeout            types.Int64                    `tfsdk:"connect_timeout"`
+	SocketTimeout             types.Int64                    `tfsdk:"socket_timeout"`
+	DefaultTimeZone           types.String                   `tfsdk:"default_time_zone"`
+	UseLegacyDatetimeCode     types.Bool                     `tfsdk:"use_legacy_datetime_code"`
+	MySQLConnectionID         types.Int64                    `tfsdk:"mysql_connection_id"`
+	InputOptionColumns        []InputOptionColumn            `tfsdk:"input_option_columns"`
+	CustomVariableSettings    *[]model.CustomVariableSetting `tfsdk:"custom_variable_settings"`
 }
 
 type InputOptionColumn struct {
@@ -50,7 +49,7 @@ func NewMysqlInputOption(mysqlInputOption *input_options.MySQLInputOption) *MySQ
 		UseLegacyDatetimeCode:     types.BoolPointerValue(mysqlInputOption.UseLegacyDatetimeCode),
 		MySQLConnectionID:         types.Int64Value(mysqlInputOption.MySQLConnectionID),
 		InputOptionColumns:        newInputOptionColumns(mysqlInputOption.InputOptionColumns),
-		CustomVariableSettings:    models.NewCustomVariableSettings(mysqlInputOption.CustomVariableSettings),
+		CustomVariableSettings:    model.NewCustomVariableSettings(mysqlInputOption.CustomVariableSettings),
 	}
 }
 
@@ -88,7 +87,7 @@ func (mysqlInputOption *MySQLInputOption) ToInput() *input_options2.MySQLInputOp
 		UseLegacyDatetimeCode:     mysqlInputOption.UseLegacyDatetimeCode.ValueBool(),
 		MySQLConnectionID:         mysqlInputOption.MySQLConnectionID.ValueInt64(),
 		InputOptionColumns:        toInputOptionColumnsInput(mysqlInputOption.InputOptionColumns),
-		CustomVariableSettings:    models.ToCustomVariableSettingInputs(mysqlInputOption.CustomVariableSettings),
+		CustomVariableSettings:    model.ToCustomVariableSettingInputs(mysqlInputOption.CustomVariableSettings),
 	}
 }
 
@@ -113,7 +112,7 @@ func (mysqlInputOption *MySQLInputOption) ToUpdateInput() *input_options2.Update
 		UseLegacyDatetimeCode:     mysqlInputOption.UseLegacyDatetimeCode.ValueBoolPointer(),
 		MySQLConnectionID:         mysqlInputOption.MySQLConnectionID.ValueInt64Pointer(),
 		InputOptionColumns:        &inputOptionColumns,
-		CustomVariableSettings:    models.ToCustomVariableSettingInputs(mysqlInputOption.CustomVariableSettings),
+		CustomVariableSettings:    model.ToCustomVariableSettingInputs(mysqlInputOption.CustomVariableSettings),
 	}
 }
 

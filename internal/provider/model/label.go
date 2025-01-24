@@ -1,8 +1,9 @@
-package models
+package model
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entities"
+
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type LabelModel struct {

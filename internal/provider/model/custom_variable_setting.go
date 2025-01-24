@@ -1,4 +1,4 @@
-package models
+package model
 
 import (
 	"terraform-provider-trocco/internal/client/entities"
