@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"terraform-provider-trocco/internal/client"
+	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -55,7 +56,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		// Common Fields
 		Name:            m.Name.ValueString(),
 		Description:     m.Description.ValueStringPointer(),
-		ResourceGroupID: newNullableFromTerraformInt64(m.ResourceGroupID),
+		ResourceGroupID: model.NewNullableInt64(m.ResourceGroupID),
 
 		// BigQuery Fields
 		ProjectID:             m.ProjectID.ValueStringPointer(),
@@ -80,7 +81,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		// Common Fields
 		Name:            m.Name.ValueStringPointer(),
 		Description:     m.Description.ValueStringPointer(),
-		ResourceGroupID: newNullableFromTerraformInt64(m.ResourceGroupID),
+		ResourceGroupID: model.NewNullableInt64(m.ResourceGroupID),
 
 		// BigQuery Fields
 		ProjectID:             m.ProjectID.ValueStringPointer(),
