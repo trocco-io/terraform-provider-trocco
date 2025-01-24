@@ -1,7 +1,7 @@
 package input_options
 
 import (
-	"terraform-provider-trocco/internal/client/entity/job_definition/input_options"
+	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
 	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definitions/input_options"
 	"terraform-provider-trocco/internal/provider/model"
 
@@ -30,7 +30,7 @@ type InputOptionColumn struct {
 	Type types.String `tfsdk:"type"`
 }
 
-func NewMysqlInputOption(mysqlInputOption *input_options.MySQLInputOption) *MySQLInputOption {
+func NewMysqlInputOption(mysqlInputOption *input_option.MySQLInputOption) *MySQLInputOption {
 	if mysqlInputOption == nil {
 		return nil
 	}
@@ -53,7 +53,7 @@ func NewMysqlInputOption(mysqlInputOption *input_options.MySQLInputOption) *MySQ
 	}
 }
 
-func newInputOptionColumns(inputOptionColumns []input_options.InputOptionColumn) []InputOptionColumn {
+func newInputOptionColumns(inputOptionColumns []input_option.InputOptionColumn) []InputOptionColumn {
 	if inputOptionColumns == nil {
 		return nil
 	}

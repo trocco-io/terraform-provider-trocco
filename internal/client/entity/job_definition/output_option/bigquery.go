@@ -1,4 +1,4 @@
-package output_options
+package output_option
 
 import (
 	"terraform-provider-trocco/internal/client/entity"

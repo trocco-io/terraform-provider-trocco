@@ -1,7 +1,7 @@
 package output_options
 
 import (
-	"terraform-provider-trocco/internal/client/entity/job_definition/output_options"
+	"terraform-provider-trocco/internal/client/entity/job_definition/output_option"
 	output_options2 "terraform-provider-trocco/internal/client/parameter/job_definitions/output_options"
 	"terraform-provider-trocco/internal/provider/model"
 
@@ -41,7 +41,7 @@ type bigQueryOutputOptionColumnOption struct {
 	Description     types.String `tfsdk:"description"`
 }
 
-func NewBigQueryOutputOption(bigQueryOutputOption *output_options.BigQueryOutputOption) *BigQueryOutputOption {
+func NewBigQueryOutputOption(bigQueryOutputOption *output_option.BigQueryOutputOption) *BigQueryOutputOption {
 	if bigQueryOutputOption == nil {
 		return nil
 	}
@@ -95,7 +95,7 @@ func newBigQueryOutputOptionClusteringFields(fields *[]string) *[]types.String {
 	return &outputs
 }
 
-func newBigqueryOutputOptionColumnOptions(bigQueryOutputOptionColumnOptions *[]output_options.BigQueryOutputOptionColumnOption) *[]bigQueryOutputOptionColumnOption {
+func newBigqueryOutputOptionColumnOptions(bigQueryOutputOptionColumnOptions *[]output_option.BigQueryOutputOptionColumnOption) *[]bigQueryOutputOptionColumnOption {
 	if bigQueryOutputOptionColumnOptions == nil {
 		return nil
 	}

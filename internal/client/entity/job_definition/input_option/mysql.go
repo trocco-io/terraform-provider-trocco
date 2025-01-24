@@ -1,4 +1,4 @@
-package input_options
+package input_option
 
 import "terraform-provider-trocco/internal/client/entity"
 
