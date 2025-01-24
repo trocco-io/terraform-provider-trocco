@@ -115,4 +115,3 @@ func TestAccResourceGroupDuplicateRoles(t *testing.T) {
 	})
 
 }
-

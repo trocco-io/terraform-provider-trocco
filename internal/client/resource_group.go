@@ -9,20 +9,20 @@ import (
 const resourceGroupBasePath = "/api/resource_groups"
 
 type ResourceGroup struct {
-	ID          int64        `json:"id"`
-	Name        string       `json:"name"`
-	Description *string      `json:"description"`
-	CreatedAt   string       `json:"created_at"`
-	UpdatedAt   string       `json:"updated_at"`
-}
-
-type ResourceGroupWithTeams struct {
 	ID          int64   `json:"id"`
 	Name        string  `json:"name"`
 	Description *string `json:"description"`
-	Teams       []ResourceGroupPermission `json:"teams"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`
+}
+
+type ResourceGroupWithTeams struct {
+	ID          int64                     `json:"id"`
+	Name        string                    `json:"name"`
+	Description *string                   `json:"description"`
+	Teams       []ResourceGroupPermission `json:"teams"`
+	CreatedAt   string                    `json:"created_at"`
+	UpdatedAt   string                    `json:"updated_at"`
 }
 
 type ResourceGroupPermission struct {
@@ -47,7 +47,7 @@ func (input *ListResouceGroupInput) SetCursor(cursor string) {
 
 type ListResouceGroupOutput struct {
 	Items      []ResourceGroupWithTeams `json:"items"`
-	NextCursor *string              `json:"next_cursor"`
+	NextCursor *string                  `json:"next_cursor"`
 }
 
 const MaxListResourceGroupsLimit = 100
@@ -87,9 +87,9 @@ func (client *TroccoClient) GetResourceGroup(id int64) (*ResourceGroupWithTeams,
 // Create
 
 type CreateResourceGroupInput struct {
-	Name        *string        `json:"name"`
-	Description *string       `json:"description,omitempty"`
-	Teams     []TeamRoleInput `json:"teams"`
+	Name        *string         `json:"name"`
+	Description *string         `json:"description,omitempty"`
+	Teams       []TeamRoleInput `json:"teams"`
 }
 
 type TeamRoleInput struct {
@@ -109,9 +109,9 @@ func (client *TroccoClient) CreateResourceGroup(input *CreateResourceGroupInput)
 // Update
 
 type UpdateResourceGroupInput struct {
-	Name        *string        `json:"name"`
-	Description *string       `json:"description,omitempty"`
-	Teams     []TeamRoleInput `json:"teams"`
+	Name        *string         `json:"name"`
+	Description *string         `json:"description,omitempty"`
+	Teams       []TeamRoleInput `json:"teams"`
 }
 
 func (client *TroccoClient) UpdateResourceGroup(id int64, input *UpdateResourceGroupInput) (*ResourceGroupWithTeams, error) {

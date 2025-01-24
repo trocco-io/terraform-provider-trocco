@@ -5,9 +5,9 @@ import (
 )
 
 type ResourceGroupResourceModel struct {
-	ID          types.Int64               `tfsdk:"id"`
-	Name        types.String              `tfsdk:"name"`
-	Description types.String              `tfsdk:"description"`
+	ID          types.Int64             `tfsdk:"id"`
+	Name        types.String            `tfsdk:"name"`
+	Description types.String            `tfsdk:"description"`
 	Teams       []TeamRoleResourceModel `tfsdk:"teams"`
 }
 

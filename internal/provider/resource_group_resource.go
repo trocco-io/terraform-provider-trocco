@@ -108,7 +108,7 @@ func (r *resourceGroupResource) Create(ctx context.Context, req resource.CreateR
 	input := client.CreateResourceGroupInput{
 		Name:        plan.Name.ValueStringPointer(),
 		Description: plan.Description.ValueStringPointer(),
-		Teams:     []client.TeamRoleInput{},
+		Teams:       []client.TeamRoleInput{},
 	}
 	for _, m := range plan.Teams {
 		input.Teams = append(input.Teams, client.TeamRoleInput{
@@ -131,7 +131,7 @@ func (r *resourceGroupResource) Create(ctx context.Context, req resource.CreateR
 		ID:          types.Int64Value(resourceGroup.ID),
 		Name:        types.StringValue(resourceGroup.Name),
 		Description: types.StringPointerValue(resourceGroup.Description),
-		Teams:     []model.TeamRoleResourceModel{},
+		Teams:       []model.TeamRoleResourceModel{},
 	}
 	for _, m := range resourceGroup.Teams {
 		newState.Teams = append(newState.Teams, model.TeamRoleResourceModel{
@@ -163,7 +163,7 @@ func (r *resourceGroupResource) Read(ctx context.Context, req resource.ReadReque
 		ID:          types.Int64Value(resourceGroup.ID),
 		Name:        types.StringValue(resourceGroup.Name),
 		Description: types.StringPointerValue(resourceGroup.Description),
-		Teams:     []model.TeamRoleResourceModel{},
+		Teams:       []model.TeamRoleResourceModel{},
 	}
 	for _, m := range resourceGroup.Teams {
 		newState.Teams = append(newState.Teams, model.TeamRoleResourceModel{
@@ -185,7 +185,7 @@ func (r *resourceGroupResource) Update(ctx context.Context, req resource.UpdateR
 	input := client.UpdateResourceGroupInput{
 		Name:        plan.Name.ValueStringPointer(),
 		Description: plan.Description.ValueStringPointer(),
-		Teams:     []client.TeamRoleInput{},
+		Teams:       []client.TeamRoleInput{},
 	}
 	for _, m := range plan.Teams {
 		input.Teams = append(input.Teams, client.TeamRoleInput{
@@ -207,7 +207,7 @@ func (r *resourceGroupResource) Update(ctx context.Context, req resource.UpdateR
 		ID:          types.Int64Value(resourceGroup.ID),
 		Name:        types.StringValue(resourceGroup.Name),
 		Description: types.StringPointerValue(resourceGroup.Description),
-		Teams:     []model.TeamRoleResourceModel{},
+		Teams:       []model.TeamRoleResourceModel{},
 	}
 	for _, m := range resourceGroup.Teams {
 		newState.Teams = append(newState.Teams, model.TeamRoleResourceModel{
