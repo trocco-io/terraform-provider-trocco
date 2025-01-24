@@ -1,7 +1,7 @@
 package output_options
 
 import (
-	"terraform-provider-trocco/internal/client/entities/job_definitions/output_options"
+	"terraform-provider-trocco/internal/client/entity/job_definition/output_options"
 	output_options2 "terraform-provider-trocco/internal/client/parameter/job_definitions/output_options"
 	"terraform-provider-trocco/internal/provider/model"
 

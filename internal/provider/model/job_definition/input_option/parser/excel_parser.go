@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"terraform-provider-trocco/internal/client/entities/job_definitions"
+	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	params "terraform-provider-trocco/internal/client/parameter/job_definitions"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"

@@ -1,8 +1,8 @@
 package input_options
 
 import (
-	"terraform-provider-trocco/internal/client/entities/job_definitions"
 	"terraform-provider-trocco/internal/client/entity"
+	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
 )
 
 type GcsInputOption struct {
