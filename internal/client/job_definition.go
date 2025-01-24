@@ -11,8 +11,8 @@ import (
 	"terraform-provider-trocco/internal/client/parameter"
 	job_definitions "terraform-provider-trocco/internal/client/parameter/job_definition"
 	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
-	"terraform-provider-trocco/internal/client/parameter/job_definition/input_options"
-	"terraform-provider-trocco/internal/client/parameter/job_definition/output_options"
+	input_options "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	output_options "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
 )
 
 type JobDefinition struct {
