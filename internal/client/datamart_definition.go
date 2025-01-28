@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"terraform-provider-trocco/internal/client/entities"
+	"terraform-provider-trocco/internal/client/entity"
 	"terraform-provider-trocco/internal/client/parameter"
 )
 
@@ -85,7 +85,7 @@ type DatamartDefinition struct {
 	UpdatedAt              string                  `json:"updated_at"`
 	Notifications          []DatamartNotification  `json:"notifications"`
 	Schedules              []Schedule              `json:"schedules"`
-	Labels                 []entities.Label        `json:"labels"`
+	Labels                 []entity.Label          `json:"labels"`
 }
 
 type DatamartBigqueryOption struct {

@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"terraform-provider-trocco/internal/client/entities"
+	"terraform-provider-trocco/internal/client/entity"
 )
 
 const labelBasePath = "/api/labels"
 
-type Label = entities.Label
+type Label = entity.Label
 
 // List of Labels
 
