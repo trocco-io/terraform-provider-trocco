@@ -30,7 +30,7 @@ resource "trocco_label" "example" {
 
 ### Optional
 
-- `description` (String) The description of the label. It must be at least 1 character.
+- `description` (String) The description of the label.
 
 ### Read-Only
 
