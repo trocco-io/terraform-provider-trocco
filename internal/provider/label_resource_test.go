@@ -37,9 +37,9 @@ func TestAccLabelResource(t *testing.T) {
 					resource.TestCheckResourceAttr("trocco_label.test", "color", "#FFFFFF"),
 					resource.TestCheckResourceAttrSet("trocco_label.test", "id"),
 
-					resource.TestCheckNoResourceAttr("trocco_label.test_default_description", "description"),
+					resource.TestCheckNoResourceAttr("trocco_label.test_nil_description", "description"),
 
-					resource.TestCheckResourceAttr("trocco_label.test_default_description", "description", ""),
+					resource.TestCheckResourceAttr("trocco_label.test_empty_description", "description", ""),
 				),
 			},
 			// ImportState testing
@@ -63,6 +63,25 @@ func TestAccLabelResource(t *testing.T) {
 					resource.TestCheckResourceAttr("trocco_label.test", "description", "This is an updated test label"),
 					resource.TestCheckResourceAttr("trocco_label.test", "color", "#000000"),
 				),
+			},
+			{
+				Config: providerConfig + `
+                    resource "trocco_label" "test" {
+                        name = "Updated Label, Second Time"
+                        color = "#000000"
+                    }
+                `,
+				Check: resource.TestCheckResourceAttr("trocco_label.test", "description", "This is an updated test label"),
+			},
+			{
+				Config: providerConfig + `
+                    resource "trocco_label" "test" {
+                        name = "Updated Label, Third Time"
+                        color = "#000000"
+                        description = ""
+                    }
+                `,
+				Check: resource.TestCheckResourceAttr("trocco_label.test_empty_description", "description", ""),
 			},
 		},
 	})

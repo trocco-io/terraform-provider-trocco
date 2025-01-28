@@ -73,6 +73,7 @@ func (r *labelResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			},
 			"description": schema.StringAttribute{
 				Optional:            true,
+				Computed:            true,
 				MarkdownDescription: "The description of the label.",
 			},
 			"color": schema.StringAttribute{
