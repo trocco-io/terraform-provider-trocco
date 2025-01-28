@@ -20,9 +20,15 @@ func TestAccLabelResource(t *testing.T) {
 						description = "This is a test label"
 					}
 
-                    resource "trocco_label" "test_default_description" {
-                        name = "Test Label Using Default Description"
+                    resource "trocco_label" "test_nil_description" {
+                        name = "Test Label Using Nil Description"
                         color = "#FFFFFF"
+                    }
+
+                    resource "trocco_label" "test_empty_description" {
+                        name = "Test Label Using Empty Description"
+                        color = "#FFFFFF"
+                        description = ""
                     }
 				`,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -31,10 +37,9 @@ func TestAccLabelResource(t *testing.T) {
 					resource.TestCheckResourceAttr("trocco_label.test", "color", "#FFFFFF"),
 					resource.TestCheckResourceAttrSet("trocco_label.test", "id"),
 
-					resource.TestCheckResourceAttr("trocco_label.test_default_description", "name", "Test Label"),
-					resource.TestCheckResourceAttr("trocco_label.test_default_description", "description", ""),
-					resource.TestCheckResourceAttr("trocco_label.test_default_description", "color", "#FFFFFF"),
-					resource.TestCheckResourceAttrSet("trocco_label.test_default_description", "id"),
+					resource.TestCheckNoResourceAttr("trocco_label.test_default_description", "description"),
+
+                    resource.TestCheckResourceAttr("trocco_label.test_default_description", "description", ""),
 				),
 			},
 			// ImportState testing

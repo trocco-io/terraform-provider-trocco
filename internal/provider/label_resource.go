@@ -14,7 +14,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -74,8 +73,6 @@ func (r *labelResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			},
 			"description": schema.StringAttribute{
 				Optional:            true,
-				Computed:            true,
-				Default:             stringdefault.StaticString(""),
 				MarkdownDescription: "The description of the label.",
 			},
 			"color": schema.StringAttribute{
@@ -117,7 +114,7 @@ func (r *labelResource) Create(ctx context.Context, req resource.CreateRequest, 
 	data := model.LabelModel{
 		ID:          types.Int64Value(label.ID),
 		Name:        types.StringValue(label.Name),
-		Description: types.StringValue(label.Description),
+		Description: types.StringPointerValue(label.Description),
 		Color:       types.StringValue(label.Color),
 	}
 
@@ -143,7 +140,7 @@ func (r *labelResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	data := model.LabelModel{
 		ID:          types.Int64Value(label.ID),
 		Name:        types.StringValue(label.Name),
-		Description: types.StringValue(label.Description),
+		Description: types.StringPointerValue(label.Description),
 		Color:       types.StringValue(label.Color),
 	}
 
@@ -176,7 +173,7 @@ func (r *labelResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	data := model.LabelModel{
 		ID:          types.Int64Value(label.ID),
 		Name:        types.StringValue(label.Name),
-		Description: types.StringValue(label.Description),
+		Description: types.StringPointerValue(label.Description),
 		Color:       types.StringValue(label.Color),
 	}
 
