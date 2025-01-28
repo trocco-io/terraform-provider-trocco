@@ -16,15 +16,25 @@ func TestAccLabelResource(t *testing.T) {
 				Config: providerConfig + `
 					resource "trocco_label" "test" {
 						name = "Test Label"
-						description = "This is a test label"
 						color = "#FFFFFF"
+						description = "This is a test label"
 					}
+
+                    resource "trocco_label" "test_default_description" {
+                        name = "Test Label Using Default Description"
+                        color = "#FFFFFF"
+                    }
 				`,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("trocco_label.test", "name", "Test Label"),
 					resource.TestCheckResourceAttr("trocco_label.test", "description", "This is a test label"),
 					resource.TestCheckResourceAttr("trocco_label.test", "color", "#FFFFFF"),
 					resource.TestCheckResourceAttrSet("trocco_label.test", "id"),
+
+					resource.TestCheckResourceAttr("trocco_label.test_default_description", "name", "Test Label"),
+					resource.TestCheckResourceAttr("trocco_label.test_default_description", "description", ""),
+					resource.TestCheckResourceAttr("trocco_label.test_default_description", "color", "#FFFFFF"),
+					resource.TestCheckResourceAttrSet("trocco_label.test_default_description", "id"),
 				),
 			},
 			// ImportState testing
