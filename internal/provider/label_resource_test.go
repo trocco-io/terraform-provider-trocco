@@ -39,7 +39,7 @@ func TestAccLabelResource(t *testing.T) {
 
 					resource.TestCheckNoResourceAttr("trocco_label.test_default_description", "description"),
 
-                    resource.TestCheckResourceAttr("trocco_label.test_default_description", "description", ""),
+					resource.TestCheckResourceAttr("trocco_label.test_default_description", "description", ""),
 				),
 			},
 			// ImportState testing

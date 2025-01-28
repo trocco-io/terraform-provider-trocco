@@ -1,10 +1,10 @@
 package entity
 
 type Label struct {
-	ID          int64  `json:"id"`
-	Name        string `json:"name"`
+	ID          int64   `json:"id"`
+	Name        string  `json:"name"`
 	Description *string `json:"description"`
-	Color       string `json:"color"`
-	CreatedAt   string `json:"created_at"`
-	UpdatedAt   string `json:"updated_at"`
+	Color       string  `json:"color"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
 }
