@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
-	"terraform-provider-trocco/internal/provider/models"
+	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -93,7 +93,7 @@ func (r *labelResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 }
 
 func (r *labelResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan models.LabelModel
+	var plan model.LabelModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -114,7 +114,7 @@ func (r *labelResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	data := models.LabelModel{
+	data := model.LabelModel{
 		ID:          types.Int64Value(label.ID),
 		Name:        types.StringValue(label.Name),
 		Description: types.StringValue(label.Description),
@@ -125,7 +125,7 @@ func (r *labelResource) Create(ctx context.Context, req resource.CreateRequest, 
 }
 
 func (r *labelResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state models.LabelModel
+	var state model.LabelModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -140,7 +140,7 @@ func (r *labelResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		return
 	}
 
-	data := models.LabelModel{
+	data := model.LabelModel{
 		ID:          types.Int64Value(label.ID),
 		Name:        types.StringValue(label.Name),
 		Description: types.StringValue(label.Description),
@@ -151,7 +151,7 @@ func (r *labelResource) Read(ctx context.Context, req resource.ReadRequest, resp
 }
 
 func (r *labelResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan, state models.LabelModel
+	var plan, state model.LabelModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
@@ -173,7 +173,7 @@ func (r *labelResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
-	data := models.LabelModel{
+	data := model.LabelModel{
 		ID:          types.Int64Value(label.ID),
 		Name:        types.StringValue(label.Name),
 		Description: types.StringValue(label.Description),
@@ -184,7 +184,7 @@ func (r *labelResource) Update(ctx context.Context, req resource.UpdateRequest, 
 }
 
 func (r *labelResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state models.LabelModel
+	var state model.LabelModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
