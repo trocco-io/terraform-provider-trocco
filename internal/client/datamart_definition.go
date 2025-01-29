@@ -102,6 +102,14 @@ type DatamartBigqueryOption struct {
 	Location             *string  `json:"location"`
 }
 
+type ResourceGroup struct {
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+}
+
 type CustomVariableSetting struct {
 	Name      string  `json:"name"`
 	Type      string  `json:"type"`
