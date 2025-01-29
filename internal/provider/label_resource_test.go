@@ -76,7 +76,7 @@ func TestAccLabelResource(t *testing.T) {
 					    name = "Updated Label, Second Time"
 					    color = "#000000"
 					}
-                `,
+				`,
 				Check: resource.TestCheckResourceAttr("trocco_label.test_empty_description", "description", ""),
 			},
 			{
@@ -86,7 +86,7 @@ func TestAccLabelResource(t *testing.T) {
 					    color = "#000000"
 					    description = ""
 					}
-                `,
+				`,
 				Check: resource.TestCheckResourceAttr("trocco_label.test_empty_description", "description", ""),
 			},
 		},
@@ -114,7 +114,7 @@ func TestAccLabelResourceInvalidColor(t *testing.T) {
 					    description = "This is a test label"
 					    color = ""
 					}
-                `,
+				`,
 				ExpectError: regexp.MustCompile(`must be in format #RRGGBB or #RGB`),
 			},
 		},

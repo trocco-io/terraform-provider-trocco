@@ -39,7 +39,7 @@ func TestListLabels(t *testing.T) {
 					}
 				]
 			}
-    	`
+		`
 		_, err := w.Write([]byte(resp))
 
 		assert.NoError(t, err)
