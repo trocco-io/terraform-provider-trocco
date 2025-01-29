@@ -28,17 +28,17 @@ func TestListLabels(t *testing.T) {
 						"color": "#FFFFFF",
 						"created_at": "2024-07-29T19:00:00.000+09:00",
 						"updated_at": "2024-07-29T20:00:00.000+09:00"
-    				},
-    				{
+			        },
+			        {
 						"id": 2,
 						"name": "Label 2",
 						"description": "Description 2",
 						"color": "#000000",
 						"created_at": "2024-07-29T21:00:00.000+09:00",
 						"updated_at": "2024-07-29T22:00:00.000+09:00"
-    				}
+			        }
 				]
-    		}
+			}
     	`
 		_, err := w.Write([]byte(resp))
 
@@ -108,7 +108,7 @@ func TestGetLabel(t *testing.T) {
 				"color": "#FFFFFF",
 				"created_at": "2024-07-29T19:00:00.000+09:00",
 				"updated_at": "2024-07-29T20:00:00.000+09:00"
-    		}
+			}
 		`))
 
 		assert.NoError(t, err)
@@ -144,7 +144,7 @@ func TestCreateLabel(t *testing.T) {
 				"color": "#FFFFFF",
 				"created_at": "2024-07-29T19:00:00.000+09:00",
 				"updated_at": "2024-07-29T20:00:00.000+09:00"
-    		}
+			}
 		`))
 
 		assert.NoError(t, err)
@@ -185,7 +185,7 @@ func TestUpdateLabel(t *testing.T) {
 				"color": "#000000",
 				"created_at": "2024-07-29T19:00:00.000+09:00",
 				"updated_at": "2024-07-29T20:00:00.000+09:00"
-    		}
+			}
 		`
 		_, err := w.Write([]byte(resp))
 

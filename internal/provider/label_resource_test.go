@@ -20,22 +20,22 @@ func TestAccLabelResource(t *testing.T) {
 						description = "This is a test label"
 					}
 
-                    resource "trocco_label" "test2" {
-                						name = "Test Label 2"
-                						color = "#FFFFFF"
-                						description = "This is a test label"
-                					}
+					resource "trocco_label" "test2" {
+					    name = "Test Label 2"
+					    color = "#FFFFFF"
+					    description = "This is a test label"
+					}
 
-                    resource "trocco_label" "test_omitted_description" {
-                        name = "Test Label Using Omitted Description"
-                        color = "#FFFFFF"
-                    }
+					resource "trocco_label" "test_omitted_description" {
+					    name = "Test Label Using Omitted Description"
+					    color = "#FFFFFF"
+					}
 
-                    resource "trocco_label" "test_empty_description" {
-                        name = "Test Label Using Empty Description"
-                        color = "#FFFFFF"
-                        description = ""
-                    }
+					resource "trocco_label" "test_empty_description" {
+					    name = "Test Label Using Empty Description"
+					    color = "#FFFFFF"
+					    description = ""
+					}
 				`,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("trocco_label.test", "name", "Test Label"),
@@ -72,20 +72,20 @@ func TestAccLabelResource(t *testing.T) {
 			},
 			{
 				Config: providerConfig + `
-                    resource "trocco_label" "test" {
-                        name = "Updated Label, Second Time"
-                        color = "#000000"
-                    }
+					resource "trocco_label" "test" {
+					    name = "Updated Label, Second Time"
+					    color = "#000000"
+					}
                 `,
 				Check: resource.TestCheckResourceAttr("trocco_label.test_empty_description", "description", ""),
 			},
 			{
 				Config: providerConfig + `
-                    resource "trocco_label" "test2" {
-                        name = "Updated Label, Third Time"
-                        color = "#000000"
-                        description = ""
-                    }
+					resource "trocco_label" "test2" {
+					    name = "Updated Label, Third Time"
+					    color = "#000000"
+					    description = ""
+					}
                 `,
 				Check: resource.TestCheckResourceAttr("trocco_label.test_empty_description", "description", ""),
 			},
@@ -109,11 +109,11 @@ func TestAccLabelResourceInvalidColor(t *testing.T) {
 			},
 			{
 				Config: providerConfig + `
-                    resource "trocco_label" "test" {
-                        name = "Test Label"
-                        description = "This is a test label"
-                        color = ""
-                    }
+					resource "trocco_label" "test" {
+					    name = "Test Label"
+					    description = "This is a test label"
+					    color = ""
+					}
                 `,
 				ExpectError: regexp.MustCompile(`must be in format #RRGGBB or #RGB`),
 			},
