@@ -32,27 +32,27 @@ type ResourceGroupPermission struct {
 
 // List of ResourceGroups
 
-type ListResouceGroupInput struct {
+type ListResourceGroupInput struct {
 	limit  *int
 	cursor *string
 }
 
-func (input *ListResouceGroupInput) SetLimit(limit int) {
+func (input *ListResourceGroupInput) SetLimit(limit int) {
 	input.limit = &limit
 }
 
-func (input *ListResouceGroupInput) SetCursor(cursor string) {
+func (input *ListResourceGroupInput) SetCursor(cursor string) {
 	input.cursor = &cursor
 }
 
-type ListResouceGroupOutput struct {
+type ListResourceGroupOutput struct {
 	Items      []ResourceGroupWithTeams `json:"items"`
 	NextCursor *string                  `json:"next_cursor"`
 }
 
 const MaxListResourceGroupsLimit = 100
 
-func (client *TroccoClient) ListResourceGroups(input *ListResouceGroupInput) (*ListResouceGroupOutput, error) {
+func (client *TroccoClient) ListResourceGroups(input *ListResourceGroupInput) (*ListResourceGroupOutput, error) {
 	params := url.Values{}
 	if input != nil && input.limit != nil {
 		if *input.limit < 1 || *input.limit > MaxListResourceGroupsLimit {
@@ -64,7 +64,7 @@ func (client *TroccoClient) ListResourceGroups(input *ListResouceGroupInput) (*L
 		params.Add("cursor", *input.cursor)
 	}
 	path := fmt.Sprintf(resourceGroupBasePath+"?%s", params.Encode())
-	output := new(ListResouceGroupOutput)
+	output := new(ListResourceGroupOutput)
 	err := client.do(http.MethodGet, path, nil, output)
 	if err != nil {
 		return nil, err

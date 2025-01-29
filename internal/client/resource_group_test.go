@@ -87,7 +87,7 @@ func TestListResourceGroupsLimitAndCursor(t *testing.T) {
 	}))
 	defer server.Close()
 
-	input := &ListResouceGroupInput{}
+	input := &ListResourceGroupInput{}
 	input.SetLimit(1)
 	input.SetCursor("test_prev_cursor")
 
@@ -105,7 +105,7 @@ func TestListResourceGroupsLimitAndCursor(t *testing.T) {
 
 // Get Team
 
-func TestGetResouceGroup(t *testing.T) {
+func TestGetResourceGroup(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "/api/resource_groups/1", r.URL.Path)
 		assert.Equal(t, http.MethodGet, r.Method)
