@@ -183,7 +183,7 @@ func TestCreateResourceGroup(t *testing.T) {
 	defer server.Close()
 
 	input := &CreateResourceGroupInput{
-		Name:        lo.ToPtr("ResourceGroup"),
+		Name:        "ResourceGroup",
 		Description: lo.ToPtr("description"),
 		Teams: []TeamRoleInput{
 			{TeamID: 1, Role: "administrator"},

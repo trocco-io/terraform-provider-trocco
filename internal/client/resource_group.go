@@ -79,7 +79,7 @@ func (client *TroccoClient) GetResourceGroup(id int64) (*ResourceGroupWithTeams,
 // Create
 
 type CreateResourceGroupInput struct {
-	Name        *string         `json:"name"`
+	Name        string          `json:"name"`
 	Description *string         `json:"description,omitempty"`
 	Teams       []TeamRoleInput `json:"teams"`
 }

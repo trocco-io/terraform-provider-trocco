@@ -68,6 +68,10 @@ func (r *resourceGroupResource) Schema(ctx context.Context, req resource.SchemaR
 			"name": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: "The name of the resource group.",
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+					stringvalidator.UTF8LengthAtMost(255),
+				},
 			},
 			"description": schema.StringAttribute{
 				Optional:            true,
@@ -109,7 +113,7 @@ func (r *resourceGroupResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	input := client.CreateResourceGroupInput{
-		Name:        plan.Name.ValueStringPointer(),
+		Name:        plan.Name.ValueString(),
 		Description: plan.Description.ValueStringPointer(),
 		Teams:       []client.TeamRoleInput{},
 	}
