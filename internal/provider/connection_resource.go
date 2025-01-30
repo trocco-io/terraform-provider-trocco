@@ -8,7 +8,6 @@ import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
 
-	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -313,11 +312,11 @@ func (r *connectionResource) Schema(
 			},
 
 			// MySQL Fields
-			"port": schema.Int32Attribute{
+			"port": schema.Int64Attribute{
 				MarkdownDescription: "MySQL: The port of the MySQL server.",
 				Optional:            true,
-				Validators: []validator.Int32{
-					int32validator.AtLeast(1),
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
 				},
 			},
 			"ssl": schema.BoolAttribute{
@@ -360,12 +359,12 @@ func (r *connectionResource) Schema(
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
-			"gateway_port": schema.Int32Attribute{
+			"gateway_port": schema.Int64Attribute{
 				MarkdownDescription: "MySQL: SSH Port",
 				Optional:            true,
 				Sensitive:           true,
-				Validators: []validator.Int32{
-					int32validator.AtLeast(1),
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
 				},
 			},
 			"gateway_user_name": schema.StringAttribute{
