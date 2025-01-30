@@ -14,6 +14,18 @@ func (n NullableInt64) MarshalJSON() ([]byte, error) {
 	return json.Marshal(n.Value)
 }
 
+type NullableInt32 struct {
+	Value int32
+	Valid bool
+}
+
+func (n NullableInt32) MarshalJSON() ([]byte, error) {
+	if !n.Valid {
+		return []byte("null"), nil
+	}
+	return json.Marshal(n.Value)
+}
+
 type NullableString struct {
 	Value string
 	Valid bool

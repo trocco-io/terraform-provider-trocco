@@ -8,6 +8,7 @@ import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -49,6 +50,20 @@ type connectionResourceModel struct {
 	// GCS Fields
 	ApplicationName     types.String `tfsdk:"application_name"`
 	ServiceAccountEmail types.String `tfsdk:"service_account_email"`
+
+	// MySQL Fields
+	Port                 types.Int32  `tfsdk:"port"`
+	SSL                  types.Bool   `tfsdk:"ssl"`
+	SSLCA                types.String `tfsdk:"ssl_ca"`
+	SSLCert              types.String `tfsdk:"ssl_cert"`
+	SSLKey               types.String `tfsdk:"ssl_key"`
+	GatewayEnabled       types.Bool   `tfsdk:"gateway_enabled"`
+	GatewayHost          types.String `tfsdk:"gateway_host"`
+	GatewayPort          types.Int32  `tfsdk:"gateway_port"`
+	GatewayUserName      types.String `tfsdk:"gateway_user_name"`
+	GatewayPassword      types.String `tfsdk:"gateway_password"`
+	GatewayKey           types.String `tfsdk:"gateway_key"`
+	GatewayKeyPassphrase types.String `tfsdk:"gateway_key_passphrase"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -73,6 +88,20 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		// GCS Fields
 		ApplicationName:     m.ApplicationName.ValueStringPointer(),
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
+
+		// MySQL Fields
+		Port:                 model.NewNullableInt32(m.Port),
+		SSL:                  m.SSL.ValueBoolPointer(),
+		SSLCA:                m.SSLCA.ValueStringPointer(),
+		SSLCert:              m.SSLCert.ValueStringPointer(),
+		SSLKey:               m.SSLKey.ValueStringPointer(),
+		GatewayEnabled:       m.GatewayEnabled.ValueBoolPointer(),
+		GatewayHost:          m.GatewayHost.ValueStringPointer(),
+		GatewayPort:          model.NewNullableInt32(m.GatewayPort),
+		GatewayUserName:      m.GatewayUserName.ValueStringPointer(),
+		GatewayPassword:      m.GatewayPassword.ValueStringPointer(),
+		GatewayKey:           m.GatewayKey.ValueStringPointer(),
+		GatewayKeyPassphrase: m.GatewayKeyPassphrase.ValueStringPointer(),
 	}
 }
 
@@ -98,6 +127,20 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		// GCS Fields
 		ApplicationName:     m.ApplicationName.ValueStringPointer(),
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
+
+		// MySQL Fields
+		Port:                 model.NewNullableInt32(m.Port),
+		SSL:                  m.SSL.ValueBoolPointer(),
+		SSLCA:                m.SSLCA.ValueStringPointer(),
+		SSLCert:              m.SSLCert.ValueStringPointer(),
+		SSLKey:               m.SSLKey.ValueStringPointer(),
+		GatewayEnabled:       m.GatewayEnabled.ValueBoolPointer(),
+		GatewayHost:          m.GatewayHost.ValueStringPointer(),
+		GatewayPort:          model.NewNullableInt32(m.GatewayPort),
+		GatewayUserName:      m.GatewayUserName.ValueStringPointer(),
+		GatewayPassword:      m.GatewayPassword.ValueStringPointer(),
+		GatewayKey:           m.GatewayKey.ValueStringPointer(),
+		GatewayKeyPassphrase: m.GatewayKeyPassphrase.ValueStringPointer(),
 	}
 }
 
@@ -148,13 +191,13 @@ func (r *connectionResource) Schema(
 		Attributes: map[string]schema.Attribute{
 			// Common Fields
 			"connection_type": schema.StringAttribute{
-				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake` or `gcs`.",
+				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, or `mysql`.",
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery", "snowflake", "gcs"),
+					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "mysql"),
 				},
 			},
 			"id": schema.Int64Attribute{
@@ -268,6 +311,95 @@ func (r *connectionResource) Schema(
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
+
+			// MySQL Fields
+			"port": schema.Int32Attribute{
+				MarkdownDescription: "MySQL: The port of the MySQL server.",
+				Optional:            true,
+				Validators: []validator.Int32{
+					int32validator.AtLeast(1),
+				},
+			},
+			"ssl": schema.BoolAttribute{
+				MarkdownDescription: "MySQL: Whether to use SSL for the MySQL connection.",
+				Optional:            true,
+			},
+			"ssl_ca": schema.StringAttribute{
+				MarkdownDescription: "MySQL: CA certificate",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"ssl_cert": schema.StringAttribute{
+				MarkdownDescription: "MySQL: Certificate (CRT file)",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"ssl_key": schema.StringAttribute{
+				MarkdownDescription: "MySQL: Key (KEY file)",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"gateway_enabled": schema.BoolAttribute{
+				MarkdownDescription: "MySQL: Whether to connect via SSH",
+				Optional:            true,
+			},
+			"gateway_host": schema.StringAttribute{
+				MarkdownDescription: "MySQL: SSH Host",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"gateway_port": schema.Int32Attribute{
+				MarkdownDescription: "MySQL: SSH Port",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.Int32{
+					int32validator.AtLeast(1),
+				},
+			},
+			"gateway_user_name": schema.StringAttribute{
+				MarkdownDescription: "MySQL: SSH User",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"gateway_password": schema.StringAttribute{
+				MarkdownDescription: "MySQL: SSH Password",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"gateway_key": schema.StringAttribute{
+				MarkdownDescription: "MySQL: SSH Private Key",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"gateway_key_passphrase": schema.StringAttribute{
+				MarkdownDescription: "MySQL: SSH Private Key Passphrase",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
 		},
 	}
 }
@@ -318,6 +450,20 @@ func (r *connectionResource) Create(
 		// GCS Fields
 		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
 		ServiceAccountEmail: plan.ServiceAccountEmail,
+
+		// MySQL Fields
+		Port:                 types.Int32PointerValue(connection.Port),
+		SSL:                  types.BoolPointerValue(connection.SSL),
+		SSLCA:                types.StringPointerValue(connection.SSLCA),
+		SSLCert:              types.StringPointerValue(connection.SSLCert),
+		SSLKey:               types.StringPointerValue(connection.SSLKey),
+		GatewayEnabled:       types.BoolPointerValue(connection.GatewayEnabled),
+		GatewayHost:          types.StringPointerValue(connection.GatewayHost),
+		GatewayPort:          types.Int32PointerValue(connection.GatewayPort),
+		GatewayUserName:      types.StringPointerValue(connection.GatewayUserName),
+		GatewayPassword:      types.StringPointerValue(connection.GatewayPassword),
+		GatewayKey:           types.StringPointerValue(connection.GatewayKey),
+		GatewayKeyPassphrase: types.StringPointerValue(connection.GatewayKeyPassphrase),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -375,6 +521,20 @@ func (r *connectionResource) Update(
 		// GCS Fields
 		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
 		ServiceAccountEmail: plan.ServiceAccountEmail,
+
+		// MySQL Fields
+		Port:                 types.Int32PointerValue(connection.Port),
+		SSL:                  types.BoolPointerValue(connection.SSL),
+		SSLCA:                plan.SSLCA,
+		SSLCert:              plan.SSLCert,
+		SSLKey:               plan.SSLKey,
+		GatewayEnabled:       types.BoolPointerValue(connection.GatewayEnabled),
+		GatewayHost:          plan.GatewayHost,
+		GatewayPort:          plan.GatewayPort,
+		GatewayUserName:      plan.GatewayUserName,
+		GatewayPassword:      plan.GatewayPassword,
+		GatewayKey:           plan.GatewayKey,
+		GatewayKeyPassphrase: plan.GatewayKeyPassphrase,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -425,6 +585,20 @@ func (r *connectionResource) Read(
 		// GCS Fields
 		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
 		ServiceAccountEmail: state.ServiceAccountEmail,
+
+		// MySQL Fields
+		Port:                 types.Int32PointerValue(connection.Port),
+		SSL:                  types.BoolPointerValue(connection.SSL),
+		SSLCA:                state.SSLCA,
+		SSLCert:              state.SSLCert,
+		SSLKey:               state.SSLKey,
+		GatewayEnabled:       types.BoolPointerValue(connection.GatewayEnabled),
+		GatewayHost:          state.GatewayHost,
+		GatewayPort:          state.GatewayPort,
+		GatewayUserName:      state.GatewayUserName,
+		GatewayPassword:      state.GatewayPassword,
+		GatewayKey:           state.GatewayKey,
+		GatewayKeyPassphrase: state.GatewayKeyPassphrase,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -495,77 +669,62 @@ func (r *connectionResource) ValidateConfig(
 		return
 	}
 
-	if plan.ConnectionType.ValueString() == "bigquery" {
-		if plan.ServiceAccountJSONKey.IsNull() {
-			resp.Diagnostics.AddError(
-				"service_account_json_key",
-				"Service account JSON key is required for BigQuery connection.",
-			)
+	switch plan.ConnectionType.ValueString() {
+	case "bigquery":
+		validateRequiredString(plan.ServiceAccountJSONKey, "service_account_json_key", "BigQuery", resp)
+		validateRequiredString(plan.ProjectID, "project_id", "BigQuery", resp)
+	case "snowflake":
+		validateRequiredString(plan.Host, "host", "Snowflake", resp)
+		validateRequiredString(plan.UserName, "user_name", "Snowflake", resp)
+		validateRequiredString(plan.AuthMethod, "auth_method", "Snowflake", resp)
+		if plan.AuthMethod.ValueString() == "key_pair" {
+			validateRequiredString(plan.PrivateKey, "private_key", "Snowflake", resp)
 		}
-		if plan.ProjectID.IsNull() {
-			resp.Diagnostics.AddError(
-				"project_id",
-				"Project ID is required for BigQuery connection.",
-			)
+		if plan.AuthMethod.ValueString() == "user_password" {
+			validateRequiredString(plan.Password, "password", "Snowflake", resp)
 		}
-	}
-
-	if plan.ConnectionType.ValueString() == "snowflake" {
-		if plan.Host.IsNull() {
-			resp.Diagnostics.AddError(
-				"host",
-				"Host is required for Snowflake connection.",
-			)
-		}
-
-		if plan.UserName.IsNull() {
-			resp.Diagnostics.AddError(
-				"user_name",
-				"User name is required for Snowflake connection.",
-			)
-		}
-
-		if plan.AuthMethod.IsNull() {
-			resp.Diagnostics.AddError(
-				"auth_method",
-				"Auth method is required for Snowflake connection.",
-			)
-		}
-
-		if plan.AuthMethod.ValueString() == "key_pair" && plan.PrivateKey.IsNull() {
-			resp.Diagnostics.AddError(
-				"private_key",
-				"Private key is required for Snowflake connection with key pair authentication.",
-			)
-		}
-
-		if plan.AuthMethod.ValueString() == "user_password" && plan.Password.IsNull() {
-			resp.Diagnostics.AddError(
-				"password",
-				"Password is required for Snowflake connection with user password authentication.",
-			)
+	case "gcs":
+		validateRequiredString(plan.ApplicationName, "application_name", "GCS", resp)
+		validateRequiredString(plan.ServiceAccountEmail, "service_account_email", "GCS", resp)
+		validateRequiredString(plan.ProjectID, "project_id", "GCS", resp)
+	case "mysql":
+		validateRequiredString(plan.Host, "host", "MySQL", resp)
+		validateRequiredInt32(plan.Port, "port", "MySQL", resp)
+		validateRequiredString(plan.UserName, "user_name", "MySQL", resp)
+		validateRequiredString(plan.Password, "password", "MySQL", resp)
+		validateRequiredBool(plan.SSL, "ssl", "MySQL", resp)
+		validateRequiredBool(plan.GatewayEnabled, "gateway_enabled", "MySQL", resp)
+		if plan.GatewayEnabled.Equal(types.BoolValue(true)) {
+			validateRequiredString(plan.GatewayHost, "gateway_host", "MySQL", resp)
+			validateRequiredInt32(plan.GatewayPort, "gateway_port", "MySQL", resp)
+			validateRequiredString(plan.GatewayUserName, "gateway_user_name", "MySQL", resp)
 		}
 	}
+}
 
-	if plan.ConnectionType.ValueString() == "gcs" {
-		if plan.ApplicationName.IsNull() {
-			resp.Diagnostics.AddError(
-				"application_name",
-				"Application name is required for GCS connection.",
-			)
-		}
+func validateRequiredString(field types.String, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {
+	if field.IsNull() {
+		resp.Diagnostics.AddError(
+			fieldName,
+			fmt.Sprintf("%s is required for %s connection.", fieldName, connectionType),
+		)
+	}
+}
 
-		if plan.ServiceAccountEmail.IsNull() {
-			resp.Diagnostics.AddError(
-				"service_account_email",
-				"Service account email is required for GCS connection.",
-			)
-		}
-		if plan.ProjectID.IsNull() {
-			resp.Diagnostics.AddError(
-				"project_id",
-				"Project ID is required for GCS connection.",
-			)
-		}
+func validateRequiredInt32(field types.Int32, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {
+	if field.IsNull() {
+		resp.Diagnostics.AddError(
+			fieldName,
+			fmt.Sprintf("%s is required for %s connection.", fieldName, connectionType),
+		)
+	}
+}
+
+func validateRequiredBool(field types.Bool, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {
+	if field.IsNull() {
+		resp.Diagnostics.AddError(
+			fieldName,
+			fmt.Sprintf("%s is required for %s connection.", fieldName, connectionType),
+		)
 	}
 }
