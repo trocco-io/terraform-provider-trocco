@@ -11,6 +11,7 @@ func OutputOptionSchema() schema.Attribute {
 		Required: true,
 		Attributes: map[string]schema.Attribute{
 			"bigquery_output_option": BigqueryOutputOptionSchema(),
+			// "snowflake_output_option": SnowflakeOutputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planmodifier2.OutputOptionPlanModifier{},
