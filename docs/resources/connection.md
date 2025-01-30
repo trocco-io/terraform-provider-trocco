@@ -53,7 +53,7 @@ resource "trocco_connection" "snowflake" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake` or `gcs`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, or `mysql`.
 - `name` (String) The name of the connection.
 
 ### Optional
@@ -61,14 +61,26 @@ resource "trocco_connection" "snowflake" {
 - `application_name` (String) GCS: Application name.
 - `auth_method` (String) Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`.
 - `description` (String) The description of the connection.
+- `gateway_enabled` (Boolean) MySQL: Whether to connect via SSH
+- `gateway_host` (String, Sensitive) MySQL: SSH Host
+- `gateway_key` (String, Sensitive) MySQL: SSH Private Key
+- `gateway_key_passphrase` (String, Sensitive) MySQL: SSH Private Key Passphrase
+- `gateway_password` (String, Sensitive) MySQL: SSH Password
+- `gateway_port` (Number, Sensitive) MySQL: SSH Port
+- `gateway_user_name` (String, Sensitive) MySQL: SSH User
 - `host` (String) Snowflake: The host of a Snowflake account.
 - `password` (String, Sensitive) Snowflake: The password for the Snowflake user.
+- `port` (Number) MySQL: The port of the MySQL server.
 - `private_key` (String, Sensitive) Snowflake: A private key for the Snowflake user.
 - `project_id` (String) BigQuery, GCS: A GCP project ID.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
 - `role` (String) Snowflake: A role attached to the Snowflake user.
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery: A GCP service account key.
+- `ssl` (Boolean) MySQL: Whether to use SSL for the MySQL connection.
+- `ssl_ca` (String, Sensitive) MySQL: CA certificate
+- `ssl_cert` (String, Sensitive) MySQL: Certificate (CRT file)
+- `ssl_key` (String, Sensitive) MySQL: Key (KEY file)
 - `user_name` (String) Snowflake: The name of a Snowflake user.
 
 ### Read-Only
