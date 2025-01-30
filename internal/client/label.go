@@ -13,6 +13,9 @@ type Label = entity.Label
 
 // List of Labels
 
+// Note: /api/labels API allows for datamart_definition_id, job_definition_id, job_definition_bulk_id, &
+// pipeline_definition_id filter parameters, so they're included in ListLabelsInput. However, these
+// parameters are not used by Terraform label resource's Read.
 type ListLabelsInput struct {
 	Limit                *int
 	Cursor               *string
