@@ -52,14 +52,14 @@ type connectionResourceModel struct {
 	ServiceAccountEmail types.String `tfsdk:"service_account_email"`
 
 	// MySQL Fields
-	Port                 types.Int32  `tfsdk:"port"`
+	Port                 types.Int64  `tfsdk:"port"`
 	SSL                  types.Bool   `tfsdk:"ssl"`
 	SSLCA                types.String `tfsdk:"ssl_ca"`
 	SSLCert              types.String `tfsdk:"ssl_cert"`
 	SSLKey               types.String `tfsdk:"ssl_key"`
 	GatewayEnabled       types.Bool   `tfsdk:"gateway_enabled"`
 	GatewayHost          types.String `tfsdk:"gateway_host"`
-	GatewayPort          types.Int32  `tfsdk:"gateway_port"`
+	GatewayPort          types.Int64  `tfsdk:"gateway_port"`
 	GatewayUserName      types.String `tfsdk:"gateway_user_name"`
 	GatewayPassword      types.String `tfsdk:"gateway_password"`
 	GatewayKey           types.String `tfsdk:"gateway_key"`
@@ -90,14 +90,14 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 
 		// MySQL Fields
-		Port:                 model.NewNullableInt32(m.Port),
-		SSL:                  m.SSL.ValueBoolPointer(),
+		Port:                 model.NewNullableInt64(m.Port),
+		SSL:                  model.NewNullableBool(m.SSL),
 		SSLCA:                m.SSLCA.ValueStringPointer(),
 		SSLCert:              m.SSLCert.ValueStringPointer(),
 		SSLKey:               m.SSLKey.ValueStringPointer(),
-		GatewayEnabled:       m.GatewayEnabled.ValueBoolPointer(),
+		GatewayEnabled:       model.NewNullableBool(m.GatewayEnabled),
 		GatewayHost:          m.GatewayHost.ValueStringPointer(),
-		GatewayPort:          model.NewNullableInt32(m.GatewayPort),
+		GatewayPort:          model.NewNullableInt64(m.GatewayPort),
 		GatewayUserName:      m.GatewayUserName.ValueStringPointer(),
 		GatewayPassword:      m.GatewayPassword.ValueStringPointer(),
 		GatewayKey:           m.GatewayKey.ValueStringPointer(),
@@ -129,14 +129,14 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 
 		// MySQL Fields
-		Port:                 model.NewNullableInt32(m.Port),
-		SSL:                  m.SSL.ValueBoolPointer(),
+		Port:                 model.NewNullableInt64(m.Port),
+		SSL:                  model.NewNullableBool(m.SSL),
 		SSLCA:                m.SSLCA.ValueStringPointer(),
 		SSLCert:              m.SSLCert.ValueStringPointer(),
 		SSLKey:               m.SSLKey.ValueStringPointer(),
-		GatewayEnabled:       m.GatewayEnabled.ValueBoolPointer(),
+		GatewayEnabled:       model.NewNullableBool(m.GatewayEnabled),
 		GatewayHost:          m.GatewayHost.ValueStringPointer(),
-		GatewayPort:          model.NewNullableInt32(m.GatewayPort),
+		GatewayPort:          model.NewNullableInt64(m.GatewayPort),
 		GatewayUserName:      m.GatewayUserName.ValueStringPointer(),
 		GatewayPassword:      m.GatewayPassword.ValueStringPointer(),
 		GatewayKey:           m.GatewayKey.ValueStringPointer(),
@@ -452,14 +452,14 @@ func (r *connectionResource) Create(
 		ServiceAccountEmail: plan.ServiceAccountEmail,
 
 		// MySQL Fields
-		Port:                 types.Int32PointerValue(connection.Port),
+		Port:                 types.Int64PointerValue(connection.Port),
 		SSL:                  types.BoolPointerValue(connection.SSL),
 		SSLCA:                types.StringPointerValue(connection.SSLCA),
 		SSLCert:              types.StringPointerValue(connection.SSLCert),
 		SSLKey:               types.StringPointerValue(connection.SSLKey),
 		GatewayEnabled:       types.BoolPointerValue(connection.GatewayEnabled),
 		GatewayHost:          types.StringPointerValue(connection.GatewayHost),
-		GatewayPort:          types.Int32PointerValue(connection.GatewayPort),
+		GatewayPort:          types.Int64PointerValue(connection.GatewayPort),
 		GatewayUserName:      types.StringPointerValue(connection.GatewayUserName),
 		GatewayPassword:      types.StringPointerValue(connection.GatewayPassword),
 		GatewayKey:           types.StringPointerValue(connection.GatewayKey),
@@ -523,7 +523,7 @@ func (r *connectionResource) Update(
 		ServiceAccountEmail: plan.ServiceAccountEmail,
 
 		// MySQL Fields
-		Port:                 types.Int32PointerValue(connection.Port),
+		Port:                 types.Int64PointerValue(connection.Port),
 		SSL:                  types.BoolPointerValue(connection.SSL),
 		SSLCA:                plan.SSLCA,
 		SSLCert:              plan.SSLCert,
@@ -587,7 +587,7 @@ func (r *connectionResource) Read(
 		ServiceAccountEmail: state.ServiceAccountEmail,
 
 		// MySQL Fields
-		Port:                 types.Int32PointerValue(connection.Port),
+		Port:                 types.Int64PointerValue(connection.Port),
 		SSL:                  types.BoolPointerValue(connection.SSL),
 		SSLCA:                state.SSLCA,
 		SSLCert:              state.SSLCert,
@@ -689,14 +689,14 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredString(plan.ProjectID, "project_id", "GCS", resp)
 	case "mysql":
 		validateRequiredString(plan.Host, "host", "MySQL", resp)
-		validateRequiredInt32(plan.Port, "port", "MySQL", resp)
+		validateRequiredInt(plan.Port, "port", "MySQL", resp)
 		validateRequiredString(plan.UserName, "user_name", "MySQL", resp)
 		validateRequiredString(plan.Password, "password", "MySQL", resp)
 		validateRequiredBool(plan.SSL, "ssl", "MySQL", resp)
 		validateRequiredBool(plan.GatewayEnabled, "gateway_enabled", "MySQL", resp)
 		if plan.GatewayEnabled.Equal(types.BoolValue(true)) {
 			validateRequiredString(plan.GatewayHost, "gateway_host", "MySQL", resp)
-			validateRequiredInt32(plan.GatewayPort, "gateway_port", "MySQL", resp)
+			validateRequiredInt(plan.GatewayPort, "gateway_port", "MySQL", resp)
 			validateRequiredString(plan.GatewayUserName, "gateway_user_name", "MySQL", resp)
 		}
 	}
@@ -711,7 +711,7 @@ func validateRequiredString(field types.String, fieldName, connectionType string
 	}
 }
 
-func validateRequiredInt32(field types.Int32, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {
+func validateRequiredInt(field types.Int64, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {
 	if field.IsNull() {
 		resp.Diagnostics.AddError(
 			fieldName,

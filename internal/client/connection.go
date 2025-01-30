@@ -38,14 +38,14 @@ type Connection struct {
 	ServiceAccountEmail *string `json:"service_account_email"`
 
 	// MySQL Fields
-	Port                 *int32  `json:"port"`
+	Port                 *int64  `json:"port"`
 	SSL                  *bool   `json:"ssl"`
 	SSLCA                *string `json:"ssl_ca"`
 	SSLCert              *string `json:"ssl_cert"`
 	SSLKey               *string `json:"ssl_key"`
 	GatewayEnabled       *bool   `json:"gateway_enabled"`
 	GatewayHost          *string `json:"gateway_host"`
-	GatewayPort          *int32  `json:"gateway_port"`
+	GatewayPort          *int64  `json:"gateway_port"`
 	GatewayUserName      *string `json:"gateway_user_name"`
 	GatewayPassword      *string `json:"gateway_password"`
 	GatewayKey           *string `json:"gateway_key"`
@@ -80,18 +80,18 @@ type CreateConnectionInput struct {
 	ServiceAccountEmail *string `json:"service_account_email,omitempty"`
 
 	// MySQL Fields
-	Port                 *parameter.NullableInt32 `json:"port"`
-	SSL                  *bool                    `json:"ssl"`
-	SSLCA                *string                  `json:"ssl_ca"`
-	SSLCert              *string                  `json:"ssl_cert"`
-	SSLKey               *string                  `json:"ssl_key"`
-	GatewayEnabled       *bool                    `json:"gateway_enabled"`
-	GatewayHost          *string                  `json:"gateway_host"`
-	GatewayPort          *parameter.NullableInt32 `json:"gateway_port"`
-	GatewayUserName      *string                  `json:"gateway_user_name"`
-	GatewayPassword      *string                  `json:"gateway_password"`
-	GatewayKey           *string                  `json:"gateway_key"`
-	GatewayKeyPassphrase *string                  `json:"gateway_key_passphrase"`
+	Port                 *parameter.NullableInt64 `json:"port,omitempty"`
+	SSL                  *parameter.NullableBool  `json:"ssl,omitempty"`
+	SSLCA                *string                  `json:"ssl_ca,omitempty"`
+	SSLCert              *string                  `json:"ssl_cert,omitempty"`
+	SSLKey               *string                  `json:"ssl_key,omitempty"`
+	GatewayEnabled       *parameter.NullableBool  `json:"gateway_enabled,omitempty"`
+	GatewayHost          *string                  `json:"gateway_host,omitempty"`
+	GatewayPort          *parameter.NullableInt64 `json:"gateway_port,omitempty"`
+	GatewayUserName      *string                  `json:"gateway_user_name,omitempty"`
+	GatewayPassword      *string                  `json:"gateway_password,omitempty"`
+	GatewayKey           *string                  `json:"gateway_key,omitempty"`
+	GatewayKeyPassphrase *string                  `json:"gateway_key_passphrase,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -117,18 +117,18 @@ type UpdateConnectionInput struct {
 	ServiceAccountEmail *string `json:"service_account_email,omitempty"`
 
 	// MySQL Fields
-	Port                 *parameter.NullableInt32 `json:"port"`
-	SSL                  *bool                    `json:"ssl"`
-	SSLCA                *string                  `json:"ssl_ca"`
-	SSLCert              *string                  `json:"ssl_cert"`
-	SSLKey               *string                  `json:"ssl_key"`
-	GatewayEnabled       *bool                    `json:"gateway_enabled"`
-	GatewayHost          *string                  `json:"gateway_host"`
-	GatewayPort          *parameter.NullableInt32 `json:"gateway_port"`
-	GatewayUserName      *string                  `json:"gateway_user_name"`
-	GatewayPassword      *string                  `json:"gateway_password"`
-	GatewayKey           *string                  `json:"gateway_key"`
-	GatewayKeyPassphrase *string                  `json:"gateway_key_passphrase"`
+	Port                 *parameter.NullableInt64 `json:"port,omitempty"`
+	SSL                  *parameter.NullableBool  `json:"ssl,omitempty"`
+	SSLCA                *string                  `json:"ssl_ca,omitempty"`
+	SSLCert              *string                  `json:"ssl_cert,omitempty"`
+	SSLKey               *string                  `json:"ssl_key,omitempty"`
+	GatewayEnabled       *parameter.NullableBool  `json:"gateway_enabled,omitempty"`
+	GatewayHost          *string                  `json:"gateway_host,omitempty"`
+	GatewayPort          *parameter.NullableInt64 `json:"gateway_port,omitempty"`
+	GatewayUserName      *string                  `json:"gateway_user_name,omitempty"`
+	GatewayPassword      *string                  `json:"gateway_password,omitempty"`
+	GatewayKey           *string                  `json:"gateway_key,omitempty"`
+	GatewayKeyPassphrase *string                  `json:"gateway_key_passphrase,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {
