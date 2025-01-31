@@ -7,6 +7,7 @@ import (
 	"strings"
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
+	"terraform-provider-trocco/internal/provider/model/connection"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -52,9 +53,9 @@ type connectionResourceModel struct {
 	ServiceAccountEmail types.String `tfsdk:"service_account_email"`
 
 	// MySQL Fields
-	Port    types.Int64    `tfsdk:"port"`
-	SSL     *model.SSL     `tfsdk:"ssl"`
-	Gateway *model.Gateway `tfsdk:"gateway"`
+	Port    types.Int64         `tfsdk:"port"`
+	SSL     *connection.SSL     `tfsdk:"ssl"`
+	Gateway *connection.Gateway `tfsdk:"gateway"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -492,11 +493,11 @@ func (r *connectionResource) Create(
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 
-func (m *connectionResourceModel) NewGateway() *model.Gateway {
+func (m *connectionResourceModel) NewGateway() *connection.Gateway {
 	if m.Gateway == nil {
 		return nil
 	}
-	return &model.Gateway{
+	return &connection.Gateway{
 		Host:          types.StringPointerValue(m.Gateway.Host.ValueStringPointer()),
 		Port:          types.Int64PointerValue(m.Gateway.Port.ValueInt64Pointer()),
 		UserName:      types.StringPointerValue(m.Gateway.UserName.ValueStringPointer()),
@@ -506,11 +507,11 @@ func (m *connectionResourceModel) NewGateway() *model.Gateway {
 	}
 }
 
-func (m *connectionResourceModel) NewSSL() *model.SSL {
+func (m *connectionResourceModel) NewSSL() *connection.SSL {
 	if m.SSL == nil {
 		return nil
 	}
-	return &model.SSL{
+	return &connection.SSL{
 		CA:   types.StringPointerValue(m.SSL.CA.ValueStringPointer()),
 		Cert: types.StringPointerValue(m.SSL.Cert.ValueStringPointer()),
 		Key:  types.StringPointerValue(m.SSL.Key.ValueStringPointer()),
