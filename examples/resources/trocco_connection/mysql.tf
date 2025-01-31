@@ -9,17 +9,17 @@ resource "trocco_connection" "mysql" {
   ssl = {
     ca   = <<-SSL_CA
       -----BEGIN PRIVATE KEY-----
-      ... SSL CA...!
+      ...SSL CA...
       -----END PRIVATE KEY-----
     SSL_CA
     cert = <<-SSL_CERT
       -----BEGIN CERTIFICATE-----
-      ... SSL CRT...
+      ...SSL CRT...
       -----END CERTIFICATE-----
     SSL_CERT
     key  = <<-SSL_KEY
       -----BEGIN PRIVATE KEY-----
-      ... SSL KEY...!
+      ...SSL KEY...
       -----END PRIVATE KEY-----
     SSL_KEY
   }
