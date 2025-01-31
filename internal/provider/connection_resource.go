@@ -695,7 +695,7 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredString(plan.Password, "password", "MySQL", resp)
 		validateRequiredBool(plan.SSL, "ssl", "MySQL", resp)
 		validateRequiredBool(plan.GatewayEnabled, "gateway_enabled", "MySQL", resp)
-		if plan.GatewayEnabled.Equal(types.BoolValue(true)) {
+		if plan.GatewayEnabled.ValueBool() {
 			validateRequiredString(plan.GatewayHost, "gateway_host", "MySQL", resp)
 			validateRequiredInt(plan.GatewayPort, "gateway_port", "MySQL", resp)
 			validateRequiredString(plan.GatewayUserName, "gateway_user_name", "MySQL", resp)
