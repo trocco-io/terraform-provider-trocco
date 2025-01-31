@@ -105,12 +105,6 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.GatewayKeyPassphrase = m.Gateway.KeyPassphrase.ValueStringPointer()
 	} else {
 		input.GatewayEnabled = model.NewNullableBool(types.BoolValue(false))
-		input.GatewayHost = nil
-		input.GatewayPort = nil
-		input.GatewayUserName = nil
-		input.GatewayPassword = nil
-		input.GatewayKey = nil
-		input.GatewayKeyPassphrase = nil
 	}
 
 	return input
@@ -152,9 +146,6 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
 	} else {
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
-		input.SSLCA = nil
-		input.SSLCert = nil
-		input.SSLKey = nil
 	}
 
 	// Gateway Fields
@@ -168,12 +159,6 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.GatewayKeyPassphrase = m.Gateway.KeyPassphrase.ValueStringPointer()
 	} else {
 		input.GatewayEnabled = model.NewNullableBool(types.BoolValue(false))
-		input.GatewayHost = nil
-		input.GatewayPort = nil
-		input.GatewayUserName = nil
-		input.GatewayPassword = nil
-		input.GatewayKey = nil
-		input.GatewayKeyPassphrase = nil
 	}
 	return input
 
