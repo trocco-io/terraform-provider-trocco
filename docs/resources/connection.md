@@ -61,13 +61,7 @@ resource "trocco_connection" "snowflake" {
 - `application_name` (String) GCS: Application name.
 - `auth_method` (String) Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`.
 - `description` (String) The description of the connection.
-- `gateway_enabled` (Boolean) MySQL: Whether to connect via SSH
-- `gateway_host` (String, Sensitive) MySQL: SSH Host
-- `gateway_key` (String, Sensitive) MySQL: SSH Private Key
-- `gateway_key_passphrase` (String, Sensitive) MySQL: SSH Private Key Passphrase
-- `gateway_password` (String, Sensitive) MySQL: SSH Password
-- `gateway_port` (Number, Sensitive) MySQL: SSH Port
-- `gateway_user_name` (String, Sensitive) MySQL: SSH User
+- `gateway` (Attributes) MySQL: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
 - `host` (String) Snowflake: The host of a Snowflake account.
 - `password` (String, Sensitive) Snowflake: The password for the Snowflake user.
 - `port` (Number) MySQL: The port of the MySQL server.
@@ -77,15 +71,35 @@ resource "trocco_connection" "snowflake" {
 - `role` (String) Snowflake: A role attached to the Snowflake user.
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery: A GCP service account key.
-- `ssl` (Boolean) MySQL: Whether to use SSL for the MySQL connection.
-- `ssl_ca` (String, Sensitive) MySQL: CA certificate
-- `ssl_cert` (String, Sensitive) MySQL: Certificate (CRT file)
-- `ssl_key` (String, Sensitive) MySQL: Key (KEY file)
+- `ssl` (Attributes) MySQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
 - `user_name` (String) Snowflake: The name of a Snowflake user.
 
 ### Read-Only
 
 - `id` (Number) The ID of the connection.
+
+<a id="nestedatt--gateway"></a>
+### Nested Schema for `gateway`
+
+Optional:
+
+- `host` (String, Sensitive) MySQL: SSH Host
+- `key` (String, Sensitive) MySQL: SSH Private Key
+- `key_passphrase` (String, Sensitive) MySQL: SSH Private Key Passphrase
+- `password` (String, Sensitive) MySQL: SSH Password
+- `port` (Number, Sensitive) MySQL: SSH Port
+- `user_name` (String, Sensitive) MySQL: SSH User
+
+
+<a id="nestedatt--ssl"></a>
+### Nested Schema for `ssl`
+
+Optional:
+
+- `ca` (String, Sensitive) MySQL: CA certificate
+- `cert` (String, Sensitive) MySQL: Certificate (CRT file)
+- `key` (String, Sensitive) MySQL: Key (KEY file)
+
 
 
 
