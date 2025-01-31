@@ -317,6 +317,7 @@ func (r *connectionResource) Schema(
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
+					int64validator.AtMost(65535),
 				},
 			},
 			"ssl": schema.BoolAttribute{
@@ -365,6 +366,7 @@ func (r *connectionResource) Schema(
 				Sensitive:           true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
+					int64validator.AtMost(65535),
 				},
 			},
 			"gateway_user_name": schema.StringAttribute{
