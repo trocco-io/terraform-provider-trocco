@@ -52,15 +52,9 @@ type connectionResourceModel struct {
 	ServiceAccountEmail types.String `tfsdk:"service_account_email"`
 
 	// MySQL Fields
-	Port                 types.Int64  `tfsdk:"port"`
-	SSL                  *model.SSL   `tfsdk:"ssl"`
-	GatewayEnabled       types.Bool   `tfsdk:"gateway_enabled"`
-	GatewayHost          types.String `tfsdk:"gateway_host"`
-	GatewayPort          types.Int64  `tfsdk:"gateway_port"`
-	GatewayUserName      types.String `tfsdk:"gateway_user_name"`
-	GatewayPassword      types.String `tfsdk:"gateway_password"`
-	GatewayKey           types.String `tfsdk:"gateway_key"`
-	GatewayKeyPassphrase types.String `tfsdk:"gateway_key_passphrase"`
+	Port    types.Int64    `tfsdk:"port"`
+	SSL     *model.SSL     `tfsdk:"ssl"`
+	Gateway *model.Gateway `tfsdk:"gateway"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -87,14 +81,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 
 		// MySQL Fields
-		Port:                 model.NewNullableInt64(m.Port),
-		GatewayEnabled:       model.NewNullableBool(m.GatewayEnabled),
-		GatewayHost:          m.GatewayHost.ValueStringPointer(),
-		GatewayPort:          model.NewNullableInt64(m.GatewayPort),
-		GatewayUserName:      m.GatewayUserName.ValueStringPointer(),
-		GatewayPassword:      m.GatewayPassword.ValueStringPointer(),
-		GatewayKey:           m.GatewayKey.ValueStringPointer(),
-		GatewayKeyPassphrase: m.GatewayKeyPassphrase.ValueStringPointer(),
+		Port: model.NewNullableInt64(m.Port),
 	}
 
 	// SSL Fields
@@ -105,6 +92,25 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
 	} else {
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
+	}
+
+	// Gateway Fields
+	if m.Gateway != nil {
+		input.GatewayEnabled = model.NewNullableBool(types.BoolValue(true))
+		input.GatewayHost = m.Gateway.Host.ValueStringPointer()
+		input.GatewayPort = model.NewNullableInt64(m.Gateway.Port)
+		input.GatewayUserName = m.Gateway.UserName.ValueStringPointer()
+		input.GatewayPassword = m.Gateway.Password.ValueStringPointer()
+		input.GatewayKey = m.Gateway.Key.ValueStringPointer()
+		input.GatewayKeyPassphrase = m.Gateway.KeyPassphrase.ValueStringPointer()
+	} else {
+		input.GatewayEnabled = model.NewNullableBool(types.BoolValue(false))
+		input.GatewayHost = nil
+		input.GatewayPort = nil
+		input.GatewayUserName = nil
+		input.GatewayPassword = nil
+		input.GatewayKey = nil
+		input.GatewayKeyPassphrase = nil
 	}
 
 	return input
@@ -135,16 +141,10 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 
 		// MySQL Fields
-		Port:                 model.NewNullableInt64(m.Port),
-		GatewayEnabled:       model.NewNullableBool(m.GatewayEnabled),
-		GatewayHost:          m.GatewayHost.ValueStringPointer(),
-		GatewayPort:          model.NewNullableInt64(m.GatewayPort),
-		GatewayUserName:      m.GatewayUserName.ValueStringPointer(),
-		GatewayPassword:      m.GatewayPassword.ValueStringPointer(),
-		GatewayKey:           m.GatewayKey.ValueStringPointer(),
-		GatewayKeyPassphrase: m.GatewayKeyPassphrase.ValueStringPointer(),
+		Port: model.NewNullableInt64(m.Port),
 	}
 
+	// SSL Fields
 	if m.SSL != nil {
 		input.SSL = model.NewNullableBool(types.BoolValue(true))
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
@@ -155,6 +155,25 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.SSLCA = nil
 		input.SSLCert = nil
 		input.SSLKey = nil
+	}
+
+	// Gateway Fields
+	if m.Gateway != nil {
+		input.GatewayEnabled = model.NewNullableBool(types.BoolValue(true))
+		input.GatewayHost = m.Gateway.Host.ValueStringPointer()
+		input.GatewayPort = model.NewNullableInt64(m.Gateway.Port)
+		input.GatewayUserName = m.Gateway.UserName.ValueStringPointer()
+		input.GatewayPassword = m.Gateway.Password.ValueStringPointer()
+		input.GatewayKey = m.Gateway.Key.ValueStringPointer()
+		input.GatewayKeyPassphrase = m.Gateway.KeyPassphrase.ValueStringPointer()
+	} else {
+		input.GatewayEnabled = model.NewNullableBool(types.BoolValue(false))
+		input.GatewayHost = nil
+		input.GatewayPort = nil
+		input.GatewayUserName = nil
+		input.GatewayPassword = nil
+		input.GatewayKey = nil
+		input.GatewayKeyPassphrase = nil
 	}
 	return input
 
@@ -348,8 +367,8 @@ func (r *connectionResource) Schema(
 						Validators: []validator.String{
 							stringvalidator.UTF8LengthAtLeast(1),
 						},
-						Computed:            true,
-						Default: stringdefault.StaticString(""),
+						Computed: true,
+						Default:  stringdefault.StaticString(""),
 					},
 					"cert": schema.StringAttribute{
 						MarkdownDescription: "MySQL: Certificate (CRT file)",
@@ -358,8 +377,8 @@ func (r *connectionResource) Schema(
 						Validators: []validator.String{
 							stringvalidator.UTF8LengthAtLeast(1),
 						},
-						Computed:            true,
-						Default: stringdefault.StaticString(""),
+						Computed: true,
+						Default:  stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
 						MarkdownDescription: "MySQL: Key (KEY file)",
@@ -368,62 +387,61 @@ func (r *connectionResource) Schema(
 						Validators: []validator.String{
 							stringvalidator.UTF8LengthAtLeast(1),
 						},
-						Computed:            true,
-						Default: stringdefault.StaticString(""),
+						Computed: true,
+						Default:  stringdefault.StaticString(""),
 					},
 				},
 			},
-			"gateway_enabled": schema.BoolAttribute{
+			"gateway": schema.SingleNestedAttribute{
 				MarkdownDescription: "MySQL: Whether to connect via SSH",
 				Optional:            true,
-			},
-			"gateway_host": schema.StringAttribute{
-				MarkdownDescription: "MySQL: SSH Host",
-				Optional:            true,
-				Sensitive:           true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
-				},
-			},
-			"gateway_port": schema.Int64Attribute{
-				MarkdownDescription: "MySQL: SSH Port",
-				Optional:            true,
-				Sensitive:           true,
-				Validators: []validator.Int64{
-					int64validator.AtLeast(1),
-					int64validator.AtMost(65535),
-				},
-			},
-			"gateway_user_name": schema.StringAttribute{
-				MarkdownDescription: "MySQL: SSH User",
-				Optional:            true,
-				Sensitive:           true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
-				},
-			},
-			"gateway_password": schema.StringAttribute{
-				MarkdownDescription: "MySQL: SSH Password",
-				Optional:            true,
-				Sensitive:           true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
-				},
-			},
-			"gateway_key": schema.StringAttribute{
-				MarkdownDescription: "MySQL: SSH Private Key",
-				Optional:            true,
-				Sensitive:           true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
-				},
-			},
-			"gateway_key_passphrase": schema.StringAttribute{
-				MarkdownDescription: "MySQL: SSH Private Key Passphrase",
-				Optional:            true,
-				Sensitive:           true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
+				Attributes: map[string]schema.Attribute{
+					"host": schema.StringAttribute{
+						MarkdownDescription: "MySQL: SSH Host",
+						Optional:            true,
+						Sensitive:           true,
+						Validators: []validator.String{
+							stringvalidator.UTF8LengthAtLeast(1),
+						},
+					},
+					"port": schema.Int64Attribute{
+						MarkdownDescription: "MySQL: SSH Port",
+						Optional:            true,
+						Sensitive:           true,
+						Validators: []validator.Int64{
+							int64validator.AtLeast(1),
+							int64validator.AtMost(65535),
+						},
+					},
+					"user_name": schema.StringAttribute{
+						MarkdownDescription: "MySQL: SSH User",
+						Optional:            true,
+						Sensitive:           true,
+						Validators: []validator.String{
+							stringvalidator.UTF8LengthAtLeast(1),
+						},
+					},
+					"password": schema.StringAttribute{
+						MarkdownDescription: "MySQL: SSH Password",
+						Optional:            true,
+						Computed:            true,
+						Sensitive:           true,
+						Default:             stringdefault.StaticString(""),
+					},
+					"key": schema.StringAttribute{
+						MarkdownDescription: "MySQL: SSH Private Key",
+						Optional:            true,
+						Computed:            true,
+						Sensitive:           true,
+						Default:             stringdefault.StaticString(""),
+					},
+					"key_passphrase": schema.StringAttribute{
+						MarkdownDescription: "MySQL: SSH Private Key Passphrase",
+						Optional:            true,
+						Computed:            true,
+						Sensitive:           true,
+						Default:             stringdefault.StaticString(""),
+					},
 				},
 			},
 		},
@@ -479,16 +497,28 @@ func (r *connectionResource) Create(
 
 		// MySQL Fields
 		Port: types.Int64PointerValue(connection.Port),
+
+		// SSL Fields
 		SSL: NewSSL(plan),
-		GatewayEnabled:       types.BoolPointerValue(connection.GatewayEnabled),
-		GatewayHost:          plan.GatewayHost,
-		GatewayPort:          plan.GatewayPort,
-		GatewayUserName:      plan.GatewayUserName,
-		GatewayPassword:      plan.GatewayPassword,
-		GatewayKey:           plan.GatewayKey,
-		GatewayKeyPassphrase: plan.GatewayKeyPassphrase,
+
+		// Gateway Fields
+		Gateway: NewGateway(plan),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
+}
+
+func NewGateway(plan *connectionResourceModel) *model.Gateway {
+	if plan.Gateway == nil {
+		return nil
+	}
+	return &model.Gateway{
+		Host:          types.StringPointerValue(plan.Gateway.Host.ValueStringPointer()),
+		Port:          types.Int64PointerValue(plan.Gateway.Port.ValueInt64Pointer()),
+		UserName:      types.StringPointerValue(plan.Gateway.UserName.ValueStringPointer()),
+		Password:      types.StringPointerValue(plan.Gateway.Password.ValueStringPointer()),
+		Key:           types.StringPointerValue(plan.Gateway.Key.ValueStringPointer()),
+		KeyPassphrase: types.StringPointerValue(plan.Gateway.KeyPassphrase.ValueStringPointer()),
+	}
 }
 
 func NewSSL(plan *connectionResourceModel) *model.SSL {
@@ -557,15 +587,9 @@ func (r *connectionResource) Update(
 		ServiceAccountEmail: plan.ServiceAccountEmail,
 
 		// MySQL Fields
-		Port: types.Int64PointerValue(connection.Port),
-		SSL: NewSSL(plan),
-		GatewayEnabled:       types.BoolPointerValue(connection.GatewayEnabled),
-		GatewayHost:          plan.GatewayHost,
-		GatewayPort:          plan.GatewayPort,
-		GatewayUserName:      plan.GatewayUserName,
-		GatewayPassword:      plan.GatewayPassword,
-		GatewayKey:           plan.GatewayKey,
-		GatewayKeyPassphrase: plan.GatewayKeyPassphrase,
+		Port:    types.Int64PointerValue(connection.Port),
+		SSL:     NewSSL(plan),
+		Gateway: NewGateway(plan),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -618,15 +642,9 @@ func (r *connectionResource) Read(
 		ServiceAccountEmail: state.ServiceAccountEmail,
 
 		// MySQL Fields
-		Port: types.Int64PointerValue(connection.Port),
-		SSL: NewSSL(state),
-		GatewayEnabled:       types.BoolPointerValue(connection.GatewayEnabled),
-		GatewayHost:          state.GatewayHost,
-		GatewayPort:          state.GatewayPort,
-		GatewayUserName:      state.GatewayUserName,
-		GatewayPassword:      state.GatewayPassword,
-		GatewayKey:           state.GatewayKey,
-		GatewayKeyPassphrase: state.GatewayKeyPassphrase,
+		Port:    types.Int64PointerValue(connection.Port),
+		SSL:     NewSSL(state),
+		Gateway: NewGateway(state),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -720,11 +738,10 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredInt(plan.Port, "port", "MySQL", resp)
 		validateRequiredString(plan.UserName, "user_name", "MySQL", resp)
 		validateRequiredString(plan.Password, "password", "MySQL", resp)
-		validateRequiredBool(plan.GatewayEnabled, "gateway_enabled", "MySQL", resp)
-		if plan.GatewayEnabled.ValueBool() {
-			validateRequiredString(plan.GatewayHost, "gateway_host", "MySQL", resp)
-			validateRequiredInt(plan.GatewayPort, "gateway_port", "MySQL", resp)
-			validateRequiredString(plan.GatewayUserName, "gateway_user_name", "MySQL", resp)
+		if plan.Gateway != nil {
+			validateRequiredString(plan.Gateway.Host, "gateway.host", "MySQL", resp)
+			validateRequiredInt(plan.Gateway.Port, "gateway.port", "MySQL", resp)
+			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "MySQL", resp)
 		}
 	}
 }
@@ -739,15 +756,6 @@ func validateRequiredString(field types.String, fieldName, connectionType string
 }
 
 func validateRequiredInt(field types.Int64, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {
-	if field.IsNull() {
-		resp.Diagnostics.AddError(
-			fieldName,
-			fmt.Sprintf("%s is required for %s connection.", fieldName, connectionType),
-		)
-	}
-}
-
-func validateRequiredBool(field types.Bool, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {
 	if field.IsNull() {
 		resp.Diagnostics.AddError(
 			fieldName,
