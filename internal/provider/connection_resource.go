@@ -15,6 +15,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -52,10 +53,7 @@ type connectionResourceModel struct {
 
 	// MySQL Fields
 	Port                 types.Int64  `tfsdk:"port"`
-	SSL                  types.Bool   `tfsdk:"ssl"`
-	SSLCA                types.String `tfsdk:"ssl_ca"`
-	SSLCert              types.String `tfsdk:"ssl_cert"`
-	SSLKey               types.String `tfsdk:"ssl_key"`
+	SSL                  *model.SSL   `tfsdk:"ssl"`
 	GatewayEnabled       types.Bool   `tfsdk:"gateway_enabled"`
 	GatewayHost          types.String `tfsdk:"gateway_host"`
 	GatewayPort          types.Int64  `tfsdk:"gateway_port"`
@@ -66,7 +64,7 @@ type connectionResourceModel struct {
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
-	return &client.CreateConnectionInput{
+	input := &client.CreateConnectionInput{
 		// Common Fields
 		Name:            m.Name.ValueString(),
 		Description:     m.Description.ValueStringPointer(),
@@ -90,10 +88,6 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 
 		// MySQL Fields
 		Port:                 model.NewNullableInt64(m.Port),
-		SSL:                  model.NewNullableBool(m.SSL),
-		SSLCA:                m.SSLCA.ValueStringPointer(),
-		SSLCert:              m.SSLCert.ValueStringPointer(),
-		SSLKey:               m.SSLKey.ValueStringPointer(),
 		GatewayEnabled:       model.NewNullableBool(m.GatewayEnabled),
 		GatewayHost:          m.GatewayHost.ValueStringPointer(),
 		GatewayPort:          model.NewNullableInt64(m.GatewayPort),
@@ -102,10 +96,23 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		GatewayKey:           m.GatewayKey.ValueStringPointer(),
 		GatewayKeyPassphrase: m.GatewayKeyPassphrase.ValueStringPointer(),
 	}
+
+	// SSL Fields
+	if m.SSL != nil {
+		input.SSL = model.NewNullableBool(types.BoolValue(true))
+		input.SSLCA = m.SSL.CA.ValueStringPointer()
+		input.SSLCert = m.SSL.Cert.ValueStringPointer()
+		input.SSLKey = m.SSL.Key.ValueStringPointer()
+	} else {
+		input.SSL = model.NewNullableBool(types.BoolValue(false))
+	}
+
+	return input
+
 }
 
 func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnectionInput {
-	return &client.UpdateConnectionInput{
+	input := &client.UpdateConnectionInput{
 		// Common Fields
 		Name:            m.Name.ValueStringPointer(),
 		Description:     m.Description.ValueStringPointer(),
@@ -129,10 +136,6 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 
 		// MySQL Fields
 		Port:                 model.NewNullableInt64(m.Port),
-		SSL:                  model.NewNullableBool(m.SSL),
-		SSLCA:                m.SSLCA.ValueStringPointer(),
-		SSLCert:              m.SSLCert.ValueStringPointer(),
-		SSLKey:               m.SSLKey.ValueStringPointer(),
 		GatewayEnabled:       model.NewNullableBool(m.GatewayEnabled),
 		GatewayHost:          m.GatewayHost.ValueStringPointer(),
 		GatewayPort:          model.NewNullableInt64(m.GatewayPort),
@@ -141,6 +144,20 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		GatewayKey:           m.GatewayKey.ValueStringPointer(),
 		GatewayKeyPassphrase: m.GatewayKeyPassphrase.ValueStringPointer(),
 	}
+
+	if m.SSL != nil {
+		input.SSL = model.NewNullableBool(types.BoolValue(true))
+		input.SSLCA = m.SSL.CA.ValueStringPointer()
+		input.SSLCert = m.SSL.Cert.ValueStringPointer()
+		input.SSLKey = m.SSL.Key.ValueStringPointer()
+	} else {
+		input.SSL = model.NewNullableBool(types.BoolValue(false))
+		input.SSLCA = nil
+		input.SSLCert = nil
+		input.SSLKey = nil
+	}
+	return input
+
 }
 
 type connectionResource struct {
@@ -320,32 +337,40 @@ func (r *connectionResource) Schema(
 					int64validator.AtMost(65535),
 				},
 			},
-			"ssl": schema.BoolAttribute{
-				MarkdownDescription: "MySQL: Whether to use SSL for the MySQL connection.",
+			"ssl": schema.SingleNestedAttribute{
+				MarkdownDescription: "MySQL: SSL configuration.",
 				Optional:            true,
-			},
-			"ssl_ca": schema.StringAttribute{
-				MarkdownDescription: "MySQL: CA certificate",
-				Optional:            true,
-				Sensitive:           true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
-				},
-			},
-			"ssl_cert": schema.StringAttribute{
-				MarkdownDescription: "MySQL: Certificate (CRT file)",
-				Optional:            true,
-				Sensitive:           true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
-				},
-			},
-			"ssl_key": schema.StringAttribute{
-				MarkdownDescription: "MySQL: Key (KEY file)",
-				Optional:            true,
-				Sensitive:           true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
+				Attributes: map[string]schema.Attribute{
+					"ca": schema.StringAttribute{
+						MarkdownDescription: "MySQL: CA certificate",
+						Optional:            true,
+						Sensitive:           true,
+						Validators: []validator.String{
+							stringvalidator.UTF8LengthAtLeast(1),
+						},
+						Computed:            true,
+						Default: stringdefault.StaticString(""),
+					},
+					"cert": schema.StringAttribute{
+						MarkdownDescription: "MySQL: Certificate (CRT file)",
+						Optional:            true,
+						Sensitive:           true,
+						Validators: []validator.String{
+							stringvalidator.UTF8LengthAtLeast(1),
+						},
+						Computed:            true,
+						Default: stringdefault.StaticString(""),
+					},
+					"key": schema.StringAttribute{
+						MarkdownDescription: "MySQL: Key (KEY file)",
+						Optional:            true,
+						Sensitive:           true,
+						Validators: []validator.String{
+							stringvalidator.UTF8LengthAtLeast(1),
+						},
+						Computed:            true,
+						Default: stringdefault.StaticString(""),
+					},
 				},
 			},
 			"gateway_enabled": schema.BoolAttribute{
@@ -453,11 +478,8 @@ func (r *connectionResource) Create(
 		ServiceAccountEmail: plan.ServiceAccountEmail,
 
 		// MySQL Fields
-		Port:                 types.Int64PointerValue(connection.Port),
-		SSL:                  types.BoolPointerValue(connection.SSL),
-		SSLCA:                plan.SSLCA,
-		SSLCert:              plan.SSLCert,
-		SSLKey:               plan.SSLKey,
+		Port: types.Int64PointerValue(connection.Port),
+		SSL: NewSSL(plan),
 		GatewayEnabled:       types.BoolPointerValue(connection.GatewayEnabled),
 		GatewayHost:          plan.GatewayHost,
 		GatewayPort:          plan.GatewayPort,
@@ -467,6 +489,17 @@ func (r *connectionResource) Create(
 		GatewayKeyPassphrase: plan.GatewayKeyPassphrase,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
+}
+
+func NewSSL(plan *connectionResourceModel) *model.SSL {
+	if plan.SSL == nil {
+		return nil
+	}
+	return &model.SSL{
+		CA:   types.StringPointerValue(plan.SSL.CA.ValueStringPointer()),
+		Cert: types.StringPointerValue(plan.SSL.Cert.ValueStringPointer()),
+		Key:  types.StringPointerValue(plan.SSL.Key.ValueStringPointer()),
+	}
 }
 
 func (r *connectionResource) Update(
@@ -524,11 +557,8 @@ func (r *connectionResource) Update(
 		ServiceAccountEmail: plan.ServiceAccountEmail,
 
 		// MySQL Fields
-		Port:                 types.Int64PointerValue(connection.Port),
-		SSL:                  types.BoolPointerValue(connection.SSL),
-		SSLCA:                plan.SSLCA,
-		SSLCert:              plan.SSLCert,
-		SSLKey:               plan.SSLKey,
+		Port: types.Int64PointerValue(connection.Port),
+		SSL: NewSSL(plan),
 		GatewayEnabled:       types.BoolPointerValue(connection.GatewayEnabled),
 		GatewayHost:          plan.GatewayHost,
 		GatewayPort:          plan.GatewayPort,
@@ -588,11 +618,8 @@ func (r *connectionResource) Read(
 		ServiceAccountEmail: state.ServiceAccountEmail,
 
 		// MySQL Fields
-		Port:                 types.Int64PointerValue(connection.Port),
-		SSL:                  types.BoolPointerValue(connection.SSL),
-		SSLCA:                state.SSLCA,
-		SSLCert:              state.SSLCert,
-		SSLKey:               state.SSLKey,
+		Port: types.Int64PointerValue(connection.Port),
+		SSL: NewSSL(state),
 		GatewayEnabled:       types.BoolPointerValue(connection.GatewayEnabled),
 		GatewayHost:          state.GatewayHost,
 		GatewayPort:          state.GatewayPort,
@@ -693,7 +720,6 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredInt(plan.Port, "port", "MySQL", resp)
 		validateRequiredString(plan.UserName, "user_name", "MySQL", resp)
 		validateRequiredString(plan.Password, "password", "MySQL", resp)
-		validateRequiredBool(plan.SSL, "ssl", "MySQL", resp)
 		validateRequiredBool(plan.GatewayEnabled, "gateway_enabled", "MySQL", resp)
 		if plan.GatewayEnabled.ValueBool() {
 			validateRequiredString(plan.GatewayHost, "gateway_host", "MySQL", resp)
