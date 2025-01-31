@@ -499,36 +499,36 @@ func (r *connectionResource) Create(
 		Port: types.Int64PointerValue(connection.Port),
 
 		// SSL Fields
-		SSL: NewSSL(plan),
+		SSL: plan.NewSSL(),
 
 		// Gateway Fields
-		Gateway: NewGateway(plan),
+		Gateway: plan.NewGateway(),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 
-func NewGateway(plan *connectionResourceModel) *model.Gateway {
-	if plan.Gateway == nil {
+func (m *connectionResourceModel) NewGateway() *model.Gateway {
+	if m.Gateway == nil {
 		return nil
 	}
 	return &model.Gateway{
-		Host:          types.StringPointerValue(plan.Gateway.Host.ValueStringPointer()),
-		Port:          types.Int64PointerValue(plan.Gateway.Port.ValueInt64Pointer()),
-		UserName:      types.StringPointerValue(plan.Gateway.UserName.ValueStringPointer()),
-		Password:      types.StringPointerValue(plan.Gateway.Password.ValueStringPointer()),
-		Key:           types.StringPointerValue(plan.Gateway.Key.ValueStringPointer()),
-		KeyPassphrase: types.StringPointerValue(plan.Gateway.KeyPassphrase.ValueStringPointer()),
+		Host:          types.StringPointerValue(m.Gateway.Host.ValueStringPointer()),
+		Port:          types.Int64PointerValue(m.Gateway.Port.ValueInt64Pointer()),
+		UserName:      types.StringPointerValue(m.Gateway.UserName.ValueStringPointer()),
+		Password:      types.StringPointerValue(m.Gateway.Password.ValueStringPointer()),
+		Key:           types.StringPointerValue(m.Gateway.Key.ValueStringPointer()),
+		KeyPassphrase: types.StringPointerValue(m.Gateway.KeyPassphrase.ValueStringPointer()),
 	}
 }
 
-func NewSSL(plan *connectionResourceModel) *model.SSL {
-	if plan.SSL == nil {
+func (m *connectionResourceModel) NewSSL() *model.SSL {
+	if m.SSL == nil {
 		return nil
 	}
 	return &model.SSL{
-		CA:   types.StringPointerValue(plan.SSL.CA.ValueStringPointer()),
-		Cert: types.StringPointerValue(plan.SSL.Cert.ValueStringPointer()),
-		Key:  types.StringPointerValue(plan.SSL.Key.ValueStringPointer()),
+		CA:   types.StringPointerValue(m.SSL.CA.ValueStringPointer()),
+		Cert: types.StringPointerValue(m.SSL.Cert.ValueStringPointer()),
+		Key:  types.StringPointerValue(m.SSL.Key.ValueStringPointer()),
 	}
 }
 
@@ -588,8 +588,8 @@ func (r *connectionResource) Update(
 
 		// MySQL Fields
 		Port:    types.Int64PointerValue(connection.Port),
-		SSL:     NewSSL(plan),
-		Gateway: NewGateway(plan),
+		SSL:     plan.NewSSL(),
+		Gateway: plan.NewGateway(),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -643,8 +643,8 @@ func (r *connectionResource) Read(
 
 		// MySQL Fields
 		Port:    types.Int64PointerValue(connection.Port),
-		SSL:     NewSSL(state),
-		Gateway: NewGateway(state),
+		SSL:     state.NewSSL(),
+		Gateway: state.NewGateway(),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
