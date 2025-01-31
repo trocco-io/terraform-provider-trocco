@@ -455,16 +455,16 @@ func (r *connectionResource) Create(
 		// MySQL Fields
 		Port:                 types.Int64PointerValue(connection.Port),
 		SSL:                  types.BoolPointerValue(connection.SSL),
-		SSLCA:                types.StringPointerValue(connection.SSLCA),
-		SSLCert:              types.StringPointerValue(connection.SSLCert),
-		SSLKey:               types.StringPointerValue(connection.SSLKey),
+		SSLCA:                plan.SSLCA,
+		SSLCert:              plan.SSLCert,
+		SSLKey:               plan.SSLKey,
 		GatewayEnabled:       types.BoolPointerValue(connection.GatewayEnabled),
-		GatewayHost:          types.StringPointerValue(connection.GatewayHost),
-		GatewayPort:          types.Int64PointerValue(connection.GatewayPort),
-		GatewayUserName:      types.StringPointerValue(connection.GatewayUserName),
-		GatewayPassword:      types.StringPointerValue(connection.GatewayPassword),
-		GatewayKey:           types.StringPointerValue(connection.GatewayKey),
-		GatewayKeyPassphrase: types.StringPointerValue(connection.GatewayKeyPassphrase),
+		GatewayHost:          plan.GatewayHost,
+		GatewayPort:          plan.GatewayPort,
+		GatewayUserName:      plan.GatewayUserName,
+		GatewayPassword:      plan.GatewayPassword,
+		GatewayKey:           plan.GatewayKey,
+		GatewayKeyPassphrase: plan.GatewayKeyPassphrase,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
