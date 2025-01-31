@@ -31,7 +31,7 @@ resource "trocco_connection" "mysql" {
     key            = <<-GATEWAY_KEY
       -----BEGIN PRIVATE KEY-----
       ... GATEWAY KEY...
-      -----END
+      -----END PRIVATE KEY-----
     GATEWAY_KEY
     key_passphrase = "sample_passphrase"
   }
