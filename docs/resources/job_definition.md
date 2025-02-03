@@ -1020,6 +1020,7 @@ Optional:
 
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
+- `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
 
 <a id="nestedatt--input_option--gcs_input_option"></a>
 ### Nested Schema for `input_option.gcs_input_option`
@@ -1321,6 +1322,53 @@ Optional:
 
 
 
+<a id="nestedatt--input_option--snowflake_input_option"></a>
+### Nested Schema for `input_option.snowflake_input_option`
+
+Required:
+
+- `database` (String) database name
+- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--snowflake_input_option--input_option_columns))
+- `query` (String) query
+- `schema` (String) schema name
+- `snowflake_connection_id` (Number) Id of Snowflake connection
+- `warehouse` (String) Warehouse name
+
+Optional:
+
+- `connect_timeout` (Number) Connection timeout (sec)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--snowflake_input_option--custom_variable_settings))
+- `fetch_rows` (Number) Number of records processed by the cursor at one time
+- `socket_timeout` (Number) Socket timeout (seconds)
+
+<a id="nestedatt--input_option--snowflake_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.snowflake_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+
+<a id="nestedatt--input_option--snowflake_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.snowflake_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
 
 <a id="nestedatt--output_option"></a>
 ### Nested Schema for `output_option`
@@ -1328,6 +1376,7 @@ Optional:
 Optional:
 
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
+- `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
 
 <a id="nestedatt--output_option--bigquery_output_option"></a>
 ### Nested Schema for `output_option.bigquery_output_option`
@@ -1391,6 +1440,65 @@ Optional:
 - `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--output_option--snowflake_output_option"></a>
+### Nested Schema for `output_option.snowflake_output_option`
+
+Required:
+
+- `database` (String) Database name
+- `schema` (String) Schema name
+- `snowflake_connection_id` (String) Snowflake connection ID
+- `table` (String) Table name
+- `warehouse` (String) Warehouse name
+
+Optional:
+
+- `batch_size` (Number) Batch size (MB)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--snowflake_output_option--custom_variable_settings))
+- `default_time_zone` (String) Default time zone
+- `delete_stage_on_error` (Boolean) Delete temporary stage on error
+- `empty_field_as_null` (Boolean) Replace empty string with NULL
+- `max_retry_wait` (Number) Maximum retry wait time (milliseconds)
+- `mode` (String) Transfer mode
+- `retry_limit` (Number) Maximum retry limit
+- `retry_wait` (Number) Retry wait time (milliseconds)
+- `snowflake_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--snowflake_output_option--snowflake_output_option_column_options))
+- `snowflake_output_option_merge_keys` (List of String) Merge keys (only applicable if mode is 'merge')
+
+<a id="nestedatt--output_option--snowflake_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.snowflake_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--output_option--snowflake_output_option--snowflake_output_option_column_options"></a>
+### Nested Schema for `output_option.snowflake_output_option.snowflake_output_option_column_options`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Data type
+
+Optional:
+
+- `timestamp_format` (String) Timestamp format
+- `timezone` (String) Time zone
+- `value_type` (String) Value type
 
 
 
