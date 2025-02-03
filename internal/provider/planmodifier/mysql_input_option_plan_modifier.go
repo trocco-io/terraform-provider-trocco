@@ -12,7 +12,7 @@ var _ planmodifier.Object = &MysqlInputOptionPlanModifier{}
 type MysqlInputOptionPlanModifier struct{}
 
 func (d *MysqlInputOptionPlanModifier) Description(ctx context.Context) string {
-	return "Modifier for validating schedule attributes"
+	return "Modifier for validating mysql input option attributes"
 }
 
 func (d *MysqlInputOptionPlanModifier) MarkdownDescription(ctx context.Context) string {

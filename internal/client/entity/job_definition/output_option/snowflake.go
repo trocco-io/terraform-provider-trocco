@@ -20,7 +20,7 @@ type SnowflakeOutputOption struct {
 	SnowflakeConnectionId              int64                               `json:"snowflake_connection_id"`
 	SnowflakeOutputOptionColumnOptions []SnowflakeOutputOptionColumnOption `json:"snowflake_output_option_column_options"`
 	SnowflakeOutputOptionMergeKeys     []string                            `json:"snowflake_output_option_merge_keys"`
-	CustomVariableSettings             []entity.CustomVariableSetting      `json:"custom_variable_settings"`
+	CustomVariableSettings             *[]entity.CustomVariableSetting     `json:"custom_variable_settings"`
 }
 
 type SnowflakeOutputOptionColumnOption struct {

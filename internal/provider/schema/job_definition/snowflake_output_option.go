@@ -6,9 +6,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
 )
 
 func SnowflakeOutputOptionSchema() schema.Attribute {
@@ -95,7 +97,7 @@ func SnowflakeOutputOptionSchema() schema.Attribute {
 				Default:             stringdefault.StaticString("UTC"),
 				MarkdownDescription: "Default time zone",
 			},
-			"snowflake_connection_id": schema.StringAttribute{
+			"snowflake_connection_id": schema.Int64Attribute{
 				Required:            true,
 				MarkdownDescription: "Snowflake connection ID",
 			},
@@ -124,6 +126,9 @@ func SnowflakeOutputOptionSchema() schema.Attribute {
 							MarkdownDescription: "Time zone",
 						},
 					},
+					PlanModifiers: []planmodifier.Object{
+						&planmodifier2.SnowflakeOutputOptionColumnPlanModifier{},
+					},
 				},
 			},
 			"snowflake_output_option_merge_keys": schema.ListAttribute{
@@ -132,6 +137,9 @@ func SnowflakeOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Merge keys (only applicable if mode is 'merge')",
 			},
 			"custom_variable_settings": CustomVariableSettingsSchema(),
+		},
+		PlanModifiers: []planmodifier.Object{
+			&planmodifier2.SnowflakeOutputOptionPlanModifier{},
 		},
 	}
 }

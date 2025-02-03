@@ -56,7 +56,7 @@ func NewSnowflakeOutputOption(snowflakeOutputOption *output_option.SnowflakeOutp
 		SnowflakeConnectionId:              types.Int64Value(snowflakeOutputOption.SnowflakeConnectionId),
 		SnowflakeOutputOptionColumnOptions: newSnowflakeOutputOptionColumnOptions(snowflakeOutputOption.SnowflakeOutputOptionColumnOptions),
 		SnowflakeOutputOptionMergeKeys:     newSnowflakeOutputOptionMergeKeys(snowflakeOutputOption.SnowflakeOutputOptionMergeKeys),
-		CustomVariableSettings:             model.NewCustomVariableSettings(&snowflakeOutputOption.CustomVariableSettings),
+		CustomVariableSettings:             model.NewCustomVariableSettings(snowflakeOutputOption.CustomVariableSettings),
 	}
 }
 
@@ -96,12 +96,13 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToInput() *output_options2.S
 		return nil
 	}
 
-	var mergeKeys []string
-	if snowflakeOutputOption.SnowflakeOutputOptionColumnOptions != nil {
-		mergeKeys = make([]string, 0, len(snowflakeOutputOption.SnowflakeOutputOptionMergeKeys))
+	var mergeKeys *[]string
+	if snowflakeOutputOption.SnowflakeOutputOptionMergeKeys != nil {
+		mk := make([]string, 0, len(snowflakeOutputOption.SnowflakeOutputOptionMergeKeys))
 		for _, input := range snowflakeOutputOption.SnowflakeOutputOptionMergeKeys {
-			mergeKeys = append(mergeKeys, input.ValueString())
+			mk = append(mk, input.ValueString())
 		}
+		mergeKeys = &mk
 	}
 
 	return &output_options2.SnowflakeOutputOptionInput{
@@ -118,8 +119,8 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToInput() *output_options2.S
 		MaxRetryWait:                       model.NewNullableInt64(snowflakeOutputOption.MaxRetryWait),
 		DefaultTimeZone:                    model.NewNullableString(snowflakeOutputOption.DefaultTimeZone),
 		SnowflakeConnectionId:              snowflakeOutputOption.SnowflakeConnectionId.ValueInt64(),
-		SnowflakeOutputOptionColumnOptions: toInputSnowflakeOutputOptionColumnOptions(snowflakeOutputOption.SnowflakeOutputOptionColumnOptions),
-		SnowflakeOutputOptionMergeKeys:     mergeKeys,
+		SnowflakeOutputOptionColumnOptions: model.WrapObjectList(toInputSnowflakeOutputOptionColumnOptions(snowflakeOutputOption.SnowflakeOutputOptionColumnOptions)),
+		SnowflakeOutputOptionMergeKeys:     model.WrapObjectList(mergeKeys),
 		CustomVariableSettings:             model.ToCustomVariableSettingInputs(snowflakeOutputOption.CustomVariableSettings),
 	}
 }
@@ -129,12 +130,13 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput() *output_opti
 		return nil
 	}
 
-	var mergeKeys []string
+	var mergeKeys *[]string
 	if snowflakeOutputOption.SnowflakeOutputOptionMergeKeys != nil {
-		mergeKeys = make([]string, 0, len(snowflakeOutputOption.SnowflakeOutputOptionMergeKeys))
+		mk := make([]string, 0, len(snowflakeOutputOption.SnowflakeOutputOptionMergeKeys))
 		for _, input := range snowflakeOutputOption.SnowflakeOutputOptionMergeKeys {
-			mergeKeys = append(mergeKeys, input.ValueString())
+			mk = append(mk, input.ValueString())
 		}
+		mergeKeys = &mk
 	}
 
 	return &output_options2.UpdateSnowflakeOutputOptionInput{
@@ -151,13 +153,13 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput() *output_opti
 		MaxRetryWait:                       model.NewNullableInt64(snowflakeOutputOption.MaxRetryWait),
 		DefaultTimeZone:                    model.NewNullableString(snowflakeOutputOption.DefaultTimeZone),
 		SnowflakeConnectionId:              snowflakeOutputOption.SnowflakeConnectionId.ValueInt64Pointer(),
-		SnowflakeOutputOptionColumnOptions: toInputSnowflakeOutputOptionColumnOptions(snowflakeOutputOption.SnowflakeOutputOptionColumnOptions),
-		SnowflakeOutputOptionMergeKeys:     mergeKeys,
-		CustomVariableSettings:             *model.ToCustomVariableSettingInputs(snowflakeOutputOption.CustomVariableSettings),
+		SnowflakeOutputOptionColumnOptions: model.WrapObjectList(toInputSnowflakeOutputOptionColumnOptions(snowflakeOutputOption.SnowflakeOutputOptionColumnOptions)),
+		SnowflakeOutputOptionMergeKeys:     model.WrapObjectList(mergeKeys),
+		CustomVariableSettings:             model.ToCustomVariableSettingInputs(snowflakeOutputOption.CustomVariableSettings),
 	}
 }
 
-func toInputSnowflakeOutputOptionColumnOptions(snowflakeOutputOptionColumnOptions []snowflakeOutputOptionColumnOption) []output_options2.SnowflakeOutputOptionColumnOptionInput {
+func toInputSnowflakeOutputOptionColumnOptions(snowflakeOutputOptionColumnOptions []snowflakeOutputOptionColumnOption) *[]output_options2.SnowflakeOutputOptionColumnOptionInput {
 	if snowflakeOutputOptionColumnOptions == nil {
 		return nil
 	}
@@ -172,5 +174,5 @@ func toInputSnowflakeOutputOptionColumnOptions(snowflakeOutputOptionColumnOption
 			Timezone:        input.Timezone.ValueStringPointer(),
 		})
 	}
-	return outputs
+	return &outputs
 }

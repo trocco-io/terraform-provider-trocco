@@ -13,7 +13,7 @@ var _ planmodifier.Object = &OutputOptionPlanModifier{}
 type OutputOptionPlanModifier struct{}
 
 func (d *OutputOptionPlanModifier) Description(ctx context.Context) string {
-	return "Modifier for validating schedule attributes"
+	return "Modifier for validating output option attributes"
 }
 
 func (d *OutputOptionPlanModifier) MarkdownDescription(ctx context.Context) string {
