@@ -1450,7 +1450,7 @@ Required:
 
 - `database` (String) Database name
 - `schema` (String) Schema name
-- `snowflake_connection_id` (String) Snowflake connection ID
+- `snowflake_connection_id` (Number) Snowflake connection ID
 - `table` (String) Table name
 - `warehouse` (String) Warehouse name
 
