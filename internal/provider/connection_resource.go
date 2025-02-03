@@ -576,8 +576,8 @@ func (r *connectionResource) Create(
 
 		// S3 Fields
 		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
-		AWSIAMUser:    plan.NewAWSIAMUser(),
-		AWSAssumeRole: plan.NewAWSAssumeRole(),
+		AWSIAMUser:    plan.AWSIAMUser.Copy(),
+		AWSAssumeRole: plan.AWSAssumeRole.Copy(),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -593,26 +593,6 @@ func (m *connectionResourceModel) NewGateway() *connection.Gateway {
 		Password:      types.StringPointerValue(m.Gateway.Password.ValueStringPointer()),
 		Key:           types.StringPointerValue(m.Gateway.Key.ValueStringPointer()),
 		KeyPassphrase: types.StringPointerValue(m.Gateway.KeyPassphrase.ValueStringPointer()),
-	}
-}
-
-func (m *connectionResourceModel) NewAWSIAMUser() *connection.AWSIAMUser {
-	if m.AWSIAMUser == nil {
-		return nil
-	}
-	return &connection.AWSIAMUser{
-		AccessKeyID:     types.StringPointerValue(m.AWSIAMUser.AccessKeyID.ValueStringPointer()),
-		SecretAccessKey: types.StringPointerValue(m.AWSIAMUser.SecretAccessKey.ValueStringPointer()),
-	}
-}
-
-func (m *connectionResourceModel) NewAWSAssumeRole() *connection.AWSAssumeRole {
-	if m.AWSAssumeRole == nil {
-		return nil
-	}
-	return &connection.AWSAssumeRole{
-		AccountID:       types.StringPointerValue(m.AWSAssumeRole.AccountID.ValueStringPointer()),
-		AccountRoleName: types.StringPointerValue(m.AWSAssumeRole.AccountRoleName.ValueStringPointer()),
 	}
 }
 
@@ -688,8 +668,8 @@ func (r *connectionResource) Update(
 
 		// S3 Fields
 		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
-		AWSIAMUser:    plan.NewAWSIAMUser(),
-		AWSAssumeRole: plan.NewAWSAssumeRole(),
+		AWSIAMUser:    plan.AWSIAMUser.Copy(),
+		AWSAssumeRole: plan.AWSAssumeRole.Copy(),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -748,8 +728,8 @@ func (r *connectionResource) Read(
 
 		// S3 Fields
 		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
-		AWSIAMUser:    state.NewAWSIAMUser(),
-		AWSAssumeRole: state.NewAWSAssumeRole(),
+		AWSIAMUser:    state.AWSIAMUser.Copy(),
+		AWSAssumeRole: state.AWSAssumeRole.Copy(),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
