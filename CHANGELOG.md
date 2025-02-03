@@ -1,10 +1,16 @@
+## 0.6.0
+FEATURES:
+- Added `resource_group` resource.
+- Added `label` resource.
+- Added `mysql` type for `trocco_connection` resource.
+
 ## 0.5.0
 FEATURES:
-- Addded `trocco_job_definition` resource.
-- Addded `trocco_pipeline_definition` resource.
+- Added `trocco_job_definition` resource.
+- Added `trocco_pipeline_definition` resource.
 
 CHORE:
-- Suppressed unecessary diffs.
+- Suppressed unnecessary diffs.
 
 ## 0.4.0
 FEATURES:
