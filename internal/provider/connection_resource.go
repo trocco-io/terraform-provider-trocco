@@ -569,15 +569,15 @@ func (r *connectionResource) Create(
 		Port: types.Int64PointerValue(connection.Port),
 
 		// SSL Fields
-		SSL: plan.NewSSL(),
+		SSL: plan.SSL,
 
 		// Gateway Fields
-		Gateway: plan.NewGateway(),
+		Gateway: plan.Gateway,
 
 		// S3 Fields
 		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
-		AWSIAMUser:    plan.AWSIAMUser.Copy(),
-		AWSAssumeRole: plan.AWSAssumeRole.Copy(),
+		AWSIAMUser:    plan.AWSIAMUser,
+		AWSAssumeRole: plan.AWSAssumeRole,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -593,17 +593,6 @@ func (m *connectionResourceModel) NewGateway() *connection.Gateway {
 		Password:      types.StringPointerValue(m.Gateway.Password.ValueStringPointer()),
 		Key:           types.StringPointerValue(m.Gateway.Key.ValueStringPointer()),
 		KeyPassphrase: types.StringPointerValue(m.Gateway.KeyPassphrase.ValueStringPointer()),
-	}
-}
-
-func (m *connectionResourceModel) NewSSL() *connection.SSL {
-	if m.SSL == nil {
-		return nil
-	}
-	return &connection.SSL{
-		CA:   types.StringPointerValue(m.SSL.CA.ValueStringPointer()),
-		Cert: types.StringPointerValue(m.SSL.Cert.ValueStringPointer()),
-		Key:  types.StringPointerValue(m.SSL.Key.ValueStringPointer()),
 	}
 }
 
@@ -663,13 +652,13 @@ func (r *connectionResource) Update(
 
 		// MySQL Fields
 		Port:    types.Int64PointerValue(connection.Port),
-		SSL:     plan.NewSSL(),
-		Gateway: plan.NewGateway(),
+		SSL:     plan.SSL,
+		Gateway: plan.Gateway,
 
 		// S3 Fields
 		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
-		AWSIAMUser:    plan.AWSIAMUser.Copy(),
-		AWSAssumeRole: plan.AWSAssumeRole.Copy(),
+		AWSIAMUser:    plan.AWSIAMUser,
+		AWSAssumeRole: plan.AWSAssumeRole,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -723,13 +712,13 @@ func (r *connectionResource) Read(
 
 		// MySQL Fields
 		Port:    types.Int64PointerValue(connection.Port),
-		SSL:     state.NewSSL(),
-		Gateway: state.NewGateway(),
+		SSL:     state.SSL,
+		Gateway: state.Gateway,
 
 		// S3 Fields
 		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
-		AWSIAMUser:    state.AWSIAMUser.Copy(),
-		AWSAssumeRole: state.AWSAssumeRole.Copy(),
+		AWSIAMUser:    state.AWSIAMUser,
+		AWSAssumeRole: state.AWSAssumeRole,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
