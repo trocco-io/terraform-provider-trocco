@@ -1,0 +1,1 @@
+terraform import trocco_resource.import_resource_group <resource_group_id>
