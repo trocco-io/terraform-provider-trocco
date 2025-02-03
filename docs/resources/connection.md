@@ -53,13 +53,16 @@ resource "trocco_connection" "snowflake" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, or `mysql`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `mysql`, or `s3`.
 - `name` (String) The name of the connection.
 
 ### Optional
 
 - `application_name` (String) GCS: Application name.
 - `auth_method` (String) Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`.
+- `aws_assume_role` (Attributes) S3: AssumeRole configuration. (see [below for nested schema](#nestedatt--aws_assume_role))
+- `aws_auth_type` (String) S3: The authentication type for the S3 connection. It must be one of `iam_user` or `assume_role`.
+- `aws_iam_user` (Attributes) S3: IAM User configuration. (see [below for nested schema](#nestedatt--aws_iam_user))
 - `description` (String) The description of the connection.
 - `gateway` (Attributes) MySQL: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
 - `host` (String) Snowflake: The host of a Snowflake account.
@@ -77,6 +80,24 @@ resource "trocco_connection" "snowflake" {
 ### Read-Only
 
 - `id` (Number) The ID of the connection.
+
+<a id="nestedatt--aws_assume_role"></a>
+### Nested Schema for `aws_assume_role`
+
+Optional:
+
+- `account_id` (String) S3: The account ID for the AssumeRole configuration.
+- `role_name` (String) S3: The account role name for the AssumeRole configuration.
+
+
+<a id="nestedatt--aws_iam_user"></a>
+### Nested Schema for `aws_iam_user`
+
+Optional:
+
+- `access_key_id` (String) S3: The access key ID for the S3 connection.
+- `secret_access_key` (String, Sensitive) S3: The secret access key for the S3 connection.
+
 
 <a id="nestedatt--gateway"></a>
 ### Nested Schema for `gateway`
