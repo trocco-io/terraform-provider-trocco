@@ -7,8 +7,10 @@ import (
 )
 
 type LabelModel struct {
-	ID   types.Int64  `tfsdk:"id"`
-	Name types.String `tfsdk:"name"`
+	ID          types.Int64  `tfsdk:"id"`
+	Name        types.String `tfsdk:"name"`
+	Description types.String `tfsdk:"description"`
+	Color       types.String `tfsdk:"color"`
 }
 
 func NewLabels(labels []entity.Label) []LabelModel {
