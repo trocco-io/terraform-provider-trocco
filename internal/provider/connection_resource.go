@@ -128,7 +128,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.AWSAssumeRoleName = m.AWSAssumeRole.AccountRoleName.ValueStringPointer()
 	}
 
-  return input
+	return input
 }
 
 func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnectionInput {
