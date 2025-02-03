@@ -1,3 +1,18 @@
+## 0.5.0
+FEATURES:
+- Addded `trocco_job_definition` resource.
+- Addded `trocco_pipeline_definition` resource.
+
+CHORE:
+- Suppressed unecessary diffs.
+
+## 0.4.0
+FEATURES:
+- Supported `gcs` type for `trocco_connection` resource.
+
+CHORE:
+- Improved error messages.
+
 ## 0.3.0
 FEATURES:
 - Added `trocco_team` resource.
