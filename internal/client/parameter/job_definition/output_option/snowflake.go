@@ -20,7 +20,7 @@ type SnowflakeOutputOptionInput struct {
 	SnowflakeConnectionId              int64                                                                                                           `json:"snowflake_connection_id"`
 	SnowflakeOutputOptionColumnOptions *parameter.NullableObjectList[[]SnowflakeOutputOptionColumnOptionInput, SnowflakeOutputOptionColumnOptionInput] `json:"snowflake_output_option_column_options,omitempty"`
 	SnowflakeOutputOptionMergeKeys     *parameter.NullableObjectList[[]string, string]                                                                 `json:"snowflake_output_option_merge_keys,omitempty"`
-	CustomVariableSettings             *[]parameter.CustomVariableSettingInput                                                                         `json:"custom_variable_settings,omitempty,omitempty"`
+	CustomVariableSettings             *[]parameter.CustomVariableSettingInput                                                                         `json:"custom_variable_settings,omitempty"`
 }
 
 type UpdateSnowflakeOutputOptionInput struct {
