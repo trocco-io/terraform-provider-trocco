@@ -12,7 +12,7 @@ var _ planmodifier.Object = &BigqueryOutputOptionPlanModifier{}
 type BigqueryOutputOptionPlanModifier struct{}
 
 func (d *BigqueryOutputOptionPlanModifier) Description(ctx context.Context) string {
-	return "Modifier for validating schedule attributes"
+	return "Modifier for validating bigquery output option attributes"
 }
 
 func (d *BigqueryOutputOptionPlanModifier) MarkdownDescription(ctx context.Context) string {

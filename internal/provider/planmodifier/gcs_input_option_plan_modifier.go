@@ -12,7 +12,7 @@ var _ planmodifier.Object = &GcsInputOptionPlanModifier{}
 type GcsInputOptionPlanModifier struct{}
 
 func (d *GcsInputOptionPlanModifier) Description(ctx context.Context) string {
-	return "Modifier for validating schedule attributes"
+	return "Modifier for validating gcs input option attributes"
 }
 
 func (d *GcsInputOptionPlanModifier) MarkdownDescription(ctx context.Context) string {

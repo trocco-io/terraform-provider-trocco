@@ -13,7 +13,7 @@ var _ planmodifier.Object = &FileParserPlanModifier{}
 type FileParserPlanModifier struct{}
 
 func (d *FileParserPlanModifier) Description(ctx context.Context) string {
-	return "Modifier for validating schedule attributes"
+	return "Modifier for validating file parser attributes"
 }
 
 func (d *FileParserPlanModifier) MarkdownDescription(ctx context.Context) string {

@@ -86,7 +86,7 @@ func (mysqlInputOption *MySQLInputOption) ToInput() *input_options2.MySQLInputOp
 		DefaultTimeZone:           model.NewNullableString(mysqlInputOption.DefaultTimeZone),
 		UseLegacyDatetimeCode:     mysqlInputOption.UseLegacyDatetimeCode.ValueBool(),
 		MySQLConnectionID:         mysqlInputOption.MySQLConnectionID.ValueInt64(),
-		InputOptionColumns:        toInputOptionColumnsInput(mysqlInputOption.InputOptionColumns),
+		InputOptionColumns:        toMysqlInputOptionColumnsInput(mysqlInputOption.InputOptionColumns),
 		CustomVariableSettings:    model.ToCustomVariableSettingInputs(mysqlInputOption.CustomVariableSettings),
 	}
 }
@@ -96,7 +96,7 @@ func (mysqlInputOption *MySQLInputOption) ToUpdateInput() *input_options2.Update
 		return nil
 	}
 
-	inputOptionColumns := toInputOptionColumnsInput(mysqlInputOption.InputOptionColumns)
+	inputOptionColumns := toMysqlInputOptionColumnsInput(mysqlInputOption.InputOptionColumns)
 
 	return &input_options2.UpdateMySQLInputOptionInput{
 		Database:                  mysqlInputOption.Database.ValueStringPointer(),
@@ -116,7 +116,7 @@ func (mysqlInputOption *MySQLInputOption) ToUpdateInput() *input_options2.Update
 	}
 }
 
-func toInputOptionColumnsInput(columns []InputOptionColumn) []input_options2.InputOptionColumn {
+func toMysqlInputOptionColumnsInput(columns []InputOptionColumn) []input_options2.InputOptionColumn {
 	if columns == nil {
 		return nil
 	}

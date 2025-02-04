@@ -33,3 +33,7 @@ func NewNullableString(v types.String) *parameter.NullableString {
 func WrapObject[T any](v *T) *parameter.NullableObject[T] {
 	return &parameter.NullableObject[T]{Valid: v != nil, Value: v}
 }
+
+func WrapObjectList[T any](v *[]T) *parameter.NullableObjectList[T] {
+	return &parameter.NullableObjectList[T]{Valid: v != nil, Value: v}
+}
