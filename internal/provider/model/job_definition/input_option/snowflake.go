@@ -2,7 +2,7 @@ package input_options
 
 import (
 	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	param "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -60,12 +60,12 @@ func newSnowflakeInputOptionColumns(inputOptionColumns []input_option.SnowflakeI
 	return columns
 }
 
-func (snowflakeInputOption *SnowflakeInputOption) ToInput() *input_options2.SnowflakeInputOptionInput {
+func (snowflakeInputOption *SnowflakeInputOption) ToInput() *param.SnowflakeInputOptionInput {
 	if snowflakeInputOption == nil {
 		return nil
 	}
 
-	return &input_options2.SnowflakeInputOptionInput{
+	return &param.SnowflakeInputOptionInput{
 		Warehouse:              snowflakeInputOption.Warehouse.ValueString(),
 		Database:               snowflakeInputOption.Database.ValueString(),
 		Schema:                 snowflakeInputOption.Schema.ValueString(),
@@ -79,14 +79,14 @@ func (snowflakeInputOption *SnowflakeInputOption) ToInput() *input_options2.Snow
 	}
 }
 
-func (snowflakeInputOption *SnowflakeInputOption) ToUpdateInput() *input_options2.UpdateSnowflakeInputOptionInput {
+func (snowflakeInputOption *SnowflakeInputOption) ToUpdateInput() *param.UpdateSnowflakeInputOptionInput {
 	if snowflakeInputOption == nil {
 		return nil
 	}
 
 	inputOptionColumns := toSnowflakeInputOptionColumnsInput(snowflakeInputOption.InputOptionColumns)
 
-	return &input_options2.UpdateSnowflakeInputOptionInput{
+	return &param.UpdateSnowflakeInputOptionInput{
 		Warehouse:              snowflakeInputOption.Warehouse.ValueStringPointer(),
 		Database:               snowflakeInputOption.Database.ValueStringPointer(),
 		Schema:                 snowflakeInputOption.Schema.ValueStringPointer(),
@@ -100,14 +100,14 @@ func (snowflakeInputOption *SnowflakeInputOption) ToUpdateInput() *input_options
 	}
 }
 
-func toSnowflakeInputOptionColumnsInput(columns []SnowflakeInputOptionColumn) []input_options2.SnowflakeInputOptionColumn {
+func toSnowflakeInputOptionColumnsInput(columns []SnowflakeInputOptionColumn) []param.SnowflakeInputOptionColumn {
 	if columns == nil {
 		return nil
 	}
 
-	inputs := make([]input_options2.SnowflakeInputOptionColumn, 0, len(columns))
+	inputs := make([]param.SnowflakeInputOptionColumn, 0, len(columns))
 	for _, column := range columns {
-		inputs = append(inputs, input_options2.SnowflakeInputOptionColumn{
+		inputs = append(inputs, param.SnowflakeInputOptionColumn{
 			Name: column.Name.ValueString(),
 			Type: column.Type.ValueString(),
 		})
