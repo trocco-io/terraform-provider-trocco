@@ -577,7 +577,7 @@ func (r *connectionResource) Create(
 		// S3 Fields
 		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
 		AWSIAMUser:    plan.AWSIAMUser,
-		AWSAssumeRole: plan.AWSAssumeRole,
+		AWSAssumeRole: connection.GetAWSAssumeRole(),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -718,7 +718,7 @@ func (r *connectionResource) Read(
 		// S3 Fields
 		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
 		AWSIAMUser:    state.AWSIAMUser,
-		AWSAssumeRole: state.AWSAssumeRole,
+		AWSAssumeRole: connection.GetAWSAssumeRole(),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
