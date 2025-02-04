@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -26,21 +27,23 @@ func SnowflakeInputOptionSchema() schema.Attribute {
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
-				MarkdownDescription: "database name",
+				MarkdownDescription: "Database name",
 			},
 			"schema": schema.StringAttribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
-				MarkdownDescription: "schema name",
+				Default:             stringdefault.StaticString("PUBLIC"),
+				MarkdownDescription: "Schema name",
 			},
 			"query": schema.StringAttribute{
 				Required: true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
-				MarkdownDescription: "query",
+				MarkdownDescription: "Query",
 			},
 			"fetch_rows": schema.Int64Attribute{
 				Optional:            true,

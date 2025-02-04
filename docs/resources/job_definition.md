@@ -1327,10 +1327,9 @@ Optional:
 
 Required:
 
-- `database` (String) database name
+- `database` (String) Database name
 - `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--snowflake_input_option--input_option_columns))
-- `query` (String) query
-- `schema` (String) schema name
+- `query` (String) Query
 - `snowflake_connection_id` (Number) Id of Snowflake connection
 - `warehouse` (String) Warehouse name
 
@@ -1339,6 +1338,7 @@ Optional:
 - `connect_timeout` (Number) Connection timeout (sec)
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--snowflake_input_option--custom_variable_settings))
 - `fetch_rows` (Number) Number of records processed by the cursor at one time
+- `schema` (String) Schema name
 - `socket_timeout` (Number) Socket timeout (seconds)
 
 <a id="nestedatt--input_option--snowflake_input_option--input_option_columns"></a>

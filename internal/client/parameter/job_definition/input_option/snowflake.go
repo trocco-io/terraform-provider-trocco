@@ -7,7 +7,7 @@ import (
 type SnowflakeInputOptionInput struct {
 	Warehouse              string                                  `json:"warehouse"`
 	Database               string                                  `json:"database"`
-	Schema                 string                                  `json:"schema"`
+	Schema                 *parameter.NullableString               `json:"schema"`
 	Query                  string                                  `json:"query"`
 	FetchRows              *parameter.NullableInt64                `json:"fetch_rows,omitempty"`
 	ConnectTimeout         *parameter.NullableInt64                `json:"connect_timeout,omitempty"`
@@ -20,7 +20,7 @@ type SnowflakeInputOptionInput struct {
 type UpdateSnowflakeInputOptionInput struct {
 	Warehouse              *string                                 `json:"warehouse,omitempty"`
 	Database               *string                                 `json:"database,omitempty"`
-	Schema                 *string                                 `json:"schema,omitempty"`
+	Schema                 *parameter.NullableString               `json:"schema,omitempty"`
 	Query                  *string                                 `json:"query,omitempty"`
 	FetchRows              *parameter.NullableInt64                `json:"fetch_rows,omitempty"`
 	ConnectTimeout         *parameter.NullableInt64                `json:"connect_timeout,omitempty"`

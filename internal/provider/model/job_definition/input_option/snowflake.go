@@ -68,7 +68,7 @@ func (snowflakeInputOption *SnowflakeInputOption) ToInput() *param.SnowflakeInpu
 	return &param.SnowflakeInputOptionInput{
 		Warehouse:              snowflakeInputOption.Warehouse.ValueString(),
 		Database:               snowflakeInputOption.Database.ValueString(),
-		Schema:                 snowflakeInputOption.Schema.ValueString(),
+		Schema:                 model.NewNullableString(snowflakeInputOption.Schema),
 		Query:                  snowflakeInputOption.Query.ValueString(),
 		FetchRows:              model.NewNullableInt64(snowflakeInputOption.FetchRows),
 		ConnectTimeout:         model.NewNullableInt64(snowflakeInputOption.ConnectTimeout),
@@ -89,7 +89,7 @@ func (snowflakeInputOption *SnowflakeInputOption) ToUpdateInput() *param.UpdateS
 	return &param.UpdateSnowflakeInputOptionInput{
 		Warehouse:              snowflakeInputOption.Warehouse.ValueStringPointer(),
 		Database:               snowflakeInputOption.Database.ValueStringPointer(),
-		Schema:                 snowflakeInputOption.Schema.ValueStringPointer(),
+		Schema:                 model.NewNullableString(snowflakeInputOption.Schema),
 		Query:                  snowflakeInputOption.Query.ValueStringPointer(),
 		FetchRows:              model.NewNullableInt64(snowflakeInputOption.FetchRows),
 		ConnectTimeout:         model.NewNullableInt64(snowflakeInputOption.ConnectTimeout),
