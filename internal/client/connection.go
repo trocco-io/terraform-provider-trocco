@@ -5,9 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"terraform-provider-trocco/internal/client/parameter"
-	"terraform-provider-trocco/internal/provider/model/connection"
-
-	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type ConnectionList struct {
@@ -60,16 +57,6 @@ type Connection struct {
 	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
 	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
 	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
-}
-
-func (c *Connection) GetAWSAssumeRole() *connection.AWSAssumeRole {
-	if c.AWSAuthType == nil || *c.AWSAuthType != "assume_role" {
-		return nil
-	}
-	return &connection.AWSAssumeRole{
-		AccountID:       types.StringPointerValue(c.AWSAssumeRoleAccountID),
-		AccountRoleName: types.StringPointerValue(c.AWSAssumeRoleName),
-	}
 }
 
 type GetConnectionsInput struct {

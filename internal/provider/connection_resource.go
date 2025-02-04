@@ -529,7 +529,7 @@ func (r *connectionResource) Create(
 		return
 	}
 
-	connection, err := r.client.CreateConnection(
+	conn, err := r.client.CreateConnection(
 		plan.ConnectionType.ValueString(),
 		plan.ToCreateConnectionInput(),
 	)
@@ -544,29 +544,29 @@ func (r *connectionResource) Create(
 	newState := connectionResourceModel{
 		// Common Fields
 		ConnectionType:  plan.ConnectionType,
-		ID:              types.Int64Value(connection.ID),
-		Name:            types.StringPointerValue(connection.Name),
-		Description:     types.StringPointerValue(connection.Description),
-		ResourceGroupID: types.Int64PointerValue(connection.ResourceGroupID),
+		ID:              types.Int64Value(conn.ID),
+		Name:            types.StringPointerValue(conn.Name),
+		Description:     types.StringPointerValue(conn.Description),
+		ResourceGroupID: types.Int64PointerValue(conn.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             types.StringPointerValue(connection.ProjectID),
+		ProjectID:             types.StringPointerValue(conn.ProjectID),
 		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
 
 		// Snowflake Fields
-		Host:       types.StringPointerValue(connection.Host),
-		UserName:   types.StringPointerValue(connection.UserName),
-		Role:       types.StringPointerValue(connection.Role),
-		AuthMethod: types.StringPointerValue(connection.AuthMethod),
+		Host:       types.StringPointerValue(conn.Host),
+		UserName:   types.StringPointerValue(conn.UserName),
+		Role:       types.StringPointerValue(conn.Role),
+		AuthMethod: types.StringPointerValue(conn.AuthMethod),
 		Password:   plan.Password,
 		PrivateKey: plan.PrivateKey,
 
 		// GCS Fields
-		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
+		ApplicationName:     types.StringPointerValue(conn.ApplicationName),
 		ServiceAccountEmail: plan.ServiceAccountEmail,
 
 		// MySQL Fields
-		Port: types.Int64PointerValue(connection.Port),
+		Port: types.Int64PointerValue(conn.Port),
 
 		// SSL Fields
 		SSL: plan.SSL,
@@ -575,9 +575,9 @@ func (r *connectionResource) Create(
 		Gateway: plan.Gateway,
 
 		// S3 Fields
-		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
+		AWSAuthType:   types.StringPointerValue(conn.AWSAuthType),
 		AWSIAMUser:    plan.AWSIAMUser,
-		AWSAssumeRole: connection.GetAWSAssumeRole(),
+		AWSAssumeRole: connection.NewAWSAssumeRole(conn),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -674,7 +674,7 @@ func (r *connectionResource) Read(
 		return
 	}
 
-	connection, err := r.client.GetConnection(
+	conn, err := r.client.GetConnection(
 		state.ConnectionType.ValueString(),
 		state.ID.ValueInt64(),
 	)
@@ -689,36 +689,36 @@ func (r *connectionResource) Read(
 	newState := connectionResourceModel{
 		// Common Fields
 		ConnectionType:  state.ConnectionType,
-		ID:              types.Int64Value(connection.ID),
-		Name:            types.StringPointerValue(connection.Name),
-		Description:     types.StringPointerValue(connection.Description),
-		ResourceGroupID: types.Int64PointerValue(connection.ResourceGroupID),
+		ID:              types.Int64Value(conn.ID),
+		Name:            types.StringPointerValue(conn.Name),
+		Description:     types.StringPointerValue(conn.Description),
+		ResourceGroupID: types.Int64PointerValue(conn.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             types.StringPointerValue(connection.ProjectID),
+		ProjectID:             types.StringPointerValue(conn.ProjectID),
 		ServiceAccountJSONKey: state.ServiceAccountJSONKey,
 
 		// Snowflake Fields
-		Host:       types.StringPointerValue(connection.Host),
-		UserName:   types.StringPointerValue(connection.UserName),
-		Role:       types.StringPointerValue(connection.Role),
-		AuthMethod: types.StringPointerValue(connection.AuthMethod),
+		Host:       types.StringPointerValue(conn.Host),
+		UserName:   types.StringPointerValue(conn.UserName),
+		Role:       types.StringPointerValue(conn.Role),
+		AuthMethod: types.StringPointerValue(conn.AuthMethod),
 		Password:   state.Password,
 		PrivateKey: state.PrivateKey,
 
 		// GCS Fields
-		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
+		ApplicationName:     types.StringPointerValue(conn.ApplicationName),
 		ServiceAccountEmail: state.ServiceAccountEmail,
 
 		// MySQL Fields
-		Port:    types.Int64PointerValue(connection.Port),
+		Port:    types.Int64PointerValue(conn.Port),
 		SSL:     state.SSL,
 		Gateway: state.Gateway,
 
 		// S3 Fields
-		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
+		AWSAuthType:   types.StringPointerValue(conn.AWSAuthType),
 		AWSIAMUser:    state.AWSIAMUser,
-		AWSAssumeRole: connection.GetAWSAssumeRole(),
+		AWSAssumeRole: connection.NewAWSAssumeRole(conn),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
