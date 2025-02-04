@@ -53,16 +53,12 @@ func (n NullableObject[T]) MarshalJSON() ([]byte, error) {
 	return json.Marshal(n.Value)
 }
 
-type SliceConstraint[E any] interface {
-	~[]E
-}
-
-type NullableObjectList[T SliceConstraint[E], E any] struct {
-	Value *T
+type NullableObjectList[E any] struct {
+	Value *[]E
 	Valid bool
 }
 
-func (n NullableObjectList[T, E]) MarshalJSON() ([]byte, error) {
+func (n NullableObjectList[T]) MarshalJSON() ([]byte, error) {
 	if !n.Valid {
 		return []byte("[]"), nil
 	}
