@@ -10,7 +10,8 @@ func OutputOptionSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Required: true,
 		Attributes: map[string]schema.Attribute{
-			"bigquery_output_option": BigqueryOutputOptionSchema(),
+			"bigquery_output_option":  BigqueryOutputOptionSchema(),
+			"snowflake_output_option": SnowflakeOutputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planmodifier2.OutputOptionPlanModifier{},

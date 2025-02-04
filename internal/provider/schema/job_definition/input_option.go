@@ -10,8 +10,9 @@ func InputOptionSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Required: true,
 		Attributes: map[string]schema.Attribute{
-			"mysql_input_option": MysqlInputOptionSchema(),
-			"gcs_input_option":   GcsInputOptionSchema(),
+			"mysql_input_option":     MysqlInputOptionSchema(),
+			"gcs_input_option":       GcsInputOptionSchema(),
+			"snowflake_input_option": SnowflakeInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planmodifier2.InputOptionPlanModifier{},

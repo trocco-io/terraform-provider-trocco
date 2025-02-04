@@ -1,6 +1,8 @@
 package parameter
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type NullableInt64 struct {
 	Value int64
@@ -47,6 +49,18 @@ type NullableObject[T any] struct {
 func (n NullableObject[T]) MarshalJSON() ([]byte, error) {
 	if !n.Valid {
 		return []byte("{}"), nil
+	}
+	return json.Marshal(n.Value)
+}
+
+type NullableObjectList[E any] struct {
+	Value *[]E
+	Valid bool
+}
+
+func (n NullableObjectList[T]) MarshalJSON() ([]byte, error) {
+	if !n.Valid {
+		return []byte("[]"), nil
 	}
 	return json.Marshal(n.Value)
 }
