@@ -819,6 +819,12 @@ func (r *connectionResource) ValidateConfig(
 		}
 	case "s3":
 		validateRequiredString(plan.AWSAuthType, "aws_auth_type", "S3", resp)
+		if plan.AWSAssumeRole != nil && plan.AWSIAMUser != nil {
+			resp.Diagnostics.AddError(
+				"aws_auth_type",
+				"`aws_assume_role` and `aws_iam_user` cannot be used together for S3 connection.",
+			)
+		}
 		switch plan.AWSAuthType.ValueString() {
 		case "iam_user":
 			if plan.AWSIAMUser == nil {
