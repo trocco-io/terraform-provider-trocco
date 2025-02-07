@@ -6,8 +6,8 @@ import (
 	"terraform-provider-trocco/internal/client/entity"
 	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
 	filterEntities "terraform-provider-trocco/internal/client/entity/job_definition/filter"
-	inputOptionEntitites "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	outputOptionEntitites "terraform-provider-trocco/internal/client/entity/job_definition/output_option"
+	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	outputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/output_option"
 	"terraform-provider-trocco/internal/client/parameter"
 	job_definitions "terraform-provider-trocco/internal/client/parameter/job_definition"
 	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
@@ -87,26 +87,29 @@ type UpdateJobDefinitionInput struct {
 }
 
 type InputOption struct {
-	MySQLInputOption     *inputOptionEntitites.MySQLInputOption     `json:"mysql_input_option"`
-	GcsInputOption       *inputOptionEntitites.GcsInputOption       `json:"gcs_input_option"`
-	SnowflakeInputOption *inputOptionEntitites.SnowflakeInputOption `json:"snowflake_input_option"`
+	MySQLInputOption              *inputOptionEntities.MySQLInputOption              `json:"mysql_input_option"`
+	GcsInputOption                *inputOptionEntities.GcsInputOption                `json:"gcs_input_option"`
+	SnowflakeInputOption          *inputOptionEntities.SnowflakeInputOption          `json:"snowflake_input_option"`
+	GoogleSpreadsheetsInputOption *inputOptionEntities.GoogleSpreadsheetsInputOption `json:"google_spreadsheets_input_option"`
 }
 
 type InputOptionInput struct {
-	MySQLInputOption     *parameter.NullableObject[input_options.MySQLInputOptionInput]     `json:"mysql_input_option,omitempty"`
-	GcsInputOption       *parameter.NullableObject[input_options.GcsInputOptionInput]       `json:"gcs_input_option,omitempty"`
-	SnowflakeInputOption *parameter.NullableObject[input_options.SnowflakeInputOptionInput] `json:"snowflake_input_option,omitempty"`
+	MySQLInputOption              *parameter.NullableObject[input_options.MySQLInputOptionInput]              `json:"mysql_input_option,omitempty"`
+	GcsInputOption                *parameter.NullableObject[input_options.GcsInputOptionInput]                `json:"gcs_input_option,omitempty"`
+	SnowflakeInputOption          *parameter.NullableObject[input_options.SnowflakeInputOptionInput]          `json:"snowflake_input_option,omitempty"`
+	GoogleSpreadsheetsInputOption *parameter.NullableObject[input_options.GoogleSpreadsheetsInputOptionInput] `json:"google_spreadsheets_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
-	MySQLInputOption     *parameter.NullableObject[input_options.UpdateMySQLInputOptionInput]     `json:"mysql_input_option,omitempty"`
-	GcsInputOption       *parameter.NullableObject[input_options.UpdateGcsInputOptionInput]       `json:"gcs_input_option,omitempty"`
-	SnowflakeInputOption *parameter.NullableObject[input_options.UpdateSnowflakeInputOptionInput] `json:"snowflake_input_option,omitempty"`
+	MySQLInputOption              *parameter.NullableObject[input_options.UpdateMySQLInputOptionInput]              `json:"mysql_input_option,omitempty"`
+	GcsInputOption                *parameter.NullableObject[input_options.UpdateGcsInputOptionInput]                `json:"gcs_input_option,omitempty"`
+	SnowflakeInputOption          *parameter.NullableObject[input_options.UpdateSnowflakeInputOptionInput]          `json:"snowflake_input_option,omitempty"`
+	GoogleSpreadsheetsInputOption *parameter.NullableObject[input_options.UpdateGoogleSpreadsheetsInputOptionInput] `json:"google_spreadsheets_input_option,omitempty"`
 }
 
 type OutputOption struct {
-	BigQueryOutputOption  *outputOptionEntitites.BigQueryOutputOption  `json:"bigquery_output_option"`
-	SnowflakeOutputOption *outputOptionEntitites.SnowflakeOutputOption `json:"snowflake_output_option"`
+	BigQueryOutputOption  *outputOptionEntities.BigQueryOutputOption  `json:"bigquery_output_option"`
+	SnowflakeOutputOption *outputOptionEntities.SnowflakeOutputOption `json:"snowflake_output_option"`
 }
 
 type OutputOptionInput struct {
