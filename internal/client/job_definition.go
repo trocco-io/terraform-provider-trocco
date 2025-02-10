@@ -108,18 +108,21 @@ type UpdateInputOptionInput struct {
 }
 
 type OutputOption struct {
-	BigQueryOutputOption  *outputOptionEntities.BigQueryOutputOption  `json:"bigquery_output_option"`
-	SnowflakeOutputOption *outputOptionEntities.SnowflakeOutputOption `json:"snowflake_output_option"`
+	BigQueryOutputOption           *outputOptionEntities.BigQueryOutputOption           `json:"bigquery_output_option"`
+	SnowflakeOutputOption          *outputOptionEntities.SnowflakeOutputOption          `json:"snowflake_output_option"`
+	GoogleSpreadsheetsOutputOption *outputOptionEntities.GoogleSpreadsheetsOutputOption `json:"google_spreadsheets_output_option"`
 }
 
 type OutputOptionInput struct {
-	BigQueryOutputOption  *parameter.NullableObject[output_options.BigQueryOutputOptionInput]  `json:"bigquery_output_option,omitempty"`
-	SnowflakeOutputOption *parameter.NullableObject[output_options.SnowflakeOutputOptionInput] `json:"snowflake_output_option,omitempty"`
+	BigQueryOutputOption           *parameter.NullableObject[output_options.BigQueryOutputOptionInput]           `json:"bigquery_output_option,omitempty"`
+	SnowflakeOutputOption          *parameter.NullableObject[output_options.SnowflakeOutputOptionInput]          `json:"snowflake_output_option,omitempty"`
+	GoogleSpreadsheetsOutputOption *parameter.NullableObject[output_options.GoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
-	BigQueryOutputOption  *parameter.NullableObject[output_options.UpdateBigQueryOutputOptionInput]  `json:"bigquery_output_option,omitempty"`
-	SnowflakeOutputOption *parameter.NullableObject[output_options.UpdateSnowflakeOutputOptionInput] `json:"snowflake_output_option,omitempty"`
+	BigQueryOutputOption           *parameter.NullableObject[output_options.UpdateBigQueryOutputOptionInput]           `json:"bigquery_output_option,omitempty"`
+	SnowflakeOutputOption          *parameter.NullableObject[output_options.UpdateSnowflakeOutputOptionInput]          `json:"snowflake_output_option,omitempty"`
+	GoogleSpreadsheetsOutputOption *parameter.NullableObject[output_options.UpdateGoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {

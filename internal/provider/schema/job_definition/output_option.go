@@ -1,17 +1,19 @@
 package job_definition
 
 import (
+	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
 )
 
 func OutputOptionSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Required: true,
 		Attributes: map[string]schema.Attribute{
-			"bigquery_output_option":  BigqueryOutputOptionSchema(),
-			"snowflake_output_option": SnowflakeOutputOptionSchema(),
+			"bigquery_output_option":            BigqueryOutputOptionSchema(),
+			"snowflake_output_option":           SnowflakeOutputOptionSchema(),
+			"google_spreadsheets_output_option": GoogleSpreadsheetsOutputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planmodifier2.OutputOptionPlanModifier{},

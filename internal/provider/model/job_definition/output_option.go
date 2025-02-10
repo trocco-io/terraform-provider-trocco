@@ -7,14 +7,16 @@ import (
 )
 
 type OutputOption struct {
-	BigQueryOutputOption  *output_options.BigQueryOutputOption  `tfsdk:"bigquery_output_option"`
-	SnowflakeOutputOption *output_options.SnowflakeOutputOption `tfsdk:"snowflake_output_option"`
+	BigQueryOutputOption           *output_options.BigQueryOutputOption           `tfsdk:"bigquery_output_option"`
+	SnowflakeOutputOption          *output_options.SnowflakeOutputOption          `tfsdk:"snowflake_output_option"`
+	GoogleSpreadsheetsOutputOption *output_options.GoogleSpreadsheetsOutputOption `tfsdk:"google_spreadsheets_output_option"`
 }
 
 func NewOutputOption(outputOption client.OutputOption) *OutputOption {
 	return &OutputOption{
-		BigQueryOutputOption:  output_options.NewBigQueryOutputOption(outputOption.BigQueryOutputOption),
-		SnowflakeOutputOption: output_options.NewSnowflakeOutputOption(outputOption.SnowflakeOutputOption),
+		BigQueryOutputOption:           output_options.NewBigQueryOutputOption(outputOption.BigQueryOutputOption),
+		SnowflakeOutputOption:          output_options.NewSnowflakeOutputOption(outputOption.SnowflakeOutputOption),
+		GoogleSpreadsheetsOutputOption: output_options.NewGoogleSpreadsheetsOutputOption(outputOption.GoogleSpreadsheetsOutputOption),
 	}
 }
 
@@ -22,6 +24,7 @@ func (o OutputOption) ToInput() client.OutputOptionInput {
 	return client.OutputOptionInput{
 		BigQueryOutputOption:  model.WrapObject(o.BigQueryOutputOption.ToInput()),
 		SnowflakeOutputOption: model.WrapObject(o.SnowflakeOutputOption.ToInput()),
+		GoogleSpreadsheetsOutputOption: model.WrapObject(o.GoogleSpreadsheetsOutputOption.ToInput()),
 	}
 }
 
@@ -29,5 +32,6 @@ func (o OutputOption) ToUpdateInput() *client.UpdateOutputOptionInput {
 	return &client.UpdateOutputOptionInput{
 		BigQueryOutputOption:  model.WrapObject(o.BigQueryOutputOption.ToUpdateInput()),
 		SnowflakeOutputOption: model.WrapObject(o.SnowflakeOutputOption.ToUpdateInput()),
+		GoogleSpreadsheetsOutputOption: model.WrapObject(o.GoogleSpreadsheetsOutputOption.ToUpdateInput()),
 	}
 }

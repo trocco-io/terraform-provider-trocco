@@ -10,12 +10,12 @@ import (
 
 type GoogleSpreadsheetsInputOption struct {
 	SpreadsheetsURL                types.String                          `tfsdk:"spreadsheets_url"`
-	WorkSheetTitle                 types.String                          `tfsdk:"work_sheet_title"`
+	WorksheetTitle                 types.String                          `tfsdk:"worksheet_title"`
 	StartRow                       types.Int64                           `tfsdk:"start_row"`
 	StartColumn                    types.String                          `tfsdk:"start_column"`
 	DefaultTimeZone                types.String                          `tfsdk:"default_time_zone"`
 	NullString                     types.String                          `tfsdk:"null_string"`
-	GoogleSpreadsheetsConnectionID types.Int64                           `tfsdk:"snowflake_connection_id"`
+	GoogleSpreadsheetsConnectionID types.Int64                           `tfsdk:"google_spreadsheets_connection_id"`
 	InputOptionColumns             []GoogleSpreadsheetsInputOptionColumn `tfsdk:"input_option_columns"`
 	CustomVariableSettings         *[]model.CustomVariableSetting        `tfsdk:"custom_variable_settings"`
 }
@@ -33,7 +33,7 @@ func NewGoogleSpreadsheetsInputOption(inputOption *input_option.GoogleSpreadshee
 
 	return &GoogleSpreadsheetsInputOption{
 		SpreadsheetsURL:                types.StringValue(inputOption.SpreadsheetsURL),
-		WorkSheetTitle:                 types.StringValue(inputOption.WorkSheetTitle),
+		WorksheetTitle:                 types.StringValue(inputOption.WorksheetTitle),
 		StartRow:                       types.Int64Value(inputOption.StartRow),
 		StartColumn:                    types.StringValue(inputOption.StartColumn),
 		DefaultTimeZone:                types.StringValue(inputOption.DefaultTimeZone),
@@ -67,7 +67,7 @@ func (inputOption *GoogleSpreadsheetsInputOption) ToInput() *param.GoogleSpreads
 
 	return &param.GoogleSpreadsheetsInputOptionInput{
 		SpreadsheetsURL:                inputOption.SpreadsheetsURL.ValueString(),
-		WorkSheetTitle:                 inputOption.WorkSheetTitle.ValueString(),
+		WorksheetTitle:                 inputOption.WorksheetTitle.ValueString(),
 		StartRow:                       inputOption.StartRow.ValueInt64(),
 		StartColumn:                    inputOption.StartColumn.ValueString(),
 		DefaultTimeZone:                inputOption.DefaultTimeZone.ValueString(),
@@ -87,7 +87,7 @@ func (inputOption *GoogleSpreadsheetsInputOption) ToUpdateInput() *param.UpdateG
 
 	return &param.UpdateGoogleSpreadsheetsInputOptionInput{
 		SpreadsheetsURL:                inputOption.SpreadsheetsURL.ValueStringPointer(),
-		WorkSheetTitle:                 inputOption.WorkSheetTitle.ValueStringPointer(),
+		WorksheetTitle:                 inputOption.WorksheetTitle.ValueStringPointer(),
 		StartRow:                       inputOption.StartRow.ValueInt64Pointer(),
 		StartColumn:                    inputOption.StartColumn.ValueStringPointer(),
 		DefaultTimeZone:                inputOption.DefaultTimeZone.ValueStringPointer(),
