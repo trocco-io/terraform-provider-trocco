@@ -1019,6 +1019,7 @@ Optional:
 Optional:
 
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
+- `google_spreadsheets_input_option` (Attributes) Attributes about source Google Spreadsheets (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
 
@@ -1271,6 +1272,56 @@ Optional:
 
 
 
+<a id="nestedatt--input_option--google_spreadsheets_input_option"></a>
+### Nested Schema for `input_option.google_spreadsheets_input_option`
+
+Required:
+
+- `default_time_zone` (String) Default time zone
+- `google_spreadsheets_connection_id` (Number) Id of Snowflake connection
+- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option--input_option_columns))
+- `spreadsheets_url` (String) URL of the Google Sheets
+- `start_column` (String) Column to start reading data
+- `start_row` (Number) Row number to start reading data
+- `worksheet_title` (String) Title of the worksheet
+
+Optional:
+
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option--custom_variable_settings))
+- `null_string` (String) String to be treated as NULL
+
+<a id="nestedatt--input_option--google_spreadsheets_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.google_spreadsheets_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Column format
+
+
+<a id="nestedatt--input_option--google_spreadsheets_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.google_spreadsheets_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
 <a id="nestedatt--input_option--mysql_input_option"></a>
 ### Nested Schema for `input_option.mysql_input_option`
 
@@ -1376,6 +1427,7 @@ Optional:
 Optional:
 
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
+- `google_spreadsheets_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
 - `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
 
 <a id="nestedatt--output_option--bigquery_output_option"></a>
@@ -1440,6 +1492,51 @@ Optional:
 - `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--output_option--google_spreadsheets_output_option"></a>
+### Nested Schema for `output_option.google_spreadsheets_output_option`
+
+Required:
+
+- `google_spreadsheets_connection_id` (Number) Snowflake connection ID
+- `spreadsheets_id` (String) Spreadsheet ID
+- `worksheet_title` (String) Worksheet title
+
+Optional:
+
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option--custom_variable_settings))
+- `google_spreadsheets_output_option_sorts` (Attributes List) (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option--google_spreadsheets_output_option_sorts))
+- `mode` (String) Transfer mode
+- `timezone` (String) Time zone
+- `value_input_option` (String) Value input option
+
+<a id="nestedatt--output_option--google_spreadsheets_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.google_spreadsheets_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--output_option--google_spreadsheets_output_option--google_spreadsheets_output_option_sorts"></a>
+### Nested Schema for `output_option.google_spreadsheets_output_option.google_spreadsheets_output_option_sorts`
+
+Required:
+
+- `column` (String) Column name
+- `order` (String) Data type
 
 
 
