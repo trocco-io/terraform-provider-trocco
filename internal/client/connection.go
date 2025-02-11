@@ -41,6 +41,13 @@ type Connection struct {
 	Port           *int64 `json:"port"`
 	SSL            *bool  `json:"ssl"`
 	GatewayEnabled *bool  `json:"gateway_enabled"`
+
+	// S3 Fields
+	AWSAuthType            *string `json:"aws_auth_type,omitempty"`
+	AWSAccessKeyID         *string `json:"aws_access_key_id,omitempty"`
+	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
+	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
+	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
 }
 
 type GetConnectionsInput struct {
@@ -83,6 +90,13 @@ type CreateConnectionInput struct {
 	GatewayPassword      *string                  `json:"gateway_password,omitempty"`
 	GatewayKey           *string                  `json:"gateway_key,omitempty"`
 	GatewayKeyPassphrase *string                  `json:"gateway_key_passphrase,omitempty"`
+
+	// S3 Fields
+	AWSAuthType            *string `json:"aws_auth_type,omitempty"`
+	AWSAccessKeyID         *string `json:"aws_access_key_id,omitempty"`
+	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
+	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
+	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -120,6 +134,13 @@ type UpdateConnectionInput struct {
 	GatewayPassword      *string                  `json:"gateway_password,omitempty"`
 	GatewayKey           *string                  `json:"gateway_key,omitempty"`
 	GatewayKeyPassphrase *string                  `json:"gateway_key_passphrase,omitempty"`
+
+	// S3 Fields
+	AWSAuthType            *string `json:"aws_auth_type,omitempty"`
+	AWSAccessKeyID         *string `json:"aws_access_key_id,omitempty"`
+	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
+	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
+	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {

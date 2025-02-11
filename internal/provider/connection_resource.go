@@ -56,6 +56,11 @@ type connectionResourceModel struct {
 	Port    types.Int64         `tfsdk:"port"`
 	SSL     *connection.SSL     `tfsdk:"ssl"`
 	Gateway *connection.Gateway `tfsdk:"gateway"`
+
+	// S3 Fields
+	AWSAuthType   types.String              `tfsdk:"aws_auth_type"`
+	AWSIAMUser    *connection.AWSIAMUser    `tfsdk:"aws_iam_user"`
+	AWSAssumeRole *connection.AWSAssumeRole `tfsdk:"aws_assume_role"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -83,6 +88,9 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 
 		// MySQL Fields
 		Port: model.NewNullableInt64(m.Port),
+
+		// S3 Fields
+		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
 	}
 
 	// SSL Fields
@@ -108,8 +116,19 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.GatewayEnabled = model.NewNullableBool(types.BoolValue(false))
 	}
 
-	return input
+	// AWS IAM User Fields
+	if m.AWSIAMUser != nil {
+		input.AWSAccessKeyID = m.AWSIAMUser.AccessKeyID.ValueStringPointer()
+		input.AWSSecretAccessKey = m.AWSIAMUser.SecretAccessKey.ValueStringPointer()
+	}
 
+	// AWS Assume Role Fields
+	if m.AWSAssumeRole != nil {
+		input.AWSAssumeRoleAccountID = m.AWSAssumeRole.AccountID.ValueStringPointer()
+		input.AWSAssumeRoleName = m.AWSAssumeRole.AccountRoleName.ValueStringPointer()
+	}
+
+	return input
 }
 
 func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnectionInput {
@@ -137,6 +156,9 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 
 		// MySQL Fields
 		Port: model.NewNullableInt64(m.Port),
+
+		// S3 Fields
+		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
 	}
 
 	// SSL Fields
@@ -161,8 +183,20 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 	} else {
 		input.GatewayEnabled = model.NewNullableBool(types.BoolValue(false))
 	}
-	return input
 
+	// AWS IAM User Fields
+	if m.AWSIAMUser != nil {
+		input.AWSAccessKeyID = m.AWSIAMUser.AccessKeyID.ValueStringPointer()
+		input.AWSSecretAccessKey = m.AWSIAMUser.SecretAccessKey.ValueStringPointer()
+	}
+
+	// AWS Assume Role Fields
+	if m.AWSAssumeRole != nil {
+		input.AWSAssumeRoleAccountID = m.AWSAssumeRole.AccountID.ValueStringPointer()
+		input.AWSAssumeRoleName = m.AWSAssumeRole.AccountRoleName.ValueStringPointer()
+	}
+
+	return input
 }
 
 type connectionResource struct {
@@ -212,13 +246,13 @@ func (r *connectionResource) Schema(
 		Attributes: map[string]schema.Attribute{
 			// Common Fields
 			"connection_type": schema.StringAttribute{
-				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, or `mysql`.",
+				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `mysql`, or `s3`.",
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "mysql"),
+					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "mysql", "s3"),
 				},
 			},
 			"id": schema.Int64Attribute{
@@ -430,6 +464,56 @@ func (r *connectionResource) Schema(
 					},
 				},
 			},
+
+			// S3 Fields
+			"aws_auth_type": schema.StringAttribute{
+				MarkdownDescription: "S3: The authentication type for the S3 connection. It must be one of `iam_user` or `assume_role`.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("iam_user", "assume_role"),
+				},
+			},
+			"aws_iam_user": schema.SingleNestedAttribute{
+				MarkdownDescription: "S3: IAM User configuration.",
+				Optional:            true,
+				Attributes: map[string]schema.Attribute{
+					"access_key_id": schema.StringAttribute{
+						MarkdownDescription: "S3: The access key ID for the S3 connection.",
+						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.UTF8LengthAtLeast(1),
+						},
+					},
+					"secret_access_key": schema.StringAttribute{
+						MarkdownDescription: "S3: The secret access key for the S3 connection.",
+						Optional:            true,
+						Sensitive:           true,
+						Validators: []validator.String{
+							stringvalidator.UTF8LengthAtLeast(1),
+						},
+					},
+				},
+			},
+			"aws_assume_role": schema.SingleNestedAttribute{
+				MarkdownDescription: "S3: AssumeRole configuration.",
+				Optional:            true,
+				Attributes: map[string]schema.Attribute{
+					"account_id": schema.StringAttribute{
+						MarkdownDescription: "S3: The account ID for the AssumeRole configuration.",
+						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.UTF8LengthAtLeast(1),
+						},
+					},
+					"role_name": schema.StringAttribute{
+						MarkdownDescription: "S3: The account role name for the AssumeRole configuration.",
+						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.UTF8LengthAtLeast(1),
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -445,7 +529,7 @@ func (r *connectionResource) Create(
 		return
 	}
 
-	connection, err := r.client.CreateConnection(
+	conn, err := r.client.CreateConnection(
 		plan.ConnectionType.ValueString(),
 		plan.ToCreateConnectionInput(),
 	)
@@ -460,35 +544,40 @@ func (r *connectionResource) Create(
 	newState := connectionResourceModel{
 		// Common Fields
 		ConnectionType:  plan.ConnectionType,
-		ID:              types.Int64Value(connection.ID),
-		Name:            types.StringPointerValue(connection.Name),
-		Description:     types.StringPointerValue(connection.Description),
-		ResourceGroupID: types.Int64PointerValue(connection.ResourceGroupID),
+		ID:              types.Int64Value(conn.ID),
+		Name:            types.StringPointerValue(conn.Name),
+		Description:     types.StringPointerValue(conn.Description),
+		ResourceGroupID: types.Int64PointerValue(conn.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             types.StringPointerValue(connection.ProjectID),
+		ProjectID:             types.StringPointerValue(conn.ProjectID),
 		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
 
 		// Snowflake Fields
-		Host:       types.StringPointerValue(connection.Host),
-		UserName:   types.StringPointerValue(connection.UserName),
-		Role:       types.StringPointerValue(connection.Role),
-		AuthMethod: types.StringPointerValue(connection.AuthMethod),
+		Host:       types.StringPointerValue(conn.Host),
+		UserName:   types.StringPointerValue(conn.UserName),
+		Role:       types.StringPointerValue(conn.Role),
+		AuthMethod: types.StringPointerValue(conn.AuthMethod),
 		Password:   plan.Password,
 		PrivateKey: plan.PrivateKey,
 
 		// GCS Fields
-		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
+		ApplicationName:     types.StringPointerValue(conn.ApplicationName),
 		ServiceAccountEmail: plan.ServiceAccountEmail,
 
 		// MySQL Fields
-		Port: types.Int64PointerValue(connection.Port),
+		Port: types.Int64PointerValue(conn.Port),
 
 		// SSL Fields
-		SSL: plan.NewSSL(),
+		SSL: plan.SSL,
 
 		// Gateway Fields
-		Gateway: plan.NewGateway(),
+		Gateway: plan.Gateway,
+
+		// S3 Fields
+		AWSAuthType:   types.StringPointerValue(conn.AWSAuthType),
+		AWSIAMUser:    plan.AWSIAMUser,
+		AWSAssumeRole: connection.NewAWSAssumeRole(conn),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -504,17 +593,6 @@ func (m *connectionResourceModel) NewGateway() *connection.Gateway {
 		Password:      types.StringPointerValue(m.Gateway.Password.ValueStringPointer()),
 		Key:           types.StringPointerValue(m.Gateway.Key.ValueStringPointer()),
 		KeyPassphrase: types.StringPointerValue(m.Gateway.KeyPassphrase.ValueStringPointer()),
-	}
-}
-
-func (m *connectionResourceModel) NewSSL() *connection.SSL {
-	if m.SSL == nil {
-		return nil
-	}
-	return &connection.SSL{
-		CA:   types.StringPointerValue(m.SSL.CA.ValueStringPointer()),
-		Cert: types.StringPointerValue(m.SSL.Cert.ValueStringPointer()),
-		Key:  types.StringPointerValue(m.SSL.Key.ValueStringPointer()),
 	}
 }
 
@@ -574,8 +652,13 @@ func (r *connectionResource) Update(
 
 		// MySQL Fields
 		Port:    types.Int64PointerValue(connection.Port),
-		SSL:     plan.NewSSL(),
-		Gateway: plan.NewGateway(),
+		SSL:     plan.SSL,
+		Gateway: plan.Gateway,
+
+		// S3 Fields
+		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
+		AWSIAMUser:    plan.AWSIAMUser,
+		AWSAssumeRole: plan.AWSAssumeRole,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -591,7 +674,7 @@ func (r *connectionResource) Read(
 		return
 	}
 
-	connection, err := r.client.GetConnection(
+	conn, err := r.client.GetConnection(
 		state.ConnectionType.ValueString(),
 		state.ID.ValueInt64(),
 	)
@@ -606,31 +689,36 @@ func (r *connectionResource) Read(
 	newState := connectionResourceModel{
 		// Common Fields
 		ConnectionType:  state.ConnectionType,
-		ID:              types.Int64Value(connection.ID),
-		Name:            types.StringPointerValue(connection.Name),
-		Description:     types.StringPointerValue(connection.Description),
-		ResourceGroupID: types.Int64PointerValue(connection.ResourceGroupID),
+		ID:              types.Int64Value(conn.ID),
+		Name:            types.StringPointerValue(conn.Name),
+		Description:     types.StringPointerValue(conn.Description),
+		ResourceGroupID: types.Int64PointerValue(conn.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             types.StringPointerValue(connection.ProjectID),
+		ProjectID:             types.StringPointerValue(conn.ProjectID),
 		ServiceAccountJSONKey: state.ServiceAccountJSONKey,
 
 		// Snowflake Fields
-		Host:       types.StringPointerValue(connection.Host),
-		UserName:   types.StringPointerValue(connection.UserName),
-		Role:       types.StringPointerValue(connection.Role),
-		AuthMethod: types.StringPointerValue(connection.AuthMethod),
+		Host:       types.StringPointerValue(conn.Host),
+		UserName:   types.StringPointerValue(conn.UserName),
+		Role:       types.StringPointerValue(conn.Role),
+		AuthMethod: types.StringPointerValue(conn.AuthMethod),
 		Password:   state.Password,
 		PrivateKey: state.PrivateKey,
 
 		// GCS Fields
-		ApplicationName:     types.StringPointerValue(connection.ApplicationName),
+		ApplicationName:     types.StringPointerValue(conn.ApplicationName),
 		ServiceAccountEmail: state.ServiceAccountEmail,
 
 		// MySQL Fields
-		Port:    types.Int64PointerValue(connection.Port),
-		SSL:     state.NewSSL(),
-		Gateway: state.NewGateway(),
+		Port:    types.Int64PointerValue(conn.Port),
+		SSL:     state.SSL,
+		Gateway: state.Gateway,
+
+		// S3 Fields
+		AWSAuthType:   types.StringPointerValue(conn.AWSAuthType),
+		AWSIAMUser:    state.AWSIAMUser,
+		AWSAssumeRole: connection.NewAWSAssumeRole(conn),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -728,6 +816,36 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "MySQL", resp)
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "MySQL", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "MySQL", resp)
+		}
+	case "s3":
+		validateRequiredString(plan.AWSAuthType, "aws_auth_type", "S3", resp)
+		if plan.AWSAssumeRole != nil && plan.AWSIAMUser != nil {
+			resp.Diagnostics.AddError(
+				"aws_auth_type",
+				"`aws_assume_role` and `aws_iam_user` cannot be used together for S3 connection.",
+			)
+		}
+		switch plan.AWSAuthType.ValueString() {
+		case "iam_user":
+			if plan.AWSIAMUser == nil {
+				resp.Diagnostics.AddError(
+					"aws_iam_user",
+					"aws_iam_user is required for S3 connection with aws_auth_type `iam_user`.",
+				)
+			} else {
+				validateRequiredString(plan.AWSIAMUser.AccessKeyID, "aws_iam_user.access_key_id", "S3", resp)
+				validateRequiredString(plan.AWSIAMUser.SecretAccessKey, "aws_iam_user.secret_access_key", "S3", resp)
+			}
+		case "assume_role":
+			if plan.AWSAssumeRole == nil {
+				resp.Diagnostics.AddError(
+					"aws_assume_role",
+					"aws_assume_role is required for S3 connection with aws_auth_type `assume_role`.",
+				)
+			} else {
+				validateRequiredString(plan.AWSAssumeRole.AccountID, "aws_assume_role.account_id", "S3", resp)
+				validateRequiredString(plan.AWSAssumeRole.AccountRoleName, "aws_assume_role.account_role_name", "S3", resp)
+			}
 		}
 	}
 }
