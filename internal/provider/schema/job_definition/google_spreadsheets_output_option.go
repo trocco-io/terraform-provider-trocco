@@ -68,8 +68,5 @@ func GoogleSpreadsheetsOutputOptionSchema() schema.Attribute {
 			},
 			"custom_variable_settings": CustomVariableSettingsSchema(),
 		},
-		// PlanModifiers: []planmodifier.Object{
-		// 	&planmodifier2.GoogleSpreadsheetsOutputOptionPlanModifier{},
-		// },
 	}
 }

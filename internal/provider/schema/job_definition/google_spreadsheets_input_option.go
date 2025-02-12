@@ -1,10 +1,13 @@
 package job_definition
 
 import (
+	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
@@ -89,6 +92,9 @@ func GoogleSpreadsheetsInputOptionSchema() schema.Attribute {
 								stringvalidator.UTF8LengthAtLeast(1),
 							},
 						},
+					},
+					PlanModifiers: []planmodifier.Object{
+						&troccoPlanModifier.GoogleSpreadsheetsInputOptionColumnPlanModifier{},
 					},
 				},
 				Validators: []validator.List{
