@@ -1,6 +1,7 @@
 package input_option
 
 import (
+	"strings"
 	"terraform-provider-trocco/internal/client/entity"
 )
 
@@ -14,6 +15,14 @@ type GoogleSpreadsheetsInputOption struct {
 	GoogleSpreadsheetsConnectionID int64                                 `json:"google_spreadsheets_connection_id"`
 	InputOptionColumns             []GoogleSpreadsheetsInputOptionColumn `json:"input_option_columns"`
 	CustomVariableSettings         *[]entity.CustomVariableSetting       `json:"custom_variable_settings"`
+}
+
+func (inputOption *GoogleSpreadsheetsInputOption) SpreadsheetsID() string {
+	if inputOption.SpreadsheetsURL == "" {
+		return ""
+	}
+	// ex) "https://docs.google.com/spreadsheets/d/MY_SHEETS_ID/edit#gid=0" --> "MY_SHEETS_ID"
+	return strings.Split(strings.Split(inputOption.SpreadsheetsURL, "https://docs.google.com/spreadsheets/d/")[1], "/")[0]
 }
 
 type GoogleSpreadsheetsInputOptionColumn struct {

@@ -9,15 +9,24 @@ import (
 )
 
 type GoogleSpreadsheetsInputOption struct {
-	SpreadsheetsURL                types.String                          `tfsdk:"spreadsheets_url"`
+	GoogleSpreadsheetsConnectionID types.Int64                           `tfsdk:"google_spreadsheets_connection_id"`
+	SpreadsheetsID                 types.String                          `tfsdk:"spreadsheets_id"`
 	WorksheetTitle                 types.String                          `tfsdk:"worksheet_title"`
 	StartRow                       types.Int64                           `tfsdk:"start_row"`
 	StartColumn                    types.String                          `tfsdk:"start_column"`
 	DefaultTimeZone                types.String                          `tfsdk:"default_time_zone"`
 	NullString                     types.String                          `tfsdk:"null_string"`
-	GoogleSpreadsheetsConnectionID types.Int64                           `tfsdk:"google_spreadsheets_connection_id"`
 	InputOptionColumns             []GoogleSpreadsheetsInputOptionColumn `tfsdk:"input_option_columns"`
 	CustomVariableSettings         *[]model.CustomVariableSetting        `tfsdk:"custom_variable_settings"`
+}
+
+func (inputOption *GoogleSpreadsheetsInputOption) SpreadsheetsURL() types.String {
+	if inputOption.SpreadsheetsID.IsNull() || inputOption.SpreadsheetsID.ValueString() == "" {
+		return types.StringNull()
+	}
+	// ex) "https://docs.google.com/spreadsheets/d/MY_SHEETS_ID/edit#gid=0"
+	url := "https://docs.google.com/spreadsheets/d/" + inputOption.SpreadsheetsID.ValueString() + "/edit#gid=0"
+	return types.StringValue(url)
 }
 
 type GoogleSpreadsheetsInputOptionColumn struct {
@@ -32,7 +41,7 @@ func NewGoogleSpreadsheetsInputOption(inputOption *input_option.GoogleSpreadshee
 	}
 
 	return &GoogleSpreadsheetsInputOption{
-		SpreadsheetsURL:                types.StringValue(inputOption.SpreadsheetsURL),
+		SpreadsheetsID:                 types.StringValue(inputOption.SpreadsheetsID()),
 		WorksheetTitle:                 types.StringValue(inputOption.WorksheetTitle),
 		StartRow:                       types.Int64Value(inputOption.StartRow),
 		StartColumn:                    types.StringValue(inputOption.StartColumn),
@@ -66,7 +75,7 @@ func (inputOption *GoogleSpreadsheetsInputOption) ToInput() *param.GoogleSpreads
 	}
 
 	return &param.GoogleSpreadsheetsInputOptionInput{
-		SpreadsheetsURL:                inputOption.SpreadsheetsURL.ValueString(),
+		SpreadsheetsURL:                inputOption.SpreadsheetsURL().ValueString(),
 		WorksheetTitle:                 inputOption.WorksheetTitle.ValueString(),
 		StartRow:                       inputOption.StartRow.ValueInt64(),
 		StartColumn:                    inputOption.StartColumn.ValueString(),
@@ -86,13 +95,13 @@ func (inputOption *GoogleSpreadsheetsInputOption) ToUpdateInput() *param.UpdateG
 	inputOptionColumns := toGoogleSpreadsheetsInputOptionColumnsInput(inputOption.InputOptionColumns)
 
 	return &param.UpdateGoogleSpreadsheetsInputOptionInput{
-		SpreadsheetsURL:                inputOption.SpreadsheetsURL.ValueStringPointer(),
-		WorksheetTitle:                 inputOption.WorksheetTitle.ValueStringPointer(),
-		StartRow:                       inputOption.StartRow.ValueInt64Pointer(),
-		StartColumn:                    inputOption.StartColumn.ValueStringPointer(),
-		DefaultTimeZone:                inputOption.DefaultTimeZone.ValueStringPointer(),
-		NullString:                     inputOption.NullString.ValueStringPointer(),
-		GoogleSpreadsheetsConnectionID: inputOption.GoogleSpreadsheetsConnectionID.ValueInt64Pointer(),
+		SpreadsheetsURL:                model.NewNullableString(inputOption.SpreadsheetsURL()),
+		WorksheetTitle:                 model.NewNullableString(inputOption.WorksheetTitle),
+		StartRow:                       model.NewNullableInt64(inputOption.StartRow),
+		StartColumn:                    model.NewNullableString(inputOption.StartColumn),
+		DefaultTimeZone:                model.NewNullableString(inputOption.DefaultTimeZone),
+		NullString:                     model.NewNullableString(inputOption.NullString),
+		GoogleSpreadsheetsConnectionID: model.NewNullableInt64(inputOption.GoogleSpreadsheetsConnectionID),
 		InputOptionColumns:             inputOptionColumns,
 		CustomVariableSettings:         model.ToCustomVariableSettingInputs(inputOption.CustomVariableSettings),
 	}
