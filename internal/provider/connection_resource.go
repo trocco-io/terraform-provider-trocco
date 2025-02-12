@@ -78,7 +78,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		ProjectID:             m.ProjectID.ValueStringPointer(),
 		ServiceAccountJSONKey: m.ServiceAccountJSONKey.ValueStringPointer(),
 
-		// Snowflake Fields,
+		// Snowflake Fields
 		Host:       m.Host.ValueStringPointer(),
 		UserName:   m.UserName.ValueStringPointer(),
 		Role:       m.Role.ValueStringPointer(),
@@ -90,7 +90,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		ApplicationName:     m.ApplicationName.ValueStringPointer(),
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 
-		// MySQL　Fields
+		// MySQL Fields
 		Port: model.NewNullableInt64(m.Port),
 
 		// S3 Fields
@@ -164,7 +164,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		ApplicationName:     m.ApplicationName.ValueStringPointer(),
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 
-		// MySQL　Fields
+		// MySQL Fields
 		Port: model.NewNullableInt64(m.Port),
 
 		// S3 Fields

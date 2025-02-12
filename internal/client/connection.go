@@ -40,10 +40,10 @@ type Connection struct {
 	// MySQL Fields
 	Port                 *int64  `json:"port"`
 	SSL                  *bool   `json:"ssl"`
+	GatewayEnabled       *bool   `json:"gateway_enabled"`
 	SSLCA                *string `json:"ssl_ca"`
 	SSLCert              *string `json:"ssl_cert"`
 	SSLKey               *string `json:"ssl_key"`
-	GatewayEnabled       *bool   `json:"gateway_enabled"`
 	GatewayHost          *string `json:"gateway_host"`
 	GatewayPort          *int64  `json:"gateway_port"`
 	GatewayUserName      *string `json:"gateway_user_name"`
@@ -91,7 +91,7 @@ type CreateConnectionInput struct {
 	ApplicationName     *string `json:"application_name,omitempty"`
 	ServiceAccountEmail *string `json:"service_account_email,omitempty"`
 
-	// MySQLFields
+	// MySQL Fields
 	Port                 *parameter.NullableInt64 `json:"port,omitempty"`
 	SSL                  *parameter.NullableBool  `json:"ssl,omitempty"`
 	SSLCA                *string                  `json:"ssl_ca,omitempty"`
@@ -134,14 +134,14 @@ type UpdateConnectionInput struct {
 	UserName   *string `json:"user_name,omitempty"`
 	Role       *string `json:"role,omitempty"`
 	AuthMethod *string `json:"auth_method,omitempty"`
-	PrivateKey *string `json:"private_key,omitempty"`
 	Password   *string `json:"password,omitempty"`
+	PrivateKey *string `json:"private_key,omitempty"`
 
 	// GCS Fields
 	ApplicationName     *string `json:"application_name,omitempty"`
 	ServiceAccountEmail *string `json:"service_account_email,omitempty"`
 
-	// MySQLFields
+	// MySQL Fields
 	Port                 *parameter.NullableInt64 `json:"port,omitempty"`
 	SSL                  *parameter.NullableBool  `json:"ssl,omitempty"`
 	SSLCA                *string                  `json:"ssl_ca,omitempty"`

@@ -230,3 +230,4 @@ Import is supported using the following syntax:
 ```shell
 terraform import trocco_connection.example <connection_type>,<id>
 ```
+
