@@ -32,7 +32,7 @@ resource "trocco_connection" "bigquery" {
 }
 ```
 
-### Snowflake
+### Snowflake 
 
 ```terraform
 resource "trocco_connection" "snowflake" {
@@ -150,7 +150,7 @@ resource "trocco_connection" "s3_with_assume_role" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `mysql`, `s3`, or `postgresql`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `mysql`, or `s3`.
 - `name` (String) The name of the connection.
 
 ### Optional
@@ -161,20 +161,20 @@ resource "trocco_connection" "s3_with_assume_role" {
 - `aws_auth_type` (String) S3: The authentication type for the S3 connection. It must be one of `iam_user` or `assume_role`.
 - `aws_iam_user` (Attributes) S3: IAM User configuration. (see [below for nested schema](#nestedatt--aws_iam_user))
 - `description` (String) The description of the connection.
+- `driver` (String) PostgreSQL: The name of a PostgreSQL driver.
 - `gateway` (Attributes) MySQL, PostgreSQL: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
 - `host` (String) Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.
 - `password` (String, Sensitive) Snowflake, PostgreSQL: The password for the (Snowflake, PostgreSQL) user.
-- `port` (Number) MySQL, PostgreSQL: The port of the database server (MySQL or PostgreSQL).
+- `port` (Number) MySQL, PostgreSQL: The port of the (MySQL, PostgreSQL) server.
 - `private_key` (String, Sensitive) Snowflake: A private key for the Snowflake user.
 - `project_id` (String) BigQuery, GCS: A GCP project ID.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
-- `role` (String) Snowflake: A role attached to the Snowflake user.
+- `role` (String) Snowflake, PostgreSQL: A role attached to the (Snowflake, PostgreSQL) user.
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery: A GCP service account key.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
+- `ssl_mode` (String) PostgreSQL: SSL connection mode.
 - `user_name` (String) Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.
-- `ssl_mode` (String) PostgreSQL: Defines the SSL connection mode. Possible values are `required`, `verify-ca`.
-- `driver` (String) PostgreSQL: The name of a PostgreSQL driver. Possible values are `postgresql_42_5_1`, `postgresql_9_4_1205_jdbc41`.
 
 ### Read-Only
 
@@ -218,7 +218,7 @@ Optional:
 
 - `ca` (String, Sensitive) MySQL, PostgreSQL: CA certificate
 - `cert` (String, Sensitive) MySQL, PostgreSQL: Certificate (CRT file)
-- `key` (String, Sensitive) MySQL: Key (KEY file)
+- `key` (String, Sensitive) MySQL, PostgreSQL: Key (KEY file)
 
 
 
