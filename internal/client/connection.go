@@ -26,13 +26,11 @@ type Connection struct {
 	GoogleOAuth2CredentialID *int64  `json:"google_oauth2_credential_id"`
 
 	// Snowflake Fields
+	Host                  *string `json:"host"`
+	UserName              *string `json:"user_name"`
 	Role                  *string `json:"role"`
 	AuthMethod            *string `json:"auth_method"`
 	AWSPrivateLinkEnabled *bool   `json:"aws_privatelink_enabled"`
-
-	// Snowflake, PostgreSQL Fields
-	Host                  *string `json:"host"`
-	UserName              *string `json:"user_name"`
 	Driver                *string `json:"driver"`
 
 	// GCS Fields
@@ -40,18 +38,11 @@ type Connection struct {
 	ServiceAccountEmail *string `json:"service_account_email"`
 
 	// MySQL Fields
-	SSLCert              *string `json:"ssl_cert"`
-	SSLKey               *string `json:"ssl_key"`
-
-	// PostgreSQL Fields
-	SSLClientCert        *string `json:"ssl_client_cert"`
-	SSLClientKey         *string `json:"ssl_clinet_key"`
-	SSLMode              *string `json:"ssl_mode"`
-
-	// MySQL, PostgreSQL Fields
 	Port                 *int64  `json:"port"`
 	SSL                  *bool   `json:"ssl"`
 	SSLCA                *string `json:"ssl_ca"`
+	SSLCert              *string `json:"ssl_cert"`
+	SSLKey               *string `json:"ssl_key"`
 	GatewayEnabled       *bool   `json:"gateway_enabled"`
 	GatewayHost          *string `json:"gateway_host"`
 	GatewayPort          *int64  `json:"gateway_port"`
@@ -66,6 +57,11 @@ type Connection struct {
 	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
 	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
 	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
+
+	// PostgreSQL Fields
+	SSLClientCa  *string `json:"ssl_client_ca"`
+	SSLClientKey *string `json:"ssl_clinet_key"`
+	SSLMode      *string `json:"ssl_mode"`
 }
 
 type GetConnectionsInput struct {
@@ -84,13 +80,11 @@ type CreateConnectionInput struct {
 	ServiceAccountJSONKey *string `json:"service_account_json_key,omitempty"`
 
 	// Snowflake Fields
+	Host       *string `json:"host,omitempty"`
+	UserName   *string `json:"user_name,omitempty"`
 	Role       *string `json:"role,omitempty"`
 	AuthMethod *string `json:"auth_method,omitempty"`
 	PrivateKey *string `json:"private_key,omitempty"`
-
-	// Snowflake, PostgreSQL Fields
-	Host       *string `json:"host,omitempty"`
-	UserName   *string `json:"user_name,omitempty"`
 	Password   *string `json:"password,omitempty"`
 
 	// GCS Fields
@@ -98,19 +92,11 @@ type CreateConnectionInput struct {
 	ServiceAccountEmail *string `json:"service_account_email,omitempty"`
 
 	// MySQLFields
-	SSLCert              *string                  `json:"ssl_cert,omitempty"`
-	SSLKey               *string                  `json:"ssl_key,omitempty"`
-
-	// PostgreSQL Fields
-	SSLClientCert          *string                  `json:"ssl_client_cert,omitempty"`
-	SSLClientKey           *string                  `json:"ssl_client_key,omitempty"`
-	SSLMode                *string                  `json:"ssl_mode,omitempty"`
-	Driver                 *string                  `json:"driver,omitempty"`
-
-	// MySQL, PostgreSQL Fields
 	Port                 *parameter.NullableInt64 `json:"port,omitempty"`
 	SSL                  *parameter.NullableBool  `json:"ssl,omitempty"`
 	SSLCA                *string                  `json:"ssl_ca,omitempty"`
+	SSLCert              *string                  `json:"ssl_cert,omitempty"`
+	SSLKey               *string                  `json:"ssl_key,omitempty"`
 	GatewayEnabled       *parameter.NullableBool  `json:"gateway_enabled,omitempty"`
 	GatewayHost          *string                  `json:"gateway_host,omitempty"`
 	GatewayPort          *parameter.NullableInt64 `json:"gateway_port,omitempty"`
@@ -125,6 +111,12 @@ type CreateConnectionInput struct {
 	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
 	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
 	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
+
+	// PostgreSQL Fields
+	SSLClientCa  *string `json:"ssl_client_ca,omitempty"`
+	SSLClientKey *string `json:"ssl_client_key,omitempty"`
+	SSLMode      *string `json:"ssl_mode,omitempty"`
+	Driver       *string `json:"driver,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -138,13 +130,11 @@ type UpdateConnectionInput struct {
 	ServiceAccountJSONKey *string `json:"service_account_json_key"`
 
 	// Snowflake Fields
+	Host       *string `json:"host,omitempty"`
+	UserName   *string `json:"user_name,omitempty"`
 	Role       *string `json:"role,omitempty"`
 	AuthMethod *string `json:"auth_method,omitempty"`
 	PrivateKey *string `json:"private_key,omitempty"`
-
-	// Snowflake, PostgreSQL Fields
-	Host       *string `json:"host,omitempty"`
-	UserName   *string `json:"user_name,omitempty"`
 	Password   *string `json:"password,omitempty"`
 
 	// GCS Fields
@@ -152,19 +142,11 @@ type UpdateConnectionInput struct {
 	ServiceAccountEmail *string `json:"service_account_email,omitempty"`
 
 	// MySQLFields
-	SSLCert              *string                  `json:"ssl_cert,omitempty"`
-	SSLKey               *string                  `json:"ssl_key,omitempty"`
-
-	// PostgreSQL Fields
-	SSLClientCert          *string                  `json:"ssl_client_cert,omitempty"`
-	SSLClientKey           *string                  `json:"ssl_client_key,omitempty"`
-	SSLMode                *string                  `json:"ssl_mode,omitempty"`
-	Driver                 *string                  `json:"driver,omitempty"`
-
-	// MySQL, PostgreSQL Fields
 	Port                 *parameter.NullableInt64 `json:"port,omitempty"`
 	SSL                  *parameter.NullableBool  `json:"ssl,omitempty"`
 	SSLCA                *string                  `json:"ssl_ca,omitempty"`
+	SSLCert              *string                  `json:"ssl_cert,omitempty"`
+	SSLKey               *string                  `json:"ssl_key,omitempty"`
 	GatewayEnabled       *parameter.NullableBool  `json:"gateway_enabled,omitempty"`
 	GatewayHost          *string                  `json:"gateway_host,omitempty"`
 	GatewayPort          *parameter.NullableInt64 `json:"gateway_port,omitempty"`
@@ -179,6 +161,12 @@ type UpdateConnectionInput struct {
 	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
 	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
 	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
+
+	// PostgreSQL Fields
+	SSLClientCa  *string `json:"ssl_client_ca,omitempty"`
+	SSLClientKey *string `json:"ssl_client_key,omitempty"`
+	SSLMode      *string `json:"ssl_mode,omitempty"`
+	Driver       *string `json:"driver,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {

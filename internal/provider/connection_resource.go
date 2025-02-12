@@ -58,8 +58,8 @@ type connectionResourceModel struct {
 	Gateway *connection.Gateway `tfsdk:"gateway"`
 
 	// PostgreSQL Fields
-	SSLMode *connection.SSLMode `tfsdk:"ssl_mode"`
-	Driver  *connection.Driver  `tfsdk:"driver"`
+	SSLMode types.String `tfsdk:"ssl_mode"`
+	Driver  types.String `tfsdk:"driver"`
 
 	// S3 Fields
 	AWSAuthType   types.String              `tfsdk:"aws_auth_type"`
@@ -79,28 +79,26 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		ServiceAccountJSONKey: m.ServiceAccountJSONKey.ValueStringPointer(),
 
 		// Snowflake Fields,
-		Role:       m.Role.ValueStringPointer(),
-		AuthMethod: m.AuthMethod.ValueStringPointer(),
-		PrivateKey: m.PrivateKey.ValueStringPointer(),
-
-		// Snowflake, PostgreSQL Fields
 		Host:       m.Host.ValueStringPointer(),
 		UserName:   m.UserName.ValueStringPointer(),
+		Role:       m.Role.ValueStringPointer(),
+		AuthMethod: m.AuthMethod.ValueStringPointer(),
 		Password:   m.Password.ValueStringPointer(),
+		PrivateKey: m.PrivateKey.ValueStringPointer(),
 
 		// GCS Fields
 		ApplicationName:     m.ApplicationName.ValueStringPointer(),
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 
-		// MySQL, PostgreSQL Fields
+		// MySQL　Fields
 		Port: model.NewNullableInt64(m.Port),
-
-		// PostgreSQL Fields
-		SSLMode: model.NewNullableInt64(m.SSLMode),
-		Driver: model.NewNullableInt64(m.SSLMode),
 
 		// S3 Fields
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
+
+		// PostgreSQL Fields
+		SSLMode: m.SSLMode.ValueStringPointer(),
+		Driver:  m.Driver.ValueStringPointer(),
 	}
 
 	// SSL Fields
@@ -108,7 +106,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.SSL = model.NewNullableBool(types.BoolValue(true))
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
-		input.SSLClientCA = m.SSL.CA.ValueStringPointer()
+		input.SSLClientCa = m.SSL.CA.ValueStringPointer()
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
 		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 	} else {
@@ -155,28 +153,26 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		ServiceAccountJSONKey: m.ServiceAccountJSONKey.ValueStringPointer(),
 
 		// Snowflake Fields
-		Role:       m.Role.ValueStringPointer(),
-		AuthMethod: m.AuthMethod.ValueStringPointer(),
-		PrivateKey: m.PrivateKey.ValueStringPointer(),
-
-		// Snowflake, PostgreSQL Fields
 		Host:       m.Host.ValueStringPointer(),
 		UserName:   m.UserName.ValueStringPointer(),
+		Role:       m.Role.ValueStringPointer(),
+		AuthMethod: m.AuthMethod.ValueStringPointer(),
 		Password:   m.Password.ValueStringPointer(),
+		PrivateKey: m.PrivateKey.ValueStringPointer(),
 
 		// GCS Fields
 		ApplicationName:     m.ApplicationName.ValueStringPointer(),
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 
-		// MySQL, PostgreSQL Fields
+		// MySQL　Fields
 		Port: model.NewNullableInt64(m.Port),
-
-		// PostgreSQL Fields
-		SSLMode: model.NewNullableInt64(m.SSLMode),
-		Driver: model.NewNullableInt64(m.SSLMode),
 
 		// S3 Fields
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
+
+		// PostgreSQL Fields
+		SSLMode: m.SSLMode.ValueStringPointer(),
+		Driver:  m.Driver.ValueStringPointer(),
 	}
 
 	// SSL Fields
@@ -185,7 +181,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
-		input.SSLClientCA = m.SSL.CA.ValueStringPointer()
+		input.SSLClientCa = m.SSL.CA.ValueStringPointer()
 		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 	} else {
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
@@ -325,23 +321,6 @@ func (r *connectionResource) Schema(
 			},
 
 			// Snowflake Fields
-			"auth_method": schema.StringAttribute{
-				MarkdownDescription: "Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`.",
-				Optional:            true,
-				Validators: []validator.String{
-					stringvalidator.OneOf("key_pair", "user_password"),
-				},
-			},
-			"private_key": schema.StringAttribute{
-				MarkdownDescription: "Snowflake: A private key for the Snowflake user.",
-				Optional:            true,
-				Sensitive:           true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
-				},
-			},
-
-			// Snowflake, PostgreSQL Fields
 			"host": schema.StringAttribute{
 				MarkdownDescription: "Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.",
 				Optional:            true,
@@ -363,8 +342,23 @@ func (r *connectionResource) Schema(
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
+			"auth_method": schema.StringAttribute{
+				MarkdownDescription: "Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("key_pair", "user_password"),
+				},
+			},
 			"password": schema.StringAttribute{
 				MarkdownDescription: "Snowflake, PostgreSQL: The password for the (Snowflake, PostgreSQL) user.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"private_key": schema.StringAttribute{
+				MarkdownDescription: "Snowflake: A private key for the Snowflake user.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -389,7 +383,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 
-			// MySQL, PostgreSQL Fields
+			// MySQL Fields
 			"port": schema.Int64Attribute{
 				MarkdownDescription: "MySQL, PostgreSQL: The port of the (MySQL, PostgreSQL) server.",
 				Optional:            true,
@@ -617,6 +611,10 @@ func (r *connectionResource) Create(
 		AWSAuthType:   types.StringPointerValue(conn.AWSAuthType),
 		AWSIAMUser:    plan.AWSIAMUser,
 		AWSAssumeRole: connection.NewAWSAssumeRole(conn),
+
+		// PostgreSQL Fields
+		SSLMode: types.StringPointerValue(conn.SSLMode),
+		Driver:  types.StringPointerValue(conn.Driver),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -698,6 +696,10 @@ func (r *connectionResource) Update(
 		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
 		AWSIAMUser:    plan.AWSIAMUser,
 		AWSAssumeRole: plan.AWSAssumeRole,
+
+		// PostgreSQL Fields
+		SSLMode: types.StringPointerValue(connection.SSLMode),
+		Driver:  types.StringPointerValue(connection.Driver),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -758,6 +760,10 @@ func (r *connectionResource) Read(
 		AWSAuthType:   types.StringPointerValue(conn.AWSAuthType),
 		AWSIAMUser:    state.AWSIAMUser,
 		AWSAssumeRole: connection.NewAWSAssumeRole(conn),
+
+		// PostgreSQL Fields
+		SSLMode: types.StringPointerValue(conn.SSLMode),
+		Driver:  types.StringPointerValue(conn.Driver),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -885,6 +891,16 @@ func (r *connectionResource) ValidateConfig(
 				validateRequiredString(plan.AWSAssumeRole.AccountID, "aws_assume_role.account_id", "S3", resp)
 				validateRequiredString(plan.AWSAssumeRole.AccountRoleName, "aws_assume_role.account_role_name", "S3", resp)
 			}
+		}
+	case "postgresql":
+		validateRequiredString(plan.Host, "host", "PostgreSQL", resp)
+		validateRequiredInt(plan.Port, "port", "PostgreSQL", resp)
+		validateRequiredString(plan.UserName, "user_name", "PostgreSQL", resp)
+		validateRequiredString(plan.Password, "password", "PostgreSQL", resp)
+		if plan.Gateway != nil {
+			validateRequiredString(plan.Gateway.Host, "gateway.host", "PostgreSQL", resp)
+			validateRequiredInt(plan.Gateway.Port, "gateway.port", "PostgreSQL", resp)
+			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "PostgreSQL", resp)
 		}
 	}
 }

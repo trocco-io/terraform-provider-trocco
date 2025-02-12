@@ -173,8 +173,8 @@ resource "trocco_connection" "s3_with_assume_role" {
 - `service_account_json_key` (String, Sensitive) BigQuery: A GCP service account key.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
 - `user_name` (String) Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.
-- `ssl_mode` (String) PostgreSQL: Defines the SSL connection mode. Possible values are `required`, `verify-ca`, or `nil`.
-- `driver` (String) PostgreSQL: The name of a PostgreSQL driver. Possible values are `postgresql_42_5_1`, `postgresql_9_4_1205_jdbc41`, or `nil`.
+- `ssl_mode` (String) PostgreSQL: Defines the SSL connection mode. Possible values are `required`, `verify-ca`.
+- `driver` (String) PostgreSQL: The name of a PostgreSQL driver. Possible values are `postgresql_42_5_1`, `postgresql_9_4_1205_jdbc41`.
 
 ### Read-Only
 
