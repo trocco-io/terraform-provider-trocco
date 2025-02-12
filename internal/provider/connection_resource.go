@@ -57,6 +57,10 @@ type connectionResourceModel struct {
 	SSL     *connection.SSL     `tfsdk:"ssl"`
 	Gateway *connection.Gateway `tfsdk:"gateway"`
 
+	// PostgreSQL Fields
+	SSLMode *connection.SSLMode `tfsdk:"ssl_mode"`
+	Driver  *connection.Driver  `tfsdk:"driver"`
+
 	// S3 Fields
 	AWSAuthType   types.String              `tfsdk:"aws_auth_type"`
 	AWSIAMUser    *connection.AWSIAMUser    `tfsdk:"aws_iam_user"`
@@ -74,20 +78,26 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		ProjectID:             m.ProjectID.ValueStringPointer(),
 		ServiceAccountJSONKey: m.ServiceAccountJSONKey.ValueStringPointer(),
 
-		// Snowflake Fields
-		Host:       m.Host.ValueStringPointer(),
-		UserName:   m.UserName.ValueStringPointer(),
+		// Snowflake Fields,
 		Role:       m.Role.ValueStringPointer(),
 		AuthMethod: m.AuthMethod.ValueStringPointer(),
-		Password:   m.Password.ValueStringPointer(),
 		PrivateKey: m.PrivateKey.ValueStringPointer(),
+
+		// Snowflake, PostgreSQL Fields
+		Host:       m.Host.ValueStringPointer(),
+		UserName:   m.UserName.ValueStringPointer(),
+		Password:   m.Password.ValueStringPointer(),
 
 		// GCS Fields
 		ApplicationName:     m.ApplicationName.ValueStringPointer(),
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 
-		// MySQL Fields
+		// MySQL, PostgreSQL Fields
 		Port: model.NewNullableInt64(m.Port),
+
+		// PostgreSQL Fields
+		SSLMode: model.NewNullableInt64(m.SSLMode),
+		Driver: model.NewNullableInt64(m.SSLMode),
 
 		// S3 Fields
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
@@ -98,7 +108,9 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.SSL = model.NewNullableBool(types.BoolValue(true))
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
+		input.SSLClientCA = m.SSL.CA.ValueStringPointer()
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
+		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 	} else {
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
@@ -143,19 +155,25 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		ServiceAccountJSONKey: m.ServiceAccountJSONKey.ValueStringPointer(),
 
 		// Snowflake Fields
-		Host:       m.Host.ValueStringPointer(),
-		UserName:   m.UserName.ValueStringPointer(),
 		Role:       m.Role.ValueStringPointer(),
 		AuthMethod: m.AuthMethod.ValueStringPointer(),
-		Password:   m.Password.ValueStringPointer(),
 		PrivateKey: m.PrivateKey.ValueStringPointer(),
+
+		// Snowflake, PostgreSQL Fields
+		Host:       m.Host.ValueStringPointer(),
+		UserName:   m.UserName.ValueStringPointer(),
+		Password:   m.Password.ValueStringPointer(),
 
 		// GCS Fields
 		ApplicationName:     m.ApplicationName.ValueStringPointer(),
 		ServiceAccountEmail: m.ServiceAccountEmail.ValueStringPointer(),
 
-		// MySQL Fields
+		// MySQL, PostgreSQL Fields
 		Port: model.NewNullableInt64(m.Port),
+
+		// PostgreSQL Fields
+		SSLMode: model.NewNullableInt64(m.SSLMode),
+		Driver: model.NewNullableInt64(m.SSLMode),
 
 		// S3 Fields
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
@@ -167,6 +185,8 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
+		input.SSLClientCA = m.SSL.CA.ValueStringPointer()
+		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 	} else {
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
@@ -252,7 +272,7 @@ func (r *connectionResource) Schema(
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "mysql", "s3"),
+					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "mysql", "s3", "postgresql"),
 				},
 			},
 			"id": schema.Int64Attribute{
@@ -305,27 +325,6 @@ func (r *connectionResource) Schema(
 			},
 
 			// Snowflake Fields
-			"host": schema.StringAttribute{
-				MarkdownDescription: "Snowflake: The host of a Snowflake account.",
-				Optional:            true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
-				},
-			},
-			"user_name": schema.StringAttribute{
-				MarkdownDescription: "Snowflake: The name of a Snowflake user.",
-				Optional:            true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
-				},
-			},
-			"role": schema.StringAttribute{
-				MarkdownDescription: "Snowflake: A role attached to the Snowflake user.",
-				Optional:            true,
-				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
-				},
-			},
 			"auth_method": schema.StringAttribute{
 				MarkdownDescription: "Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`.",
 				Optional:            true,
@@ -333,16 +332,39 @@ func (r *connectionResource) Schema(
 					stringvalidator.OneOf("key_pair", "user_password"),
 				},
 			},
-			"password": schema.StringAttribute{
-				MarkdownDescription: "Snowflake: The password for the Snowflake user.",
+			"private_key": schema.StringAttribute{
+				MarkdownDescription: "Snowflake: A private key for the Snowflake user.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
-			"private_key": schema.StringAttribute{
-				MarkdownDescription: "Snowflake: A private key for the Snowflake user.",
+
+			// Snowflake, PostgreSQL Fields
+			"host": schema.StringAttribute{
+				MarkdownDescription: "Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"user_name": schema.StringAttribute{
+				MarkdownDescription: "Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"role": schema.StringAttribute{
+				MarkdownDescription: "Snowflake, PostgreSQL: A role attached to the (Snowflake, PostgreSQL) user.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"password": schema.StringAttribute{
+				MarkdownDescription: "Snowflake, PostgreSQL: The password for the (Snowflake, PostgreSQL) user.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -367,21 +389,22 @@ func (r *connectionResource) Schema(
 				},
 			},
 
-			// MySQL Fields
+			// MySQL, PostgreSQL Fields
 			"port": schema.Int64Attribute{
-				MarkdownDescription: "MySQL: The port of the MySQL server.",
+				MarkdownDescription: "MySQL, PostgreSQL: The port of the (MySQL, PostgreSQL) server.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 					int64validator.AtMost(65535),
 				},
 			},
+
 			"ssl": schema.SingleNestedAttribute{
-				MarkdownDescription: "MySQL: SSL configuration.",
+				MarkdownDescription: "MySQL, PostgreSQL: SSL configuration.",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"ca": schema.StringAttribute{
-						MarkdownDescription: "MySQL: CA certificate",
+						MarkdownDescription: "MySQL, PostgreSQL: CA certificate",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -391,7 +414,7 @@ func (r *connectionResource) Schema(
 						Default:  stringdefault.StaticString(""),
 					},
 					"cert": schema.StringAttribute{
-						MarkdownDescription: "MySQL: Certificate (CRT file)",
+						MarkdownDescription: "MySQL, PostgreSQL: Certificate (CRT file)",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -401,7 +424,7 @@ func (r *connectionResource) Schema(
 						Default:  stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
-						MarkdownDescription: "MySQL: Key (KEY file)",
+						MarkdownDescription: "MySQL, PostgreSQL: Key (KEY file)",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -413,11 +436,11 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"gateway": schema.SingleNestedAttribute{
-				MarkdownDescription: "MySQL: Whether to connect via SSH",
+				MarkdownDescription: "MySQL, PostgreSQL: Whether to connect via SSH",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"host": schema.StringAttribute{
-						MarkdownDescription: "MySQL: SSH Host",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Host",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -425,7 +448,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"port": schema.Int64Attribute{
-						MarkdownDescription: "MySQL: SSH Port",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Port",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.Int64{
@@ -434,7 +457,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"user_name": schema.StringAttribute{
-						MarkdownDescription: "MySQL: SSH User",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH User",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -442,21 +465,21 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"password": schema.StringAttribute{
-						MarkdownDescription: "MySQL: SSH Password",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Password",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
-						MarkdownDescription: "MySQL: SSH Private Key",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Private Key",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key_passphrase": schema.StringAttribute{
-						MarkdownDescription: "MySQL: SSH Private Key Passphrase",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Private Key Passphrase",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
@@ -512,6 +535,22 @@ func (r *connectionResource) Schema(
 							stringvalidator.UTF8LengthAtLeast(1),
 						},
 					},
+				},
+			},
+
+			// PostgreSQL Fields
+			"ssl_mode": schema.StringAttribute{
+				MarkdownDescription: "PostgreSQL: SSL connection mode.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("required", "verify-ca"),
+				},
+			},
+			"driver": schema.StringAttribute{
+				MarkdownDescription: "PostgreSQL: The name of a PostgreSQL driver.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("postgresql_42_5_1", "postgresql_9_4_1205_jdbc41"),
 				},
 			},
 		},
