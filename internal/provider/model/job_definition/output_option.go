@@ -22,16 +22,16 @@ func NewOutputOption(outputOption client.OutputOption) *OutputOption {
 
 func (o OutputOption) ToInput() client.OutputOptionInput {
 	return client.OutputOptionInput{
-		BigQueryOutputOption:  model.WrapObject(o.BigQueryOutputOption.ToInput()),
-		SnowflakeOutputOption: model.WrapObject(o.SnowflakeOutputOption.ToInput()),
+		BigQueryOutputOption:           model.WrapObject(o.BigQueryOutputOption.ToInput()),
+		SnowflakeOutputOption:          model.WrapObject(o.SnowflakeOutputOption.ToInput()),
 		GoogleSpreadsheetsOutputOption: model.WrapObject(o.GoogleSpreadsheetsOutputOption.ToInput()),
 	}
 }
 
 func (o OutputOption) ToUpdateInput() *client.UpdateOutputOptionInput {
 	return &client.UpdateOutputOptionInput{
-		BigQueryOutputOption:  model.WrapObject(o.BigQueryOutputOption.ToUpdateInput()),
-		SnowflakeOutputOption: model.WrapObject(o.SnowflakeOutputOption.ToUpdateInput()),
+		BigQueryOutputOption:           model.WrapObject(o.BigQueryOutputOption.ToUpdateInput()),
+		SnowflakeOutputOption:          model.WrapObject(o.SnowflakeOutputOption.ToUpdateInput()),
 		GoogleSpreadsheetsOutputOption: model.WrapObject(o.GoogleSpreadsheetsOutputOption.ToUpdateInput()),
 	}
 }
