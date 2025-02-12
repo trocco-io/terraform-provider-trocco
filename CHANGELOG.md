@@ -1,3 +1,8 @@
+## 0.7.0
+FEATURES:
+- Added `snowflake` input in `trocco_job_definition` resource.
+- Added `s3` type for `trocco_connection` resource.
+
 ## 0.6.0
 FEATURES:
 - Added `resource_group` resource.
