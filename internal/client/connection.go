@@ -47,7 +47,6 @@ type Connection struct {
 	SSLClientCert        *string `json:"ssl_client_cert"`
 	SSLClientKey         *string `json:"ssl_clinet_key"`
 	SSLMode              *string `json:"ssl_mode"`
-	Driver               *string `json:"driver"`
 
 	// MySQL, PostgreSQL Fields
 	Port                 *int64  `json:"port"`
