@@ -32,7 +32,7 @@ resource "trocco_connection" "bigquery" {
 }
 ```
 
-### Snowflake 
+### Snowflake
 
 ```terraform
 resource "trocco_connection" "snowflake" {
@@ -150,7 +150,7 @@ resource "trocco_connection" "s3_with_assume_role" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `mysql`, or `s3`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `mysql`, `s3`, or `postgresql`.
 - `name` (String) The name of the connection.
 
 ### Optional
@@ -161,18 +161,20 @@ resource "trocco_connection" "s3_with_assume_role" {
 - `aws_auth_type` (String) S3: The authentication type for the S3 connection. It must be one of `iam_user` or `assume_role`.
 - `aws_iam_user` (Attributes) S3: IAM User configuration. (see [below for nested schema](#nestedatt--aws_iam_user))
 - `description` (String) The description of the connection.
-- `gateway` (Attributes) MySQL: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
-- `host` (String) Snowflake: The host of a Snowflake account.
-- `password` (String, Sensitive) Snowflake: The password for the Snowflake user.
-- `port` (Number) MySQL: The port of the MySQL server.
+- `gateway` (Attributes) MySQL, PostgreSQL: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
+- `host` (String) Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.
+- `password` (String, Sensitive) Snowflake, PostgreSQL: The password for the (Snowflake, PostgreSQL) user.
+- `port` (Number) MySQL, PostgreSQL: The port of the database server (MySQL or PostgreSQL).
 - `private_key` (String, Sensitive) Snowflake: A private key for the Snowflake user.
 - `project_id` (String) BigQuery, GCS: A GCP project ID.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
 - `role` (String) Snowflake: A role attached to the Snowflake user.
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery: A GCP service account key.
-- `ssl` (Attributes) MySQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
-- `user_name` (String) Snowflake: The name of a Snowflake user.
+- `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
+- `user_name` (String) Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.
+- `ssl_mode` (String) PostgreSQL: Defines the SSL connection mode. Possible values are `required`, `verify-ca`, or `nil`.
+- `driver` (String) PostgreSQL: The name of a PostgreSQL driver. Possible values are `postgresql_42_5_1`, `postgresql_9_4_1205_jdbc41`, or `nil`.
 
 ### Read-Only
 
@@ -201,12 +203,12 @@ Optional:
 
 Optional:
 
-- `host` (String, Sensitive) MySQL: SSH Host
-- `key` (String, Sensitive) MySQL: SSH Private Key
-- `key_passphrase` (String, Sensitive) MySQL: SSH Private Key Passphrase
-- `password` (String, Sensitive) MySQL: SSH Password
-- `port` (Number, Sensitive) MySQL: SSH Port
-- `user_name` (String, Sensitive) MySQL: SSH User
+- `host` (String, Sensitive) MySQL, PostgreSQL: SSH Host
+- `key` (String, Sensitive) MySQL, PostgreSQL: SSH Private Key
+- `key_passphrase` (String, Sensitive) MySQL, PostgreSQL: SSH Private Key Passphrase
+- `password` (String, Sensitive) MySQL, PostgreSQL: SSH Password
+- `port` (Number, Sensitive) MySQL, PostgreSQL: SSH Port
+- `user_name` (String, Sensitive) MySQL, PostgreSQL: SSH User
 
 
 <a id="nestedatt--ssl"></a>
@@ -214,8 +216,8 @@ Optional:
 
 Optional:
 
-- `ca` (String, Sensitive) MySQL: CA certificate
-- `cert` (String, Sensitive) MySQL: Certificate (CRT file)
+- `ca` (String, Sensitive) MySQL, PostgreSQL: CA certificate
+- `cert` (String, Sensitive) MySQL, PostgreSQL: Certificate (CRT file)
 - `key` (String, Sensitive) MySQL: Key (KEY file)
 
 
@@ -227,5 +229,3 @@ Import is supported using the following syntax:
 
 ```shell
 terraform import trocco_connection.example <connection_type>,<id>
-```
-
