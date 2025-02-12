@@ -38,18 +38,9 @@ type Connection struct {
 	ServiceAccountEmail *string `json:"service_account_email"`
 
 	// MySQL Fields
-	Port                 *int64  `json:"port"`
-	SSL                  *bool   `json:"ssl"`
-	GatewayEnabled       *bool   `json:"gateway_enabled"`
-	SSLCA                *string `json:"ssl_ca"`
-	SSLCert              *string `json:"ssl_cert"`
-	SSLKey               *string `json:"ssl_key"`
-	GatewayHost          *string `json:"gateway_host"`
-	GatewayPort          *int64  `json:"gateway_port"`
-	GatewayUserName      *string `json:"gateway_user_name"`
-	GatewayPassword      *string `json:"gateway_password"`
-	GatewayKey           *string `json:"gateway_key"`
-	GatewayKeyPassphrase *string `json:"gateway_key_passphrase"`
+	Port           *int64 `json:"port"`
+	SSL            *bool  `json:"ssl"`
+	GatewayEnabled *bool  `json:"gateway_enabled"`
 
 	// S3 Fields
 	AWSAuthType            *string `json:"aws_auth_type,omitempty"`
@@ -59,9 +50,7 @@ type Connection struct {
 	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
 
 	// PostgreSQL Fields
-	SSLClientCa  *string `json:"ssl_client_ca"`
-	SSLClientKey *string `json:"ssl_clinet_key"`
-	SSLMode      *string `json:"ssl_mode"`
+	SSLMode *string `json:"ssl_mode"`
 }
 
 type GetConnectionsInput struct {
