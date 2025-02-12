@@ -84,8 +84,8 @@ type CreateConnectionInput struct {
 	UserName   *string `json:"user_name,omitempty"`
 	Role       *string `json:"role,omitempty"`
 	AuthMethod *string `json:"auth_method,omitempty"`
-	PrivateKey *string `json:"private_key,omitempty"`
 	Password   *string `json:"password,omitempty"`
+	PrivateKey *string `json:"private_key,omitempty"`
 
 	// GCS Fields
 	ApplicationName     *string `json:"application_name,omitempty"`
