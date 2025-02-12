@@ -61,6 +61,10 @@ type connectionResourceModel struct {
 	AWSAuthType   types.String              `tfsdk:"aws_auth_type"`
 	AWSIAMUser    *connection.AWSIAMUser    `tfsdk:"aws_iam_user"`
 	AWSAssumeRole *connection.AWSAssumeRole `tfsdk:"aws_assume_role"`
+
+	// Salesforce Fields
+	SecurityToken types.String `tfsdk:"security_token"`
+	AuthEndPoint  types.String `tfsdk:"auth_end_point"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -91,6 +95,10 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 
 		// S3 Fields
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
+
+		// Salesforce Fields
+		SecurityToken: m.SecurityToken.ValueStringPointer(),
+		AuthEndPoint:  m.AuthEndPoint.ValueStringPointer(),
 	}
 
 	// SSL Fields
@@ -159,6 +167,10 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 
 		// S3 Fields
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
+
+		// Salesforce Fields
+		SecurityToken: m.SecurityToken.ValueStringPointer(),
+		AuthEndPoint:  m.AuthEndPoint.ValueStringPointer(),
 	}
 
 	// SSL Fields
@@ -246,13 +258,13 @@ func (r *connectionResource) Schema(
 		Attributes: map[string]schema.Attribute{
 			// Common Fields
 			"connection_type": schema.StringAttribute{
-				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `mysql`, or `s3`.",
+				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `mysql`, `s3` or `salesforce`.",
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "mysql", "s3"),
+					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "mysql", "s3", "salesforce"),
 				},
 			},
 			"id": schema.Int64Attribute{
@@ -514,6 +526,24 @@ func (r *connectionResource) Schema(
 					},
 				},
 			},
+			// Salesforce Fields
+			"security_token": schema.StringAttribute{
+				MarkdownDescription: "Salesforce: Security token.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"auth_end_point": schema.StringAttribute{
+				MarkdownDescription: "Salesforce: Authentication endpoint.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+				Computed: true,
+				Default:  stringdefault.StaticString("https://login.salesforce.com/services/Soap/u/"),
+			},
 		},
 	}
 }
@@ -578,6 +608,10 @@ func (r *connectionResource) Create(
 		AWSAuthType:   types.StringPointerValue(conn.AWSAuthType),
 		AWSIAMUser:    plan.AWSIAMUser,
 		AWSAssumeRole: connection.NewAWSAssumeRole(conn),
+
+		// Salesforce Fields
+		SecurityToken: plan.SecurityToken,
+		AuthEndPoint:  types.StringPointerValue(conn.AuthEndPoint),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -659,6 +693,10 @@ func (r *connectionResource) Update(
 		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
 		AWSIAMUser:    plan.AWSIAMUser,
 		AWSAssumeRole: plan.AWSAssumeRole,
+
+		// Salesforce Fields
+		SecurityToken: plan.SecurityToken,
+		AuthEndPoint:  types.StringPointerValue(connection.AuthEndPoint),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -719,6 +757,10 @@ func (r *connectionResource) Read(
 		AWSAuthType:   types.StringPointerValue(conn.AWSAuthType),
 		AWSIAMUser:    state.AWSIAMUser,
 		AWSAssumeRole: connection.NewAWSAssumeRole(conn),
+
+		// Salesforce Fields
+		SecurityToken: state.SecurityToken,
+		AuthEndPoint:  types.StringPointerValue(conn.AuthEndPoint),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -847,6 +889,18 @@ func (r *connectionResource) ValidateConfig(
 				validateRequiredString(plan.AWSAssumeRole.AccountRoleName, "aws_assume_role.account_role_name", "S3", resp)
 			}
 		}
+	case "salesforce":
+		validateRequiredString(plan.AuthMethod, "auth_method", "Salesforce", resp)
+		if plan.AuthMethod.ValueString() != "user_password" {
+			resp.Diagnostics.AddError(
+				"auth_method",
+				"auth_method must be 'user_password' for Salesforce connection.",
+			)
+		}
+		validateRequiredString(plan.UserName, "user_name", "Salesforce", resp)
+		validateRequiredString(plan.Password, "password", "Salesforce", resp)
+		validateRequiredString(plan.SecurityToken, "security_token", "Salesforce", resp)
+		validateRequiredString(plan.AuthEndPoint, "auth_end_point", "Salesforce", resp)
 	}
 }
 
