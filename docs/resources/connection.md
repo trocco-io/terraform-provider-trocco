@@ -169,7 +169,7 @@ resource "trocco_connection" "s3_with_assume_role" {
 - `private_key` (String, Sensitive) Snowflake: A private key for the Snowflake user.
 - `project_id` (String) BigQuery, GCS: A GCP project ID.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
-- `role` (String) Snowflake, PostgreSQL: A role attached to the (Snowflake, PostgreSQL) user.
+- `role` (String) Snowflake: A role attached to the Snowflake user.
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery: A GCP service account key.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
