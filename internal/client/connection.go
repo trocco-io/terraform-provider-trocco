@@ -50,7 +50,7 @@ type Connection struct {
 	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
 
 	// PostgreSQL Fields
-	SSLMode *string `json:"ssl_mode"`
+	SSLMode *string `json:"ssl_mode,omitempty"`
 }
 
 type GetConnectionsInput struct {

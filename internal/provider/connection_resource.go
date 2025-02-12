@@ -336,7 +336,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"role": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL: A role attached to the (Snowflake, PostgreSQL) user.",
+				MarkdownDescription: "Snowflake: A role attached to the Snowflake user.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
