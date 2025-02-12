@@ -31,6 +31,11 @@ func NewGoogleSpreadsheetsOutputOption(googleSpreadsheetsOutputOption *output_op
 
 	return &GoogleSpreadsheetsOutputOption{
 		GoogleSpreadsheetsConnectionId:      types.Int64Value(googleSpreadsheetsOutputOption.GoogleSpreadsheetsConnectionId),
+		SpreadsheetsID:                      types.StringValue(googleSpreadsheetsOutputOption.SpreadsheetsID),
+		WorksheetTitle:                      types.StringValue(googleSpreadsheetsOutputOption.WorksheetTitle),
+		Timezone:                            types.StringValue(googleSpreadsheetsOutputOption.Timezone),
+		ValueInputOption:                    types.StringValue(googleSpreadsheetsOutputOption.ValueInputOption),
+		Mode:                                types.StringValue(googleSpreadsheetsOutputOption.Mode),
 		GoogleSpreadsheetsOutputOptionSorts: newGoogleSpreadsheetsOutputOptionSorts(googleSpreadsheetsOutputOption.GoogleSpreadsheetsOutputOptionSorts),
 		CustomVariableSettings:              model.NewCustomVariableSettings(googleSpreadsheetsOutputOption.CustomVariableSettings),
 	}
