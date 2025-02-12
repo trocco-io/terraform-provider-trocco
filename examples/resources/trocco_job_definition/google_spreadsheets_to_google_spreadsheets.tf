@@ -28,8 +28,8 @@ resource "trocco_job_definition" "sheets_to_sheets_example" {
       json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
-      name                         = "mydate"
-      src                          = "mydate"
+      name                         = "created_at"
+      src                          = "created_at"
       type                         = "timestamp"
     },
   ]
@@ -37,12 +37,13 @@ resource "trocco_job_definition" "sheets_to_sheets_example" {
   input_option = {
     google_spreadsheets_input_option = {
       google_spreadsheets_connection_id = 1
-      spreadsheets_url                  = "https://docs.google.com/spreadsheets/d/{YOUR_SHEETS_ID}/edit?gid=0"
-      worksheet_title                   = "inputdata"
-      start_row                         = 2
-      start_column                      = "A"
-      default_time_zone                 = "Asia/Tokyo"
-      null_string                       = ""
+      # ex "https://docs.google.com/spreadsheets/d/YOUR_SHEETS_ID/edit?gid=0"
+      spreadsheets_id   = "YOUR_SHEETS_ID"
+      worksheet_title   = "inputdata"
+      start_row         = 2
+      start_column      = "A"
+      default_time_zone = "Asia/Tokyo"
+      null_string       = ""
       input_option_columns = [
         {
           name = "id"
@@ -53,7 +54,7 @@ resource "trocco_job_definition" "sheets_to_sheets_example" {
           type = "string"
         },
         {
-          name   = "mydate"
+          name   = "created_at"
           type   = "timestamp"
           format = "%Y-%m-%d %H:%M:%S"
         },
@@ -64,14 +65,14 @@ resource "trocco_job_definition" "sheets_to_sheets_example" {
   output_option = {
     google_spreadsheets_output_option = {
       google_spreadsheets_connection_id = 1
-      spreadsheets_id                   = "{YOUR_SHEETS_ID}"
+      spreadsheets_id                   = "YOUR_SHEETS_ID"
       worksheet_title                   = "outputdata"
       timezone                          = "Asia/Tokyo"
       value_input_option                = "USER_ENTERED"
       mode                              = "replace"
       google_spreadsheets_output_option_sorts = [
         {
-          column = "mydate"
+          column = "created_at"
           order  = "ASCENDING"
         }
       ]
