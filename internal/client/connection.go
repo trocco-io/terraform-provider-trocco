@@ -51,6 +51,9 @@ type Connection struct {
 
 	// Salesforce Fields
 	AuthEndPoint *string `json:"auth_end_point"`
+
+	// PostgreSQL Fields
+	SSLMode *string `json:"ssl_mode,omitempty"`
 }
 
 type GetConnectionsInput struct {
@@ -104,6 +107,12 @@ type CreateConnectionInput struct {
 	// Salesforce Fields
 	SecurityToken *string `json:"security_token,omitempty"`
 	AuthEndPoint  *string `json:"auth_end_point,omitempty"`
+
+	// PostgreSQL Fields
+	SSLClientCa  *string `json:"ssl_client_ca,omitempty"`
+	SSLClientKey *string `json:"ssl_client_key,omitempty"`
+	SSLMode      *string `json:"ssl_mode,omitempty"`
+	Driver       *string `json:"driver,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -152,6 +161,12 @@ type UpdateConnectionInput struct {
 	// Salesforce Fields
 	SecurityToken *string `json:"security_token,omitempty"`
 	AuthEndPoint  *string `json:"auth_end_point,omitempty"`
+
+	// PostgreSQL Fields
+	SSLClientCa  *string `json:"ssl_client_ca,omitempty"`
+	SSLClientKey *string `json:"ssl_client_key,omitempty"`
+	SSLMode      *string `json:"ssl_mode,omitempty"`
+	Driver       *string `json:"driver,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {

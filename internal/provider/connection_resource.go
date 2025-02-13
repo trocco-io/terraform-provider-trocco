@@ -57,6 +57,10 @@ type connectionResourceModel struct {
 	SSL     *connection.SSL     `tfsdk:"ssl"`
 	Gateway *connection.Gateway `tfsdk:"gateway"`
 
+	// PostgreSQL Fields
+	SSLMode types.String `tfsdk:"ssl_mode"`
+	Driver  types.String `tfsdk:"driver"`
+
 	// S3 Fields
 	AWSAuthType   types.String              `tfsdk:"aws_auth_type"`
 	AWSIAMUser    *connection.AWSIAMUser    `tfsdk:"aws_iam_user"`
@@ -99,6 +103,10 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		// Salesforce Fields
 		SecurityToken: m.SecurityToken.ValueStringPointer(),
 		AuthEndPoint:  m.AuthEndPoint.ValueStringPointer(),
+
+		// PostgreSQL Fields
+		SSLMode: m.SSLMode.ValueStringPointer(),
+		Driver:  m.Driver.ValueStringPointer(),
 	}
 
 	// SSL Fields
@@ -106,7 +114,9 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.SSL = model.NewNullableBool(types.BoolValue(true))
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
+		input.SSLClientCa = m.SSL.Cert.ValueStringPointer()
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
+		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 	} else {
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
@@ -171,6 +181,10 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		// Salesforce Fields
 		SecurityToken: m.SecurityToken.ValueStringPointer(),
 		AuthEndPoint:  m.AuthEndPoint.ValueStringPointer(),
+
+		// PostgreSQL Fields
+		SSLMode: m.SSLMode.ValueStringPointer(),
+		Driver:  m.Driver.ValueStringPointer(),
 	}
 
 	// SSL Fields
@@ -179,6 +193,8 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
+		input.SSLClientCa = m.SSL.Cert.ValueStringPointer()
+		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 	} else {
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
@@ -264,7 +280,7 @@ func (r *connectionResource) Schema(
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "mysql", "s3", "salesforce"),
+					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "mysql", "s3", "salesforce", "postgresql"),
 				},
 			},
 			"id": schema.Int64Attribute{
@@ -318,14 +334,14 @@ func (r *connectionResource) Schema(
 
 			// Snowflake Fields
 			"host": schema.StringAttribute{
-				MarkdownDescription: "Snowflake: The host of a Snowflake account.",
+				MarkdownDescription: "Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
 			"user_name": schema.StringAttribute{
-				MarkdownDescription: "Snowflake: The name of a Snowflake user.",
+				MarkdownDescription: "Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
@@ -346,7 +362,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"password": schema.StringAttribute{
-				MarkdownDescription: "Snowflake: The password for the Snowflake user.",
+				MarkdownDescription: "Snowflake, PostgreSQL: The password for the (Snowflake, PostgreSQL) user.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -381,19 +397,20 @@ func (r *connectionResource) Schema(
 
 			// MySQL Fields
 			"port": schema.Int64Attribute{
-				MarkdownDescription: "MySQL: The port of the MySQL server.",
+				MarkdownDescription: "MySQL, PostgreSQL: The port of the (MySQL, PostgreSQL) server.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 					int64validator.AtMost(65535),
 				},
 			},
+
 			"ssl": schema.SingleNestedAttribute{
-				MarkdownDescription: "MySQL: SSL configuration.",
+				MarkdownDescription: "MySQL, PostgreSQL: SSL configuration.",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"ca": schema.StringAttribute{
-						MarkdownDescription: "MySQL: CA certificate",
+						MarkdownDescription: "MySQL, PostgreSQL: CA certificate",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -403,7 +420,7 @@ func (r *connectionResource) Schema(
 						Default:  stringdefault.StaticString(""),
 					},
 					"cert": schema.StringAttribute{
-						MarkdownDescription: "MySQL: Certificate (CRT file)",
+						MarkdownDescription: "MySQL, PostgreSQL: Certificate (CRT file)",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -413,7 +430,7 @@ func (r *connectionResource) Schema(
 						Default:  stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
-						MarkdownDescription: "MySQL: Key (KEY file)",
+						MarkdownDescription: "MySQL, PostgreSQL: Key (KEY file)",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -425,11 +442,11 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"gateway": schema.SingleNestedAttribute{
-				MarkdownDescription: "MySQL: Whether to connect via SSH",
+				MarkdownDescription: "MySQL, PostgreSQL: Whether to connect via SSH",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"host": schema.StringAttribute{
-						MarkdownDescription: "MySQL: SSH Host",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Host",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -437,7 +454,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"port": schema.Int64Attribute{
-						MarkdownDescription: "MySQL: SSH Port",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Port",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.Int64{
@@ -446,7 +463,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"user_name": schema.StringAttribute{
-						MarkdownDescription: "MySQL: SSH User",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH User",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -454,21 +471,21 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"password": schema.StringAttribute{
-						MarkdownDescription: "MySQL: SSH Password",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Password",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
-						MarkdownDescription: "MySQL: SSH Private Key",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Private Key",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key_passphrase": schema.StringAttribute{
-						MarkdownDescription: "MySQL: SSH Private Key Passphrase",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Private Key Passphrase",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
@@ -526,6 +543,7 @@ func (r *connectionResource) Schema(
 					},
 				},
 			},
+
 			// Salesforce Fields
 			"security_token": schema.StringAttribute{
 				MarkdownDescription: "Salesforce: Security token.",
@@ -543,6 +561,25 @@ func (r *connectionResource) Schema(
 				},
 				Computed: true,
 				Default:  stringdefault.StaticString("https://login.salesforce.com/services/Soap/u/"),
+			},
+
+			// PostgreSQL Fields
+			"ssl_mode": schema.StringAttribute{
+				MarkdownDescription: "PostgreSQL: SSL connection mode.",
+				Optional:            true,
+				Computed:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("require", "verify-ca"),
+				},
+			},
+			"driver": schema.StringAttribute{
+				MarkdownDescription: "PostgreSQL: The name of a PostgreSQL driver.",
+				Optional:            true,
+				Computed:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("postgresql_42_5_1", "postgresql_9_4_1205_jdbc41"),
+				},
+				Default: stringdefault.StaticString("postgresql_42_5_1"),
 			},
 		},
 	}
@@ -612,6 +649,10 @@ func (r *connectionResource) Create(
 		// Salesforce Fields
 		SecurityToken: plan.SecurityToken,
 		AuthEndPoint:  types.StringPointerValue(conn.AuthEndPoint),
+
+		// PostgreSQL Fields
+		SSLMode: types.StringPointerValue(conn.SSLMode),
+		Driver:  types.StringPointerValue(conn.Driver),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -697,6 +738,10 @@ func (r *connectionResource) Update(
 		// Salesforce Fields
 		SecurityToken: plan.SecurityToken,
 		AuthEndPoint:  types.StringPointerValue(connection.AuthEndPoint),
+
+		// PostgreSQL Fields
+		SSLMode: types.StringPointerValue(connection.SSLMode),
+		Driver:  types.StringPointerValue(connection.Driver),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -761,6 +806,10 @@ func (r *connectionResource) Read(
 		// Salesforce Fields
 		SecurityToken: state.SecurityToken,
 		AuthEndPoint:  types.StringPointerValue(conn.AuthEndPoint),
+
+		// PostgreSQL Fields
+		SSLMode: types.StringPointerValue(conn.SSLMode),
+		Driver:  types.StringPointerValue(conn.Driver),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -901,6 +950,16 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredString(plan.Password, "password", "Salesforce", resp)
 		validateRequiredString(plan.SecurityToken, "security_token", "Salesforce", resp)
 		validateRequiredString(plan.AuthEndPoint, "auth_end_point", "Salesforce", resp)
+	case "postgresql":
+		validateRequiredString(plan.Host, "host", "PostgreSQL", resp)
+		validateRequiredInt(plan.Port, "port", "PostgreSQL", resp)
+		validateRequiredString(plan.UserName, "user_name", "PostgreSQL", resp)
+		validateRequiredString(plan.Password, "password", "PostgreSQL", resp)
+		if plan.Gateway != nil {
+			validateRequiredString(plan.Gateway.Host, "gateway.host", "PostgreSQL", resp)
+			validateRequiredInt(plan.Gateway.Port, "gateway.port", "PostgreSQL", resp)
+			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "PostgreSQL", resp)
+		}
 	}
 }
 
