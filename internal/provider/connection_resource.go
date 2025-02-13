@@ -106,7 +106,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.SSL = model.NewNullableBool(types.BoolValue(true))
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
-		input.SSLClientCa = m.SSL.CA.ValueStringPointer()
+		input.SSLClientCa = m.SSL.Cert.ValueStringPointer()
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
 		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 	} else {
@@ -181,7 +181,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
-		input.SSLClientCa = m.SSL.CA.ValueStringPointer()
+		input.SSLClientCa = m.SSL.Cert.ValueStringPointer()
 		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 	} else {
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
