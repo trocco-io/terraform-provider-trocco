@@ -537,7 +537,7 @@ func (r *connectionResource) Schema(
 				MarkdownDescription: "PostgreSQL: SSL connection mode.",
 				Optional:            true,
 				Validators: []validator.String{
-					stringvalidator.OneOf("required", "verify-ca"),
+					stringvalidator.OneOf("require", "verify-ca"),
 				},
 			},
 			"driver": schema.StringAttribute{
