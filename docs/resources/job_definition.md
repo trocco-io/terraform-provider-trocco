@@ -1376,6 +1376,7 @@ Optional:
 Optional:
 
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
+- `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
 
 <a id="nestedatt--output_option--bigquery_output_option"></a>
@@ -1441,6 +1442,23 @@ Optional:
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
 
+
+
+<a id="nestedatt--output_option--salesforce_output_option"></a>
+### Nested Schema for `output_option.salesforce_output_option`
+
+Required:
+
+- `object` (String) Object name
+- `salesforce_connection_id` (Number) Salesforce connection ID. Only connection information with authentication method user_password can be selected.
+
+Optional:
+
+- `action_type` (String) Transfer mode
+- `api_version` (String) Api version
+- `ignore_nulls` (Boolean) Update processing when NULL is included. Even if true, the record update process itself is performed.
+- `throw_if_failed` (Boolean) Status of records that could not be sent
+- `upsert_key` (String) Upsert key. If action_type is 'upsert', this field can be set.
 
 
 <a id="nestedatt--output_option--snowflake_output_option"></a>
