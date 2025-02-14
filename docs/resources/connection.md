@@ -32,7 +32,7 @@ resource "trocco_connection" "bigquery" {
 }
 ```
 
-### Snowflake 
+### Snowflake
 
 ```terraform
 resource "trocco_connection" "snowflake" {
@@ -161,18 +161,20 @@ resource "trocco_connection" "s3_with_assume_role" {
 - `aws_auth_type` (String) S3: The authentication type for the S3 connection. It must be one of `iam_user` or `assume_role`.
 - `aws_iam_user` (Attributes) S3: IAM User configuration. (see [below for nested schema](#nestedatt--aws_iam_user))
 - `description` (String) The description of the connection.
-- `gateway` (Attributes) MySQL: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
-- `host` (String) Snowflake: The host of a Snowflake account.
-- `password` (String, Sensitive) Snowflake: The password for the Snowflake user.
-- `port` (Number) MySQL: The port of the MySQL server.
+- `driver` (String) PostgreSQL: The name of a PostgreSQL driver.
+- `gateway` (Attributes) MySQL, PostgreSQL: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
+- `host` (String) Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.
+- `password` (String, Sensitive) Snowflake, PostgreSQL: The password for the (Snowflake, PostgreSQL) user.
+- `port` (Number) MySQL, PostgreSQL: The port of the (MySQL, PostgreSQL) server.
 - `private_key` (String, Sensitive) Snowflake: A private key for the Snowflake user.
 - `project_id` (String) BigQuery, GCS: A GCP project ID.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
 - `role` (String) Snowflake: A role attached to the Snowflake user.
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery: A GCP service account key.
-- `ssl` (Attributes) MySQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
-- `user_name` (String) Snowflake: The name of a Snowflake user.
+- `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
+- `ssl_mode` (String) PostgreSQL: SSL connection mode.
+- `user_name` (String) Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.
 
 ### Read-Only
 
@@ -201,12 +203,12 @@ Optional:
 
 Optional:
 
-- `host` (String, Sensitive) MySQL: SSH Host
-- `key` (String, Sensitive) MySQL: SSH Private Key
-- `key_passphrase` (String, Sensitive) MySQL: SSH Private Key Passphrase
-- `password` (String, Sensitive) MySQL: SSH Password
-- `port` (Number, Sensitive) MySQL: SSH Port
-- `user_name` (String, Sensitive) MySQL: SSH User
+- `host` (String, Sensitive) MySQL, PostgreSQL: SSH Host
+- `key` (String, Sensitive) MySQL, PostgreSQL: SSH Private Key
+- `key_passphrase` (String, Sensitive) MySQL, PostgreSQL: SSH Private Key Passphrase
+- `password` (String, Sensitive) MySQL, PostgreSQL: SSH Password
+- `port` (Number, Sensitive) MySQL, PostgreSQL: SSH Port
+- `user_name` (String, Sensitive) MySQL, PostgreSQL: SSH User
 
 
 <a id="nestedatt--ssl"></a>
@@ -214,12 +216,58 @@ Optional:
 
 Optional:
 
-- `ca` (String, Sensitive) MySQL: CA certificate
-- `cert` (String, Sensitive) MySQL: Certificate (CRT file)
-- `key` (String, Sensitive) MySQL: Key (KEY file)
+- `ca` (String, Sensitive) MySQL, PostgreSQL: CA certificate
+- `cert` (String, Sensitive) MySQL, PostgreSQL: Certificate (CRT file)
+- `key` (String, Sensitive) MySQL, PostgreSQL: Key (KEY file)
 
 
 
+
+### PostgreSQL
+
+```terraform
+resource "trocco_connection" "postgresql" {
+  connection_type = "postgresql"
+  name            = "PostgreSQL Example"
+  description     = "This is a PostgreSQL connection example"
+  host            = "db.example.com"
+  port            = 5432
+  user_name       = "root"
+  password        = "password"
+  ssl_mode        = "require"
+  driver          = "postgresql_42_5_1"
+  ssl = {
+    ca   = <<-SSL_CA
+      -----BEGIN PRIVATE KEY-----
+      ...SSL CA...
+      -----END PRIVATE KEY-----
+    SSL_CA
+    cert = <<-SSL_CERT
+      -----BEGIN CERTIFICATE-----
+      ...SSL CRT...
+      -----END CERTIFICATE-----
+    SSL_CERT
+    key  = <<-SSL_KEY
+      -----BEGIN PRIVATE KEY-----
+      ...SSL KEY...
+      -----END PRIVATE KEY-----
+    SSL_KEY
+  }
+  gateway = {
+    host           = "gateway.example.com"
+    port           = 1234
+    user_name      = "gateway-joe"
+    password       = "gateway-joepass"
+    key            = <<-GATEWAY_KEY
+      -----BEGIN PRIVATE KEY-----
+      ... GATEWAY KEY...
+      -----END PRIVATE KEY-----
+    GATEWAY_KEY
+    key_passphrase = "sample_passphrase"
+  }
+  resource_group_id = 1
+}
+```
 
 ## Import
 
