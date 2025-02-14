@@ -559,15 +559,12 @@ func (r *connectionResource) Schema(
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
-				Computed: true,
-				Default:  stringdefault.StaticString("https://login.salesforce.com/services/Soap/u/"),
 			},
 
 			// PostgreSQL Fields
 			"ssl_mode": schema.StringAttribute{
 				MarkdownDescription: "PostgreSQL: SSL connection mode.",
 				Optional:            true,
-				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("require", "verify-ca"),
 				},
@@ -575,11 +572,9 @@ func (r *connectionResource) Schema(
 			"driver": schema.StringAttribute{
 				MarkdownDescription: "PostgreSQL: The name of a PostgreSQL driver.",
 				Optional:            true,
-				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("postgresql_42_5_1", "postgresql_9_4_1205_jdbc41"),
 				},
-				Default: stringdefault.StaticString("postgresql_42_5_1"),
 			},
 		},
 	}
