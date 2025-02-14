@@ -97,7 +97,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
 
 		// PostgreSQL Fields
-		SSLMode: m.SSLMode.ValueStringPointer(),
+		SSLMode: model.NewNullableString(m.SSLMode),
 		Driver:  m.Driver.ValueStringPointer(),
 	}
 
@@ -171,7 +171,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
 
 		// PostgreSQL Fields
-		SSLMode: m.SSLMode.ValueStringPointer(),
+		SSLMode: model.NewNullableString(m.SSLMode),
 		Driver:  m.Driver.ValueStringPointer(),
 	}
 
@@ -897,6 +897,7 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredInt(plan.Port, "port", "PostgreSQL", resp)
 		validateRequiredString(plan.UserName, "user_name", "PostgreSQL", resp)
 		validateRequiredString(plan.Password, "password", "PostgreSQL", resp)
+		validateRequiredString(plan.SSLMode, "ssl_mode", "PostgreSQL", resp)
 		validateRequiredString(plan.Driver, "driver", "PostgreSQL", resp)
 		if plan.Gateway != nil {
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "PostgreSQL", resp)
