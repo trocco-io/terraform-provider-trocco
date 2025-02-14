@@ -536,7 +536,6 @@ func (r *connectionResource) Schema(
 			"ssl_mode": schema.StringAttribute{
 				MarkdownDescription: "PostgreSQL: SSL connection mode.",
 				Optional:            true,
-				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("require", "verify-ca"),
 				},
@@ -544,11 +543,9 @@ func (r *connectionResource) Schema(
 			"driver": schema.StringAttribute{
 				MarkdownDescription: "PostgreSQL: The name of a PostgreSQL driver.",
 				Optional:            true,
-				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("postgresql_42_5_1", "postgresql_9_4_1205_jdbc41"),
 				},
-				Default: stringdefault.StaticString("postgresql_42_5_1"),
 			},
 		},
 	}
@@ -900,6 +897,7 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredInt(plan.Port, "port", "PostgreSQL", resp)
 		validateRequiredString(plan.UserName, "user_name", "PostgreSQL", resp)
 		validateRequiredString(plan.Password, "password", "PostgreSQL", resp)
+		validateRequiredString(plan.Driver, "driver", "PostgreSQL", resp)
 		if plan.Gateway != nil {
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "PostgreSQL", resp)
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "PostgreSQL", resp)
