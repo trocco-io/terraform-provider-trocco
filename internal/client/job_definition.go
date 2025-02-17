@@ -87,21 +87,24 @@ type UpdateJobDefinitionInput struct {
 }
 
 type InputOption struct {
-	MySQLInputOption     *inputOptionEntitites.MySQLInputOption     `json:"mysql_input_option"`
-	GcsInputOption       *inputOptionEntitites.GcsInputOption       `json:"gcs_input_option"`
-	SnowflakeInputOption *inputOptionEntitites.SnowflakeInputOption `json:"snowflake_input_option"`
+	MySQLInputOption      *inputOptionEntitites.MySQLInputOption      `json:"mysql_input_option"`
+	GcsInputOption        *inputOptionEntitites.GcsInputOption        `json:"gcs_input_option"`
+	SnowflakeInputOption  *inputOptionEntitites.SnowflakeInputOption  `json:"snowflake_input_option"`
+	SalesforceInputOption *inputOptionEntitites.SalesforceInputOption `json:"salesforce_input_option"`
 }
 
 type InputOptionInput struct {
-	MySQLInputOption     *parameter.NullableObject[input_options.MySQLInputOptionInput]     `json:"mysql_input_option,omitempty"`
-	GcsInputOption       *parameter.NullableObject[input_options.GcsInputOptionInput]       `json:"gcs_input_option,omitempty"`
-	SnowflakeInputOption *parameter.NullableObject[input_options.SnowflakeInputOptionInput] `json:"snowflake_input_option,omitempty"`
+	MySQLInputOption      *parameter.NullableObject[input_options.MySQLInputOptionInput]      `json:"mysql_input_option,omitempty"`
+	GcsInputOption        *parameter.NullableObject[input_options.GcsInputOptionInput]        `json:"gcs_input_option,omitempty"`
+	SnowflakeInputOption  *parameter.NullableObject[input_options.SnowflakeInputOptionInput]  `json:"snowflake_input_option,omitempty"`
+	SalesforceInputOption *parameter.NullableObject[input_options.SalesforceInputOptionInput] `json:"salesforce_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
-	MySQLInputOption     *parameter.NullableObject[input_options.UpdateMySQLInputOptionInput]     `json:"mysql_input_option,omitempty"`
-	GcsInputOption       *parameter.NullableObject[input_options.UpdateGcsInputOptionInput]       `json:"gcs_input_option,omitempty"`
-	SnowflakeInputOption *parameter.NullableObject[input_options.UpdateSnowflakeInputOptionInput] `json:"snowflake_input_option,omitempty"`
+	MySQLInputOption      *parameter.NullableObject[input_options.UpdateMySQLInputOptionInput]      `json:"mysql_input_option,omitempty"`
+	GcsInputOption        *parameter.NullableObject[input_options.UpdateGcsInputOptionInput]        `json:"gcs_input_option,omitempty"`
+	SnowflakeInputOption  *parameter.NullableObject[input_options.UpdateSnowflakeInputOptionInput]  `json:"snowflake_input_option,omitempty"`
+	SalesforceInputOption *parameter.NullableObject[input_options.UpdateSalesforceInputOptionInput] `json:"salesforce_input_option,omitempty"`
 }
 
 type OutputOption struct {
