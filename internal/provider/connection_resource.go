@@ -898,9 +898,6 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "PostgreSQL", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "PostgreSQL", resp)
 		}
-		if plan.SSL != nil {
-			validateRequiredString(plan.SSL.SSLMode, "ssl_mode", "PostgreSQL", resp)
-		}
 	}
 }
 
