@@ -1020,6 +1020,7 @@ Optional:
 
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
+- `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
 
 <a id="nestedatt--input_option--gcs_input_option"></a>
@@ -1305,6 +1306,56 @@ Required:
 
 <a id="nestedatt--input_option--mysql_input_option--custom_variable_settings"></a>
 ### Nested Schema for `input_option.mysql_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--input_option--salesforce_input_option"></a>
+### Nested Schema for `input_option.salesforce_input_option`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--salesforce_input_option--columns))
+- `object` (String) Object name
+- `salesforce_connection_id` (Number) Id of Salesforce connection
+
+Optional:
+
+- `api_version` (String) Api version
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--salesforce_input_option--custom_variable_settings))
+- `include_deleted_or_archived_records` (Boolean) Extraction of deleted and archived records
+- `is_convert_type_custom_columns` (Boolean) false: transfer based on custom columns. true: Change custom columns to STRING type. If you select change custom columns to STRING type, all custom columns except BOOLEAN type will be changed to STRING type.
+- `object_acquisition_method` (String) Object Acquisition Method. If 'all_columns' is specified, soql is automatically completed.
+- `soql` (String) SOQL. If object_acquisition_method is 'soql', this field is required.
+
+<a id="nestedatt--input_option--salesforce_input_option--columns"></a>
+### Nested Schema for `input_option.salesforce_input_option.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type.
+
+Optional:
+
+- `format` (String) format
+
+
+<a id="nestedatt--input_option--salesforce_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.salesforce_input_option.custom_variable_settings`
 
 Required:
 
