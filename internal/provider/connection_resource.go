@@ -57,10 +57,6 @@ type connectionResourceModel struct {
 	SSL     *connection.SSL     `tfsdk:"ssl"`
 	Gateway *connection.Gateway `tfsdk:"gateway"`
 
-	// PostgreSQL Fields
-	SSLMode types.String `tfsdk:"ssl_mode"`
-	Driver  types.String `tfsdk:"driver"`
-
 	// S3 Fields
 	AWSAuthType   types.String              `tfsdk:"aws_auth_type"`
 	AWSIAMUser    *connection.AWSIAMUser    `tfsdk:"aws_iam_user"`
@@ -95,10 +91,6 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 
 		// S3 Fields
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
-
-		// PostgreSQL Fields
-		SSLMode: m.SSLMode.ValueStringPointer(),
-		Driver:  m.Driver.ValueStringPointer(),
 	}
 
 	// SSL Fields
@@ -106,9 +98,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.SSL = model.NewNullableBool(types.BoolValue(true))
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
-		input.SSLClientCa = m.SSL.Cert.ValueStringPointer()
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
-		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 	} else {
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
@@ -169,10 +159,6 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 
 		// S3 Fields
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
-
-		// PostgreSQL Fields
-		SSLMode: m.SSLMode.ValueStringPointer(),
-		Driver:  m.Driver.ValueStringPointer(),
 	}
 
 	// SSL Fields
@@ -181,8 +167,6 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
-		input.SSLClientCa = m.SSL.Cert.ValueStringPointer()
-		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 	} else {
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
@@ -268,7 +252,7 @@ func (r *connectionResource) Schema(
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "mysql", "s3", "postgresql"),
+					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "mysql", "s3"),
 				},
 			},
 			"id": schema.Int64Attribute{
@@ -322,14 +306,14 @@ func (r *connectionResource) Schema(
 
 			// Snowflake Fields
 			"host": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.",
+				MarkdownDescription: "Snowflake: The host of a Snowflake account.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
 			"user_name": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.",
+				MarkdownDescription: "Snowflake: The name of a Snowflake user.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
@@ -350,7 +334,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"password": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL: The password for the (Snowflake, PostgreSQL) user.",
+				MarkdownDescription: "Snowflake: The password for the Snowflake user.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -385,20 +369,19 @@ func (r *connectionResource) Schema(
 
 			// MySQL Fields
 			"port": schema.Int64Attribute{
-				MarkdownDescription: "MySQL, PostgreSQL: The port of the (MySQL, PostgreSQL) server.",
+				MarkdownDescription: "MySQL: The port of the MySQL server.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 					int64validator.AtMost(65535),
 				},
 			},
-
 			"ssl": schema.SingleNestedAttribute{
-				MarkdownDescription: "MySQL, PostgreSQL: SSL configuration.",
+				MarkdownDescription: "MySQL: SSL configuration.",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"ca": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: CA certificate",
+						MarkdownDescription: "MySQL: CA certificate",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -408,7 +391,7 @@ func (r *connectionResource) Schema(
 						Default:  stringdefault.StaticString(""),
 					},
 					"cert": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: Certificate (CRT file)",
+						MarkdownDescription: "MySQL: Certificate (CRT file)",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -418,7 +401,7 @@ func (r *connectionResource) Schema(
 						Default:  stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: Key (KEY file)",
+						MarkdownDescription: "MySQL: Key (KEY file)",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -430,11 +413,11 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"gateway": schema.SingleNestedAttribute{
-				MarkdownDescription: "MySQL, PostgreSQL: Whether to connect via SSH",
+				MarkdownDescription: "MySQL: Whether to connect via SSH",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"host": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Host",
+						MarkdownDescription: "MySQL: SSH Host",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -442,7 +425,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"port": schema.Int64Attribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Port",
+						MarkdownDescription: "MySQL: SSH Port",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.Int64{
@@ -451,7 +434,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"user_name": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH User",
+						MarkdownDescription: "MySQL: SSH User",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -459,21 +442,21 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"password": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Password",
+						MarkdownDescription: "MySQL: SSH Password",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Private Key",
+						MarkdownDescription: "MySQL: SSH Private Key",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key_passphrase": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Private Key Passphrase",
+						MarkdownDescription: "MySQL: SSH Private Key Passphrase",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
@@ -530,25 +513,6 @@ func (r *connectionResource) Schema(
 						},
 					},
 				},
-			},
-
-			// PostgreSQL Fields
-			"ssl_mode": schema.StringAttribute{
-				MarkdownDescription: "PostgreSQL: SSL connection mode.",
-				Optional:            true,
-				Computed:            true,
-				Validators: []validator.String{
-					stringvalidator.OneOf("require", "verify-ca"),
-				},
-			},
-			"driver": schema.StringAttribute{
-				MarkdownDescription: "PostgreSQL: The name of a PostgreSQL driver.",
-				Optional:            true,
-				Computed:            true,
-				Validators: []validator.String{
-					stringvalidator.OneOf("postgresql_42_5_1", "postgresql_9_4_1205_jdbc41"),
-				},
-				Default: stringdefault.StaticString("postgresql_42_5_1"),
 			},
 		},
 	}
@@ -614,10 +578,6 @@ func (r *connectionResource) Create(
 		AWSAuthType:   types.StringPointerValue(conn.AWSAuthType),
 		AWSIAMUser:    plan.AWSIAMUser,
 		AWSAssumeRole: connection.NewAWSAssumeRole(conn),
-
-		// PostgreSQL Fields
-		SSLMode: types.StringPointerValue(conn.SSLMode),
-		Driver:  types.StringPointerValue(conn.Driver),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -699,10 +659,6 @@ func (r *connectionResource) Update(
 		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
 		AWSIAMUser:    plan.AWSIAMUser,
 		AWSAssumeRole: plan.AWSAssumeRole,
-
-		// PostgreSQL Fields
-		SSLMode: types.StringPointerValue(connection.SSLMode),
-		Driver:  types.StringPointerValue(connection.Driver),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -763,10 +719,6 @@ func (r *connectionResource) Read(
 		AWSAuthType:   types.StringPointerValue(conn.AWSAuthType),
 		AWSIAMUser:    state.AWSIAMUser,
 		AWSAssumeRole: connection.NewAWSAssumeRole(conn),
-
-		// PostgreSQL Fields
-		SSLMode: types.StringPointerValue(conn.SSLMode),
-		Driver:  types.StringPointerValue(conn.Driver),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -894,16 +846,6 @@ func (r *connectionResource) ValidateConfig(
 				validateRequiredString(plan.AWSAssumeRole.AccountID, "aws_assume_role.account_id", "S3", resp)
 				validateRequiredString(plan.AWSAssumeRole.AccountRoleName, "aws_assume_role.account_role_name", "S3", resp)
 			}
-		}
-	case "postgresql":
-		validateRequiredString(plan.Host, "host", "PostgreSQL", resp)
-		validateRequiredInt(plan.Port, "port", "PostgreSQL", resp)
-		validateRequiredString(plan.UserName, "user_name", "PostgreSQL", resp)
-		validateRequiredString(plan.Password, "password", "PostgreSQL", resp)
-		if plan.Gateway != nil {
-			validateRequiredString(plan.Gateway.Host, "gateway.host", "PostgreSQL", resp)
-			validateRequiredInt(plan.Gateway.Port, "gateway.port", "PostgreSQL", resp)
-			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "PostgreSQL", resp)
 		}
 	}
 }
