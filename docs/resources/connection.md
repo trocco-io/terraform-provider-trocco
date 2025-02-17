@@ -234,24 +234,24 @@ resource "trocco_connection" "postgresql" {
   port            = 5432
   user_name       = "root"
   password        = "password"
-  ssl_mode        = "require"
   driver          = "postgresql_42_5_1"
   ssl = {
-    ca   = <<-SSL_CA
+    ca       = <<-SSL_CA
       -----BEGIN PRIVATE KEY-----
       ...SSL CA...
       -----END PRIVATE KEY-----
     SSL_CA
-    cert = <<-SSL_CERT
+    cert     = <<-SSL_CERT
       -----BEGIN CERTIFICATE-----
       ...SSL CRT...
       -----END CERTIFICATE-----
     SSL_CERT
-    key  = <<-SSL_KEY
+    key      = <<-SSL_KEY
       -----BEGIN PRIVATE KEY-----
       ...SSL KEY...
       -----END PRIVATE KEY-----
     SSL_KEY
+    ssl_mode = "require"
   }
   gateway = {
     host           = "gateway.example.com"

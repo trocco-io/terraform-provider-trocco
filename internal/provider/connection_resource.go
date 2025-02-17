@@ -58,8 +58,7 @@ type connectionResourceModel struct {
 	Gateway *connection.Gateway `tfsdk:"gateway"`
 
 	// PostgreSQL Fields
-	SSLMode types.String `tfsdk:"ssl_mode"`
-	Driver  types.String `tfsdk:"driver"`
+	Driver types.String `tfsdk:"driver"`
 
 	// S3 Fields
 	AWSAuthType   types.String              `tfsdk:"aws_auth_type"`
@@ -97,8 +96,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
 
 		// PostgreSQL Fields
-		SSLMode: model.NewNullableString(m.SSLMode),
-		Driver:  m.Driver.ValueStringPointer(),
+		Driver: m.Driver.ValueStringPointer(),
 	}
 
 	// SSL Fields
@@ -109,6 +107,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.SSLClientCa = m.SSL.Cert.ValueStringPointer()
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
 		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
+		input.SSLMode = model.NewNullableString(m.SSL.SSLMode)
 	} else {
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
@@ -171,8 +170,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
 
 		// PostgreSQL Fields
-		SSLMode: model.NewNullableString(m.SSLMode),
-		Driver:  m.Driver.ValueStringPointer(),
+		Driver: m.Driver.ValueStringPointer(),
 	}
 
 	// SSL Fields
@@ -183,6 +181,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
 		input.SSLClientCa = m.SSL.Cert.ValueStringPointer()
 		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
+		input.SSLMode = model.NewNullableString(m.SSL.SSLMode)
 	} else {
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
@@ -427,6 +426,13 @@ func (r *connectionResource) Schema(
 						Computed: true,
 						Default:  stringdefault.StaticString(""),
 					},
+					"ssl_mode": schema.StringAttribute{
+						MarkdownDescription: "PostgreSQL: SSL connection mode.",
+						Optional:            true,
+						Validators: []validator.String{
+							stringvalidator.OneOf("require", "verify-ca"),
+						},
+					},
 				},
 			},
 			"gateway": schema.SingleNestedAttribute{
@@ -533,13 +539,6 @@ func (r *connectionResource) Schema(
 			},
 
 			// PostgreSQL Fields
-			"ssl_mode": schema.StringAttribute{
-				MarkdownDescription: "PostgreSQL: SSL connection mode.",
-				Optional:            true,
-				Validators: []validator.String{
-					stringvalidator.OneOf("require", "verify-ca"),
-				},
-			},
 			"driver": schema.StringAttribute{
 				MarkdownDescription: "PostgreSQL: The name of a PostgreSQL driver.",
 				Optional:            true,
@@ -613,8 +612,7 @@ func (r *connectionResource) Create(
 		AWSAssumeRole: connection.NewAWSAssumeRole(conn),
 
 		// PostgreSQL Fields
-		SSLMode: types.StringPointerValue(conn.SSLMode),
-		Driver:  types.StringPointerValue(conn.Driver),
+		Driver: types.StringPointerValue(conn.Driver),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -698,8 +696,7 @@ func (r *connectionResource) Update(
 		AWSAssumeRole: plan.AWSAssumeRole,
 
 		// PostgreSQL Fields
-		SSLMode: types.StringPointerValue(connection.SSLMode),
-		Driver:  types.StringPointerValue(connection.Driver),
+		Driver: types.StringPointerValue(connection.Driver),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -762,8 +759,7 @@ func (r *connectionResource) Read(
 		AWSAssumeRole: connection.NewAWSAssumeRole(conn),
 
 		// PostgreSQL Fields
-		SSLMode: types.StringPointerValue(conn.SSLMode),
-		Driver:  types.StringPointerValue(conn.Driver),
+		Driver: types.StringPointerValue(conn.Driver),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -896,13 +892,14 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredString(plan.Host, "host", "PostgreSQL", resp)
 		validateRequiredInt(plan.Port, "port", "PostgreSQL", resp)
 		validateRequiredString(plan.UserName, "user_name", "PostgreSQL", resp)
-		validateRequiredString(plan.Password, "password", "PostgreSQL", resp)
-		validateRequiredString(plan.SSLMode, "ssl_mode", "PostgreSQL", resp)
 		validateRequiredString(plan.Driver, "driver", "PostgreSQL", resp)
 		if plan.Gateway != nil {
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "PostgreSQL", resp)
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "PostgreSQL", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "PostgreSQL", resp)
+		}
+		if plan.SSL != nil {
+			validateRequiredString(plan.SSL.SSLMode, "ssl_mode", "PostgreSQL", resp)
 		}
 	}
 }
