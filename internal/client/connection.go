@@ -48,9 +48,6 @@ type Connection struct {
 	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
 	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
 	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
-
-	// PostgreSQL Fields
-	SSLMode *string `json:"ssl_mode,omitempty"`
 }
 
 type GetConnectionsInput struct {
