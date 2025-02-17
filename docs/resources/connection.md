@@ -173,7 +173,6 @@ resource "trocco_connection" "s3_with_assume_role" {
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery: A GCP service account key.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
-- `ssl_mode` (String) PostgreSQL: SSL connection mode.
 - `user_name` (String) Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.
 
 ### Read-Only
@@ -219,6 +218,7 @@ Optional:
 - `ca` (String, Sensitive) MySQL, PostgreSQL: CA certificate
 - `cert` (String, Sensitive) MySQL, PostgreSQL: Certificate (CRT file)
 - `key` (String, Sensitive) MySQL, PostgreSQL: Key (KEY file)
+- `ssl_mode` (String) PostgreSQL: SSL connection mode.
 
 
 
