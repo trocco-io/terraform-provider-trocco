@@ -12,7 +12,6 @@ type BigQueryOutputOption struct {
 	Dataset                              types.String                        `tfsdk:"dataset"`
 	Table                                types.String                        `tfsdk:"table"`
 	AutoCreateDataset                    types.Bool                          `tfsdk:"auto_create_dataset"`
-	AutoCreateTable                      types.Bool                          `tfsdk:"auto_create_table"`
 	OpenTimeoutSec                       types.Int64                         `tfsdk:"open_timeout_sec"`
 	TimeoutSec                           types.Int64                         `tfsdk:"timeout_sec"`
 	SendTimeoutSec                       types.Int64                         `tfsdk:"send_timeout_sec"`
@@ -51,7 +50,6 @@ func NewBigQueryOutputOption(bigQueryOutputOption *output_option.BigQueryOutputO
 		Dataset:                              types.StringValue(bigQueryOutputOption.Dataset),
 		Table:                                types.StringValue(bigQueryOutputOption.Table),
 		AutoCreateDataset:                    types.BoolValue(bigQueryOutputOption.AutoCreateDataset),
-		AutoCreateTable:                      types.BoolValue(bigQueryOutputOption.AutoCreateTable),
 		OpenTimeoutSec:                       types.Int64Value(bigQueryOutputOption.OpenTimeoutSec),
 		TimeoutSec:                           types.Int64Value(bigQueryOutputOption.TimeoutSec),
 		SendTimeoutSec:                       types.Int64Value(bigQueryOutputOption.SendTimeoutSec),
@@ -140,7 +138,6 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.Big
 		Dataset:                              bigqueryOutputOption.Dataset.ValueString(),
 		Table:                                bigqueryOutputOption.Table.ValueString(),
 		AutoCreateDataset:                    bigqueryOutputOption.AutoCreateDataset.ValueBool(),
-		AutoCreateTable:                      bigqueryOutputOption.AutoCreateTable.ValueBool(),
 		OpenTimeoutSec:                       bigqueryOutputOption.OpenTimeoutSec.ValueInt64(),
 		TimeoutSec:                           bigqueryOutputOption.TimeoutSec.ValueInt64(),
 		SendTimeoutSec:                       bigqueryOutputOption.SendTimeoutSec.ValueInt64(),
@@ -186,7 +183,6 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_option
 		Dataset:                              bigqueryOutputOption.Dataset.ValueStringPointer(),
 		Table:                                bigqueryOutputOption.Table.ValueStringPointer(),
 		AutoCreateDataset:                    bigqueryOutputOption.AutoCreateDataset.ValueBoolPointer(),
-		AutoCreateTable:                      bigqueryOutputOption.AutoCreateTable.ValueBoolPointer(),
 		OpenTimeoutSec:                       bigqueryOutputOption.OpenTimeoutSec.ValueInt64Pointer(),
 		TimeoutSec:                           bigqueryOutputOption.TimeoutSec.ValueInt64Pointer(),
 		SendTimeoutSec:                       bigqueryOutputOption.SendTimeoutSec.ValueInt64Pointer(),
