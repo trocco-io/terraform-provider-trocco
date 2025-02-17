@@ -1,0 +1,67 @@
+name: E2E tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  e2e_test:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: >-
+      github.actor == 'u110' ||
+      github.actor == 'okeyaki' ||
+      github.actor == 'katamotokosuke' ||
+      github.actor == 'yosuke-oka' ||
+      github.actor == 'gtnao'
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
+        with:
+          go-version-file: "go.mod"
+          cache: true
+      - uses: hashicorp/setup-terraform@651471c36a6092792c552e8b1bef71e592b462d8 # v3.1.1
+      - run: go mod download
+      - run: |
+          make testacc
+        env:
+          TROCCO_API_KEY: ${{ secrets.TROCCO_API_KEY }}
+          TROCCO_TEST_URL: https://trocco.io
+
+  e2e_test_for_others:
+    name: E2E tests for others
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # if the actor is not in team member, run the e2e tests after approval
+    if: >-
+      !(
+        github.actor == 'u110' ||
+        github.actor == 'okeyaki' ||
+        github.actor == 'katamotokosuke' ||
+        github.actor == 'yosuke-oka' ||
+        github.actor == 'gtnao'
+      )
+    # see https://github.com/trocco-io/terraform-provider-trocco/settings/environments
+    environment: production
+    # REFACTOR: use composite actions
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
+        with:
+          go-version-file: "go.mod"
+          cache: true
+      - uses: hashicorp/setup-terraform@651471c36a6092792c552e8b1bef71e592b462d8 # v3.1.1
+      - run: go mod download
+      - run: |
+          make testacc
+        env:
+          TROCCO_API_KEY: ${{ secrets.TROCCO_API_KEY }}
+          TROCCO_TEST_URL: https://trocco.io
