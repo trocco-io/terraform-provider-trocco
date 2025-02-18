@@ -246,13 +246,13 @@ func (r *connectionResource) Schema(
 		Attributes: map[string]schema.Attribute{
 			// Common Fields
 			"connection_type": schema.StringAttribute{
-				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `mysql`, or `s3`.",
+				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, or `s3`.",
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "mysql", "s3"),
+					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "google_spreadsheets", "mysql", "s3"),
 				},
 			},
 			"id": schema.Int64Attribute{
@@ -296,7 +296,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"service_account_json_key": schema.StringAttribute{
-				MarkdownDescription: "BigQuery: A GCP service account key.",
+				MarkdownDescription: "BigQuery, Google Sheets: A GCP service account key.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -807,6 +807,8 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredString(plan.ApplicationName, "application_name", "GCS", resp)
 		validateRequiredString(plan.ServiceAccountEmail, "service_account_email", "GCS", resp)
 		validateRequiredString(plan.ProjectID, "project_id", "GCS", resp)
+	case "google_spreadsheets":
+		validateRequiredString(plan.ServiceAccountJSONKey, "service_account_json_key", "Google Sheets", resp)
 	case "mysql":
 		validateRequiredString(plan.Host, "host", "MySQL", resp)
 		validateRequiredInt(plan.Port, "port", "MySQL", resp)
