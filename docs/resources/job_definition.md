@@ -234,34 +234,7 @@ resource "trocco_job_definition" "sheets_to_sheets_example" {
   description              = "this is an example job definition for transferring data from Google Spreadsheets to Google Spreadsheets"
   is_runnable_concurrently = false
   retry_limit              = 0
-  filter_columns = [
-    {
-      default                      = null
-      json_expand_enabled          = false
-      json_expand_keep_base_column = false
-      name                         = "id"
-      src                          = "id"
-      type                         = "long"
-    },
-    {
-      default                      = null
-      json_expand_enabled          = false
-      json_expand_keep_base_column = false
-      name                         = "name"
-      src                          = "name"
-      type                         = "string"
-    },
-    {
-      default                      = null
-      format                       = null
-      json_expand_enabled          = false
-      json_expand_keep_base_column = false
-      name                         = "created_at"
-      src                          = "created_at"
-      type                         = "timestamp"
-    },
-  ]
-  input_option_type = "google_spreadsheets"
+  input_option_type        = "google_spreadsheets"
   input_option = {
     google_spreadsheets_input_option = {
       google_spreadsheets_connection_id = 1
