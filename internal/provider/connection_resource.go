@@ -61,6 +61,10 @@ type connectionResourceModel struct {
 	AWSAuthType   types.String              `tfsdk:"aws_auth_type"`
 	AWSIAMUser    *connection.AWSIAMUser    `tfsdk:"aws_iam_user"`
 	AWSAssumeRole *connection.AWSAssumeRole `tfsdk:"aws_assume_role"`
+
+	// Salesforce Fields
+	SecurityToken types.String `tfsdk:"security_token"`
+	AuthEndPoint  types.String `tfsdk:"auth_end_point"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -88,6 +92,10 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 
 		// MySQL Fields
 		Port: model.NewNullableInt64(m.Port),
+
+		// Salesforce Fields
+		SecurityToken: m.SecurityToken.ValueStringPointer(),
+		AuthEndPoint:  m.AuthEndPoint.ValueStringPointer(),
 
 		// S3 Fields
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
@@ -156,6 +164,10 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 
 		// MySQL Fields
 		Port: model.NewNullableInt64(m.Port),
+
+		// Salesforce Fields
+		SecurityToken: m.SecurityToken.ValueStringPointer(),
+		AuthEndPoint:  m.AuthEndPoint.ValueStringPointer(),
 
 		// S3 Fields
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
@@ -246,13 +258,13 @@ func (r *connectionResource) Schema(
 		Attributes: map[string]schema.Attribute{
 			// Common Fields
 			"connection_type": schema.StringAttribute{
-				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, or `s3`.",
+				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, or `s3`.",
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "google_spreadsheets", "mysql", "s3"),
+					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "google_spreadsheets", "mysql", "salesforce", "s3"),
 				},
 			},
 			"id": schema.Int64Attribute{
@@ -465,6 +477,23 @@ func (r *connectionResource) Schema(
 				},
 			},
 
+			// Salesforce Fields
+			"security_token": schema.StringAttribute{
+				MarkdownDescription: "Salesforce: Security token.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"auth_end_point": schema.StringAttribute{
+				MarkdownDescription: "Salesforce: Authentication endpoint.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+
 			// S3 Fields
 			"aws_auth_type": schema.StringAttribute{
 				MarkdownDescription: "S3: The authentication type for the S3 connection. It must be one of `iam_user` or `assume_role`.",
@@ -574,6 +603,10 @@ func (r *connectionResource) Create(
 		// Gateway Fields
 		Gateway: plan.Gateway,
 
+		// Salesforce Fields
+		SecurityToken: plan.SecurityToken,
+		AuthEndPoint:  types.StringPointerValue(conn.AuthEndPoint),
+
 		// S3 Fields
 		AWSAuthType:   types.StringPointerValue(conn.AWSAuthType),
 		AWSIAMUser:    plan.AWSIAMUser,
@@ -655,6 +688,10 @@ func (r *connectionResource) Update(
 		SSL:     plan.SSL,
 		Gateway: plan.Gateway,
 
+		// Salesforce Fields
+		SecurityToken: plan.SecurityToken,
+		AuthEndPoint:  types.StringPointerValue(connection.AuthEndPoint),
+
 		// S3 Fields
 		AWSAuthType:   types.StringPointerValue(connection.AWSAuthType),
 		AWSIAMUser:    plan.AWSIAMUser,
@@ -714,6 +751,10 @@ func (r *connectionResource) Read(
 		Port:    types.Int64PointerValue(conn.Port),
 		SSL:     state.SSL,
 		Gateway: state.Gateway,
+
+		// Salesforce Fields
+		SecurityToken: state.SecurityToken,
+		AuthEndPoint:  types.StringPointerValue(conn.AuthEndPoint),
 
 		// S3 Fields
 		AWSAuthType:   types.StringPointerValue(conn.AWSAuthType),
@@ -819,6 +860,18 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "MySQL", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "MySQL", resp)
 		}
+	case "salesforce":
+		validateRequiredString(plan.AuthMethod, "auth_method", "Salesforce", resp)
+		if plan.AuthMethod.ValueString() != "user_password" {
+			resp.Diagnostics.AddError(
+				"auth_method",
+				"auth_method must be 'user_password' for Salesforce connection.",
+			)
+		}
+		validateRequiredString(plan.UserName, "user_name", "Salesforce", resp)
+		validateRequiredString(plan.Password, "password", "Salesforce", resp)
+		validateRequiredString(plan.SecurityToken, "security_token", "Salesforce", resp)
+		validateRequiredString(plan.AuthEndPoint, "auth_end_point", "Salesforce", resp)
 	case "s3":
 		validateRequiredString(plan.AWSAuthType, "aws_auth_type", "S3", resp)
 		if plan.AWSAssumeRole != nil && plan.AWSIAMUser != nil {

@@ -134,6 +134,23 @@ resource "trocco_connection" "mysql" {
 }
 ```
 
+### Salesforce
+
+```terraform
+resource "trocco_connection" "salesforce" {
+  connection_type = "salesforce"
+
+  name        = "Salesforce Example"
+  description = "This is a Salesforce connection example"
+
+  auth_method    = "user_password"
+  user_name      = "<User Name>"
+  password       = "<Password>"
+  security_token = "<Security Token>"
+  auth_end_point = "https://login.salesforce.com/services/Soap/u/"
+}
+```
+
 ### S3
 
 ```terraform
@@ -169,12 +186,13 @@ resource "trocco_connection" "s3_with_assume_role" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, or `s3`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, or `s3`.
 - `name` (String) The name of the connection.
 
 ### Optional
 
 - `application_name` (String) GCS: Application name.
+- `auth_end_point` (String) Salesforce: Authentication endpoint.
 - `auth_method` (String) Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`.
 - `aws_assume_role` (Attributes) S3: AssumeRole configuration. (see [below for nested schema](#nestedatt--aws_assume_role))
 - `aws_auth_type` (String) S3: The authentication type for the S3 connection. It must be one of `iam_user` or `assume_role`.
@@ -188,6 +206,7 @@ resource "trocco_connection" "s3_with_assume_role" {
 - `project_id` (String) BigQuery, GCS: A GCP project ID.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
 - `role` (String) Snowflake: A role attached to the Snowflake user.
+- `security_token` (String, Sensitive) Salesforce: Security token.
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery, Google Sheets: A GCP service account key.
 - `ssl` (Attributes) MySQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
