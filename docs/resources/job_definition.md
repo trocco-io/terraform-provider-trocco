@@ -249,7 +249,6 @@ resource "trocco_job_definition" "filter_column_example" {
     {
       default                      = ""
       format                       = "%Y"
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "id"
@@ -258,7 +257,6 @@ resource "trocco_job_definition" "filter_column_example" {
     },
     {
       default                      = "default value"
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "name"
@@ -267,7 +265,6 @@ resource "trocco_job_definition" "filter_column_example" {
     },
     {
       default                      = ""
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "timestamp"
