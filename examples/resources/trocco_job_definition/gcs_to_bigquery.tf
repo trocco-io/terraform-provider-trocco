@@ -94,7 +94,6 @@ resource "trocco_job_definition" "gcs_to_bigquery_example" {
   output_option = {
     bigquery_output_option = {
       auto_create_dataset                      = false
-      auto_create_table                        = false
       bigquery_connection_id                   = 1
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []

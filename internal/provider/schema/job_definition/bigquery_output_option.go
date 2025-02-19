@@ -47,12 +47,6 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 				Default:             booldefault.StaticBool(false),
 				MarkdownDescription: "Option for automatic data set generation",
 			},
-			"auto_create_table": schema.BoolAttribute{
-				Optional:            true,
-				Computed:            true,
-				Default:             booldefault.StaticBool(false),
-				MarkdownDescription: "Option for automatic table generation",
-			},
 			"open_timeout_sec": schema.Int64Attribute{
 				Optional: true,
 				Computed: true,

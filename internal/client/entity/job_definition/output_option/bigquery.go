@@ -9,7 +9,6 @@ type BigQueryOutputOption struct {
 	Dataset                              string                              `json:"dataset"`
 	Table                                string                              `json:"table"`
 	AutoCreateDataset                    bool                                `json:"auto_create_dataset"`
-	AutoCreateTable                      bool                                `json:"auto_create_table"`
 	OpenTimeoutSec                       int64                               `json:"open_timeout_sec"`
 	TimeoutSec                           int64                               `json:"timeout_sec"`
 	SendTimeoutSec                       int64                               `json:"send_timeout_sec"`
