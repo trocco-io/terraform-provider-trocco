@@ -74,9 +74,14 @@ func (d *SalesforceInputOptionPlanModifier) PlanModifyObject(ctx context.Context
 						"column name is not a string",
 					)
 				}
-				if (colType.ValueString() != "boolean" && colType.ValueString() != "string") && strings.HasSuffix(colName.ValueString(), "__c") {
+				hasCustomSuffix := strings.HasSuffix(colName.ValueString(), "__c")
+				isNotString := colType.ValueString() != "string"
+				isNotBooleanOrString := colType.ValueString() != "boolean" && isNotString
+
+				if isNotBooleanOrString && hasCustomSuffix {
 					addSalesforceInputOptionAttributeError(req, resp, "column type must be 'boolean' or 'string' when is_convert_type_custom_columns is true and column name end with '__c'")
-				} else if colType.ValueString() != "string" && !strings.HasSuffix(colName.ValueString(), "__c") {
+				}
+				if isNotString && !hasCustomSuffix {
 					addSalesforceInputOptionAttributeError(req, resp, "column type must be 'string' when is_convert_type_custom_columns is true and column name does not end with '__c'")
 				}
 			} else {
