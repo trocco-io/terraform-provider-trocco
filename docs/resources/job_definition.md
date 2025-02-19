@@ -112,7 +112,6 @@ resource "trocco_job_definition" "gcs_to_bigquery_example" {
   output_option = {
     bigquery_output_option = {
       auto_create_dataset                      = false
-      auto_create_table                        = false
       bigquery_connection_id                   = 1
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []
@@ -208,7 +207,6 @@ resource "trocco_job_definition" "mysql_to_bigquery_example" {
   output_option = {
     bigquery_output_option = {
       auto_create_dataset                      = false
-      auto_create_table                        = false
       bigquery_connection_id                   = 1
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []
@@ -806,7 +804,6 @@ resource "trocco_job_definition" "bigquery_output_example" {
       table                           = "test_table"
       mode                            = "merge"
       auto_create_dataset             = true
-      auto_create_table               = false
       timeout_sec                     = 300
       open_timeout_sec                = 300
       read_timeout_sec                = 300
@@ -1389,7 +1386,6 @@ Required:
 Optional:
 
 - `auto_create_dataset` (Boolean) Option for automatic data set generation
-- `auto_create_table` (Boolean) Option for automatic table generation
 - `bigquery_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--custom_variable_settings))
 - `location` (String) Location
