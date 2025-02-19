@@ -87,36 +87,42 @@ type UpdateJobDefinitionInput struct {
 }
 
 type InputOption struct {
-	MySQLInputOption     *inputOptionEntitites.MySQLInputOption     `json:"mysql_input_option"`
-	GcsInputOption       *inputOptionEntitites.GcsInputOption       `json:"gcs_input_option"`
-	SnowflakeInputOption *inputOptionEntitites.SnowflakeInputOption `json:"snowflake_input_option"`
+	MySQLInputOption      *inputOptionEntitites.MySQLInputOption      `json:"mysql_input_option"`
+	GcsInputOption        *inputOptionEntitites.GcsInputOption        `json:"gcs_input_option"`
+	SnowflakeInputOption  *inputOptionEntitites.SnowflakeInputOption  `json:"snowflake_input_option"`
+	SalesforceInputOption *inputOptionEntitites.SalesforceInputOption `json:"salesforce_input_option"`
 }
 
 type InputOptionInput struct {
-	MySQLInputOption     *parameter.NullableObject[input_options.MySQLInputOptionInput]     `json:"mysql_input_option,omitempty"`
-	GcsInputOption       *parameter.NullableObject[input_options.GcsInputOptionInput]       `json:"gcs_input_option,omitempty"`
-	SnowflakeInputOption *parameter.NullableObject[input_options.SnowflakeInputOptionInput] `json:"snowflake_input_option,omitempty"`
+	MySQLInputOption      *parameter.NullableObject[input_options.MySQLInputOptionInput]      `json:"mysql_input_option,omitempty"`
+	GcsInputOption        *parameter.NullableObject[input_options.GcsInputOptionInput]        `json:"gcs_input_option,omitempty"`
+	SnowflakeInputOption  *parameter.NullableObject[input_options.SnowflakeInputOptionInput]  `json:"snowflake_input_option,omitempty"`
+	SalesforceInputOption *parameter.NullableObject[input_options.SalesforceInputOptionInput] `json:"salesforce_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
-	MySQLInputOption     *parameter.NullableObject[input_options.UpdateMySQLInputOptionInput]     `json:"mysql_input_option,omitempty"`
-	GcsInputOption       *parameter.NullableObject[input_options.UpdateGcsInputOptionInput]       `json:"gcs_input_option,omitempty"`
-	SnowflakeInputOption *parameter.NullableObject[input_options.UpdateSnowflakeInputOptionInput] `json:"snowflake_input_option,omitempty"`
+	MySQLInputOption      *parameter.NullableObject[input_options.UpdateMySQLInputOptionInput]      `json:"mysql_input_option,omitempty"`
+	GcsInputOption        *parameter.NullableObject[input_options.UpdateGcsInputOptionInput]        `json:"gcs_input_option,omitempty"`
+	SnowflakeInputOption  *parameter.NullableObject[input_options.UpdateSnowflakeInputOptionInput]  `json:"snowflake_input_option,omitempty"`
+	SalesforceInputOption *parameter.NullableObject[input_options.UpdateSalesforceInputOptionInput] `json:"salesforce_input_option,omitempty"`
 }
 
 type OutputOption struct {
-	BigQueryOutputOption  *outputOptionEntitites.BigQueryOutputOption  `json:"bigquery_output_option"`
-	SnowflakeOutputOption *outputOptionEntitites.SnowflakeOutputOption `json:"snowflake_output_option"`
+	BigQueryOutputOption   *outputOptionEntitites.BigQueryOutputOption   `json:"bigquery_output_option"`
+	SnowflakeOutputOption  *outputOptionEntitites.SnowflakeOutputOption  `json:"snowflake_output_option"`
+	SalesforceOutputOption *outputOptionEntitites.SalesforceOutputOption `json:"salesforce_output_option"`
 }
 
 type OutputOptionInput struct {
-	BigQueryOutputOption  *parameter.NullableObject[output_options.BigQueryOutputOptionInput]  `json:"bigquery_output_option,omitempty"`
-	SnowflakeOutputOption *parameter.NullableObject[output_options.SnowflakeOutputOptionInput] `json:"snowflake_output_option,omitempty"`
+	BigQueryOutputOption   *parameter.NullableObject[output_options.BigQueryOutputOptionInput]   `json:"bigquery_output_option,omitempty"`
+	SnowflakeOutputOption  *parameter.NullableObject[output_options.SnowflakeOutputOptionInput]  `json:"snowflake_output_option,omitempty"`
+	SalesforceOutputOption *parameter.NullableObject[output_options.SalesforceOutputOptionInput] `json:"salesforce_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
-	BigQueryOutputOption  *parameter.NullableObject[output_options.UpdateBigQueryOutputOptionInput]  `json:"bigquery_output_option,omitempty"`
-	SnowflakeOutputOption *parameter.NullableObject[output_options.UpdateSnowflakeOutputOptionInput] `json:"snowflake_output_option,omitempty"`
+	BigQueryOutputOption   *parameter.NullableObject[output_options.UpdateBigQueryOutputOptionInput]   `json:"bigquery_output_option,omitempty"`
+	SnowflakeOutputOption  *parameter.NullableObject[output_options.UpdateSnowflakeOutputOptionInput]  `json:"snowflake_output_option,omitempty"`
+	SalesforceOutputOption *parameter.NullableObject[output_options.UpdateSalesforceOutputOptionInput] `json:"salesforce_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {
