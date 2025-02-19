@@ -239,7 +239,6 @@ resource "trocco_job_definition" "sheets_to_sheets_example" {
   filter_columns = [
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "id"
@@ -248,7 +247,6 @@ resource "trocco_job_definition" "sheets_to_sheets_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "name"
@@ -258,7 +256,6 @@ resource "trocco_job_definition" "sheets_to_sheets_example" {
     {
       default                      = null
       format                       = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "created_at"
@@ -270,13 +267,12 @@ resource "trocco_job_definition" "sheets_to_sheets_example" {
   input_option = {
     google_spreadsheets_input_option = {
       google_spreadsheets_connection_id = 1
-      # ex "https://docs.google.com/spreadsheets/d/YOUR_SHEETS_ID/edit?gid=0"
-      spreadsheets_id   = "YOUR_SHEETS_ID"
-      worksheet_title   = "inputdata"
-      start_row         = 2
-      start_column      = "A"
-      default_time_zone = "Asia/Tokyo"
-      null_string       = ""
+      spreadsheets_url                  = "https://docs.google.com/spreadsheets/d/YOUR_SHEETS_ID/edit?gid=0"
+      worksheet_title                   = "input-data"
+      start_row                         = 2
+      start_column                      = "A"
+      default_time_zone                 = "Asia/Tokyo"
+      null_string                       = ""
       input_option_columns = [
         {
           name = "id"
@@ -299,14 +295,14 @@ resource "trocco_job_definition" "sheets_to_sheets_example" {
     google_spreadsheets_output_option = {
       google_spreadsheets_connection_id = 1
       spreadsheets_id                   = "YOUR_SHEETS_ID"
-      worksheet_title                   = "outputdata"
+      worksheet_title                   = "output-data"
       timezone                          = "Asia/Tokyo"
       value_input_option                = "USER_ENTERED"
       mode                              = "replace"
       google_spreadsheets_output_option_sorts = [
         {
           column = "created_at"
-          order  = "ASCENDING"
+          order  = "ascending"
         }
       ]
     }
@@ -1366,7 +1362,7 @@ Required:
 - `default_time_zone` (String) Default time zone
 - `google_spreadsheets_connection_id` (Number) Id of Snowflake connection
 - `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option--input_option_columns))
-- `spreadsheets_id` (String) ID of the Google Sheets
+- `spreadsheets_url` (String) URL of the Google Sheets
 - `start_column` (String) Column to start reading data
 - `start_row` (Number) Row number to start reading data
 - `worksheet_title` (String) Title of the worksheet
