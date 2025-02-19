@@ -1,6 +1,6 @@
 ## 0.8.0
 FEATURES:
-- Added `salesforce`, `google_spreadsheets`, `postgresql` type for `trocco_connection` resource.
+- Added `salesforce`, `google_spreadsheets` type for `trocco_connection` resource.
 - Added `salesforce` input/output in `trocco_job_definition` resource.
 - Remove `auto_create_table` option in `bigquery` output in `trocco_job_definition` resource.
 - Update documentation & examples
