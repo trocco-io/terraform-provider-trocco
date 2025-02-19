@@ -14,6 +14,7 @@ func InputOptionSchema() schema.Attribute {
 			"mysql_input_option":               MysqlInputOptionSchema(),
 			"gcs_input_option":                 GcsInputOptionSchema(),
 			"snowflake_input_option":           SnowflakeInputOptionSchema(),
+			"salesforce_input_option":          SalesforceInputOptionSchema(),
 			"google_spreadsheets_input_option": GoogleSpreadsheetsInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
