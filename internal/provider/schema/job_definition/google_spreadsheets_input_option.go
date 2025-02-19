@@ -24,9 +24,9 @@ func GoogleSpreadsheetsInputOptionSchema() schema.Attribute {
 					int64validator.AtLeast(1),
 				},
 			},
-			"spreadsheets_id": schema.StringAttribute{
+			"spreadsheets_url": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "ID of the Google Sheets",
+				MarkdownDescription: "URL of the Google Sheets",
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
