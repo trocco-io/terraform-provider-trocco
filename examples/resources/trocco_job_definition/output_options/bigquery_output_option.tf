@@ -6,7 +6,6 @@ resource "trocco_job_definition" "bigquery_output_example" {
       table                           = "test_table"
       mode                            = "merge"
       auto_create_dataset             = true
-      auto_create_table               = false
       timeout_sec                     = 300
       open_timeout_sec                = 300
       read_timeout_sec                = 300

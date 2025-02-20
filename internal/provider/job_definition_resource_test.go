@@ -199,7 +199,6 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
       table                                      = "test_table"
       mode                                       = "append"
       auto_create_dataset                        = true
-      auto_create_table                          = false
       timeout_sec                                = 300
       open_timeout_sec                           = 300
       read_timeout_sec                           = 300

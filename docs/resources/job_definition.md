@@ -112,7 +112,6 @@ resource "trocco_job_definition" "gcs_to_bigquery_example" {
   output_option = {
     bigquery_output_option = {
       auto_create_dataset                      = false
-      auto_create_table                        = false
       bigquery_connection_id                   = 1
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []
@@ -208,7 +207,6 @@ resource "trocco_job_definition" "mysql_to_bigquery_example" {
   output_option = {
     bigquery_output_option = {
       auto_create_dataset                      = false
-      auto_create_table                        = false
       bigquery_connection_id                   = 1
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []
@@ -251,7 +249,6 @@ resource "trocco_job_definition" "filter_column_example" {
     {
       default                      = ""
       format                       = "%Y"
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "id"
@@ -260,7 +257,6 @@ resource "trocco_job_definition" "filter_column_example" {
     },
     {
       default                      = "default value"
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "name"
@@ -269,7 +265,6 @@ resource "trocco_job_definition" "filter_column_example" {
     },
     {
       default                      = ""
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "timestamp"
@@ -796,6 +791,50 @@ resource "trocco_job_definition" "gcs_input_example" {
 }
 ```
 
+#### SalesforceInputOption
+```terraform
+# acquisition_method: soql
+resource "trocco_job_definition" "salesforce_input_example" {
+  input_option_type = "salesforce"
+  input_option = {
+    salesforce_input_option = {
+      columns = [
+        {
+          name = "col1__c"
+          type = "string"
+        }
+      ]
+      include_deleted_or_archived_records = true
+      is_convert_type_custom_columns      = false
+      object                              = "test_object"
+      object_acquisition_method           = "soql"
+      soql                                = "select * from test_object"
+      salesforce_connection_id            = 1 # pelase set your salesforce connection id
+    }
+  }
+}
+
+# acquisition_method: all_columns
+resource "trocco_job_definition" "salesforce_input_example" {
+  input_option_type = "salesforce"
+  input_option = {
+    salesforce_input_option = {
+      columns = [
+        {
+          name = "col1__c"
+          type = "string"
+        }
+      ]
+      include_deleted_or_archived_records = true
+      is_convert_type_custom_columns      = false
+      object                              = "test_object"
+      object_acquisition_method           = "all_columns"
+      salesforce_connection_id            = 1 # pelase set your salesforce connection id
+    }
+  }
+}
+```
+
 ### OutputOptions
 
 #### BigqueryOutputOption
@@ -809,7 +848,6 @@ resource "trocco_job_definition" "bigquery_output_example" {
       table                           = "test_table"
       mode                            = "merge"
       auto_create_dataset             = true
-      auto_create_table               = false
       timeout_sec                     = 300
       open_timeout_sec                = 300
       read_timeout_sec                = 300
@@ -824,6 +862,41 @@ resource "trocco_job_definition" "bigquery_output_example" {
       bigquery_output_option_merge_keys = [
         "id"
       ]
+    }
+  }
+}
+```
+
+#### SalesforceOutputOption
+
+```terraform
+# upsert
+resource "trocco_job_definition" "salesforce_output_example" {
+  output_option_type = "salesforce"
+  output_option = {
+    salesforce_output_option = {
+      action_type              = "upsert"
+      upsert_key               = "id"
+      api_version              = "55.0"
+      ignore_nulls             = true
+      object                   = "test_object"
+      salesforce_connection_id = 1 # please set your salesforce connection id
+      throw_if_failed          = false
+    }
+  }
+}
+
+# insert
+resource "trocco_job_definition" "salesforce_output_example" {
+  output_option_type = "salesforce"
+  output_option = {
+    salesforce_output_option = {
+      action_type              = "insert"
+      api_version              = "55.0"
+      ignore_nulls             = true
+      object                   = "test_object"
+      salesforce_connection_id = 1 # please set your salesforce connection id
+      throw_if_failed          = false
     }
   }
 }
@@ -1020,6 +1093,7 @@ Optional:
 
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
+- `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
 
 <a id="nestedatt--input_option--gcs_input_option"></a>
@@ -1322,6 +1396,56 @@ Optional:
 
 
 
+<a id="nestedatt--input_option--salesforce_input_option"></a>
+### Nested Schema for `input_option.salesforce_input_option`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--salesforce_input_option--columns))
+- `object` (String) Object name
+- `salesforce_connection_id` (Number) Id of Salesforce connection
+
+Optional:
+
+- `api_version` (String) Api version
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--salesforce_input_option--custom_variable_settings))
+- `include_deleted_or_archived_records` (Boolean) Extraction of deleted and archived records
+- `is_convert_type_custom_columns` (Boolean) false: transfer based on custom columns. true: Change custom columns to STRING type. If you select change custom columns to STRING type, all custom columns except BOOLEAN type will be changed to STRING type.
+- `object_acquisition_method` (String) Object Acquisition Method. If 'all_columns' is specified, soql is automatically completed.
+- `soql` (String) SOQL. If object_acquisition_method is 'soql', this field is required.
+
+<a id="nestedatt--input_option--salesforce_input_option--columns"></a>
+### Nested Schema for `input_option.salesforce_input_option.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type.
+
+Optional:
+
+- `format` (String) format
+
+
+<a id="nestedatt--input_option--salesforce_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.salesforce_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
 <a id="nestedatt--input_option--snowflake_input_option"></a>
 ### Nested Schema for `input_option.snowflake_input_option`
 
@@ -1376,6 +1500,7 @@ Optional:
 Optional:
 
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
+- `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
 
 <a id="nestedatt--output_option--bigquery_output_option"></a>
@@ -1392,7 +1517,6 @@ Required:
 Optional:
 
 - `auto_create_dataset` (Boolean) Option for automatic data set generation
-- `auto_create_table` (Boolean) Option for automatic table generation
 - `bigquery_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--custom_variable_settings))
 - `location` (String) Location
@@ -1441,6 +1565,23 @@ Optional:
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
 
+
+
+<a id="nestedatt--output_option--salesforce_output_option"></a>
+### Nested Schema for `output_option.salesforce_output_option`
+
+Required:
+
+- `object` (String) Object name
+- `salesforce_connection_id` (Number) Salesforce connection ID. Only connection information with authentication method user_password can be selected.
+
+Optional:
+
+- `action_type` (String) Transfer mode
+- `api_version` (String) Api version
+- `ignore_nulls` (Boolean) Update processing when NULL is included. Even if true, the record update process itself is performed.
+- `throw_if_failed` (Boolean) Status of records that could not be sent
+- `upsert_key` (String) Upsert key. If action_type is 'upsert', this field can be set.
 
 
 <a id="nestedatt--output_option--snowflake_output_option"></a>
