@@ -209,7 +209,7 @@ resource "trocco_connection" "s3_with_assume_role" {
 - `role` (String) Snowflake: A role attached to the Snowflake user.
 - `security_token` (String, Sensitive) Salesforce: Security token.
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
-- `service_account_json_key` (String, Sensitive) BigQuery: A GCP service account key.
+- `service_account_json_key` (String, Sensitive) BigQuery, Google Sheets: A GCP service account key.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
 - `user_name` (String) Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.
 
