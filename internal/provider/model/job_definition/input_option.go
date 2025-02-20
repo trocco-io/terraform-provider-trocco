@@ -12,6 +12,7 @@ type InputOption struct {
 	SnowflakeInputOption          *input_options.SnowflakeInputOption          `tfsdk:"snowflake_input_option"`
 	SalesforceInputOption         *input_options.SalesforceInputOption         `tfsdk:"salesforce_input_option"`
 	GoogleSpreadsheetsInputOption *input_options.GoogleSpreadsheetsInputOption `tfsdk:"google_spreadsheets_input_option"`
+	PostgreSQLInputOption         *input_options.PostgreSQLInputOption         `tfsdk:"postgresql_input_option"`
 }
 
 func NewInputOption(inputOption client.InputOption) *InputOption {
@@ -31,6 +32,7 @@ func (o InputOption) ToInput() client.InputOptionInput {
 		SnowflakeInputOption:          model.WrapObject(o.SnowflakeInputOption.ToInput()),
 		SalesforceInputOption:         model.WrapObject(o.SalesforceInputOption.ToInput()),
 		GoogleSpreadsheetsInputOption: model.WrapObject(o.GoogleSpreadsheetsInputOption.ToInput()),
+		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToInput()),
 	}
 }
 
