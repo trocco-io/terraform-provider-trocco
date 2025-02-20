@@ -1,10 +1,11 @@
 package input_options
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
 	param "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
+
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type SalesforceInputOption struct {
