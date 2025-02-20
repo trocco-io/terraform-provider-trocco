@@ -104,6 +104,12 @@ type CreateConnectionInput struct {
 	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
 	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
 	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
+
+	// PostgreSQL Fields
+	SSLClientCa  *string                   `json:"ssl_client_ca,omitempty"`
+	SSLClientKey *string                   `json:"ssl_client_key,omitempty"`
+	SSLMode      *parameter.NullableString `json:"ssl_mode,omitempty"`
+	Driver       *string                   `json:"driver,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -152,6 +158,12 @@ type UpdateConnectionInput struct {
 	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
 	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
 	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
+
+	// PostgreSQL Fields
+	SSLClientCa  *string                   `json:"ssl_client_ca,omitempty"`
+	SSLClientKey *string                   `json:"ssl_client_key,omitempty"`
+	SSLMode      *parameter.NullableString `json:"ssl_mode,omitempty"`
+	Driver       *string                   `json:"driver,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {
