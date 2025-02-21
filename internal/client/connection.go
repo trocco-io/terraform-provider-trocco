@@ -42,6 +42,9 @@ type Connection struct {
 	SSL            *bool  `json:"ssl"`
 	GatewayEnabled *bool  `json:"gateway_enabled"`
 
+	// Salesforce Fields
+	AuthEndPoint *string `json:"auth_end_point"`
+
 	// S3 Fields
 	AWSAuthType            *string `json:"aws_auth_type,omitempty"`
 	AWSAccessKeyID         *string `json:"aws_access_key_id,omitempty"`
@@ -91,12 +94,22 @@ type CreateConnectionInput struct {
 	GatewayKey           *string                  `json:"gateway_key,omitempty"`
 	GatewayKeyPassphrase *string                  `json:"gateway_key_passphrase,omitempty"`
 
+	// Salesforce Fields
+	SecurityToken *string `json:"security_token,omitempty"`
+	AuthEndPoint  *string `json:"auth_end_point,omitempty"`
+
 	// S3 Fields
 	AWSAuthType            *string `json:"aws_auth_type,omitempty"`
 	AWSAccessKeyID         *string `json:"aws_access_key_id,omitempty"`
 	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
 	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
 	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
+
+	// PostgreSQL Fields
+	SSLClientCa  *string                   `json:"ssl_client_ca,omitempty"`
+	SSLClientKey *string                   `json:"ssl_client_key,omitempty"`
+	SSLMode      *parameter.NullableString `json:"ssl_mode,omitempty"`
+	Driver       *string                   `json:"driver,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -135,12 +148,22 @@ type UpdateConnectionInput struct {
 	GatewayKey           *string                  `json:"gateway_key,omitempty"`
 	GatewayKeyPassphrase *string                  `json:"gateway_key_passphrase,omitempty"`
 
+	// Salesforce Fields
+	SecurityToken *string `json:"security_token,omitempty"`
+	AuthEndPoint  *string `json:"auth_end_point,omitempty"`
+
 	// S3 Fields
 	AWSAuthType            *string `json:"aws_auth_type,omitempty"`
 	AWSAccessKeyID         *string `json:"aws_access_key_id,omitempty"`
 	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
 	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
 	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
+
+	// PostgreSQL Fields
+	SSLClientCa  *string                   `json:"ssl_client_ca,omitempty"`
+	SSLClientKey *string                   `json:"ssl_client_key,omitempty"`
+	SSLMode      *parameter.NullableString `json:"ssl_mode,omitempty"`
+	Driver       *string                   `json:"driver,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {
