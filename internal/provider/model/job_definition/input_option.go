@@ -26,6 +26,7 @@ func NewInputOption(inputOption client.InputOption) *InputOption {
 		GoogleSpreadsheetsInputOption: input_options.NewGoogleSpreadsheetsInputOption(inputOption.GoogleSpreadsheetsInputOption),
 		S3InputOption:                 input_options.NewS3InputOption(inputOption.S3InputOption),
 		BigqueryInputOption:           input_options.NewBigqueryInputOption(inputOption.BigqueryInputOption),
+		PostgreSQLInputOption:         input_options.NewPostgreSQLInputOption(inputOption.PostgreSQLInputOption),
 	}
 }
 
@@ -51,5 +52,6 @@ func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
 		GoogleSpreadsheetsInputOption: model.WrapObject(o.GoogleSpreadsheetsInputOption.ToUpdateInput()),
 		S3InputOption:                 model.WrapObject(o.S3InputOption.ToUpdateInput()),
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToUpdateInput()),
+		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToUpdateInput()),
 	}
 }

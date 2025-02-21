@@ -1771,7 +1771,7 @@ Optional:
 
 - `connect_timeout` (Number) Connection timeout (sec)
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--postgresql_input_option--custom_variable_settings))
-- `default_time_zone` (String) Default time zone. enter the server-side time zone setting for MySQL. If the time zone is set to Japan, enter “Asia/Tokyo”.
+- `default_time_zone` (String) Default time zone. enter the server-side time zone setting for PostgreSQL. If the time zone is set to Japan, enter “Asia/Tokyo”.
 - `fetch_rows` (Number) Number of records processed by the cursor at one time
 - `incremental_columns` (String) Columns to determine incremental data
 - `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
