@@ -1,10 +1,9 @@
 package job_definition
 
 import (
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
-
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
 )
 
 func InputOptionSchema() schema.Attribute {
@@ -16,6 +15,7 @@ func InputOptionSchema() schema.Attribute {
 			"snowflake_input_option":           SnowflakeInputOptionSchema(),
 			"salesforce_input_option":          SalesforceInputOptionSchema(),
 			"google_spreadsheets_input_option": GoogleSpreadsheetsInputOptionSchema(),
+			"bigquery_input_option":            BigqueryInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planmodifier2.InputOptionPlanModifier{},
