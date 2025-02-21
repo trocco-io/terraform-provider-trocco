@@ -996,8 +996,8 @@ resource "trocco_job_definition" "postgresql_input_example" {
       EOT
       postgresql_input_option_column_options : [
         {
-          "column_name" : "test",
-          "column_value_type" : "string"
+          column_name : "test"
+          column_value_type : "string"
         },
       ]
     }
