@@ -16,6 +16,7 @@ func InputOptionSchema() schema.Attribute {
 			"snowflake_input_option":           SnowflakeInputOptionSchema(),
 			"salesforce_input_option":          SalesforceInputOptionSchema(),
 			"google_spreadsheets_input_option": GoogleSpreadsheetsInputOptionSchema(),
+			"bigquery_input_option":            BigqueryInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planmodifier2.InputOptionPlanModifier{},
