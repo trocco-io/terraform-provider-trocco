@@ -20,6 +20,6 @@ type PostgreSQLInputOption struct {
 }
 
 type PostgreSQLInputOptionColumnOptions struct {
-	ColumnName      string `json:"cloumn_name"`
-	ColumnValueType string `json:"cloumn_value_type"`
+	ColumnName      string `json:"column_name"`
+	ColumnValueType string `json:"column_value_type"`
 }
