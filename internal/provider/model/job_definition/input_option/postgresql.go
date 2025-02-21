@@ -11,7 +11,7 @@ import (
 type PostgreSQLInputOption struct {
 	PostgreSQLConnectionID             types.Int64                           `tfsdk:"postgresql_connection_id"`
 	Database                           types.String                          `tfsdk:"database"`
-	Schema                             types.String                          `json:"schema"`
+	Schema                             types.String                          `tfsdk:"schema"`
 	Query                              types.String                          `tfsdk:"query"`
 	IncrementalLoadingEnabled          types.Bool                            `tfsdk:"incremental_loading_enabled"`
 	Table                              types.String                          `tfsdk:"table"`
@@ -21,7 +21,7 @@ type PostgreSQLInputOption struct {
 	ConnectTimeout                     types.Int64                           `tfsdk:"connect_timeout"`
 	SocketTimeout                      types.Int64                           `tfsdk:"socket_timeout"`
 	DefaultTimeZone                    types.String                          `tfsdk:"default_time_zone"`
-	PostgreSQLInputOptionColumnOptions *[]PostgreSQLInputOptionColumnOptions `tfsdk:"input_option_columns"`
+	PostgreSQLInputOptionColumnOptions *[]PostgreSQLInputOptionColumnOptions `tfsdk:"postgresql_input_option_column_options"`
 	CustomVariableSettings             *[]model.CustomVariableSetting        `tfsdk:"custom_variable_settings"`
 }
 
@@ -48,17 +48,17 @@ func NewPostgreSQLInputOption(postgresqlInputOption *input_option.PostgreSQLInpu
 		SocketTimeout:                      types.Int64Value(postgresqlInputOption.SocketTimeout),
 		DefaultTimeZone:                    types.StringValue(postgresqlInputOption.DefaultTimeZone),
 		PostgreSQLConnectionID:             types.Int64Value(postgresqlInputOption.PostgreSQLConnectionID),
-		PostgreSQLInputOptionColumnOptions: newPostgreSQLInputOptionColumnOptions(*postgresqlInputOption.PostgreSQLInputOptionColumnOptions),
+		PostgreSQLInputOptionColumnOptions: newPostgreSQLInputOptionColumnOptions(postgresqlInputOption.PostgreSQLInputOptionColumnOptions),
 		CustomVariableSettings:             model.NewCustomVariableSettings(postgresqlInputOption.CustomVariableSettings),
 	}
 }
 
-func newPostgreSQLInputOptionColumnOptions(postgreSQLInputOptionColumnOptions []input_option.PostgreSQLInputOptionColumnOptions) *[]PostgreSQLInputOptionColumnOptions {
+func newPostgreSQLInputOptionColumnOptions(postgreSQLInputOptionColumnOptions *[]input_option.PostgreSQLInputOptionColumnOptions) *[]PostgreSQLInputOptionColumnOptions {
 	if postgreSQLInputOptionColumnOptions == nil {
 		return nil
 	}
-	columns := make([]PostgreSQLInputOptionColumnOptions, 0, len(postgreSQLInputOptionColumnOptions))
-	for _, input := range postgreSQLInputOptionColumnOptions {
+	columns := make([]PostgreSQLInputOptionColumnOptions, 0, len(*postgreSQLInputOptionColumnOptions))
+	for _, input := range *postgreSQLInputOptionColumnOptions {
 		column := PostgreSQLInputOptionColumnOptions{
 			ColumnName:      types.StringValue(input.ColumnName),
 			ColumnValueType: types.StringValue(input.ColumnValueType),
@@ -86,7 +86,7 @@ func (postgresqlInputOption *PostgreSQLInputOption) ToInput() *param.PostgreSQLI
 		SocketTimeout:                      postgresqlInputOption.SocketTimeout.ValueInt64(),
 		DefaultTimeZone:                    postgresqlInputOption.DefaultTimeZone.ValueString(),
 		PostgreSQLConnectionID:             postgresqlInputOption.PostgreSQLConnectionID.ValueInt64(),
-		PostgreSQLInputOptionColumnOptions: toPostgreSQLInputOptionColumnOptions(*postgresqlInputOption.PostgreSQLInputOptionColumnOptions),
+		PostgreSQLInputOptionColumnOptions: toPostgreSQLInputOptionColumnOptions(postgresqlInputOption.PostgreSQLInputOptionColumnOptions),
 		CustomVariableSettings:             model.ToCustomVariableSettingInputs(postgresqlInputOption.CustomVariableSettings),
 	}
 }
@@ -106,20 +106,20 @@ func (postgresqlInputOption *PostgreSQLInputOption) ToUpdateInput() *param.Updat
 		FetchRows:                          postgresqlInputOption.FetchRows.ValueInt64Pointer(),
 		ConnectTimeout:                     postgresqlInputOption.ConnectTimeout.ValueInt64Pointer(),
 		SocketTimeout:                      postgresqlInputOption.SocketTimeout.ValueInt64Pointer(),
-		DefaultTimeZone:                    model.NewNullableString(postgresqlInputOption.DefaultTimeZone),
+		DefaultTimeZone:                    postgresqlInputOption.DefaultTimeZone.ValueStringPointer(),
 		PostgreSQLConnectionID:             postgresqlInputOption.PostgreSQLConnectionID.ValueInt64Pointer(),
-		PostgreSQLInputOptionColumnOptions: toPostgreSQLInputOptionColumnOptions(*postgresqlInputOption.PostgreSQLInputOptionColumnOptions),
+		PostgreSQLInputOptionColumnOptions: toPostgreSQLInputOptionColumnOptions(postgresqlInputOption.PostgreSQLInputOptionColumnOptions),
 		CustomVariableSettings:             model.ToCustomVariableSettingInputs(postgresqlInputOption.CustomVariableSettings),
 	}
 }
 
-func toPostgreSQLInputOptionColumnOptions(columns []PostgreSQLInputOptionColumnOptions) *[]param.PostgreSQLInputOptionColumnOptions {
+func toPostgreSQLInputOptionColumnOptions(columns *[]PostgreSQLInputOptionColumnOptions) *[]param.PostgreSQLInputOptionColumnOptions {
 	if columns == nil {
 		return nil
 	}
 
-	inputs := make([]param.PostgreSQLInputOptionColumnOptions, 0, len(columns))
-	for _, column := range columns {
+	inputs := make([]param.PostgreSQLInputOptionColumnOptions, 0, len(*columns))
+	for _, column := range *columns {
 		inputs = append(inputs, param.PostgreSQLInputOptionColumnOptions{
 			ColumnName:      column.ColumnName.ValueString(),
 			ColumnValueType: column.ColumnValueType.ValueString(),

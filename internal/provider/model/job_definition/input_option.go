@@ -22,6 +22,7 @@ func NewInputOption(inputOption client.InputOption) *InputOption {
 		SnowflakeInputOption:          input_options.NewSnowflakeInputOption(inputOption.SnowflakeInputOption),
 		SalesforceInputOption:         input_options.NewSalesforceInputOption(inputOption.SalesforceInputOption),
 		GoogleSpreadsheetsInputOption: input_options.NewGoogleSpreadsheetsInputOption(inputOption.GoogleSpreadsheetsInputOption),
+		PostgreSQLInputOption:         input_options.NewPostgreSQLInputOption(inputOption.PostgreSQLInputOption),
 	}
 }
 
@@ -43,5 +44,6 @@ func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
 		SnowflakeInputOption:          model.WrapObject(o.SnowflakeInputOption.ToUpdateInput()),
 		SalesforceInputOption:         model.WrapObject(o.SalesforceInputOption.ToUpdateInput()),
 		GoogleSpreadsheetsInputOption: model.WrapObject(o.GoogleSpreadsheetsInputOption.ToUpdateInput()),
+		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToUpdateInput()),
 	}
 }

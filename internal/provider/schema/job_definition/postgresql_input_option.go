@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -82,7 +83,9 @@ func PostgresqlInputOptionSchema() schema.Attribute {
 			},
 			"default_time_zone": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Default time zone. enter the server-side time zone setting for MySQL. If the time zone is set to Japan, enter “Asia/Tokyo”.",
+				Computed:            true,
+				MarkdownDescription: "Default time zone. enter the server-side time zone setting for PostgreSQL. If the time zone is set to Japan, enter “Asia/Tokyo”.",
+				Default:             stringdefault.StaticString("UTC"),
 			},
 			"postgresql_connection_id": schema.Int64Attribute{
 				Required: true,
