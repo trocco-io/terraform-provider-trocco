@@ -92,6 +92,7 @@ type InputOption struct {
 	SnowflakeInputOption          *inputOptionEntities.SnowflakeInputOption          `json:"snowflake_input_option"`
 	SalesforceInputOption         *inputOptionEntities.SalesforceInputOption         `json:"salesforce_input_option"`
 	GoogleSpreadsheetsInputOption *inputOptionEntities.GoogleSpreadsheetsInputOption `json:"google_spreadsheets_input_option"`
+	BigqueryInputOption           *inputOptionEntities.BigqueryInputOption           `json:"bigquery_input_option"`
 }
 
 type InputOptionInput struct {
@@ -100,6 +101,7 @@ type InputOptionInput struct {
 	SnowflakeInputOption          *parameter.NullableObject[input_options.SnowflakeInputOptionInput]          `json:"snowflake_input_option,omitempty"`
 	SalesforceInputOption         *parameter.NullableObject[input_options.SalesforceInputOptionInput]         `json:"salesforce_input_option,omitempty"`
 	GoogleSpreadsheetsInputOption *parameter.NullableObject[input_options.GoogleSpreadsheetsInputOptionInput] `json:"google_spreadsheets_input_option,omitempty"`
+	BigqueryInputOption           *parameter.NullableObject[input_options.BigqueryInputOptionInput]           `json:"bigquery_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
@@ -108,6 +110,7 @@ type UpdateInputOptionInput struct {
 	SnowflakeInputOption          *parameter.NullableObject[input_options.UpdateSnowflakeInputOptionInput]          `json:"snowflake_input_option,omitempty"`
 	SalesforceInputOption         *parameter.NullableObject[input_options.UpdateSalesforceInputOptionInput]         `json:"salesforce_input_option,omitempty"`
 	GoogleSpreadsheetsInputOption *parameter.NullableObject[input_options.UpdateGoogleSpreadsheetsInputOptionInput] `json:"google_spreadsheets_input_option,omitempty"`
+	BigqueryInputOption           *parameter.NullableObject[input_options.UpdateBigqueryInputOptionInput]           `json:"bigquery_input_option,omitempty"`
 }
 
 type OutputOption struct {
