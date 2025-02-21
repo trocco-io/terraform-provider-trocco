@@ -200,8 +200,8 @@ resource "trocco_connection" "s3_with_assume_role" {
 - `description` (String) The description of the connection.
 - `driver` (String) Snowflake, MySQL, PostgreSQL: The name of a Database driver.
 Possible values are:
-    - MySQL: `` (not set), `mysql_connector_java_5_1_49`
-    - Snowflake: `` (not set), `snowflake_jdbc_3_14_2`, `snowflake_jdbc_3_17_0`
+    - MySQL: null, `mysql_connector_java_5_1_49`
+    - Snowflake: null, `snowflake_jdbc_3_14_2`, `snowflake_jdbc_3_17_0`
     - PostgreSQL: `postgresql_42_5_1`, `postgresql_9_4_1205_jdbc41`
 - `gateway` (Attributes) MySQL, PostgreSQL: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
 - `host` (String) Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.
