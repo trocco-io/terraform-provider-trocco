@@ -104,7 +104,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
 
 		// PostgreSQL Fields
-		Driver: m.Driver.ValueStringPointer(),
+		Driver: model.NewNullableString(m.Driver),
 	}
 
 	// SSL Fields
@@ -182,7 +182,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		AWSAuthType: m.AWSAuthType.ValueStringPointer(),
 
 		// PostgreSQL Fields
-		Driver: m.Driver.ValueStringPointer(),
+		Driver: model.NewNullableString(m.Driver),
 	}
 
 	// SSL Fields
@@ -569,10 +569,28 @@ func (r *connectionResource) Schema(
 
 			// PostgreSQL Fields
 			"driver": schema.StringAttribute{
-				MarkdownDescription: "PostgreSQL: The name of a PostgreSQL driver.",
-				Optional:            true,
+				MarkdownDescription: strings.Join(
+					[]string{
+						"Snowflake, MySQL, PostgreSQL: The name of a Database driver.",
+						"Possible values are:",
+						"    - MySQL: null, `mysql_connector_java_5_1_49`",
+						"    - Snowflake: null, `snowflake_jdbc_3_14_2`, `snowflake_jdbc_3_17_0`",
+						"    - PostgreSQL: `postgresql_42_5_1`, `postgresql_9_4_1205_jdbc41`",
+					},
+					"\n",
+				),
+				Optional: true,
 				Validators: []validator.String{
-					stringvalidator.OneOf("postgresql_42_5_1", "postgresql_9_4_1205_jdbc41"),
+					stringvalidator.OneOf(
+						// MySQL
+						"mysql_connector_java_5_1_49",
+						// Snowflake
+						"snowflake_jdbc_3_14_2",
+						"snowflake_jdbc_3_17_0",
+						// PostgreSQL
+						"postgresql_42_5_1",
+						"postgresql_9_4_1205_jdbc41",
+					),
 				},
 			},
 		},
