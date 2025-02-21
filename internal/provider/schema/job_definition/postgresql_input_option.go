@@ -35,6 +35,9 @@ func PostgresqlInputOptionSchema() schema.Attribute {
 			"query": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "If you want to use all record loading, specify it.",
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
 			},
 			"incremental_loading_enabled": schema.BoolAttribute{
 				Optional:            true,
@@ -45,14 +48,23 @@ func PostgresqlInputOptionSchema() schema.Attribute {
 			"table": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "table name. If you want to use incremental loading, specify it.",
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
 			},
 			"incremental_columns": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "Columns to determine incremental data",
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
 			},
 			"last_record": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "Last record transferred. The value of the column specified here is stored in “Last Transferred Record” for each transfer, and for the second and subsequent transfers, only records for which the value of the “Column for Determining Incremental Data” is greater than the value of the previous transfer (= “Last Transferred Record”) are transferred. If you wish to specify multiple columns, specify them separated by commas. If not specified, the primary key is used.",
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
 			},
 			"fetch_rows": schema.Int64Attribute{
 				Optional:            true,
@@ -86,6 +98,9 @@ func PostgresqlInputOptionSchema() schema.Attribute {
 				Computed:            true,
 				MarkdownDescription: "Default time zone. enter the server-side time zone setting for PostgreSQL. If the time zone is set to Japan, enter “Asia/Tokyo”.",
 				Default:             stringdefault.StaticString("UTC"),
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
 			},
 			"postgresql_connection_id": schema.Int64Attribute{
 				Required: true,
