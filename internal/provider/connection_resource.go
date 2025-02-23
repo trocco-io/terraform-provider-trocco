@@ -903,6 +903,7 @@ func (r *connectionResource) ValidateConfig(
 		if plan.AuthMethod.ValueString() == "user_password" {
 			validateRequiredString(plan.Password, "password", "Snowflake", resp)
 		}
+		validatePatterns(plan.Driver, "driver", "Snowflake", resp, "snowflake_jdbc_3_14_2", "snowflake_jdbc_3_17_0")
 	case "gcs":
 		validateRequiredString(plan.ApplicationName, "application_name", "GCS", resp)
 		validateRequiredString(plan.ServiceAccountEmail, "service_account_email", "GCS", resp)
@@ -914,6 +915,7 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredInt(plan.Port, "port", "MySQL", resp)
 		validateRequiredString(plan.UserName, "user_name", "MySQL", resp)
 		validateRequiredString(plan.Password, "password", "MySQL", resp)
+		validatePatterns(plan.Driver, "driver", "MySQL", resp, "mysql_connector_java_5_1_49")
 		if plan.Gateway != nil {
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "MySQL", resp)
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "MySQL", resp)
@@ -966,12 +968,35 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredInt(plan.Port, "port", "PostgreSQL", resp)
 		validateRequiredString(plan.UserName, "user_name", "PostgreSQL", resp)
 		validateRequiredString(plan.Driver, "driver", "PostgreSQL", resp)
+		validatePatterns(plan.Driver, "driver", "PostgreSQL", resp, "postgresql_42_5_1", "postgresql_9_4_1205_jdbc41")
 		if plan.Gateway != nil {
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "PostgreSQL", resp)
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "PostgreSQL", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "PostgreSQL", resp)
 		}
 	}
+}
+
+func validatePatterns(field types.String, fieldName, connectionType string, resp *resource.ValidateConfigResponse, patterns ...string) {
+	if field.IsNull() {
+		return
+	}
+
+	for _, pattern := range patterns {
+		if field.ValueString() == pattern {
+			return
+		}
+	}
+
+	resp.Diagnostics.AddError(
+		fieldName,
+		fmt.Sprintf("%s: `%s` is invalid for %s connection. Valid values are: %s",
+			fieldName,
+			field.ValueString(),
+			connectionType,
+			strings.Join(patterns, ", "),
+		),
+	)
 }
 
 func validateRequiredString(field types.String, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {
