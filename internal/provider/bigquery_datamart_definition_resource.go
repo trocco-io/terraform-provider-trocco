@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"terraform-provider-trocco/internal/client"
-	troccoModel "terraform-provider-trocco/internal/provider/model"
 	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
 	troccoValidator "terraform-provider-trocco/internal/provider/validator"
 
@@ -54,7 +53,7 @@ type bigqueryDatamartDefinitionModel struct {
 	Location               types.String                 `tfsdk:"location"`
 	Notifications          []datamartNotificationModel  `tfsdk:"notifications"`
 	Schedules              []scheduleModel              `tfsdk:"schedules"`
-	Labels                 []troccoModel.LabelModel     `tfsdk:"labels"`
+	Labels                 []labelModel                 `tfsdk:"labels"`
 }
 
 type customVariableSettingModel struct {
@@ -86,6 +85,11 @@ type scheduleModel struct {
 	Day       types.Int32  `tfsdk:"day"`
 	DayOfWeek types.Int32  `tfsdk:"day_of_week"`
 	TimeZone  types.String `tfsdk:"time_zone"`
+}
+
+type labelModel struct {
+	ID   types.Int64  `tfsdk:"id"`
+	Name types.String `tfsdk:"name"`
 }
 
 func (r *bigqueryDatamartDefinitionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -1009,9 +1013,9 @@ func parseToBigqueryDatamartDefinitionModel(response client.DatamartDefinition) 
 		model.Schedules = schedules
 	}
 	if response.Labels != nil {
-		labels := make([]troccoModel.LabelModel, len(response.Labels))
+		labels := make([]labelModel, len(response.Labels))
 		for i, v := range response.Labels {
-			labels[i] = troccoModel.LabelModel{
+			labels[i] = labelModel{
 				ID:   types.Int64Value(v.ID),
 				Name: types.StringValue(v.Name),
 			}
