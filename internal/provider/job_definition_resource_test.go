@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -242,6 +241,7 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
       bigquery_connection_id                     = trocco_connection.test_bq.id
       location                                   = "us-west1"
       bigquery_output_option_clustering_fields   = []
+      bigquery_output_option_column_options      = []
       bigquery_output_option_merge_keys          = []
     }
   }
@@ -264,7 +264,7 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					jobDefinitionId := s.RootModule().Resources["trocco_job_definition.mysql_to_bigquery"].Primary.ID
 
-					return fmt.Sprintf("job_definition,%s", jobDefinitionId), nil
+					return jobDefinitionId, nil
 				},
 			},
 		},
