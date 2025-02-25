@@ -1,10 +1,10 @@
 package job_definition
 
 import (
+	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
 )
 
 func InputOptionSchema() schema.Attribute {

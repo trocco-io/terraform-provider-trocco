@@ -109,7 +109,7 @@ func PostgresqlInputOptionSchema() schema.Attribute {
 				},
 				MarkdownDescription: "ID of Postgresql connection",
 			},
-			"postgresql_input_option_column_options": schema.ListNestedAttribute{
+			"input_option_column_options": schema.ListNestedAttribute{
 				Optional:            true,
 				MarkdownDescription: "List of unsupported data types and their convertible types",
 				NestedObject: schema.NestedAttributeObject{
