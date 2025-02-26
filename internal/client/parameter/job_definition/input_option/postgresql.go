@@ -22,11 +22,6 @@ type PostgreSQLInputOptionInput struct {
 	InputOptionColumnOptions  *[]InputOptionColumnOptions             `json:"input_option_column_options,omitempty"`
 }
 
-type InputOptionColumnOptions struct {
-	ColumnName      string `json:"column_name,omitempty"`
-	ColumnValueType string `json:"column_value_type,omitempty"`
-}
-
 type UpdatePostgreSQLInputOptionInput struct {
 	Database                  *string                                 `json:"database,omitempty"`
 	Schema                    *string                                 `json:"schema,omitempty"`
@@ -48,4 +43,9 @@ type UpdatePostgreSQLInputOptionInput struct {
 type PostgreSQLInputOptionColumn struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
+}
+
+type InputOptionColumnOptions struct {
+	ColumnName      string `json:"column_name,omitempty"`
+	ColumnValueType string `json:"column_value_type,omitempty"`
 }
