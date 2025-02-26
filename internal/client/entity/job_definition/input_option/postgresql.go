@@ -15,8 +15,14 @@ type PostgreSQLInputOption struct {
 	ConnectTimeout            int64                           `json:"connect_timeout"`
 	SocketTimeout             int64                           `json:"socket_timeout"`
 	DefaultTimeZone           string                          `json:"default_time_zone"`
-	InputOptionColumnOptions  *[]InputOptionColumnOptions     `json:"input_option_column_options"`
+	InputOptionColumns        []PostgreSQLInputOptionColumn   `json:"input_option_columns"`
 	CustomVariableSettings    *[]entity.CustomVariableSetting `json:"custom_variable_settings"`
+	InputOptionColumnOptions  *[]InputOptionColumnOptions     `json:"input_option_column_options"`
+}
+
+type PostgreSQLInputOptionColumn struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 type InputOptionColumnOptions struct {

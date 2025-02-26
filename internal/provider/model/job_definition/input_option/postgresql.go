@@ -21,13 +21,19 @@ type PostgreSQLInputOption struct {
 	ConnectTimeout            types.Int64                    `tfsdk:"connect_timeout"`
 	SocketTimeout             types.Int64                    `tfsdk:"socket_timeout"`
 	DefaultTimeZone           types.String                   `tfsdk:"default_time_zone"`
-	InputOptionColumnOptions  *[]InputOptionColumnOptions    `tfsdk:"input_option_column_options"`
+	InputOptionColumns        []PostgreSQLInputOptionColumn  `tfsdk:"input_option_columns"`
 	CustomVariableSettings    *[]model.CustomVariableSetting `tfsdk:"custom_variable_settings"`
+	InputOptionColumnOptions  *[]InputOptionColumnOptions    `tfsdk:"input_option_column_options"`
 }
 
 type InputOptionColumnOptions struct {
 	ColumnName      types.String `tfsdk:"column_name"`
 	ColumnValueType types.String `tfsdk:"column_value_type"`
+}
+
+type PostgreSQLInputOptionColumn struct {
+	Name types.String `tfsdk:"name"`
+	Type types.String `tfsdk:"type"`
 }
 
 func NewPostgreSQLInputOption(postgresqlInputOption *input_option.PostgreSQLInputOption) *PostgreSQLInputOption {
@@ -48,9 +54,25 @@ func NewPostgreSQLInputOption(postgresqlInputOption *input_option.PostgreSQLInpu
 		SocketTimeout:             types.Int64Value(postgresqlInputOption.SocketTimeout),
 		DefaultTimeZone:           types.StringValue(postgresqlInputOption.DefaultTimeZone),
 		PostgreSQLConnectionID:    types.Int64Value(postgresqlInputOption.PostgreSQLConnectionID),
+		InputOptionColumns:        newPostgresqlInputOptionColumns(postgresqlInputOption.InputOptionColumns),
 		InputOptionColumnOptions:  newInputOptionColumnOptions(postgresqlInputOption.InputOptionColumnOptions),
 		CustomVariableSettings:    model.NewCustomVariableSettings(postgresqlInputOption.CustomVariableSettings),
 	}
+}
+
+func newPostgresqlInputOptionColumns(inputOptionColumns []input_option.PostgreSQLInputOptionColumn) []PostgreSQLInputOptionColumn {
+	if inputOptionColumns == nil {
+		return nil
+	}
+	columns := make([]PostgreSQLInputOptionColumn, 0, len(inputOptionColumns))
+	for _, input := range inputOptionColumns {
+		column := PostgreSQLInputOptionColumn{
+			Name: types.StringValue(input.Name),
+			Type: types.StringValue(input.Type),
+		}
+		columns = append(columns, column)
+	}
+	return columns
 }
 
 func newInputOptionColumnOptions(InputOptions *[]input_option.InputOptionColumnOptions) *[]InputOptionColumnOptions {
@@ -86,6 +108,7 @@ func (postgresqlInputOption *PostgreSQLInputOption) ToInput() *param.PostgreSQLI
 		SocketTimeout:             postgresqlInputOption.SocketTimeout.ValueInt64(),
 		DefaultTimeZone:           postgresqlInputOption.DefaultTimeZone.ValueString(),
 		PostgreSQLConnectionID:    postgresqlInputOption.PostgreSQLConnectionID.ValueInt64(),
+		InputOptionColumns:        toPostgresqlInputOptionColumnsInput(postgresqlInputOption.InputOptionColumns),
 		InputOptionColumnOptions:  toInputOptionColumnOptions(postgresqlInputOption.InputOptionColumnOptions),
 		CustomVariableSettings:    model.ToCustomVariableSettingInputs(postgresqlInputOption.CustomVariableSettings),
 	}
@@ -108,9 +131,25 @@ func (postgresqlInputOption *PostgreSQLInputOption) ToUpdateInput() *param.Updat
 		SocketTimeout:             postgresqlInputOption.SocketTimeout.ValueInt64Pointer(),
 		DefaultTimeZone:           postgresqlInputOption.DefaultTimeZone.ValueStringPointer(),
 		PostgreSQLConnectionID:    postgresqlInputOption.PostgreSQLConnectionID.ValueInt64Pointer(),
+		InputOptionColumns:        toPostgresqlInputOptionColumnsInput(postgresqlInputOption.InputOptionColumns),
 		InputOptionColumnOptions:  toInputOptionColumnOptions(postgresqlInputOption.InputOptionColumnOptions),
 		CustomVariableSettings:    model.ToCustomVariableSettingInputs(postgresqlInputOption.CustomVariableSettings),
 	}
+}
+
+func toPostgresqlInputOptionColumnsInput(columns []PostgreSQLInputOptionColumn) []param.PostgreSQLInputOptionColumn {
+	if columns == nil {
+		return nil
+	}
+
+	inputs := make([]param.PostgreSQLInputOptionColumn, 0, len(columns))
+	for _, column := range columns {
+		inputs = append(inputs, param.PostgreSQLInputOptionColumn{
+			Name: column.Name.ValueString(),
+			Type: column.Type.ValueString(),
+		})
+	}
+	return inputs
 }
 
 func toInputOptionColumnOptions(columns *[]InputOptionColumnOptions) *[]param.InputOptionColumnOptions {

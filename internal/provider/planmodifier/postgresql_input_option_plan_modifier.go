@@ -39,12 +39,6 @@ func (d *PostgresqlInputOptionPlanModifier) PlanModifyObject(ctx context.Context
 		return
 	}
 
-	var incrementalColumns types.String
-	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("incremental_columns"), &incrementalColumns)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
 	var table types.String
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("table"), &table)...)
 	if resp.Diagnostics.HasError() {
@@ -56,14 +50,10 @@ func (d *PostgresqlInputOptionPlanModifier) PlanModifyObject(ctx context.Context
 			addPostgresqlInputOptionAttributeError(req, resp, "query is required when incremental_loading_enabled is false")
 		}
 
-		if !lastRecord.IsNull() || !incrementalColumns.IsNull() || !table.IsNull() {
-			addPostgresqlInputOptionAttributeError(req, resp, "last_record, incremental_columns, and table must be null when incremental_loading_enabled is false")
+		if !lastRecord.IsNull() {
+			addPostgresqlInputOptionAttributeError(req, resp, "last_record is only valid when incremental_loading_enabled is true")
 		}
 	} else {
-		if !query.IsNull() {
-			addPostgresqlInputOptionAttributeError(req, resp, "query must be null when incremental_loading_enabled is true")
-		}
-
 		if table.IsNull() {
 			addPostgresqlInputOptionAttributeError(req, resp, "table is required when incremental_loading_enabled is true")
 		}

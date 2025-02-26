@@ -4,6 +4,7 @@ import (
 	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -26,8 +27,10 @@ func PostgresqlInputOptionSchema() schema.Attribute {
 				},
 			},
 			"schema": schema.StringAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 				MarkdownDescription: "schema name",
+				Default:             stringdefault.StaticString("public"),
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
@@ -108,6 +111,31 @@ func PostgresqlInputOptionSchema() schema.Attribute {
 					int64validator.AtLeast(1),
 				},
 				MarkdownDescription: "ID of Postgresql connection",
+			},
+			"input_option_columns": schema.ListNestedAttribute{
+				Required:            true,
+				MarkdownDescription: "List of columns to be retrieved and their types",
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"name": schema.StringAttribute{
+							Required: true,
+							Validators: []validator.String{
+								stringvalidator.UTF8LengthAtLeast(1),
+							},
+							MarkdownDescription: "Column name",
+						},
+						"type": schema.StringAttribute{
+							Required:            true,
+							MarkdownDescription: "Column type",
+							Validators: []validator.String{
+								stringvalidator.OneOf("boolean", "long", "timestamp", "double", "string", "json"),
+							},
+						},
+					},
+				},
+				Validators: []validator.List{
+					listvalidator.SizeAtLeast(1),
+				},
 			},
 			"input_option_column_options": schema.ListNestedAttribute{
 				Optional:            true,

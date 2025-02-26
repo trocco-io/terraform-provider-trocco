@@ -17,8 +17,9 @@ type PostgreSQLInputOptionInput struct {
 	SocketTimeout             int64                                   `json:"socket_timeout"`
 	DefaultTimeZone           string                                  `json:"default_time_zone"`
 	PostgreSQLConnectionID    int64                                   `json:"postgresql_connection_id"`
-	InputOptionColumnOptions  *[]InputOptionColumnOptions             `json:"input_option_column_options,omitempty"`
+	InputOptionColumns        []PostgreSQLInputOptionColumn           `json:"input_option_columns"`
 	CustomVariableSettings    *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
+	InputOptionColumnOptions  *[]InputOptionColumnOptions             `json:"input_option_column_options,omitempty"`
 }
 
 type InputOptionColumnOptions struct {
@@ -39,6 +40,12 @@ type UpdatePostgreSQLInputOptionInput struct {
 	SocketTimeout             *int64                                  `json:"socket_timeout,omitempty"`
 	DefaultTimeZone           *string                                 `json:"default_time_zone,omitempty"`
 	PostgreSQLConnectionID    *int64                                  `json:"postgresql_connection_id,omitempty"`
-	InputOptionColumnOptions  *[]InputOptionColumnOptions             `json:"input_option_column_options,omitempty"`
+	InputOptionColumns        []PostgreSQLInputOptionColumn           `json:"input_option_columns"`
 	CustomVariableSettings    *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
+	InputOptionColumnOptions  *[]InputOptionColumnOptions             `json:"input_option_column_options,omitempty"`
+}
+
+type PostgreSQLInputOptionColumn struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
