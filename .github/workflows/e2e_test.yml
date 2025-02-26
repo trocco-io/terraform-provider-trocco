@@ -2,11 +2,15 @@ name: E2E tests
 
 on:
   push:
-    branches:
-      - main
+    paths-ignore:
+      - "README.md"
+      - docs/**
+      - examples/**
   pull_request:
-    branches:
-      - main
+    paths-ignore:
+      - "README.md"
+      - docs/**
+      - examples/**
 
 permissions:
   contents: read
