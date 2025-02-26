@@ -11,6 +11,8 @@ on:
       - "README.md"
       - docs/**
       - examples/**
+    branches:
+      - main
 
 permissions:
   contents: read
