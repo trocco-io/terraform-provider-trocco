@@ -998,6 +998,24 @@ resource "trocco_job_definition" "postgresql_input_example" {
         {
           column_name : "test"
           column_value_type : "string"
+        }
+      ]
+      input_option_columns = [
+        {
+          name = "id"
+          type = "long"
+        },
+        {
+          name = "name"
+          type = "string"
+        },
+        {
+          name = "email"
+          type = "string"
+        },
+        {
+          name = "test"
+          type = "string"
         },
       ]
     }
