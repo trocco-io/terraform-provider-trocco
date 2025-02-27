@@ -1,15 +1,12 @@
 package job_definition
 
 import (
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
-
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
@@ -132,9 +129,6 @@ func BigqueryInputOptionSchema() schema.Attribute {
 			},
 			"decoder":                  DecoderSchema(),
 			"custom_variable_settings": CustomVariableSettingsSchema(),
-		},
-		PlanModifiers: []planmodifier.Object{
-			&planmodifier2.BigqueryInputOptionPlanModifier{},
 		},
 	}
 }
