@@ -6,6 +6,7 @@ FEATURES:
 
 CHORE:
 - Fix datamart label change
+- Fix examples in sample label color
 - Update documentation & examples
 - Added E2E testings with GitHub Actions
 
