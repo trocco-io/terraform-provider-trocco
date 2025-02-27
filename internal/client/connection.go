@@ -109,7 +109,7 @@ type CreateConnectionInput struct {
 	SSLClientCa  *string                   `json:"ssl_client_ca,omitempty"`
 	SSLClientKey *string                   `json:"ssl_client_key,omitempty"`
 	SSLMode      *parameter.NullableString `json:"ssl_mode,omitempty"`
-	Driver       *string                   `json:"driver,omitempty"`
+	Driver       *parameter.NullableString `json:"driver,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -163,7 +163,7 @@ type UpdateConnectionInput struct {
 	SSLClientCa  *string                   `json:"ssl_client_ca,omitempty"`
 	SSLClientKey *string                   `json:"ssl_client_key,omitempty"`
 	SSLMode      *parameter.NullableString `json:"ssl_mode,omitempty"`
-	Driver       *string                   `json:"driver,omitempty"`
+	Driver       *parameter.NullableString `json:"driver,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {
