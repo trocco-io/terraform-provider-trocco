@@ -1,11 +1,6 @@
 name: E2E tests
 
 on:
-  push:
-    paths-ignore:
-      - "README.md"
-      - docs/**
-      - examples/**
   pull_request:
     paths-ignore:
       - "README.md"
