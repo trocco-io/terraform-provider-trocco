@@ -273,7 +273,7 @@ func (r *connectionResource) Schema(
 		Attributes: map[string]schema.Attribute{
 			// Common Fields
 			"connection_type": schema.StringAttribute{
-				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, or `s3`.",
+				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, or `postgresql`.",
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
@@ -307,7 +307,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"resource_group_id": schema.Int64Attribute{
-				MarkdownDescription: "The ID of the resource group the connection belongs to.",
+				MarkdownDescription: "The ID of the resource group that the connection belongs to.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
@@ -333,14 +333,14 @@ func (r *connectionResource) Schema(
 
 			// Snowflake Fields
 			"host": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.",
+				MarkdownDescription: "Snowflake, PostgreSQL: The host of a Snowflake or PostgreSQL account.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
 			"user_name": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.",
+				MarkdownDescription: "Snowflake, PostgreSQL: The name of a Snowflake or PostgreSQL user.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
@@ -361,7 +361,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"password": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL: The password for the (Snowflake, PostgreSQL) user.",
+				MarkdownDescription: "Snowflake, PostgreSQL: The password for the Snowflake or PostgreSQL user.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -396,7 +396,7 @@ func (r *connectionResource) Schema(
 
 			// MySQL Fields
 			"port": schema.Int64Attribute{
-				MarkdownDescription: "MySQL, PostgreSQL: The port of the (MySQL, PostgreSQL) server.",
+				MarkdownDescription: "MySQL, PostgreSQL: The port of the MySQL or PostgreSQL server.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
@@ -409,7 +409,7 @@ func (r *connectionResource) Schema(
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"ca": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: CA certificate",
+						MarkdownDescription: "MySQL, PostgreSQL: CA certificate.",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -419,7 +419,7 @@ func (r *connectionResource) Schema(
 						Default:  stringdefault.StaticString(""),
 					},
 					"cert": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: Certificate (CRT file)",
+						MarkdownDescription: "MySQL, PostgreSQL: Certificate (CRT file).",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -429,7 +429,7 @@ func (r *connectionResource) Schema(
 						Default:  stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: Key (KEY file)",
+						MarkdownDescription: "MySQL, PostgreSQL: Key (KEY file).",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -448,11 +448,11 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"gateway": schema.SingleNestedAttribute{
-				MarkdownDescription: "MySQL, PostgreSQL: Whether to connect via SSH",
+				MarkdownDescription: "MySQL, PostgreSQL: Whether to connect via SSH.",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"host": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Host",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Host.",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -460,7 +460,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"port": schema.Int64Attribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Port",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Port.",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.Int64{
@@ -469,7 +469,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"user_name": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH User",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH User.",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -477,21 +477,21 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"password": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Password",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Password.",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Private Key",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Private Key.",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key_passphrase": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Private Key Passphrase",
+						MarkdownDescription: "MySQL, PostgreSQL: SSH Private Key Passphrase.",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,

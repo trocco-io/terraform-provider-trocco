@@ -86,32 +86,32 @@ func (r *jobDefinitionResource) Configure(
 
 func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Provides a TROCCO job definitions.",
+		MarkdownDescription: "Provides a TROCCO job definition.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				Computed: true,
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: "The ID of the job definition",
+				MarkdownDescription: "The ID of the job definition.",
 			},
 			"name": schema.StringAttribute{
 				Required: true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtMost(255),
 				},
-				MarkdownDescription: "Name of the job definition. It must be less than 256 characters",
+				MarkdownDescription: "The name of the job definition. It must be less than 256 characters.",
 			},
 			"description": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Description of the job definition.",
+				MarkdownDescription: "The description of the job definition.",
 			},
 			"resource_group_id": schema.Int64Attribute{
 				Optional: true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
-				MarkdownDescription: "ID of the resource group to which the job definition belongs",
+				MarkdownDescription: "The ID of the resource group to which the job definition belongs.",
 			},
 			"resource_enhancement": schema.StringAttribute{
 				Optional: true,
@@ -119,7 +119,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: "Resource size to be used when executing the job. If not specified, the resource size specified in the transfer settings is applied. The value that can be specified varies depending on the connector. (This parameter is available only in the Professional plan.",
+				MarkdownDescription: "The resource size to be used when executing the job. If not specified, the resource size specified in the transfer settings is applied. The value that can be specified varies depending on the connector. This parameter is available only in the Professional plan.",
 				Validators: []validator.String{
 					stringvalidator.OneOf("medium", "custom_spec", "large", "xlarge"),
 				},
@@ -128,7 +128,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				Optional:            true,
 				Computed:            true,
 				Default:             booldefault.StaticBool(false),
-				MarkdownDescription: "Specifies whether or not to run a job if another job with the same job definition is running at the time the job is run",
+				MarkdownDescription: "Specifies whether to run a job if another job with the same job definition is running at the time the job is run.",
 			},
 			"retry_limit": schema.Int64Attribute{
 				Optional: true,
@@ -137,7 +137,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				Validators: []validator.Int64{
 					int64validator.Between(0, 10),
 				},
-				MarkdownDescription: "Maximum number of retries. if set 0, the job will not be retried",
+				MarkdownDescription: "The maximum number of retries. If set to 0, the job will not be retried.",
 			},
 			"input_option_type": schema.StringAttribute{
 				Required: true,
@@ -147,7 +147,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: "Input option type.",
+				MarkdownDescription: "The input option type.",
 			},
 			"input_option": job_definition.InputOptionSchema(),
 			"output_option_type": schema.StringAttribute{
@@ -158,7 +158,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: "Output option type.",
+				MarkdownDescription: "The output option type.",
 			},
 			"output_option":               job_definition.OutputOptionSchema(),
 			"filter_columns":              filters.FilterColumnsSchema(),
