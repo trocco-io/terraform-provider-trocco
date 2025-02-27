@@ -17,7 +17,6 @@ func TestAccConnectionResource(t *testing.T) {
 				Config: providerConfig + `
 					resource "trocco_connection" "test" {
 					  connection_type = "bigquery"
-
 					  name = "test"
 					  description = "The quick brown fox jumps over the lazy dog."
 					  project_id = "test"
