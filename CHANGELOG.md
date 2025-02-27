@@ -7,7 +7,7 @@ FEATURES:
 CHORE:
 - Fix datamart label change
 - Update documentation & examples
-- Added E2E testings in GitHub Actions
+- Added E2E testings with GitHub Actions
 
 ## 0.8.0
 FEATURES:
