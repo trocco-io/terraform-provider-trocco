@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -21,6 +22,16 @@ func (d *PostgresqlInputOptionPlanModifier) MarkdownDescription(ctx context.Cont
 }
 
 func (d *PostgresqlInputOptionPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
+
+	var inputOptionType types.String
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("input_option_type"), &inputOptionType)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if inputOptionType.ValueString() != "postgresql" {
+		return
+	}
+
 	var incrementalLoadingEnabled types.Bool
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("incremental_loading_enabled"), &incrementalLoadingEnabled)...)
 	if resp.Diagnostics.HasError() {

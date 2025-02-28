@@ -17,7 +17,7 @@ type PostgreSQLInputOption struct {
 	DefaultTimeZone           string                          `json:"default_time_zone"`
 	InputOptionColumns        []PostgreSQLInputOptionColumn   `json:"input_option_columns"`
 	CustomVariableSettings    *[]entity.CustomVariableSetting `json:"custom_variable_settings"`
-	InputOptionColumnOptions  *[]InputOptionColumnOptions     `json:"input_option_column_options"`
+	InputOptionColumnOptions  []InputOptionColumnOptions      `json:"input_option_column_options"`
 }
 
 type PostgreSQLInputOptionColumn struct {
