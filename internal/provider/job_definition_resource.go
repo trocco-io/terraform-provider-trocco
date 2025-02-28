@@ -198,7 +198,7 @@ type jobDefinitionResourceModel struct {
 	FilterUnixTimeConversions []filter.FilterUnixTimeConversion           `tfsdk:"filter_unixtime_conversions"`
 	Notifications             []job_definitions.JobDefinitionNotification `tfsdk:"notifications"`
 	Schedules                 []model.Schedule                            `tfsdk:"schedules"`
-	Labels                    []model.LabelModel                          `tfsdk:"labels"`
+	Labels                    []job_definitions.Label                     `tfsdk:"labels"`
 }
 
 func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.CreateJobDefinitionInput {
@@ -325,7 +325,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
 		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
 		Schedules:                 model.NewSchedules(jobDefinition.Schedules),
-		Labels:                    model.NewLabels(jobDefinition.Labels),
+		Labels:                    job_definitions.NewLabels(jobDefinition.Labels),
 	}
 	response.Diagnostics.Append(response.State.Set(ctx, newState)...)
 }
@@ -450,7 +450,7 @@ func (r *jobDefinitionResource) Create(
 		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
 		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
 		Schedules:                 model.NewSchedules(jobDefinition.Schedules),
-		Labels:                    model.NewLabels(jobDefinition.Labels),
+		Labels:                    job_definitions.NewLabels(jobDefinition.Labels),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -497,8 +497,9 @@ func (r *jobDefinitionResource) Read(
 		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
 		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
 		Schedules:                 model.NewSchedules(jobDefinition.Schedules),
-		Labels:                    model.NewLabels(jobDefinition.Labels),
+		Labels:                    job_definitions.NewLabels(jobDefinition.Labels),
 	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 
