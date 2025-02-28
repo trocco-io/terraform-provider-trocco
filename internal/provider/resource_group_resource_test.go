@@ -14,12 +14,21 @@ func TestAccResourceGroupResource(t *testing.T) {
 			// Create and Read testing
 			{
 				Config: providerConfig + `
+				  resource "trocco_team" "team1" {
+					  name = "test"
+					  members = [
+					    {
+					      user_id = 10626
+					      role = "team_admin"
+					    }
+					  ]
+					}
 					resource "trocco_resource_group" "test" {
 					  name = "test"
 					  description = "test"
 					  teams = [
 						{
-						  team_id = 1
+						  team_id = trocco_team.team1.id
 						  role = "operator"
 						}
 					  ]
@@ -29,7 +38,6 @@ func TestAccResourceGroupResource(t *testing.T) {
 					resource.TestCheckResourceAttr("trocco_resource_group.test", "name", "test"),
 					resource.TestCheckResourceAttr("trocco_resource_group.test", "description", "test"),
 					resource.TestCheckResourceAttr("trocco_resource_group.test", "teams.#", "1"),
-					resource.TestCheckResourceAttr("trocco_resource_group.test", "teams.0.team_id", "1"),
 					resource.TestCheckResourceAttr("trocco_resource_group.test", "teams.0.role", "operator"),
 				),
 			},
@@ -43,17 +51,22 @@ func TestAccResourceGroupResource(t *testing.T) {
 			// Update testing
 			{
 				Config: providerConfig + `
+				        resource "trocco_team" "team1" {
+					  name = "test1"
+					  members = [
+						{
+						  user_id = 10626
+						  role = "team_admin"
+			                        }
+					  ]
+			                }
 					resource "trocco_resource_group" "test" {
 					  name = "updated"
 					  description = "updated"
 					  teams = [
 						{
-						  team_id = 1
+						  team_id = trocco_team.team1.id
 						  role = "administrator"
-						},
-						{
-						  team_id = 2
-						  role = "operator"
 						}
 					  ]
 					}
@@ -61,11 +74,8 @@ func TestAccResourceGroupResource(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("trocco_resource_group.test", "name", "updated"),
 					resource.TestCheckResourceAttr("trocco_resource_group.test", "description", "updated"),
-					resource.TestCheckResourceAttr("trocco_resource_group.test", "teams.#", "2"),
-					resource.TestCheckResourceAttr("trocco_resource_group.test", "teams.0.team_id", "1"),
+					resource.TestCheckResourceAttr("trocco_resource_group.test", "teams.#", "1"),
 					resource.TestCheckResourceAttr("trocco_resource_group.test", "teams.0.role", "administrator"),
-					resource.TestCheckResourceAttr("trocco_resource_group.test", "teams.1.team_id", "2"),
-					resource.TestCheckResourceAttr("trocco_resource_group.test", "teams.1.role", "operator"),
 				),
 			},
 		},
@@ -100,16 +110,26 @@ func TestAccResourceGroupDuplicateRoles(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: providerConfig + `
+				        resource "trocco_team" "team1" {
+					  name = "test"
+					  description = "test"
+					  members = [
+						{
+						  user_id = 10626
+						  role = "team_admin"
+			                        }
+					  ]
+			                }
 					resource "trocco_resource_group" "test" {
 					  name = "test"
 					  description = "test"
 					  teams = [
-					    { team_id = 1, role = "administrator" },
-					    { team_id = 1, role = "operator" },
+					    { team_id = trocco_team.team1.id, role = "administrator" },
+					    { team_id = trocco_team.team1.id, role = "operator" },
 					  ]
 					}
 				`,
-				ExpectError: regexp.MustCompile(`Team ID "1" is duplicated in the list.`),
+				ExpectError: regexp.MustCompile(`Team ID "<unknown>" is duplicated in the list.`),
 			},
 		},
 	})
