@@ -3,12 +3,12 @@
 page_title: "trocco_resource_group Resource - trocco"
 subcategory: ""
 description: |-
-  Provides a TROCCO resource_group resource.
+  Provides a TROCCO resource group resource.
 ---
 
 # trocco_resource_group (Resource)
 
-Provides a TROCCO resource_group resource.
+Provides a TROCCO resource group resource.
 
 ## Example Usage
 
@@ -50,7 +50,7 @@ resource "trocco_resource_group" "example" {
 
 Required:
 
-- `role` (String) The role of the team. Valid values are `administrator`, `editor`, `operator`, `viewer`.
+- `role` (String) The role of the team. Valid values are `administrator`, `editor`, `operator`, and `viewer`.
 - `team_id` (Number) The team ID of the role.
 
 ## Import

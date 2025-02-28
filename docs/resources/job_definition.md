@@ -2,12 +2,12 @@
 page_title: "trocco_job_definition Resource - trocco"
 subcategory: ""
 description: |-
-  Provides a TROCCO job definitions.
+  Provides a TROCCO job definition.
 ---
 
 # trocco_job_definition (Resource)
 
-Provides a TROCCO job definitions.
+Provides a TROCCO job definition.
 
 ## Example Usage
 
@@ -1081,14 +1081,14 @@ resource "trocco_job_definition" "schedules" {
 
 - `filter_columns` (Attributes List) (see [below for nested schema](#nestedatt--filter_columns))
 - `input_option` (Attributes) (see [below for nested schema](#nestedatt--input_option))
-- `input_option_type` (String) Input option type.
-- `name` (String) Name of the job definition. It must be less than 256 characters
+- `input_option_type` (String) The input option type.
+- `name` (String) The name of the job definition. It must be less than 256 characters.
 - `output_option` (Attributes) (see [below for nested schema](#nestedatt--output_option))
-- `output_option_type` (String) Output option type.
+- `output_option_type` (String) The output option type.
 
 ### Optional
 
-- `description` (String) Description of the job definition.
+- `description` (String) The description of the job definition.
 - `filter_add_time` (Attributes) Transfer Date Column Setting (see [below for nested schema](#nestedatt--filter_add_time))
 - `filter_gsub` (Attributes List) String Regular Expression Replacement (see [below for nested schema](#nestedatt--filter_gsub))
 - `filter_hashes` (Attributes List) Column hashing (see [below for nested schema](#nestedatt--filter_hashes))
@@ -1096,17 +1096,17 @@ resource "trocco_job_definition" "schedules" {
 - `filter_rows` (Attributes) Filter settings (see [below for nested schema](#nestedatt--filter_rows))
 - `filter_string_transforms` (Attributes List) Character string conversion (see [below for nested schema](#nestedatt--filter_string_transforms))
 - `filter_unixtime_conversions` (Attributes List) UNIX time conversion (see [below for nested schema](#nestedatt--filter_unixtime_conversions))
-- `is_runnable_concurrently` (Boolean) Specifies whether or not to run a job if another job with the same job definition is running at the time the job is run
+- `is_runnable_concurrently` (Boolean) Specifies whether to run a job if another job with the same job definition is running at the time the job is run.
 - `labels` (Attributes Set) Labels to be attached to the job definition (see [below for nested schema](#nestedatt--labels))
 - `notifications` (Attributes Set) Notifications to be attached to the job definition (see [below for nested schema](#nestedatt--notifications))
-- `resource_enhancement` (String) Resource size to be used when executing the job. If not specified, the resource size specified in the transfer settings is applied. The value that can be specified varies depending on the connector. (This parameter is available only in the Professional plan.
-- `resource_group_id` (Number) ID of the resource group to which the job definition belongs
-- `retry_limit` (Number) Maximum number of retries. if set 0, the job will not be retried
+- `resource_enhancement` (String) The resource size to be used when executing the job. If not specified, the resource size specified in the transfer settings is applied. The value that can be specified varies depending on the connector. This parameter is available only in the Professional plan.
+- `resource_group_id` (Number) The ID of the resource group to which the job definition belongs.
+- `retry_limit` (Number) The maximum number of retries. If set to 0, the job will not be retried.
 - `schedules` (Attributes Set) Schedules to be attached to the job definition (see [below for nested schema](#nestedatt--schedules))
 
 ### Read-Only
 
-- `id` (Number) The ID of the job definition
+- `id` (Number) The ID of the job definition.
 
 <a id="nestedatt--filter_columns"></a>
 ### Nested Schema for `filter_columns`
