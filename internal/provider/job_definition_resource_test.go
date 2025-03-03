@@ -245,6 +245,16 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
       bigquery_output_option_merge_keys          = []
     }
   }
+  # please create labels if testing in local environment
+  # see https://trocco.io/labels#side-nav-labels
+  labels = [
+    {
+      name = "label1"
+    },
+    {
+      name = "label2"
+    },
+  ]
 }
 
 				`,
