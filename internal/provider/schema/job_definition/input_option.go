@@ -17,6 +17,7 @@ func InputOptionSchema() schema.Attribute {
 			"salesforce_input_option":          SalesforceInputOptionSchema(),
 			"google_spreadsheets_input_option": GoogleSpreadsheetsInputOptionSchema(),
 			"s3_input_option":                  S3InputOptionSchema(),
+			"bigquery_input_option":            BigqueryInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planmodifier2.InputOptionPlanModifier{},

@@ -13,6 +13,7 @@ type InputOption struct {
 	SalesforceInputOption         *input_options.SalesforceInputOption         `tfsdk:"salesforce_input_option"`
 	GoogleSpreadsheetsInputOption *input_options.GoogleSpreadsheetsInputOption `tfsdk:"google_spreadsheets_input_option"`
 	S3InputOption                 *input_options.S3InputOption                 `tfsdk:"s3_input_option"`
+	BigqueryInputOption           *input_options.BigqueryInputOption           `tfsdk:"bigquery_input_option"`
 }
 
 func NewInputOption(inputOption client.InputOption) *InputOption {
@@ -23,6 +24,7 @@ func NewInputOption(inputOption client.InputOption) *InputOption {
 		SalesforceInputOption:         input_options.NewSalesforceInputOption(inputOption.SalesforceInputOption),
 		GoogleSpreadsheetsInputOption: input_options.NewGoogleSpreadsheetsInputOption(inputOption.GoogleSpreadsheetsInputOption),
 		S3InputOption:                 input_options.NewS3InputOption(inputOption.S3InputOption),
+		BigqueryInputOption:           input_options.NewBigqueryInputOption(inputOption.BigqueryInputOption),
 	}
 }
 
@@ -34,6 +36,7 @@ func (o InputOption) ToInput() client.InputOptionInput {
 		SalesforceInputOption:         model.WrapObject(o.SalesforceInputOption.ToInput()),
 		GoogleSpreadsheetsInputOption: model.WrapObject(o.GoogleSpreadsheetsInputOption.ToInput()),
 		S3InputOption:                 model.WrapObject(o.S3InputOption.ToInput()),
+		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToInput()),
 	}
 }
 
@@ -45,5 +48,6 @@ func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
 		SalesforceInputOption:         model.WrapObject(o.SalesforceInputOption.ToUpdateInput()),
 		GoogleSpreadsheetsInputOption: model.WrapObject(o.GoogleSpreadsheetsInputOption.ToUpdateInput()),
 		S3InputOption:                 model.WrapObject(o.S3InputOption.ToUpdateInput()),
+		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToUpdateInput()),
 	}
 }

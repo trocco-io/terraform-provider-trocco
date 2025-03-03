@@ -747,6 +747,36 @@ resource "trocco_job_definition" "decoder_example" {
 
 ### InputOptions
 
+#### BigqueryInputOption
+
+```terraform
+resource "trocco_job_definition" "bigquery_input_example" {
+  input_option_type = "bigquery"
+  input_option = {
+    bigquery_input_option = {
+      bigquery_connection_id   = 1
+      gcs_uri                  = "test_bucket"
+      gcs_uri_format           = "bucket"
+      query                    = "SELECT * FROM `test_dataset.test_table`"
+      temp_dataset             = "temp_dataset"
+      location                 = "asia-northeast1"
+      is_standard_sql          = true
+      cleanup_gcs_files        = true
+      file_format              = "CSV"
+      cache                    = true
+      bigquery_job_wait_second = 600
+
+      columns = [
+        {
+          name = "col1__c"
+          type = "string"
+        }
+      ]
+    }
+  }
+}
+```
+
 #### MysqlInputOption
 
 ```terraform
@@ -1205,12 +1235,76 @@ Optional:
 
 Optional:
 
+- `bigquery_input_option` (Attributes) Attributes about source bigquery (see [below for nested schema](#nestedatt--input_option--bigquery_input_option))
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
 - `google_spreadsheets_input_option` (Attributes) Attributes about source Google Spreadsheets (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
 - `s3_input_option` (Attributes) Attributes about source S3 (see [below for nested schema](#nestedatt--input_option--s3_input_option))
 - `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
+
+<a id="nestedatt--input_option--bigquery_input_option"></a>
+### Nested Schema for `input_option.bigquery_input_option`
+
+Required:
+
+- `bigquery_connection_id` (Number) Id of bigquery connection
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--bigquery_input_option--columns))
+- `gcs_uri` (String) GCS URI
+- `query` (String) Query
+- `temp_dataset` (String) Temporary dataset name
+
+Optional:
+
+- `bigquery_job_wait_second` (Number) Wait time in seconds until bigquery job is completed
+- `cache` (Boolean) Flag whether query cache is enabled
+- `cleanup_gcs_files` (Boolean) Flag whether temporary GCS files should be cleaned up
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--bigquery_input_option--custom_variable_settings))
+- `decoder` (Attributes) (see [below for nested schema](#nestedatt--input_option--bigquery_input_option--decoder))
+- `file_format` (String) File format of temporary GCS files
+- `gcs_uri_format` (String) Format of GCS URI
+- `is_standard_sql` (Boolean) Flag whether standard SQL is enabled
+- `location` (String) Location of bigquery job
+
+<a id="nestedatt--input_option--bigquery_input_option--columns"></a>
+### Nested Schema for `input_option.bigquery_input_option.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type.
+
+Optional:
+
+- `format` (String) format
+
+
+<a id="nestedatt--input_option--bigquery_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.bigquery_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--bigquery_input_option--decoder"></a>
+### Nested Schema for `input_option.bigquery_input_option.decoder`
+
+Optional:
+
+- `match_name` (String) Relative path after decompression (regular expression). If not entered, all data in the compressed file will be transferred.
+
+
 
 <a id="nestedatt--input_option--gcs_input_option"></a>
 ### Nested Schema for `input_option.gcs_input_option`
