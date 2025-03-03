@@ -9,6 +9,7 @@ CHORE:
 - Fix examples in sample label color
 - Update documentation & examples
 - Added E2E testings with GitHub Actions
+- Fix problems on importing trocco_job_definition
 
 ## 0.8.0
 FEATURES:
