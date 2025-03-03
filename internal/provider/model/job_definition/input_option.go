@@ -12,6 +12,8 @@ type InputOption struct {
 	SnowflakeInputOption          *input_options.SnowflakeInputOption          `tfsdk:"snowflake_input_option"`
 	SalesforceInputOption         *input_options.SalesforceInputOption         `tfsdk:"salesforce_input_option"`
 	GoogleSpreadsheetsInputOption *input_options.GoogleSpreadsheetsInputOption `tfsdk:"google_spreadsheets_input_option"`
+	S3InputOption                 *input_options.S3InputOption                 `tfsdk:"s3_input_option"`
+	BigqueryInputOption           *input_options.BigqueryInputOption           `tfsdk:"bigquery_input_option"`
 }
 
 func NewInputOption(inputOption client.InputOption) *InputOption {
@@ -21,6 +23,8 @@ func NewInputOption(inputOption client.InputOption) *InputOption {
 		SnowflakeInputOption:          input_options.NewSnowflakeInputOption(inputOption.SnowflakeInputOption),
 		SalesforceInputOption:         input_options.NewSalesforceInputOption(inputOption.SalesforceInputOption),
 		GoogleSpreadsheetsInputOption: input_options.NewGoogleSpreadsheetsInputOption(inputOption.GoogleSpreadsheetsInputOption),
+		S3InputOption:                 input_options.NewS3InputOption(inputOption.S3InputOption),
+		BigqueryInputOption:           input_options.NewBigqueryInputOption(inputOption.BigqueryInputOption),
 	}
 }
 
@@ -31,6 +35,8 @@ func (o InputOption) ToInput() client.InputOptionInput {
 		SnowflakeInputOption:          model.WrapObject(o.SnowflakeInputOption.ToInput()),
 		SalesforceInputOption:         model.WrapObject(o.SalesforceInputOption.ToInput()),
 		GoogleSpreadsheetsInputOption: model.WrapObject(o.GoogleSpreadsheetsInputOption.ToInput()),
+		S3InputOption:                 model.WrapObject(o.S3InputOption.ToInput()),
+		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToInput()),
 	}
 }
 
@@ -41,5 +47,7 @@ func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
 		SnowflakeInputOption:          model.WrapObject(o.SnowflakeInputOption.ToUpdateInput()),
 		SalesforceInputOption:         model.WrapObject(o.SalesforceInputOption.ToUpdateInput()),
 		GoogleSpreadsheetsInputOption: model.WrapObject(o.GoogleSpreadsheetsInputOption.ToUpdateInput()),
+		S3InputOption:                 model.WrapObject(o.S3InputOption.ToUpdateInput()),
+		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToUpdateInput()),
 	}
 }
