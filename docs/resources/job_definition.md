@@ -973,6 +973,11 @@ resource "trocco_job_definition" "s3_input_example" {
       region                      = "ap-northeast-1"
       s3_connection_id            = 1 # please set your s3 connection id
       stop_when_file_not_found    = false
+    }
+  }
+}
+```
+
 #### PostgresqlInputOption
 
 ```terraform
@@ -1023,10 +1028,6 @@ resource "trocco_job_definition" "postgresql_input_example" {
 }
 ```
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 76d0db7 (add postgresql job definition)
 ### OutputOptions
 
 #### BigqueryOutputOption
@@ -1287,8 +1288,8 @@ Optional:
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
 - `google_spreadsheets_input_option` (Attributes) Attributes about source Google Spreadsheets (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
-- `s3_input_option` (Attributes) Attributes about source S3 (see [below for nested schema](#nestedatt--input_option--s3_input_option))
 - `postgresql_input_option` (Attributes) Attributes of source postgresql (see [below for nested schema](#nestedatt--input_option--postgresql_input_option))
+- `s3_input_option` (Attributes) Attributes about source S3 (see [below for nested schema](#nestedatt--input_option--s3_input_option))
 - `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
 
@@ -1705,6 +1706,67 @@ Optional:
 
 
 
+<a id="nestedatt--input_option--postgresql_input_option"></a>
+### Nested Schema for `input_option.postgresql_input_option`
+
+Required:
+
+- `database` (String) database name
+- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--postgresql_input_option--input_option_columns))
+- `postgresql_connection_id` (Number) ID of Postgresql connection
+
+Optional:
+
+- `connect_timeout` (Number) Connection timeout (sec)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--postgresql_input_option--custom_variable_settings))
+- `default_time_zone` (String) Default time zone. enter the server-side time zone setting for PostgreSQL. If the time zone is set to Japan, enter “Asia/Tokyo”.
+- `fetch_rows` (Number) Number of records processed by the cursor at one time
+- `incremental_columns` (String) Columns to determine incremental data
+- `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
+- `input_option_column_options` (Attributes List) List of unsupported data types and their convertible types (see [below for nested schema](#nestedatt--input_option--postgresql_input_option--input_option_column_options))
+- `last_record` (String) Last record transferred. The value of the column specified here is stored in “Last Transferred Record” for each transfer, and for the second and subsequent transfers, only records for which the value of the “Column for Determining Incremental Data” is greater than the value of the previous transfer (= “Last Transferred Record”) are transferred. If you wish to specify multiple columns, specify them separated by commas. If not specified, the primary key is used.
+- `query` (String) If you want to use all record loading, specify it.
+- `schema` (String) schema name
+- `socket_timeout` (Number) Socket timeout (seconds)
+- `table` (String) table name. If you want to use incremental loading, specify it.
+
+<a id="nestedatt--input_option--postgresql_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.postgresql_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+
+<a id="nestedatt--input_option--postgresql_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.postgresql_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--postgresql_input_option--input_option_column_options"></a>
+### Nested Schema for `input_option.postgresql_input_option.input_option_column_options`
+
+Required:
+
+- `column_name` (String) Column name
+- `column_value_type` (String) Column value type
+
+
+
 <a id="nestedatt--input_option--s3_input_option"></a>
 ### Nested Schema for `input_option.s3_input_option`
 
@@ -1776,41 +1838,6 @@ Optional:
 
 <a id="nestedatt--input_option--s3_input_option--custom_variable_settings"></a>
 ### Nested Schema for `input_option.s3_input_option.custom_variable_settings`
-<a id="nestedatt--input_option--postgresql_input_option"></a>
-### Nested Schema for `input_option.postgresql_input_option`
-
-Required:
-
-- `database` (String) database name
-- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--postgresql_input_option--input_option_columns))
-- `postgresql_connection_id` (Number) ID of Postgresql connection
-
-Optional:
-
-- `connect_timeout` (Number) Connection timeout (sec)
-- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--postgresql_input_option--custom_variable_settings))
-- `default_time_zone` (String) Default time zone. enter the server-side time zone setting for PostgreSQL. If the time zone is set to Japan, enter “Asia/Tokyo”.
-- `fetch_rows` (Number) Number of records processed by the cursor at one time
-- `incremental_columns` (String) Columns to determine incremental data
-- `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
-- `input_option_column_options` (Attributes List) List of unsupported data types and their convertible types (see [below for nested schema](#nestedatt--input_option--postgresql_input_option--input_option_column_options))
-- `last_record` (String) Last record transferred. The value of the column specified here is stored in “Last Transferred Record” for each transfer, and for the second and subsequent transfers, only records for which the value of the “Column for Determining Incremental Data” is greater than the value of the previous transfer (= “Last Transferred Record”) are transferred. If you wish to specify multiple columns, specify them separated by commas. If not specified, the primary key is used.
-- `query` (String) If you want to use all record loading, specify it.
-- `schema` (String) schema name
-- `socket_timeout` (Number) Socket timeout (seconds)
-- `table` (String) table name. If you want to use incremental loading, specify it.
-
-<a id="nestedatt--input_option--postgresql_input_option--input_option_columns"></a>
-### Nested Schema for `input_option.postgresql_input_option.input_option_columns`
-
-Required:
-
-- `name` (String) Column name
-- `type` (String) Column type
-
-
-<a id="nestedatt--input_option--postgresql_input_option--custom_variable_settings"></a>
-### Nested Schema for `input_option.postgresql_input_option.custom_variable_settings`
 
 Required:
 
@@ -1837,8 +1864,6 @@ Optional:
 
 <a id="nestedatt--input_option--s3_input_option--excel_parser"></a>
 ### Nested Schema for `input_option.s3_input_option.excel_parser`
-<a id="nestedatt--input_option--postgresql_input_option--input_option_column_options"></a>
-### Nested Schema for `input_option.postgresql_input_option.input_option_column_options`
 
 Required:
 
