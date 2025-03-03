@@ -28,13 +28,13 @@ resource "trocco_user" "example" {
 ### Required
 
 - `email` (String) The email of the user.
-- `role` (String) The role of the user. Valid value is `super_admin`, `admin`, or `member`.
+- `role` (String) The role of the user. Valid values are `super_admin`, `admin`, and `member`.
 
 ### Optional
 
 - `can_use_audit_log` (Boolean) Whether the user can use the audit log.
 - `is_restricted_connection_modify` (Boolean) Whether the user is restricted to modify connections.
-- `password` (String, Sensitive) The password of the user. It must be at least 8 characters long and contain at least one letter and one number. It is required when creating a new user but optional during updates.
+- `password` (String, Sensitive) The password of the user. It must be at least 8 characters long and contain at least one letter and one number. It is required when creating a new user but is optional during updates.
 
 ### Read-Only
 
