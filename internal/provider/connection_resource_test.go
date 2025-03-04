@@ -103,17 +103,26 @@ func TestAccConnectionResource(t *testing.T) {
 			{
 				Config: providerConfig + `
 					resource "trocco_connection" "google_analytics4_test" {
-					  connection_type = "google_analytics4"
-					  name = "test"
-					  description = "test"
-						service_account_json_key = "{\"type\":\"service_account\",\"project_id\":\"\",\"private_key_id\":\"\",\"private_key\":\"\"}"
+						connection_type = "google_analytics4"
+						name            = "test"
+						description     = "test"
+						service_account_json_key = <<JSON
+						{
+							"type": "service_account",
+							"project_id": "create_project_id",
+							"private_key_id": "create_private_key_id",
+							"private_key": "create_private_key",
+							"client_email": "create_client_email",
+							"client_id": "create_client_id"
+						}
+						JSON
 					}
 				`,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "connection_type", "google_analytics4"),
 					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "name", "test"),
 					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "description", "test"),
-					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "service_account_json_key", "{\"type\":\"service_account\",\"project_id\":\"\",\"private_key_id\":\"\",\"private_key\":\"\"}"),
+					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "service_account_json_key", "{\"type\":\"service_account\",\"project_id\":\"create_project_id\",\"private_key_id\":\"create_private_key_id\",\"private_key\":\"create_private_key\",\"client_email\":\"create_client_email\",\"client_id\":\"create_client_id\"}"),
 					resource.TestCheckResourceAttrSet("trocco_connection.google_analytics4_test", "id"),
 				),
 			},
