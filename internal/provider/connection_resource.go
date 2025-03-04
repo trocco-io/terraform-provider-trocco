@@ -279,7 +279,7 @@ func (r *connectionResource) Schema(
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "google_spreadsheets", "mysql", "salesforce", "s3", "postgresql"),
+					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "google_spreadsheets", "mysql", "salesforce", "s3", "postgresql", "google_analytics4"),
 				},
 			},
 			"id": schema.Int64Attribute{
@@ -323,7 +323,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"service_account_json_key": schema.StringAttribute{
-				MarkdownDescription: "BigQuery, Google Sheets: A GCP service account key.",
+				MarkdownDescription: "BigQuery, Google Sheets, Google Analytics4: A GCP service account key.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -969,6 +969,8 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "PostgreSQL", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "PostgreSQL", resp)
 		}
+	case "google_analytics4":
+		validateRequiredString(plan.ServiceAccountJSONKey, "service_account_json_key", "Google Analytics4", resp)
 	}
 }
 
