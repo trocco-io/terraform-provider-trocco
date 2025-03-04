@@ -99,6 +99,24 @@ func TestAccConnectionResource(t *testing.T) {
 					resource.TestCheckResourceAttrSet("trocco_connection.postgresql_test", "id"),
 				),
 			},
+			// Google Analytics4
+			{
+				Config: providerConfig + `
+					resource "trocco_connection" "google_analytics4_test" {
+					  connection_type = "google_analytics4"
+					  name = "test"
+					  description = "test"
+						service_account_json_key = "{\"type\":\"service_account\",\"project_id\":\"\",\"private_key_id\":\"\",\"private_key\":\"\"}"
+					}
+				`,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "connection_type", "google_analytics4"),
+					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "name", "test"),
+					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "description", "test"),
+					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "service_account_json_key", "{\"type\":\"service_account\",\"project_id\":\"\",\"private_key_id\":\"\",\"private_key\":\"\"}"),
+					resource.TestCheckResourceAttrSet("trocco_connection.google_analytics4_test", "id"),
+				),
+			},
 		},
 	})
 }
