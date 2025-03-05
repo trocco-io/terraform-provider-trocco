@@ -66,21 +66,6 @@ func (d *FileParserPlanModifier) PlanModifyObject(ctx context.Context, req planm
 	if nonNilParserCount > 1 {
 		addFileParserAttributeError(req, resp, strconv.Itoa(nonNilParserCount)+"number of parser is excessive. please specify only one parser")
 	}
-
-	var lastPath types.String
-	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("last_path"), &lastPath)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-	var incrementalLoadingEnabled types.Bool
-	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("incremental_loading_enabled"), &incrementalLoadingEnabled)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	if !incrementalLoadingEnabled.ValueBool() && !lastPath.IsNull() {
-		addFileParserAttributeError(req, resp, "last_path is only valid when incremental_loading_enabled is true")
-	}
 }
 
 func addFileParserAttributeError(req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse, message string) {

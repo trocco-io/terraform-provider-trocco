@@ -72,7 +72,7 @@ func TestAccLabelResource(t *testing.T) {
 			},
 			{
 				Config: providerConfig + `
-					resource "trocco_label" "test" {
+					resource "trocco_label" "test_empty_description" {
 					    name = "Updated Label, Second Time"
 					    color = "#000000"
 					}
@@ -81,13 +81,13 @@ func TestAccLabelResource(t *testing.T) {
 			},
 			{
 				Config: providerConfig + `
-					resource "trocco_label" "test2" {
+					resource "trocco_label" "test_empty_description_test2" {
 					    name = "Updated Label, Third Time"
 					    color = "#000000"
 					    description = ""
 					}
 				`,
-				Check: resource.TestCheckResourceAttr("trocco_label.test_empty_description", "description", ""),
+				Check: resource.TestCheckResourceAttr("trocco_label.test_empty_description_test2", "description", ""),
 			},
 		},
 	})

@@ -1,3 +1,16 @@
+## 0.9.0
+FEATURES:
+- Added `postgresql` type for `trocco_connection` resource.
+- Added `google_spreadsheets` input/output in `trocco_job_definition` resource.
+- Added `driver` for `trocco_connection` resource in `snowflake` and `mysql`.
+
+CHORE:
+- Fix datamart label change
+- Fix examples in sample label color
+- Update documentation & examples
+- Added E2E testings with GitHub Actions
+- Fix problems on importing trocco_job_definition
+
 ## 0.8.0
 FEATURES:
 - Added `salesforce` and `google_spreadsheets` type for `trocco_connection` resource.

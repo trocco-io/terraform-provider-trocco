@@ -1,33 +1,69 @@
 package provider
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
-func TestAccJobDefinitionResource(t *testing.T) {
+func TestAccJobDefinitionResourceMysqlToBigQuery(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: providerConfig + `
-
-
+resource "trocco_connection" "test_mysql" {
+  connection_type = "mysql"
+  name            = "MySQL Example"
+  host            = "db.example.com"
+  port            = 65535
+  user_name       = "root"
+  password        = "password"
+}
+resource "trocco_connection" "test_bq" {
+  connection_type = "bigquery"
+  name        = "BigQuery Example"
+  project_id               = "example"
+  service_account_json_key = <<JSON
+  {
+    "type": "service_account",
+    "project_id": "example-project-id",
+    "private_key_id": "example-private-key-id",
+    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
+  }
+  JSON
+}
+resource "trocco_team" "test" {
+  name        = "test"
+  members     = [
+    {
+      user_id = 10626
+      role    = "team_admin"
+    },
+  ]
+}
+resource "trocco_resource_group" "test" {
+  name        = "test"
+  description = "test"
+  teams     = [
+    {
+      team_id = trocco_team.test.id
+      role    = "administrator"
+    },
+  ]
+}
 resource "trocco_job_definition" "mysql_to_bigquery" {
   name                        = "test job_definition"
   description                 = "test description"
   resource_enhancement        = "large"
-  resource_group_id           = 1
+  resource_group_id           = trocco_resource_group.test.id
   retry_limit                 = 1
   is_runnable_concurrently    = true
   filter_columns              = [
     {
       default                      = ""
       format = "%Y"
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "id"
@@ -36,7 +72,6 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
     },
     {
       default                      = ""
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "name"
@@ -46,7 +81,6 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
     {
       default                      = ""
       format                       = ""
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "created_at"
@@ -182,7 +216,7 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
           type = "timestamp"
         },
       ]
-      mysql_connection_id         = 1
+      mysql_connection_id         = trocco_connection.test_mysql.id
       query                       = <<-EOT
                 select
                     *
@@ -204,12 +238,23 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
       read_timeout_sec                           = 300
       send_timeout_sec                           = 300
       retries                                    = 2
-      bigquery_connection_id                     = 1
+      bigquery_connection_id                     = trocco_connection.test_bq.id
       location                                   = "us-west1"
       bigquery_output_option_clustering_fields   = []
+      bigquery_output_option_column_options      = []
       bigquery_output_option_merge_keys          = []
     }
   }
+  # please create labels if testing in local environment
+  # see https://trocco.io/labels#side-nav-labels
+  labels = [
+    {
+      name = "label1"
+    },
+    {
+      name = "label2"
+    },
+  ]
 }
 
 				`,
@@ -217,7 +262,6 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
 					resource.TestCheckResourceAttr("trocco_job_definition.mysql_to_bigquery", "name", "test job_definition"),
 					resource.TestCheckResourceAttr("trocco_job_definition.mysql_to_bigquery", "description", "test description"),
 					resource.TestCheckResourceAttr("trocco_job_definition.mysql_to_bigquery", "resource_enhancement", "large"),
-					resource.TestCheckResourceAttr("trocco_job_definition.mysql_to_bigquery", "resource_group_id", "1"),
 					resource.TestCheckResourceAttr("trocco_job_definition.mysql_to_bigquery", "retry_limit", "1"),
 					resource.TestCheckResourceAttr("trocco_job_definition.mysql_to_bigquery", "is_runnable_concurrently", "true"),
 				),
@@ -230,7 +274,165 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					jobDefinitionId := s.RootModule().Resources["trocco_job_definition.mysql_to_bigquery"].Primary.ID
 
-					return fmt.Sprintf("job_definition,%s", jobDefinitionId), nil
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceS3ToSnowflake(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + `
+resource "trocco_connection" "s3" {
+  connection_type = "s3"
+  name        = "S3 Example"
+  description = "This is a AWS S3 connection example"
+  aws_auth_type = "iam_user"
+  aws_iam_user = {
+    access_key_id     = "YOUR_ACCESS_KEY_ID"
+    secret_access_key = "YOUR_SECRET_ACCESS_KEY"
+  }
+}
+
+resource "trocco_connection" "snowflake" {
+  connection_type = "snowflake"
+
+  name        = "Snowflake Example"
+  description = "This is a Snowflake connection example"
+
+  host        = "exmaple.snowflakecomputing.com"
+  auth_method = "user_password"
+  user_name   = "dummy_name"
+  password    = "dummy_password"
+}
+
+
+resource "trocco_job_definition" "s3_test" {
+  description              = ""
+  filter_columns           = [
+    {
+      default                      = null
+      json_expand_enabled          = false
+      json_expand_keep_base_column = false
+      name                         = "name"
+      src                          = "name"
+      type                         = "string"
+    },
+    {
+      default                      = null
+      json_expand_enabled          = false
+      json_expand_keep_base_column = false
+      name                         = "url"
+      src                          = "url"
+      type                         = "string"
+    },
+    {
+      default                      = null
+      json_expand_enabled          = false
+      json_expand_keep_base_column = false
+      name                         = "test"
+      src                          = "test"
+      type                         = "string"
+    },
+    {
+      default                      = null
+      json_expand_enabled          = false
+      json_expand_keep_base_column = false
+      name                         = "asf"
+      src                          = "asf"
+      type                         = "string"
+    },
+  ]
+  input_option             = {
+    s3_input_option = {
+      bucket                      = "test_bucket"
+      csv_parser                  = {
+        allow_extra_columns     = false
+        allow_optional_columns  = false
+        charset                 = "UTF-8"
+        columns                 = [
+          {
+            name = "name"
+            type = "string"
+          },
+          {
+            name = "url"
+            type = "string"
+          },
+          {
+            name = "test"
+            type = "string"
+          },
+          {
+            name = "asf"
+            type = "string"
+          },
+        ]
+        comment_line_marker     = ""
+        default_date            = "1970-01-01"
+        default_time_zone       = "UTC"
+        delimiter               = ","
+        escape                  = "\""
+        max_quoted_size_limit   = 131072
+        newline                 = "CRLF"
+        null_string             = ""
+        null_string_enabled     = false
+        quote                   = "\""
+        quotes_in_quoted_fields = "ACCEPT_ONLY_RFC4180_ESCAPED"
+        skip_header_lines       = 1
+        stop_on_invalid_record  = true
+        trim_if_not_quoted      = false
+      }
+      decompression_type          = "default"
+      incremental_loading_enabled = false
+      is_skip_header_line         = false
+      path_match_pattern          = ""
+      path_prefix                 = "dev/000.00.csv"
+      region                      = "ap-northeast-1"
+      s3_connection_id            = trocco_connection.s3.id
+      stop_when_file_not_found    = false
+    }
+  }
+  input_option_type        = "s3"
+  is_runnable_concurrently = false
+  name                     = "s3 to snowflake"
+  output_option            = {
+    snowflake_output_option = {
+      batch_size              = 50
+      database                = "test_database"
+      default_time_zone       = "UTC"
+      delete_stage_on_error   = false
+      empty_field_as_null     = true
+      max_retry_wait          = 1800000
+      mode                    = "insert"
+      retry_limit             = 12
+      retry_wait              = 1000
+      schema                  = "PUBLIC"
+      snowflake_connection_id = trocco_connection.snowflake.id
+      table                   = "ewaoiiowe"
+      warehouse               = "COMPUTE_WH"
+    }
+  }
+  output_option_type       = "snowflake"
+  resource_enhancement     = "custom_spec"
+  retry_limit              = 0
+}
+
+
+				`,
+			},
+			{
+				ResourceName:            "trocco_job_definition.s3_test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources["trocco_job_definition.s3_test"].Primary.ID
+					return jobDefinitionId, nil
 				},
 			},
 		},
