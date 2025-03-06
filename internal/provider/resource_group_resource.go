@@ -56,7 +56,7 @@ func (r *resourceGroupResource) Configure(ctx context.Context, req resource.Conf
 
 func (r *resourceGroupResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Provides a TROCCO resource_group resource.",
+		MarkdownDescription: "Provides a TROCCO resource group resource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				Computed: true,
@@ -96,7 +96,7 @@ func (r *resourceGroupResource) Schema(ctx context.Context, req resource.SchemaR
 							Validators: []validator.String{
 								stringvalidator.OneOf("administrator", "editor", "operator", "viewer"),
 							},
-							MarkdownDescription: "The role of the team. Valid values are `administrator`, `editor`, `operator`, `viewer`.",
+							MarkdownDescription: "The role of the team. Valid values are `administrator`, `editor`, `operator`, and `viewer`.",
 						},
 					},
 				},
