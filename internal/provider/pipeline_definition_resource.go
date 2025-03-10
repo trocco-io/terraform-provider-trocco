@@ -10,7 +10,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -301,5 +300,21 @@ func (r *pipelineDefinitionResource) ImportState(
 		return
 	}
 
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
+	en, err := r.client.GetPipelineDefinition(id)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Importing pipeline definition",
+			fmt.Sprintf("Unable to retrieve pipeline definition, got error: %s", err),
+		)
+		return
+	}
+
+	keys := map[int64]types.String{}
+	for _, t := range en.Tasks {
+		keys[t.TaskIdentifier] = types.StringValue(strconv.FormatInt(t.TaskIdentifier, 10))
+	}
+
+	newState := pdm.NewPipelineDefinition(en, keys, &pdm.PipelineDefinition{})
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }

@@ -14,6 +14,7 @@ type InputOption struct {
 	GoogleSpreadsheetsInputOption *input_options.GoogleSpreadsheetsInputOption `tfsdk:"google_spreadsheets_input_option"`
 	S3InputOption                 *input_options.S3InputOption                 `tfsdk:"s3_input_option"`
 	BigqueryInputOption           *input_options.BigqueryInputOption           `tfsdk:"bigquery_input_option"`
+	PostgreSQLInputOption         *input_options.PostgreSQLInputOption         `tfsdk:"postgresql_input_option"`
 }
 
 func NewInputOption(inputOption client.InputOption) *InputOption {
@@ -25,6 +26,7 @@ func NewInputOption(inputOption client.InputOption) *InputOption {
 		GoogleSpreadsheetsInputOption: input_options.NewGoogleSpreadsheetsInputOption(inputOption.GoogleSpreadsheetsInputOption),
 		S3InputOption:                 input_options.NewS3InputOption(inputOption.S3InputOption),
 		BigqueryInputOption:           input_options.NewBigqueryInputOption(inputOption.BigqueryInputOption),
+		PostgreSQLInputOption:         input_options.NewPostgreSQLInputOption(inputOption.PostgreSQLInputOption),
 	}
 }
 
@@ -37,6 +39,7 @@ func (o InputOption) ToInput() client.InputOptionInput {
 		GoogleSpreadsheetsInputOption: model.WrapObject(o.GoogleSpreadsheetsInputOption.ToInput()),
 		S3InputOption:                 model.WrapObject(o.S3InputOption.ToInput()),
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToInput()),
+		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToInput()),
 	}
 }
 
@@ -49,5 +52,6 @@ func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
 		GoogleSpreadsheetsInputOption: model.WrapObject(o.GoogleSpreadsheetsInputOption.ToUpdateInput()),
 		S3InputOption:                 model.WrapObject(o.S3InputOption.ToUpdateInput()),
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToUpdateInput()),
+		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToUpdateInput()),
 	}
 }
