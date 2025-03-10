@@ -38,7 +38,7 @@ func GoogleAnalytics4InputOptionSchema() schema.Attribute {
 			"start_date": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
-				Default: stringdefault.StaticString("7daysAgo"),
+				Default:  stringdefault.StaticString("7daysAgo"),
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
@@ -46,7 +46,7 @@ func GoogleAnalytics4InputOptionSchema() schema.Attribute {
 			"end_date": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
-				Default: stringdefault.StaticString("1daysAgo"),
+				Default:  stringdefault.StaticString("1daysAgo"),
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
