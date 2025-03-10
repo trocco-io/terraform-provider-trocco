@@ -72,7 +72,7 @@ resource "trocco_connection" "gcs" {
 ```
 
 ### Google Sheets
-  
+
 ```terraform
 resource "trocco_connection" "google_spreadsheets" {
   connection_type = "google_spreadsheets"
@@ -212,7 +212,7 @@ resource "trocco_connection" "s3_with_assume_role" {
 - `role` (String) Snowflake: A role attached to the Snowflake user.
 - `security_token` (String, Sensitive) Salesforce: Security token.
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
-- `service_account_json_key` (String, Sensitive) BigQuery, Google Sheets: A GCP service account key.
+- `service_account_json_key` (String, Sensitive) BigQuery, Google Sheets, Google Analytics4: A GCP service account key.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
 - `user_name` (String) Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.
 
@@ -307,6 +307,26 @@ resource "trocco_connection" "postgresql" {
     key_passphrase = "sample_passphrase"
   }
   resource_group_id = 1
+}
+```
+
+### Google Analytics4
+
+```terraform
+resource "trocco_connection" "google_analytics4" {
+  connection_type   = "google_analytics4"
+  name              = "Google Analytics4 Example"
+  description       = "This is a Google Analytics4 connection example"
+  resource_group_id = 1
+
+  service_account_json_key = <<JSON
+  {
+    "type": "service_account",
+    "project_id": "example-project-id",
+    "private_key_id": "example-private-key-id",
+    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
+  }
+  JSON
 }
 ```
 
