@@ -118,6 +118,34 @@ func TestAccConnectionResource(t *testing.T) {
 					resource.TestCheckResourceAttrSet("trocco_connection.google_analytics4_test", "id"),
 				),
 			},
+			// Kintone
+			{
+				Config: providerConfig + `
+							resource "trocco_connection" "kintone_test" {
+									connection_type               = "kintone"
+									name                          = "Kintone テスト"
+									description                   = "This is a Kintone connection example"
+									domain                        = "test_domain"
+									login_method                  = "username_and_password"
+									password                      = "test_password"
+									username                      = "test_username"
+									token                         = null
+									basic_auth_username           = "test_basic_auth_username"
+									basic_auth_password           = "test_basic_auth_password"
+							}
+					`,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "connection_type", "kintone"),
+					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "domain", "test_domain"),
+					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "login_method", "username_and_password"),
+					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "password", "test_password"),
+					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "username", "test_username"),
+					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "basic_auth_username", "test_basic_auth_username"),
+					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "basic_auth_password", "test_basic_auth_password"),
+					resource.TestCheckNoResourceAttr("trocco_connection.kintone_test", "token"),
+					resource.TestCheckResourceAttrSet("trocco_connection.kintone_test", "id"),
+				),
+			},
 		},
 	})
 }
@@ -182,6 +210,31 @@ func TestInvalidDriver(t *testing.T) {
 					}
 				`,
 				ExpectError: regexp.MustCompile("are: snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0"),
+			},
+		},
+	})
+}
+
+func TestInvalidLoginMethod(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + `
+					resource "trocco_connection" "invalid_login_method_test" {
+						connection_type               = "kintone"
+						name                          = "Kintone テスト"
+						description                   = "This is a Kintone connection example"
+						domain                        = "test_domain"
+						login_method                  = "invalid_login_method"
+						password                      = "test_password"
+						username                      = "test_username"
+						token                         = null
+						basic_auth_username           = "test_basic_auth_username"
+						basic_auth_password           = "test_basic_auth_password"
+					}
+				`,
+				ExpectError: regexp.MustCompile("login_method: `invalid_login_method` is invalid for Kintone connection."),
 			},
 		},
 	})

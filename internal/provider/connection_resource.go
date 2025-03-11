@@ -297,13 +297,13 @@ func (r *connectionResource) Schema(
 		Attributes: map[string]schema.Attribute{
 			// Common Fields
 			"connection_type": schema.StringAttribute{
-				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, or `s3`.",
+				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, 'kintone, or `s3`.",
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "google_spreadsheets", "mysql", "salesforce", "s3", "postgresql", "google_analytics4"),
+					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "google_spreadsheets", "mysql", "salesforce", "s3", "postgresql", "google_analytics4", "kintone"),
 				},
 			},
 			"id": schema.Int64Attribute{
@@ -907,7 +907,7 @@ func (r *connectionResource) Read(
 		Token:             state.Token,
 		Username:          types.StringPointerValue(conn.Username),
 		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
-		BasicAuthPassword: state.BasicAuthUsername,
+		BasicAuthPassword: state.BasicAuthPassword,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1067,6 +1067,8 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredString(plan.ServiceAccountJSONKey, "service_account_json_key", "Google Analytics4", resp)
 	case "kintone":
 		validateRequiredString(plan.Domain, "domain", "Kintone", resp)
+		validateRequiredString(plan.LoginMethod, "login_method", "Kintone", resp)
+		validateStringAgainstPatterns(plan.LoginMethod, "login_method", "Kintone", resp, "username_and_password", "token")
 		switch plan.LoginMethod.ValueString() {
 		case "username_and_password":
 			if plan.Password.IsNull() {
