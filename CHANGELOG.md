@@ -1,3 +1,11 @@
+## 0.10.0
+FEATURES:
+- Added `postgresql` input in `trocco_job_definition` resource.
+
+CHORE:
+- Added key to `trocco_pipeline_definition` resource with terraform import.
+- Fix version setting in UserAgent
+
 ## 0.9.0
 FEATURES:
 - Added `postgresql` type for `trocco_connection` resource.
