@@ -68,6 +68,14 @@ type connectionResourceModel struct {
 	// Salesforce Fields
 	SecurityToken types.String `tfsdk:"security_token"`
 	AuthEndPoint  types.String `tfsdk:"auth_end_point"`
+
+	// Kintone Fields
+	Domain            types.String `tfsdk:"domain"`
+	LoginMethod       types.String `tfsdk:"login_method"`
+	Token             types.String `tfsdk:"token"`
+	Username          types.String `tfsdk:"username"`
+	BasicAuthUsername types.String `tfsdk:"basic_auth_username"`
+	BasicAuthPassword types.String `tfsdk:"basic_auth_password"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -105,6 +113,14 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 
 		// PostgreSQL Fields
 		Driver: model.NewNullableString(m.Driver),
+
+		// Kintone
+		Domain:            m.Domain.ValueStringPointer(),
+		LoginMethod:       m.LoginMethod.ValueStringPointer(),
+		Token:             m.Token.ValueStringPointer(),
+		Username:          model.NewNullableString(m.Username),
+		BasicAuthUsername: model.NewNullableString(m.BasicAuthUsername),
+		BasicAuthPassword: model.NewNullableString(m.BasicAuthPassword),
 	}
 
 	// SSL Fields
@@ -183,6 +199,14 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 
 		// PostgreSQL Fields
 		Driver: model.NewNullableString(m.Driver),
+
+		// Kintone
+		Domain:            m.Domain.ValueStringPointer(),
+		LoginMethod:       m.LoginMethod.ValueStringPointer(),
+		Token:             m.Token.ValueStringPointer(),
+		Username:          model.NewNullableString(m.Username),
+		BasicAuthUsername: model.NewNullableString(m.BasicAuthUsername),
+		BasicAuthPassword: model.NewNullableString(m.BasicAuthPassword),
 	}
 
 	// SSL Fields
@@ -477,7 +501,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"password": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Password",
+						MarkdownDescription: "MySQL, PostgreSQL, Kintone: SSH Password",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
@@ -588,6 +612,52 @@ func (r *connectionResource) Schema(
 					),
 				},
 			},
+
+			// Kintone Fields
+			"domain": schema.StringAttribute{
+				MarkdownDescription: "Kintone: Domain.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"login_method": schema.StringAttribute{
+				MarkdownDescription: "Kintone: Login Method",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("username_and_password", "token"),
+				},
+			},
+			"username": schema.StringAttribute{
+				MarkdownDescription: "Kintone: The name of a user.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"token": schema.StringAttribute{
+				MarkdownDescription: "Kintone: Token.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"basic_auth_username": schema.StringAttribute{
+				MarkdownDescription: "Kintone: Basic Auth Username",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"basic_auth_password": schema.StringAttribute{
+				MarkdownDescription: "Kintone: Basic Auth Password",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
 		},
 	}
 }
@@ -659,6 +729,14 @@ func (r *connectionResource) Create(
 
 		// PostgreSQL Fields
 		Driver: types.StringPointerValue(conn.Driver),
+
+		// Kintone
+		Domain:            types.StringPointerValue(conn.Domain),
+		LoginMethod:       types.StringPointerValue(conn.LoginMethod),
+		Token:             plan.Token,
+		Username:          types.StringPointerValue(conn.Username),
+		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
+		BasicAuthPassword: plan.BasicAuthPassword,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -747,6 +825,14 @@ func (r *connectionResource) Update(
 
 		// PostgreSQL Fields
 		Driver: types.StringPointerValue(connection.Driver),
+
+		// Kintone
+		Domain:            types.StringPointerValue(connection.Domain),
+		LoginMethod:       types.StringPointerValue(connection.LoginMethod),
+		Token:             plan.Token,
+		Username:          types.StringPointerValue(connection.Username),
+		BasicAuthUsername: types.StringPointerValue(connection.BasicAuthUsername),
+		BasicAuthPassword: plan.BasicAuthPassword,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -814,6 +900,14 @@ func (r *connectionResource) Read(
 
 		// PostgreSQL Fields
 		Driver: types.StringPointerValue(conn.Driver),
+
+		// Kintone Fields
+		Domain:            types.StringPointerValue(conn.Domain),
+		LoginMethod:       types.StringPointerValue(conn.LoginMethod),
+		Token:             state.Token,
+		Username:          types.StringPointerValue(conn.Username),
+		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
+		BasicAuthPassword: state.BasicAuthUsername,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -971,6 +1065,42 @@ func (r *connectionResource) ValidateConfig(
 		}
 	case "google_analytics4":
 		validateRequiredString(plan.ServiceAccountJSONKey, "service_account_json_key", "Google Analytics4", resp)
+	case "kintone":
+		validateRequiredString(plan.Domain, "domain", "Kintone", resp)
+		switch plan.LoginMethod.ValueString() {
+		case "username_and_password":
+			if plan.Password.IsNull() {
+				resp.Diagnostics.AddError(
+					"password",
+					"password is required for Kintone connection with login_method `username_and_password`.",
+				)
+			}
+			if plan.Username.IsNull() {
+				resp.Diagnostics.AddError(
+					"username",
+					"username is required for Kintone connection with login_method `username_and_password`.",
+				)
+			}
+			if !plan.Token.IsNull() {
+				resp.Diagnostics.AddError(
+					"token",
+					"token should not be set when login_method is `username_and_password`.",
+				)
+			}
+		case "token":
+			if plan.Token.IsNull() {
+				resp.Diagnostics.AddError(
+					"token",
+					"token is required for Kintone connection with login_method `token`.",
+				)
+			}
+			if !plan.Password.IsNull() {
+				resp.Diagnostics.AddError(
+					"password",
+					"password should not be set when login_method is `token`.",
+				)
+			}
+		}
 	}
 }
 
