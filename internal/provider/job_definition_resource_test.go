@@ -444,137 +444,32 @@ func TestAccJobDefinitionResourceGoogleAnalytics4ToSnowflake(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: providerConfig + `
-resource "trocco_connection" "ga4" {
-  connection_type = "google_analytics4"
-  name        = "GA4 Example"
-  service_account_json_key = <<JSON
-  {
-    "type": "service_account",
-    "project_id": "example-project-id",
-    "private_key_id": "example-private-key-id",
-    "client_email":"joe@example.com",
-    "client_id":"1234567890",
-    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
-  }
-  JSON
-}
-resource "trocco_connection" "snowflake" {
-  connection_type = "snowflake"
-  name        = "Snowflake Example"
-
-  host        = "exmaple.snowflakecomputing.com"
-  auth_method = "user_password"
-  user_name   = "dummy_name"
-  password    = "dummy_password"
-}
-
-resource "trocco_job_definition" "ga4_to_snowflake" {
-  name = "GA4 to Snowflake"
-
-  filter_columns           = [
-    {
-      default                      = ""
-      format                       = ""
-      json_expand_enabled          = false
-      name                         = "date_hour"
-      src                          = "date_hour"
-      type                         = "timestamp"
-    },
-    {
-      default                      = ""
-      json_expand_enabled          = false
-      name                         = "yyyymm"
-      src                          = "yyyymm"
-      type                         = "string"
-    },
-    {
-      default                      = ""
-      json_expand_enabled          = false
-      name                         = "total_users"
-      src                          = "total_users"
-      type                         = "long"
-    },
-    {
-      default                      = ""
-      json_expand_enabled          = false
-      name                         = "property_id"
-      src                          = "property_id"
-      type                         = "string"
-    }
-  ]
-  input_option_type        = "google_analytics4"
-  input_option             = {
-    google_analytics4_input_option = {
-      google_analytics4_connection_id = 1
-      property_id                     = "262596771"
-      time_series                     = "dateHour"
-      start_date                      = "2daysAgo"
-      google_analytics4_input_option_dimensions = [
-        {
-          name       = "yyyymm",
-          expression = <<-DIM
-            {
-              "concatenate": {
-                "dimensionNames": ["year","month"],
-                "delimiter": "-"
-              }
-            }
-          DIM
-        }
-      ]
-      google_analytics4_input_option_metrics = [
-        {
-          name       = "totalUsers",
-          expression = null
-        }
-      ]
-      incremental_loading_enabled = false
-      retry_limit                 = 5
-      retry_sleep                 = 2
-      raise_on_other_row          = false
-      limit_of_rows               = 10000
-      input_option_columns        = [
-        {
-          name = "date_hour"
-          type = "timestamp"
-        },
-        {
-          name = "yyyymm"
-          type = "string"
-        },
-        {
-          name = "total_users"
-          type = "long"
-        },
-        {
-          name = "property_id"
-          type = "string"
-        },
-      ]
-    }
-  }
-  output_option            = {
-    snowflake_output_option = {
-      batch_size              = 50
-      database                = "test_database"
-      default_time_zone       = "UTC"
-      delete_stage_on_error   = false
-      empty_field_as_null     = true
-      max_retry_wait          = 1800000
-      mode                    = "insert"
-      retry_limit             = 12
-      retry_wait              = 1000
-      schema                  = "PUBLIC"
-      snowflake_connection_id = trocco_connection.snowflake.id
-      table                   = "example"
-      warehouse               = "COMPUTE_WH"
-    }
-  }
-  output_option_type       = "snowflake"
-}
-				`,
+				Config: providerConfig + LoadTextile("../../testdata/job_definition/google_analytics4_to_snowflake/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "name", "GA4 to Snowflake"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.time_series", "dateHour"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.start_date", "2daysAgo"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.end_date", "1daysAgo"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.google_analytics4_input_option_dimensions.0.name", "yyyymm"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.google_analytics4_input_option_dimensions.0.expression", "{\n  \"concatenate\": {\n    \"dimensionNames\": [\"year\",\"month\"],\n    \"delimiter\": \"-\"\n  }\n}\n"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.google_analytics4_input_option_metrics.0.name", "totalUsers"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.google_analytics4_input_option_metrics.0.expression", ""),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.incremental_loading_enabled", "false"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.retry_limit", "5"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.retry_sleep", "2"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.raise_on_other_row", "false"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.limit_of_rows", "10000"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.input_option_columns.0.name", "date_hour"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.input_option_columns.0.type", "timestamp"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.input_option_columns.1.name", "yyyymm"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.input_option_columns.1.type", "string"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.input_option_columns.2.name", "total_users"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.input_option_columns.2.type", "long"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.input_option_columns.3.name", "property_id"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.input_option_columns.3.type", "string"),
+				),
 			},
+			// ImportState testing
 			{
 				ResourceName:            "trocco_job_definition.ga4_to_snowflake",
 				ImportState:             true,
@@ -584,6 +479,15 @@ resource "trocco_job_definition" "ga4_to_snowflake" {
 					jobDefinitionId := s.RootModule().Resources["trocco_job_definition.ga4_to_snowflake"].Primary.ID
 					return jobDefinitionId, nil
 				},
+			},
+			// TODO: Update testing
+			{
+				Config: providerConfig + LoadTextile("../../testdata/job_definition/google_analytics4_to_snowflake/update.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "name", "GA4 to Snowflake"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.time_series", "dateHour"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.start_date", "2daysAgo"),
+				),
 			},
 		},
 	})
