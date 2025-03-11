@@ -487,6 +487,7 @@ func TestAccJobDefinitionResourceGoogleAnalytics4ToSnowflake(t *testing.T) {
 					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "name", "GA4 to Snowflake"),
 					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.time_series", "dateHour"),
 					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.start_date", "2daysAgo"),
+					resource.TestCheckResourceAttr("trocco_job_definition.ga4_to_snowflake", "input_option.google_analytics4_input_option.google_analytics4_input_option_dimensions.#", "0"),
 				),
 			},
 		},
