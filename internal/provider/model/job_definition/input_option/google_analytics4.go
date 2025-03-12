@@ -66,6 +66,9 @@ func newGoogleAnalytics4Dimensions(inputOptionDimensions []input_option.GoogleAn
 	if inputOptionDimensions == nil {
 		return nil
 	}
+	if len(inputOptionDimensions) == 0 {
+		return nil
+	}
 	dimensions := make([]GoogleAnalytics4Dimension, 0, len(inputOptionDimensions))
 	for _, input := range inputOptionDimensions {
 		column := GoogleAnalytics4Dimension{
@@ -150,7 +153,7 @@ func (inputOption *GoogleAnalytics4InputOption) ToUpdateInput() *param.UpdateGoo
 		RetrySleep:                            inputOption.RetrySleep.ValueInt64Pointer(),
 		RaiseOnOtherRow:                       inputOption.RaiseOnOtherRow.ValueBoolPointer(),
 		LimitOfRows:                           inputOption.LimitOfRows.ValueInt64Pointer(),
-		GoogleAnalytics4InputOptionDimensions: &dimensions,
+		GoogleAnalytics4InputOptionDimensions: model.WrapObjectList(&dimensions),
 		GoogleAnalytics4InputOptionMetrics:    &metrics,
 		InputOptionColumns:                    &columns,
 		CustomVariableSettings:                model.ToCustomVariableSettingInputs(inputOption.CustomVariableSettings),

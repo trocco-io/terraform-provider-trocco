@@ -78,7 +78,10 @@ func GoogleAnalytics4InputOptionSchema() schema.Attribute {
 				Default:  int64default.StaticInt64(10000),
 			},
 			"google_analytics4_input_option_dimensions": schema.ListNestedAttribute{
-				Required: true,
+				Optional: true,
+				Validators: []validator.List{
+					listvalidator.SizeAtMost(8),
+				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
@@ -95,6 +98,9 @@ func GoogleAnalytics4InputOptionSchema() schema.Attribute {
 			},
 			"google_analytics4_input_option_metrics": schema.ListNestedAttribute{
 				Required: true,
+				Validators: []validator.List{
+					listvalidator.SizeBetween(1, 10),
+				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
