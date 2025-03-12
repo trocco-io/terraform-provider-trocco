@@ -1655,7 +1655,6 @@ Optional:
 Required:
 
 - `google_analytics4_connection_id` (Number) Id of Google Analytics 4 connection
-- `google_analytics4_input_option_dimensions` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option--google_analytics4_input_option_dimensions))
 - `google_analytics4_input_option_metrics` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option--google_analytics4_input_option_metrics))
 - `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option--input_option_columns))
 - `property_id` (String)
@@ -1665,24 +1664,13 @@ Optional:
 
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option--custom_variable_settings))
 - `end_date` (String)
+- `google_analytics4_input_option_dimensions` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option--google_analytics4_input_option_dimensions))
 - `incremental_loading_enabled` (Boolean)
 - `limit_of_rows` (Number)
 - `raise_on_other_row` (Boolean)
 - `retry_limit` (Number)
 - `retry_sleep` (Number) Sleep time in seconds between retries
 - `start_date` (String)
-
-<a id="nestedatt--input_option--google_analytics4_input_option--google_analytics4_input_option_dimensions"></a>
-### Nested Schema for `input_option.google_analytics4_input_option.google_analytics4_input_option_dimensions`
-
-Required:
-
-- `name` (String) Dimension name
-
-Optional:
-
-- `expression` (String)
-
 
 <a id="nestedatt--input_option--google_analytics4_input_option--google_analytics4_input_option_metrics"></a>
 ### Nested Schema for `input_option.google_analytics4_input_option.google_analytics4_input_option_metrics`
@@ -1721,6 +1709,18 @@ Optional:
 - `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--google_analytics4_input_option--google_analytics4_input_option_dimensions"></a>
+### Nested Schema for `input_option.google_analytics4_input_option.google_analytics4_input_option_dimensions`
+
+Required:
+
+- `name` (String) Dimension name
+
+Optional:
+
+- `expression` (String)
 
 
 
