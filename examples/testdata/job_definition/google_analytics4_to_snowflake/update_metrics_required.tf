@@ -62,12 +62,8 @@ resource "trocco_job_definition" "ga4_to_snowflake" {
       property_id                     = "262596771"
       time_series                     = "dateHour"
       start_date                      = "2daysAgo"
-      google_analytics4_input_option_dimensions = []
-      google_analytics4_input_option_metrics = [
-        {
-          name       = "totalUsers",
-          expression = null
-        }
+      google_analytics4_input_option_dimensions = [
+        { name = "name0" },
       ]
       incremental_loading_enabled = false
       input_option_columns = [
