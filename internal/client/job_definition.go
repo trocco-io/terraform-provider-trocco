@@ -95,6 +95,7 @@ type InputOption struct {
 	S3InputOption                 *inputOptionEntities.S3InputOption                 `json:"s3_input_option"`
 	BigqueryInputOption           *inputOptionEntities.BigqueryInputOption           `json:"bigquery_input_option"`
 	PostgreSQLInputOption         *inputOptionEntities.PostgreSQLInputOption         `json:"postgresql_input_option"`
+	GoogleAnalytics4InputOption   *inputOptionEntities.GoogleAnalytics4InputOption   `json:"google_analytics4_input_option"`
 }
 
 type InputOptionInput struct {
@@ -106,6 +107,7 @@ type InputOptionInput struct {
 	S3InputOption                 *parameter.NullableObject[input_options.S3InputOptionInput]                 `json:"s3_input_option,omitempty"`
 	BigqueryInputOption           *parameter.NullableObject[input_options.BigqueryInputOptionInput]           `json:"bigquery_input_option,omitempty"`
 	PostgreSQLInputOption         *parameter.NullableObject[input_options.PostgreSQLInputOptionInput]         `json:"postgresql_input_option,omitempty"`
+	GoogleAnalytics4InputOption   *parameter.NullableObject[input_options.GoogleAnalytics4InputOptionInput]   `json:"google_analytics4_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
@@ -117,6 +119,7 @@ type UpdateInputOptionInput struct {
 	S3InputOption                 *parameter.NullableObject[input_options.UpdateS3InputOptionInput]                 `json:"s3_input_option,omitempty"`
 	BigqueryInputOption           *parameter.NullableObject[input_options.UpdateBigqueryInputOptionInput]           `json:"bigquery_input_option,omitempty"`
 	PostgreSQLInputOption         *parameter.NullableObject[input_options.UpdatePostgreSQLInputOptionInput]         `json:"postgresql_input_option,omitempty"`
+	GoogleAnalytics4InputOption   *parameter.NullableObject[input_options.UpdateGoogleAnalytics4InputOptionInput]   `json:"google_analytics4_input_option,omitempty"`
 }
 
 type OutputOption struct {
