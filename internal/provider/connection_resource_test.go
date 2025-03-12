@@ -123,7 +123,7 @@ func TestAccConnectionResource(t *testing.T) {
 				Config: providerConfig + `
 							resource "trocco_connection" "kintone_test" {
 									connection_type               = "kintone"
-									name                          = "Kintone テスト"
+									name                          = "Kintone Test"
 									description                   = "This is a Kintone connection example"
 									domain                        = "test_domain"
 									login_method                  = "username_and_password"
@@ -136,6 +136,7 @@ func TestAccConnectionResource(t *testing.T) {
 					`,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "connection_type", "kintone"),
+					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "name", "Kintone Test"),
 					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "domain", "test_domain"),
 					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "login_method", "username_and_password"),
 					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "password", "test_password"),
@@ -223,7 +224,7 @@ func TestInvalidLoginMethod(t *testing.T) {
 				Config: providerConfig + `
 					resource "trocco_connection" "invalid_login_method_test" {
 						connection_type               = "kintone"
-						name                          = "Kintone テスト"
+						name                          = "Kintone Test"
 						description                   = "This is a Kintone connection example"
 						domain                        = "test_domain"
 						login_method                  = "invalid_login_method"
