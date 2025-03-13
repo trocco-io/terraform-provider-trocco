@@ -885,6 +885,71 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 				)
 			}
 		}
+		if !data.Location.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("location"),
+				"Invalid Location",
+				"location should not be set when query_mode is 'insert'",
+			)
+		}
+	}
+	if data.QueryMode.ValueString() == "query" {
+		if !data.DestinationDataset.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("destination_dataset"),
+				"Invalid Destination Dataset",
+				"destination_dataset should not be set when query_mode is 'query'",
+			)
+		}
+		if !data.DestinationTable.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("destination_table"),
+				"Invalid Destination Table",
+				"destination_table should not be set when query_mode is 'query'",
+			)
+		}
+		if !data.WriteDisposition.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("write_disposition"),
+				"Invalid Write Disposition",
+				"write_disposition should not be set when query_mode is 'query'",
+			)
+		}
+		if !data.BeforeLoad.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("before_load"),
+				"Invalid Before Load",
+				"before_load should not be set when query_mode is 'query'",
+			)
+		}
+		if !data.Partitioning.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("partitioning"),
+				"Invalid Partitioning",
+				"partitioning should not be set when query_mode is 'query'",
+			)
+		}
+		if !data.PartitioningTime.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("partitioning_time"),
+				"Invalid Partitioning Time",
+				"partitioning_time should not be set when query_mode is 'query'",
+			)
+		}
+		if !data.PartitioningField.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("partitioning_field"),
+				"Invalid Partitioning Field",
+				"partitioning_field should not be set when query_mode is 'query'",
+			)
+		}
+		if data.ClusteringFields != nil {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("clustering_fields"),
+				"Invalid Clustering Fields",
+				"clustering_fields should not be set when query_mode is 'query'",
+			)
+		}
 	}
 }
 
