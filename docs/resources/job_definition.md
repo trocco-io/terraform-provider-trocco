@@ -2576,6 +2576,17 @@ Optional:
 
 Import is supported using the following syntax:
 
+In Terraform v1.5.0 and later, use an [`import` block](https://developer.hashicorp.com/terraform/language/import) to import trocco_job_definition (Resource). For example:
+
+```terraform
+import {
+  id = 1
+  to = trocco_job_definition.example
+}
+```
+
+Using the [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import):
+
 ```shell
 terraform import trocco_job_definition.example <job_definition_id>
 ```
