@@ -8,8 +8,8 @@ type GoogleAnalytics4InputOptionInput struct {
 	GoogleAnalytics4ConnectionID          int64                                   `json:"google_analytics4_connection_id"`
 	PropertyID                            string                                  `json:"property_id"`
 	TimeSeries                            string                                  `json:"time_series"`
-	StartDate                             *string                                 `json:"start_date,omitempty"`
-	EndDate                               *string                                 `json:"end_date,omitempty"`
+	StartDate                             *parameter.NullableString               `json:"start_date,omitempty"`
+	EndDate                               *parameter.NullableString               `json:"end_date,omitempty"`
 	IncrementalLoadingEnabled             *bool                                   `json:"incremental_loading_enabled,omitempty"`
 	RetryLimit                            *int64                                  `json:"retry_limit,omitempty"`
 	RetrySleep                            *int64                                  `json:"retry_sleep,omitempty"`
@@ -23,10 +23,10 @@ type GoogleAnalytics4InputOptionInput struct {
 
 type UpdateGoogleAnalytics4InputOptionInput struct {
 	GoogleAnalytics4ConnectionID          *int64                                                   `json:"google_analytics4_connection_id,omitempty"`
-	PropertyID                            *string                                                  `json:"property_id,omitempty"`
-	TimeSeries                            *string                                                  `json:"time_series,omitempty"`
-	StartDate                             *string                                                  `json:"start_date,omitempty"`
-	EndDate                               *string                                                  `json:"end_date,omitempty"`
+	PropertyID                            *parameter.NullableString                                `json:"property_id,omitempty"`
+	TimeSeries                            *parameter.NullableString                                `json:"time_series,omitempty"`
+	StartDate                             *parameter.NullableString                                `json:"start_date,omitempty"`
+	EndDate                               *parameter.NullableString                                `json:"end_date,omitempty"`
 	IncrementalLoadingEnabled             *bool                                                    `json:"incremental_loading_enabled,omitempty"`
 	RetryLimit                            *int64                                                   `json:"retry_limit,omitempty"`
 	RetrySleep                            *int64                                                   `json:"retry_sleep,omitempty"`
