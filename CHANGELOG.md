@@ -1,3 +1,11 @@
+## 0.11.0
+FEATURES:
+- Added `google_analytics4` type for `trocco_connection` resource.
+
+CHORE:
+- Add Import block examples.
+- Ignore target for e2e and tests.
+
 ## 0.10.0
 FEATURES:
 - Added `postgresql` input in `trocco_job_definition` resource.
