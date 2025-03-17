@@ -10,7 +10,7 @@ type GoogleAnalytics4InputOption struct {
 	TimeSeries                   string                          `json:"time_series"`
 	StartDate                    *string                         `json:"start_date"`
 	EndDate                      *string                         `json:"end_date"`
-	IncrementalLoadingEnabled    *bool                           `json:"incremental_loading_enabled"`
+	IncrementalLoadingEnabled    bool                            `json:"incremental_loading_enabled"`
 	RetryLimit                   *int64                          `json:"retry_limit"`
 	RetrySleep                   *int64                          `json:"retry_sleep"`
 	RaiseOnOtherRow              *bool                           `json:"raise_on_other_row"`
