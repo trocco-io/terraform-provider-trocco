@@ -98,8 +98,8 @@ func (r *userResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				},
 				Validators: []validator.String{
 					// see: https://documents.trocco.io/docs/password-policy
-					stringvalidator.LengthBetween(8, 128),
 					stringvalidator.All(
+						stringvalidator.LengthBetween(8, 128), // 8〜128文字
 						stringvalidator.RegexMatches(regexp.MustCompile(`[a-zA-Z]`), "must contain at least one letter"),
 						stringvalidator.RegexMatches(regexp.MustCompile(`[0-9]`), "must contain at least one number"),
 					),
