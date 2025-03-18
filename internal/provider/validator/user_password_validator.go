@@ -2,10 +2,13 @@ package validator
 
 import (
 	"context"
+	"fmt"
 	"regexp"
 
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
+
+var _ validator.String = UserPasswordValidator{}
 
 type UserPasswordValidator struct{}
 
@@ -26,23 +29,27 @@ func (v UserPasswordValidator) ValidateString(ctx context.Context, request valid
 	}
 
 	if len(password) < 8 || len(password) > 128 {
-		response.Diagnostics.AddError(
-			"Invalid Password",
-			"Password must be between 8 and 128 characters.",
+		response.Diagnostics.AddAttributeError(
+			request.Path,
+			"Invalid Attribute Value Length",
+			fmt.Sprintf("Attribute password string length must be between 8 and 128, got: %d", len(password)),
 		)
 	}
 
 	if !regexp.MustCompile(`[a-zA-Z]`).MatchString(password) {
-		response.Diagnostics.AddError(
-			"Invalid Password",
-			"Password must contain at least one letter.",
+		response.Diagnostics.AddAttributeError(
+			request.Path,
+			"Invalid Attribute Value Match",
+			fmt.Sprintf("Attribute password must contain at least one letter, got: %s", password),
 		)
 	}
 
 	if !regexp.MustCompile(`[0-9]`).MatchString(password) {
-		response.Diagnostics.AddError(
-			"Invalid Password",
-			"Password must contain at least one number.",
+		response.Diagnostics.AddAttributeError(
+			request.Path,
+			"Invalid Attribute Value Match",
+			fmt.Sprintf("Attribute password must contain at least one number, got: %s", password),
 		)
 	}
+
 }
