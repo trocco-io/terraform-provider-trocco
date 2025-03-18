@@ -122,10 +122,10 @@ func (inputOption *GoogleAnalytics4InputOption) ToInput() *param.GoogleAnalytics
 		StartDate:                             model.NewNullableString(inputOption.StartDate),
 		EndDate:                               model.NewNullableString(inputOption.EndDate),
 		IncrementalLoadingEnabled:             inputOption.IncrementalLoadingEnabled.ValueBoolPointer(),
-		RetryLimit:                            inputOption.RetryLimit.ValueInt64Pointer(),
-		RetrySleep:                            inputOption.RetrySleep.ValueInt64Pointer(),
+		RetryLimit:                            model.NewNullableInt64(inputOption.RetryLimit),
+		RetrySleep:                            model.NewNullableInt64(inputOption.RetrySleep),
 		RaiseOnOtherRow:                       inputOption.RaiseOnOtherRow.ValueBoolPointer(),
-		LimitOfRows:                           inputOption.LimitOfRows.ValueInt64Pointer(),
+		LimitOfRows:                           model.NewNullableInt64(inputOption.LimitOfRows),
 		GoogleAnalytics4InputOptionDimensions: toGoogleAnalytics4DimensionsInput(inputOption.GoogleAnalytics4Dimensions),
 		GoogleAnalytics4InputOptionMetrics:    toGoogleAnalytics4MetricsInput(inputOption.GoogleAnalytics4Metrics),
 		InputOptionColumns:                    toGoogleAnalytics4ColumnsInput(inputOption.InputOptionColumns),
@@ -143,16 +143,16 @@ func (inputOption *GoogleAnalytics4InputOption) ToUpdateInput() *param.UpdateGoo
 	columns := toGoogleAnalytics4ColumnsInput(inputOption.InputOptionColumns)
 
 	return &param.UpdateGoogleAnalytics4InputOptionInput{
-		GoogleAnalytics4ConnectionID:          inputOption.GoogleAnalytics4ConnectionID.ValueInt64Pointer(),
+		GoogleAnalytics4ConnectionID:          model.NewNullableInt64(inputOption.GoogleAnalytics4ConnectionID),
 		PropertyID:                            model.NewNullableString(inputOption.PropertyID),
 		TimeSeries:                            model.NewNullableString(inputOption.TimeSeries),
 		StartDate:                             model.NewNullableString(inputOption.StartDate),
 		EndDate:                               model.NewNullableString(inputOption.EndDate),
 		IncrementalLoadingEnabled:             inputOption.IncrementalLoadingEnabled.ValueBoolPointer(),
-		RetryLimit:                            inputOption.RetryLimit.ValueInt64Pointer(),
-		RetrySleep:                            inputOption.RetrySleep.ValueInt64Pointer(),
+		RetryLimit:                            model.NewNullableInt64(inputOption.RetryLimit),
+		RetrySleep:                            model.NewNullableInt64(inputOption.RetrySleep),
 		RaiseOnOtherRow:                       inputOption.RaiseOnOtherRow.ValueBoolPointer(),
-		LimitOfRows:                           inputOption.LimitOfRows.ValueInt64Pointer(),
+		LimitOfRows:                           model.NewNullableInt64(inputOption.LimitOfRows),
 		GoogleAnalytics4InputOptionDimensions: model.WrapObjectList(&dimensions),
 		GoogleAnalytics4InputOptionMetrics:    &metrics,
 		InputOptionColumns:                    &columns,
@@ -184,7 +184,7 @@ func toGoogleAnalytics4DimensionsInput(dimensions []GoogleAnalytics4Dimension) [
 	for _, dimension := range dimensions {
 		inputs = append(inputs, param.GoogleAnalytics4Dimension{
 			Name:       dimension.Name.ValueString(),
-			Expression: dimension.Expression.ValueStringPointer(),
+			Expression: model.NewNullableString(dimension.Expression),
 		})
 	}
 	return inputs
@@ -199,7 +199,7 @@ func toGoogleAnalytics4MetricsInput(metrics []GoogleAnalytics4Metric) []param.Go
 	for _, metric := range metrics {
 		inputs = append(inputs, param.GoogleAnalytics4Metric{
 			Name:       metric.Name.ValueString(),
-			Expression: metric.Expression.ValueStringPointer(),
+			Expression: model.NewNullableString(metric.Expression),
 		})
 	}
 	return inputs
