@@ -27,7 +27,7 @@ func (m RequiredOnCreatePlanModifier) PlanModifyString(ctx context.Context, req 
 	if !req.State.Raw.IsNull() {
 		return
 	}
-	if req.ConfigValue.IsNull() {
+	if req.ConfigValue.IsNull() || req.ConfigValue.ValueString() == "" {
 		resp.Diagnostics.AddAttributeError(
 			path.Root(m.AttributeName),
 			"Missing Required Attribute",
