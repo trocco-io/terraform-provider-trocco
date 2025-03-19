@@ -1028,6 +1028,49 @@ resource "trocco_job_definition" "postgresql_input_example" {
 }
 ```
 
+#### GoogleAnalytics4InputOption
+
+```terraform
+resource "trocco_job_definition" "ga4_input_example" {
+  input_option_type = "google_analytics4"
+  input_option = {
+    google_analytics4_input_option = {
+      google_analytics4_connection_id = 1
+      property_id                     = "123456789"
+      time_series                     = "dateHour"
+      start_date                      = "2daysAgo"
+      end_date                        = "today"
+      google_analytics4_input_option_dimensions = [
+        {
+          name       = "yyyymm",
+          expression = <<-DIM
+            {
+              "concatenate": {
+                "dimensionNames": ["year","month"],
+                "delimiter": "-"
+              }
+            }
+          DIM
+
+        }
+      ]
+      google_analytics4_input_option_metrics = [
+        {
+          name       = "totalUsers",
+          expression = null
+        }
+      ]
+      incremental_loading_enabled = false
+      retry_limit                 = 5
+      retry_sleep                 = 2
+      raise_on_other_row          = false
+      limit_of_rows               = 10000
+    }
+  }
+}
+```
+
+
 ### OutputOptions
 
 #### BigqueryOutputOption
@@ -1286,6 +1329,7 @@ Optional:
 
 - `bigquery_input_option` (Attributes) Attributes about source bigquery (see [below for nested schema](#nestedatt--input_option--bigquery_input_option))
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
+- `google_analytics4_input_option` (Attributes) Attributes about source Google Analytics 4 (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option))
 - `google_spreadsheets_input_option` (Attributes) Attributes about source Google Spreadsheets (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
 - `postgresql_input_option` (Attributes) Attributes of source postgresql (see [below for nested schema](#nestedatt--input_option--postgresql_input_option))
@@ -1602,6 +1646,81 @@ Optional:
 - `format` (String) Format of the column.
 - `timezone` (String) time zone
 
+
+
+
+<a id="nestedatt--input_option--google_analytics4_input_option"></a>
+### Nested Schema for `input_option.google_analytics4_input_option`
+
+Required:
+
+- `google_analytics4_connection_id` (Number) Id of Google Analytics 4 connection
+- `google_analytics4_input_option_metrics` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option--google_analytics4_input_option_metrics))
+- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option--input_option_columns))
+- `property_id` (String)
+- `time_series` (String)
+
+Optional:
+
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option--custom_variable_settings))
+- `end_date` (String)
+- `google_analytics4_input_option_dimensions` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option--google_analytics4_input_option_dimensions))
+- `incremental_loading_enabled` (Boolean)
+- `limit_of_rows` (Number)
+- `raise_on_other_row` (Boolean)
+- `retry_limit` (Number)
+- `retry_sleep` (Number) Sleep time in seconds between retries
+- `start_date` (String)
+
+<a id="nestedatt--input_option--google_analytics4_input_option--google_analytics4_input_option_metrics"></a>
+### Nested Schema for `input_option.google_analytics4_input_option.google_analytics4_input_option_metrics`
+
+Required:
+
+- `name` (String) Metric name
+
+Optional:
+
+- `expression` (String)
+
+
+<a id="nestedatt--input_option--google_analytics4_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.google_analytics4_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+
+<a id="nestedatt--input_option--google_analytics4_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.google_analytics4_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--google_analytics4_input_option--google_analytics4_input_option_dimensions"></a>
+### Nested Schema for `input_option.google_analytics4_input_option.google_analytics4_input_option_dimensions`
+
+Required:
+
+- `name` (String) Dimension name
+
+Optional:
+
+- `expression` (String)
 
 
 
