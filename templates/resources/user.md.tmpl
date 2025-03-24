@@ -1,0 +1,29 @@
+---
+page_title: "{{.Name}} {{.Type}} - {{.ProviderShortName}}"
+subcategory: ""
+description: |-
+  {{.Description}}
+---
+
+# {{.Name}} ({{.Type}})
+
+{{.Description}}
+
+## Example Usage
+
+{{codefile "terraform" "examples/resources/trocco_user/resource.tf"}}
+
+{{.SchemaMarkdown}}
+
+## Import
+
+Import is supported using the following syntax:
+
+In Terraform v1.5.0 and later, use an [`import` block](https://developer.hashicorp.com/terraform/language/import) to import {{.Name}} ({{.Type}}). For example:
+
+{{codefile "terraform" "examples/resources/trocco_user/import.tf"}}
+
+Using the [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import):
+
+{{codefile "shell" "examples/resources/trocco_user/import.sh"}}
+
