@@ -51,6 +51,12 @@ type Connection struct {
 	AWSSecretAccessKey     *string `json:"aws_secret_access_key,omitempty"`
 	AWSAssumeRoleAccountID *string `json:"aws_assume_role_account_id,omitempty"`
 	AWSAssumeRoleName      *string `json:"aws_assume_role_name,omitempty"`
+
+	// Kintone Fields
+	Domain            *string `json:"domain"`
+	LoginMethod       *string `json:"login_method"`
+	Username          *string `json:"username"`
+	BasicAuthUsername *string `json:"basic_auth_username"`
 }
 
 type GetConnectionsInput struct {
@@ -110,6 +116,14 @@ type CreateConnectionInput struct {
 	SSLClientKey *string                   `json:"ssl_client_key,omitempty"`
 	SSLMode      *parameter.NullableString `json:"ssl_mode,omitempty"`
 	Driver       *parameter.NullableString `json:"driver,omitempty"`
+
+	// Kintone Fields
+	Domain            *string                   `json:"domain,omitempty"`
+	LoginMethod       *string                   `json:"login_method,omitempty"`
+	Token             *string                   `json:"token,omitempty"`
+	Username          *parameter.NullableString `json:"username,omitempty"`
+	BasicAuthUsername *parameter.NullableString `json:"basic_auth_username,omitempty"`
+	BasicAuthPassword *parameter.NullableString `json:"basic_auth_password,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -164,6 +178,14 @@ type UpdateConnectionInput struct {
 	SSLClientKey *string                   `json:"ssl_client_key,omitempty"`
 	SSLMode      *parameter.NullableString `json:"ssl_mode,omitempty"`
 	Driver       *parameter.NullableString `json:"driver,omitempty"`
+
+	// Kintone Fields
+	Domain            *string                   `json:"domain,omitempty"`
+	LoginMethod       *string                   `json:"login_method,omitempty"`
+	Token             *string                   `json:"token,omitempty"`
+	Username          *parameter.NullableString `json:"username,omitempty"`
+	BasicAuthUsername *parameter.NullableString `json:"basic_auth_username,omitempty"`
+	BasicAuthPassword *parameter.NullableString `json:"basic_auth_password,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {

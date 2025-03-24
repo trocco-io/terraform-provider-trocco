@@ -19,3 +19,12 @@ var (
 		"trocco": providerserver.NewProtocol6WithError(New("test")()),
 	}
 )
+
+// LoadTextile loads a file from the filesystem and returns its content as a string.
+func LoadTextile(filePath string) string {
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		panic("Error loading file: " + err.Error())
+	}
+	return string(content)
+}
