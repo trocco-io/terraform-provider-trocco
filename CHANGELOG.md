@@ -1,3 +1,7 @@
+## 0.11.1
+CHORE:
+- Upgrade due to registry page problems https://status.hashicorp.com/incidents/01JP850E144CQ1YNY605YFSCBR
+
 ## 0.11.0
 FEATURES:
 - Added `google_analytics4` type for `trocco_connection` resource.
