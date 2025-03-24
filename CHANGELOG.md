@@ -1,3 +1,11 @@
+## 0.12.0
+FEATURES:
+- Added `kintone` type for `trocco_connection` resource.
+- Added `google_analytics4` input for `trocco_job_definition` resource.
+
+CHORE:
+- Fix validation for importing `trocco_user` resource.
+
 ## 0.11.0
 FEATURES:
 - Added `google_analytics4` type for `trocco_connection` resource.
