@@ -186,7 +186,7 @@ resource "trocco_connection" "s3_with_assume_role" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, or `s3`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `kintone`, or `s3`.
 - `name` (String) The name of the connection.
 
 ### Optional
@@ -197,13 +197,17 @@ resource "trocco_connection" "s3_with_assume_role" {
 - `aws_assume_role` (Attributes) S3: AssumeRole configuration. (see [below for nested schema](#nestedatt--aws_assume_role))
 - `aws_auth_type` (String) S3: The authentication type for the S3 connection. It must be one of `iam_user` or `assume_role`.
 - `aws_iam_user` (Attributes) S3: IAM User configuration. (see [below for nested schema](#nestedatt--aws_iam_user))
+- `basic_auth_password` (String, Sensitive) Kintone: Basic Auth Password
+- `basic_auth_username` (String) Kintone: Basic Auth Username
 - `description` (String) The description of the connection.
+- `domain` (String) Kintone: Domain.
 - `driver` (String) Snowflake, MySQL, PostgreSQL: The name of a Database driver.
   - MySQL: null, mysql_connector_java_5_1_49
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
 - `gateway` (Attributes) MySQL, PostgreSQL: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
 - `host` (String) Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.
+- `login_method` (String) Kintone: Login Method
 - `password` (String, Sensitive) Snowflake, PostgreSQL: The password for the (Snowflake, PostgreSQL) user.
 - `port` (Number) MySQL, PostgreSQL: The port of the (MySQL, PostgreSQL) server.
 - `private_key` (String, Sensitive) Snowflake: A private key for the Snowflake user.
@@ -214,7 +218,9 @@ resource "trocco_connection" "s3_with_assume_role" {
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery, Google Sheets, Google Analytics4: A GCP service account key.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
+- `token` (String, Sensitive) Kintone: Token.
 - `user_name` (String) Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.
+- `username` (String) Kintone: The name of a user.
 
 ### Read-Only
 
@@ -246,7 +252,7 @@ Optional:
 - `host` (String, Sensitive) MySQL, PostgreSQL: SSH Host
 - `key` (String, Sensitive) MySQL, PostgreSQL: SSH Private Key
 - `key_passphrase` (String, Sensitive) MySQL, PostgreSQL: SSH Private Key Passphrase
-- `password` (String, Sensitive) MySQL, PostgreSQL: SSH Password
+- `password` (String, Sensitive) MySQL, PostgreSQL, Kintone: SSH Password
 - `port` (Number, Sensitive) MySQL, PostgreSQL: SSH Port
 - `user_name` (String, Sensitive) MySQL, PostgreSQL: SSH User
 
@@ -327,6 +333,40 @@ resource "trocco_connection" "google_analytics4" {
     "private_key":"-----BEGIN PRIVATE KEY-----\n..."
   }
   JSON
+}
+```
+
+### Kintone
+
+```terraform
+# login_method: token
+resource "trocco_connection" "kintone_login_method_token" {
+  connection_type     = "kintone"
+  name                = "Kintone Example"
+  description         = "This is a Kintone connection example"
+  resource_group_id   = 1
+  domain              = "test_domain"
+  login_method        = "token"
+  token               = "token"
+  username            = nil
+  password            = nil
+  basic_auth_username = "basic_auth_username"
+  basic_auth_password = "basic_auth_password"
+}
+
+# login_method: username_and_password
+resource "trocco_connection" "kintone_login_method_username_and_password" {
+  connection_type     = "kintone"
+  name                = "Kintone Example"
+  description         = "This is a Kintone connection example"
+  resource_group_id   = 1
+  domain              = "test_domain"
+  login_method        = "username_and_password"
+  token               = ""
+  username            = "username"
+  password            = "password"
+  basic_auth_username = "basic_auth_username"
+  basic_auth_password = "basic_auth_password"
 }
 ```
 
