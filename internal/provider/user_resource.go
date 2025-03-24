@@ -8,6 +8,8 @@ import (
 	"terraform-provider-trocco/internal/client"
 	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
 
+	passwordValidator "terraform-provider-trocco/internal/provider/validator/user"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -97,12 +99,7 @@ func (r *userResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 					&troccoPlanModifier.RequiredOnCreatePlanModifier{AttributeName: "password"},
 				},
 				Validators: []validator.String{
-					// see: https://documents.trocco.io/docs/password-policy
-					stringvalidator.LengthBetween(8, 128),
-					stringvalidator.All(
-						stringvalidator.RegexMatches(regexp.MustCompile(`[a-zA-Z]`), "must contain at least one letter"),
-						stringvalidator.RegexMatches(regexp.MustCompile(`[0-9]`), "must contain at least one number"),
-					),
+					passwordValidator.UserPasswordValidator{},
 				},
 				MarkdownDescription: "The password of the user. It must be at least 8 characters long and contain at least one letter and one number. It is required when creating a new user but optional during updates.",
 			},
