@@ -137,6 +137,7 @@ func (p *TroccoProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewTeamResource,
 		NewResourceGroupResource,
 		NewLabelResource,
+		NewNotificationDestinationResource,
 	}
 }
 
