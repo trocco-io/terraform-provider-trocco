@@ -1,0 +1,33 @@
+---
+page_title: "{{.Name}} {{.Type}} - {{.ProviderShortName}}"
+subcategory: ""
+description: |-
+  {{.Description}}
+---
+
+# {{.Name}} ({{.Type}})
+
+{{.Description}}
+
+## Example Usage
+
+### Email
+
+{{codefile "terraform" "examples/resources/trocco_notification_destination/email.tf"}}
+
+### SlackChannel
+
+{{codefile "terraform" "examples/resources/trocco_notification_destination/slack_channel.tf"}}
+
+## Import
+
+Import is supported using the following syntax:
+
+In Terraform v1.5.0 and later, use an [`import` block](https://developer.hashicorp.com/terraform/language/import) to import {{.Name}} ({{.Type}}). For example:
+
+{{codefile "terraform" "examples/resources/trocco_notification_destination/import.tf"}}
+
+Using the [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import):
+
+```shell
+terraform import trocco_notification_destination.example email,4
