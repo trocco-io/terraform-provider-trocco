@@ -5,14 +5,15 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"terraform-provider-trocco/internal/client/parameter"
+	notification_parameter "terraform-provider-trocco/internal/client/parameter/notification_destination"
 	"testing"
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetNotificationDestination(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func TestGetNotificationDestinationEmail(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
 		assert.Equal(t, "/api/notification_destinations/email/1", r.URL.Path)
 
@@ -22,11 +23,13 @@ func TestGetNotificationDestination(t *testing.T) {
 			ID:    1,
 			Email: lo.ToPtr("test@example.com"),
 		}
-		_ = json.NewEncoder(w).Encode(resp)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			panic(err)
+		}
 	}))
-	defer ts.Close()
+	defer s.Close()
 
-	c := NewDevTroccoClient("dummy-token", ts.URL)
+	c := NewDevTroccoClient("1234567890", s.URL)
 
 	result, err := c.GetNotificationDestination("email", 1)
 
@@ -35,7 +38,7 @@ func TestGetNotificationDestination(t *testing.T) {
 	assert.Equal(t, "test@example.com", *result.Email)
 }
 
-func TestCreateNotificationDestination_Email(t *testing.T) {
+func TestCreateNotificationDestinationEmail(t *testing.T) {
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
 		assert.Equal(t, "/api/notification_destinations/email", r.URL.Path)
@@ -50,13 +53,15 @@ func TestCreateNotificationDestination_Email(t *testing.T) {
 			panic(err)
 		}
 	}))
-	defer s.Close()
 
 	c := NewDevTroccoClient("1234567890", s.URL)
 
 	out, err := c.CreateNotificationDestination("email", &CreateNotificationDestinationInput{
-		EmailConfig: &EmailConfigInput{
-			Email: &parameter.NullableString{Valid: true, Value: "test@example.com"},
+		EmailConfig: &notification_parameter.EmailConfigInput{
+			Email: &parameter.NullableString{
+				Valid: true,
+				Value: "test@example.com",
+			},
 		},
 	})
 
@@ -66,8 +71,8 @@ func TestCreateNotificationDestination_Email(t *testing.T) {
 	assert.Equal(t, "test@example.com", *out.Email)
 }
 
-func TestUpdateNotificationDestination(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func TestUpdateNotificationDestinationEmail(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPatch, r.Method)
 		assert.Equal(t, "/api/notification_destinations/email/1", r.URL.Path)
 
@@ -77,15 +82,20 @@ func TestUpdateNotificationDestination(t *testing.T) {
 			ID:    1,
 			Email: lo.ToPtr("updated@example.com"),
 		}
-		_ = json.NewEncoder(w).Encode(resp)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			panic(err)
+		}
 	}))
-	defer ts.Close()
+	defer s.Close()
 
-	c := NewDevTroccoClient("dummy-token", ts.URL)
+	c := NewDevTroccoClient("1234567890", s.URL)
 
 	result, err := c.UpdateNotificationDestination("email", 1, &UpdateNotificationDestinationInput{
-		EmailConfig: &EmailConfigInput{
-			Email: &parameter.NullableString{Valid: true, Value: "test@example.com"},
+		EmailConfig: &notification_parameter.EmailConfigInput{
+			Email: &parameter.NullableString{
+				Valid: true,
+				Value: "test@example.com",
+			},
 		},
 	})
 
@@ -94,14 +104,113 @@ func TestUpdateNotificationDestination(t *testing.T) {
 	assert.Equal(t, "updated@example.com", *result.Email)
 }
 
-func TestDeleteNotificationDestination(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func TestDeleteNotificationDestinationEmail(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodDelete, r.Method)
 		assert.Equal(t, "/api/notification_destinations/email/1", r.URL.Path)
 	}))
-	defer ts.Close()
+	defer s.Close()
 
-	c := NewDevTroccoClient("dummy-token", ts.URL)
+	c := NewDevTroccoClient("dummy-token", s.URL)
 	err := c.DeleteNotificationDestination("email", 1)
+	assert.NoError(t, err)
+}
+
+func TestGetNotificationDestinationSlackChannel(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/api/notification_destinations/slack_channel/1", r.URL.Path)
+
+		w.Header().Set("Content-Type", "application/json")
+
+		resp := NotificationDestination{
+			ID:      1,
+			Channel: lo.ToPtr("general"),
+		}
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			panic(err)
+		}
+	}))
+	defer s.Close()
+
+	c := NewDevTroccoClient("1234567890", s.URL)
+
+	result, err := c.GetNotificationDestination("slack_channel", 1)
+
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), result.ID)
+	assert.Equal(t, "general", *result.Channel)
+}
+
+func TestCreateNotificationDestinationSlackChannel(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/api/notification_destinations/slack_channel", r.URL.Path)
+
+		w.Header().Set("Content-Type", "application/json")
+
+		c := NotificationDestination{
+			ID:      8,
+			Channel: lo.ToPtr("general"),
+		}
+		if err := json.NewEncoder(w).Encode(c); err != nil {
+			panic(err)
+		}
+	}))
+
+	c := NewDevTroccoClient("1234567890", s.URL)
+
+	out, err := c.CreateNotificationDestination("slack_channel", &CreateNotificationDestinationInput{
+		SlackChannelConfig: &notification_parameter.SlackChannelConfigInput{
+			Channel:    &parameter.NullableString{Valid: true, Value: "general"},
+			WebhookURL: &parameter.NullableString{Valid: true, Value: "https://slack-webhook-url.com"},
+		},
+	})
+
+	assert.NoError(t, err)
+	assert.Equal(t, int64(8), out.ID)
+	assert.Equal(t, "general", *out.Channel)
+}
+
+func TestUpdateNotificationDestinationSlackChannel(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPatch, r.Method)
+		assert.Equal(t, "/api/notification_destinations/slack_channel/1", r.URL.Path)
+
+		w.Header().Set("Content-Type", "application/json")
+
+		resp := NotificationDestination{
+			ID:      1,
+			Channel: lo.ToPtr("updated-channel"),
+		}
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			panic(err)
+		}
+	}))
+	defer s.Close()
+
+	c := NewDevTroccoClient("1234567890", s.URL)
+
+	result, err := c.UpdateNotificationDestination("slack_channel", 1, &UpdateNotificationDestinationInput{
+		SlackChannelConfig: &notification_parameter.SlackChannelConfigInput{
+			Channel:    &parameter.NullableString{Valid: true, Value: "general"},
+			WebhookURL: &parameter.NullableString{Valid: true, Value: "https://slack-webhook-url.com"},
+		},
+	})
+
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), result.ID)
+	assert.Equal(t, "updated-channel", *result.Channel)
+}
+
+func TestDeleteNotificationDestinationSlackChannel(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodDelete, r.Method)
+		assert.Equal(t, "/api/notification_destinations/slack_channel/1", r.URL.Path)
+	}))
+	defer s.Close()
+
+	c := NewDevTroccoClient("1234567890", s.URL)
+	err := c.DeleteNotificationDestination("slack_channel", 1)
 	assert.NoError(t, err)
 }

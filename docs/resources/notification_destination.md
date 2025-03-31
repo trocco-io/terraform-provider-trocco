@@ -42,9 +42,11 @@ Import is supported using the following syntax:
 
 In Terraform v1.5.0 and later, use an [`import` block](https://developer.hashicorp.com/terraform/language/import) to import trocco_notification_destination (Resource). For example:
 
+**Note:** After importing a resource of `slack_channel`, if you run `terraform plan` or `terraform apply` again, Terraform will often show that the resource has changed.
+
 ```terraform
 import {
-  id = "email,1"
+  id = 1
   to = trocco_notification_destination.example
 }
 ```
@@ -52,4 +54,5 @@ import {
 Using the [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import):
 
 ```shell
-terraform import trocco_notification_destination.example email,4
+terraform import trocco_notification_destination.example <type>,<id>
+```

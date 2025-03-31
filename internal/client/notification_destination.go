@@ -3,7 +3,7 @@ package client
 import (
 	"fmt"
 	"net/http"
-	"terraform-provider-trocco/internal/client/parameter"
+	"terraform-provider-trocco/internal/client/parameter/notification_destination"
 )
 
 type NotificationDestination struct {
@@ -14,27 +14,17 @@ type NotificationDestination struct {
 	Email *string `json:"email"`
 
 	// SlackChannel Fields
-	Channel    *string `json:"channel"`
-	WebhookURL *string `json:"webhook_url"`
+	Channel *string `json:"channel"`
 }
 
 type CreateNotificationDestinationInput struct {
-	EmailConfig        *EmailConfigInput        `json:"email_config,omitempty"`
-	SlackChannelConfig *SlackChannelConfigInput `json:"slack_channel_config,omitempty"`
+	EmailConfig        *notification_destination.EmailConfigInput        `json:"email_config,omitempty"`
+	SlackChannelConfig *notification_destination.SlackChannelConfigInput `json:"slack_channel_config,omitempty"`
 }
 
 type UpdateNotificationDestinationInput struct {
-	EmailConfig        *EmailConfigInput        `json:"email_config,omitempty"`
-	SlackChannelConfig *SlackChannelConfigInput `json:"slack_channel_config,omitempty"`
-}
-
-type EmailConfigInput struct {
-	Email *parameter.NullableString `json:"email,omitempty"`
-}
-
-type SlackChannelConfigInput struct {
-	Channel    *parameter.NullableString `json:"channel,omitempty"`
-	WebhookURL *parameter.NullableString `json:"webhook_url,omitempty"`
+	EmailConfig        *notification_destination.EmailConfigInput        `json:"email_config,omitempty"`
+	SlackChannelConfig *notification_destination.SlackChannelConfigInput `json:"slack_channel_config,omitempty"`
 }
 
 func (c *TroccoClient) CreateNotificationDestination(notificationType string, in *CreateNotificationDestinationInput) (*NotificationDestination, error) {

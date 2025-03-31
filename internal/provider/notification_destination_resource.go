@@ -7,8 +7,11 @@ import (
 	"strconv"
 	"strings"
 	"terraform-provider-trocco/internal/client"
+	notification_parameter "terraform-provider-trocco/internal/client/parameter/notification_destination"
 	"terraform-provider-trocco/internal/provider/model"
+	"terraform-provider-trocco/internal/provider/model/notification_destination"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -34,19 +37,10 @@ type notificationDestinationResource struct {
 }
 
 type notificationDestinationResourceModel struct {
-	Type               types.String             `tfsdk:"type"`
-	ID                 types.Int64              `tfsdk:"id"`
-	EmailConfig        *EmailConfigModel        `tfsdk:"email_config"`
-	SlackChannelConfig *SlackChannelConfigModel `tfsdk:"slack_channel_config"`
-}
-
-type EmailConfigModel struct {
-	Email types.String `tfsdk:"email"`
-}
-
-type SlackChannelConfigModel struct {
-	Channel    types.String `tfsdk:"channel"`
-	WebhookURL types.String `tfsdk:"webhook_url"`
+	Type               types.String                                 `tfsdk:"type"`
+	ID                 types.Int64                                  `tfsdk:"id"`
+	EmailConfig        *notification_destination.EmailConfig        `tfsdk:"email_config"`
+	SlackChannelConfig *notification_destination.SlackChannelConfig `tfsdk:"slack_channel_config"`
 }
 
 func (m *notificationDestinationResourceModel) ToCreateNotificationDestinationInput() *client.CreateNotificationDestinationInput {
@@ -55,13 +49,13 @@ func (m *notificationDestinationResourceModel) ToCreateNotificationDestinationIn
 	switch m.Type.ValueString() {
 	case "email":
 		if m.EmailConfig != nil {
-			input.EmailConfig = &client.EmailConfigInput{
+			input.EmailConfig = &notification_parameter.EmailConfigInput{
 				Email: model.NewNullableString(m.EmailConfig.Email),
 			}
 		}
 	case "slack_channel":
 		if m.SlackChannelConfig != nil {
-			input.SlackChannelConfig = &client.SlackChannelConfigInput{
+			input.SlackChannelConfig = &notification_parameter.SlackChannelConfigInput{
 				Channel:    model.NewNullableString(m.SlackChannelConfig.Channel),
 				WebhookURL: model.NewNullableString(m.SlackChannelConfig.WebhookURL),
 			}
@@ -77,13 +71,13 @@ func (m *notificationDestinationResourceModel) ToUpdateNotificationDestinationIn
 	switch m.Type.ValueString() {
 	case "email":
 		if m.EmailConfig != nil {
-			input.EmailConfig = &client.EmailConfigInput{
+			input.EmailConfig = &notification_parameter.EmailConfigInput{
 				Email: model.NewNullableString(m.EmailConfig.Email),
 			}
 		}
 	case "slack_channel":
 		if m.SlackChannelConfig != nil {
-			input.SlackChannelConfig = &client.SlackChannelConfigInput{
+			input.SlackChannelConfig = &notification_parameter.SlackChannelConfigInput{
 				Channel:    model.NewNullableString(m.SlackChannelConfig.Channel),
 				WebhookURL: model.NewNullableString(m.SlackChannelConfig.WebhookURL),
 			}
@@ -138,6 +132,9 @@ func (r *notificationDestinationResource) Schema(ctx context.Context, req resour
 				MarkdownDescription: "The ID of the notification destination.",
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
 				},
 			},
 			"email_config": schema.SingleNestedAttribute{
@@ -233,8 +230,8 @@ func (r *notificationDestinationResource) Create(
 	)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Creating connection",
-			fmt.Sprintf("Unable to create connection, got error: %s", err),
+			"Creating notification_destination",
+			fmt.Sprintf("Unable to create notification_destination, got error: %s", err),
 		)
 		return
 	}
@@ -246,13 +243,13 @@ func (r *notificationDestinationResource) Create(
 
 	switch plan.Type.ValueString() {
 	case "email":
-		newState.EmailConfig = &EmailConfigModel{
+		newState.EmailConfig = &notification_destination.EmailConfig{
 			Email: types.StringPointerValue(notification.Email),
 		}
 	case "slack_channel":
-		newState.SlackChannelConfig = &SlackChannelConfigModel{
+		newState.SlackChannelConfig = &notification_destination.SlackChannelConfig{
 			Channel:    types.StringPointerValue(notification.Channel),
-			WebhookURL: types.StringValue(plan.SlackChannelConfig.WebhookURL.ValueString()),
+			WebhookURL: plan.SlackChannelConfig.WebhookURL,
 		}
 	}
 
@@ -296,13 +293,13 @@ func (r *notificationDestinationResource) Update(
 
 	switch plan.Type.ValueString() {
 	case "email":
-		newState.EmailConfig = &EmailConfigModel{
+		newState.EmailConfig = &notification_destination.EmailConfig{
 			Email: types.StringPointerValue(notification.Email),
 		}
 	case "slack_channel":
-		newState.SlackChannelConfig = &SlackChannelConfigModel{
+		newState.SlackChannelConfig = &notification_destination.SlackChannelConfig{
 			Channel:    types.StringPointerValue(notification.Channel),
-			WebhookURL: types.StringValue(plan.SlackChannelConfig.WebhookURL.ValueString()),
+			WebhookURL: plan.SlackChannelConfig.WebhookURL,
 		}
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
@@ -338,13 +335,20 @@ func (r *notificationDestinationResource) Read(
 
 	switch state.Type.ValueString() {
 	case "email":
-		newState.EmailConfig = &EmailConfigModel{
+		newState.EmailConfig = &notification_destination.EmailConfig{
 			Email: types.StringPointerValue(notification.Email),
 		}
 	case "slack_channel":
-		newState.SlackChannelConfig = &SlackChannelConfigModel{
-			Channel:    types.StringPointerValue(notification.Channel),
-			WebhookURL: types.StringPointerValue(notification.WebhookURL),
+		if state.SlackChannelConfig != nil {
+			newState.SlackChannelConfig = &notification_destination.SlackChannelConfig{
+				Channel:    types.StringPointerValue(notification.Channel),
+				WebhookURL: state.SlackChannelConfig.WebhookURL,
+			}
+		} else {
+			newState.SlackChannelConfig = &notification_destination.SlackChannelConfig{
+				Channel:    types.StringPointerValue(notification.Channel),
+				WebhookURL: types.StringValue(""),
+			}
 		}
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
