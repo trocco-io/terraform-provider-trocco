@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"terraform-provider-trocco/internal/client/parameter"
 	notification_parameter "terraform-provider-trocco/internal/client/parameter/notification_destination"
 	"testing"
 
@@ -58,10 +57,7 @@ func TestCreateNotificationDestinationEmail(t *testing.T) {
 
 	out, err := c.CreateNotificationDestination("email", &CreateNotificationDestinationInput{
 		EmailConfig: &notification_parameter.EmailConfigInput{
-			Email: &parameter.NullableString{
-				Valid: true,
-				Value: "test@example.com",
-			},
+			Email: lo.ToPtr("test@example.com"),
 		},
 	})
 
@@ -92,10 +88,7 @@ func TestUpdateNotificationDestinationEmail(t *testing.T) {
 
 	result, err := c.UpdateNotificationDestination("email", 1, &UpdateNotificationDestinationInput{
 		EmailConfig: &notification_parameter.EmailConfigInput{
-			Email: &parameter.NullableString{
-				Valid: true,
-				Value: "test@example.com",
-			},
+			Email: lo.ToPtr("test@example.com"),
 		},
 	})
 
@@ -162,8 +155,8 @@ func TestCreateNotificationDestinationSlackChannel(t *testing.T) {
 
 	out, err := c.CreateNotificationDestination("slack_channel", &CreateNotificationDestinationInput{
 		SlackChannelConfig: &notification_parameter.SlackChannelConfigInput{
-			Channel:    &parameter.NullableString{Valid: true, Value: "general"},
-			WebhookURL: &parameter.NullableString{Valid: true, Value: "https://slack-webhook-url.com"},
+			Channel:    lo.ToPtr("general"),
+			WebhookURL: lo.ToPtr(("https://slack-webhook-url.com")),
 		},
 	})
 
@@ -193,8 +186,8 @@ func TestUpdateNotificationDestinationSlackChannel(t *testing.T) {
 
 	result, err := c.UpdateNotificationDestination("slack_channel", 1, &UpdateNotificationDestinationInput{
 		SlackChannelConfig: &notification_parameter.SlackChannelConfigInput{
-			Channel:    &parameter.NullableString{Valid: true, Value: "general"},
-			WebhookURL: &parameter.NullableString{Valid: true, Value: "https://slack-webhook-url.com"},
+			Channel:    lo.ToPtr("general"),
+			WebhookURL: lo.ToPtr(("https://slack-webhook-url.com")),
 		},
 	})
 
