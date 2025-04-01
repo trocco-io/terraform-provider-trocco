@@ -193,6 +193,12 @@ func (r *notificationDestinationResource) ValidateConfig(
 				"`email_config.email` is required when type is 'email'.",
 			)
 		}
+		if plan.SlackChannelConfig != nil {
+			resp.Diagnostics.AddError(
+				"slack_channel_config",
+				"`slack_channel_config` cannot be specified when type is 'email'.",
+			)
+		}
 	case "slack_channel":
 		if plan.SlackChannelConfig == nil {
 			resp.Diagnostics.AddError(
@@ -206,6 +212,12 @@ func (r *notificationDestinationResource) ValidateConfig(
 		}
 		if plan.SlackChannelConfig.WebhookURL.IsNull() {
 			resp.Diagnostics.AddError("slack_channel_config.webhook_url", "webhook_url is required for Slack channel.")
+		}
+		if plan.EmailConfig != nil {
+			resp.Diagnostics.AddError(
+				"email_config",
+				"`email_config` cannot be specified when type is 'slack_channel'.",
+			)
 		}
 	default:
 		resp.Diagnostics.AddError("type", `"type" must be either "email" or "slack_channel".`)
