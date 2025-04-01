@@ -84,21 +84,32 @@ func TestInvalidNotificationDestinationType(t *testing.T) {
 				`,
 				ExpectError: regexp.MustCompile("`email_config.email` is required when type is 'email'."),
 			},
+			// missing email
+			{
+				Config: providerConfig + `
+					resource "trocco_notification_destination" "empty_email_config" {
+						type = "email"
+						email_config = {
+						}
+					}
+				`,
+				ExpectError: regexp.MustCompile(`attribute "email" is required`),
+			},
 			// Valid type but conflicting slack_channel_config for email type
 			{
 				Config: providerConfig + `
 					resource "trocco_notification_destination" "email_with_slack_channel_config" {
-					  type = "email"
-					  email_config = {
-							email = "test@example.com"
-					  }
-					  slack_channel_config = {
-							channel = "trocco-log2"
-							webhook_url = "https://hooks.slack.com/services/test"
+						type = "email"
+						email_config = {
+						email = "test@example.com"
+						}
+						slack_channel_config = {
+						channel     = "trocco-log2"
+						webhook_url = "https://hooks.slack.com/services/test"
 						}
 					}
 				`,
-				ExpectError: regexp.MustCompile("`slack_channel_config` cannot be specified when type is 'email'."),
+				ExpectError: regexp.MustCompile(`Attribute "(email_config|slack_channel_config)" cannot be specified when "(email_config|slack_channel_config)" is specified`),
 			},
 			// Valid type but missing slack_channel_config for slack_channel type
 			{
@@ -112,18 +123,32 @@ func TestInvalidNotificationDestinationType(t *testing.T) {
 			// Valid type but conflicting email_config for slack_channel type
 			{
 				Config: providerConfig + `
-					resource "trocco_notification_destination" "slack_channel_with_email_config" {
-					  type = "slack_channel"
-					  email_config = {
-							email = "test@example.com"
-					  }
-					  slack_channel_config = {
-							channel = "trocco-log2"
-							webhook_url = "https://hooks.slack.com/services/test"
+					resource "trocco_notification_destination" "email_with_slack_channel_config" {
+						type = "slack_channel"
+						email_config = {
+						email = "test@example.com"
+						}
+						slack_channel_config = {
+						channel     = "trocco-log2"
+						webhook_url = "https://hooks.slack.com/services/test"
 						}
 					}
 				`,
-				ExpectError: regexp.MustCompile("`email_config` cannot be specified when type is 'slack_channel'."),
+				ExpectError: regexp.MustCompile(`Attribute "(email_config|slack_channel_config)" cannot be specified when "(email_config|slack_channel_config)" is specified`),
+			},
+			// missing channel and webhook_url
+			{
+				Config: providerConfig + `
+					resource "trocco_notification_destination" "email_with_slack_channel_config" {
+						type = "slack_channel"
+						email_config = {
+						email = "test@example.com"
+						}
+						slack_channel_config = {
+						}
+					}
+				`,
+				ExpectError: regexp.MustCompile(`attributes "channel" and "webhook_url" are required.`),
 			},
 		},
 	})

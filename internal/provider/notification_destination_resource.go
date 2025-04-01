@@ -11,6 +11,7 @@ import (
 	"terraform-provider-trocco/internal/provider/model/notification_destination"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -138,6 +139,9 @@ func (r *notificationDestinationResource) Schema(ctx context.Context, req resour
 			},
 			"email_config": schema.SingleNestedAttribute{
 				Optional: true,
+				Validators: []validator.Object{
+					objectvalidator.ConflictsWith(path.MatchRelative().AtParent().AtName("slack_channel_config")),
+				},
 				Attributes: map[string]schema.Attribute{
 					"email": schema.StringAttribute{
 						Required: true,
@@ -153,6 +157,9 @@ func (r *notificationDestinationResource) Schema(ctx context.Context, req resour
 			},
 			"slack_channel_config": schema.SingleNestedAttribute{
 				Optional: true,
+				Validators: []validator.Object{
+					objectvalidator.ConflictsWith(path.MatchRelative().AtParent().AtName("email_config")),
+				},
 				Attributes: map[string]schema.Attribute{
 					"channel": schema.StringAttribute{
 						Required: true,
@@ -187,37 +194,19 @@ func (r *notificationDestinationResource) ValidateConfig(
 
 	switch plan.Type.ValueString() {
 	case "email":
-		if plan.EmailConfig == nil || plan.EmailConfig.Email.IsNull() {
+		if plan.EmailConfig == nil {
 			resp.Diagnostics.AddError(
-				"email_config.email",
+				"Missing Email Config",
 				"`email_config.email` is required when type is 'email'.",
-			)
-		}
-		if plan.SlackChannelConfig != nil {
-			resp.Diagnostics.AddError(
-				"slack_channel_config",
-				"`slack_channel_config` cannot be specified when type is 'email'.",
 			)
 		}
 	case "slack_channel":
 		if plan.SlackChannelConfig == nil {
 			resp.Diagnostics.AddError(
-				"slack_channel_config",
+				"Missing Slack Channel Config",
 				"`slack_channel_config` is required when type is 'slack_channel'.",
 			)
 			return
-		}
-		if plan.SlackChannelConfig.Channel.IsNull() {
-			resp.Diagnostics.AddError("slack_channel_config.channel", "channel is required for Slack channel.")
-		}
-		if plan.SlackChannelConfig.WebhookURL.IsNull() {
-			resp.Diagnostics.AddError("slack_channel_config.webhook_url", "webhook_url is required for Slack channel.")
-		}
-		if plan.EmailConfig != nil {
-			resp.Diagnostics.AddError(
-				"email_config",
-				"`email_config` cannot be specified when type is 'slack_channel'.",
-			)
 		}
 	default:
 		resp.Diagnostics.AddError("type", `"type" must be either "email" or "slack_channel".`)

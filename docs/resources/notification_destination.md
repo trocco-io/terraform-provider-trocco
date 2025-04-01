@@ -17,7 +17,7 @@ Provides a TROCCO notification destination resource.
 resource "trocco_notification_destination" "email" {
   type = "email"
 
-  email_config {
+  email_config = {
     email = "notify@example.com"
   }
 }
@@ -29,7 +29,7 @@ resource "trocco_notification_destination" "email" {
 resource "trocco_notification_destination" "slack_channel" {
   type = "slack_channel"
 
-  slack_channel_config {
+  slack_channel_config = {
     channel     = "#general"
     webhook_url = "https://hooks.slack.com/services/XXXX/YYYY/ZZZZ"
   }
