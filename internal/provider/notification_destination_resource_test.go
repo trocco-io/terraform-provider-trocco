@@ -69,7 +69,7 @@ func TestInvalidNotificationDestinationType(t *testing.T) {
 					resource "trocco_notification_destination" "invalid_type_test" {
 					  type = "invalid_type"
 					  email_config = {
-						email = "test@example.com"
+							email = "test@example.com"
 					  }
 					}
 				`,
@@ -84,6 +84,22 @@ func TestInvalidNotificationDestinationType(t *testing.T) {
 				`,
 				ExpectError: regexp.MustCompile("`email_config.email` is required when type is 'email'."),
 			},
+			// Valid type but conflicting slack_channel_config for email type
+			{
+				Config: providerConfig + `
+					resource "trocco_notification_destination" "email_with_slack_channel_config" {
+					  type = "email"
+					  email_config = {
+							email = "test@example.com"
+					  }
+					  slack_channel_config = {
+							channel = "trocco-log2"
+							webhook_url = "https://hooks.slack.com/services/test"
+						}
+					}
+				`,
+				ExpectError: regexp.MustCompile("`slack_channel_config` cannot be specified when type is 'email'."),
+			},
 			// Valid type but missing slack_channel_config for slack_channel type
 			{
 				Config: providerConfig + `
@@ -91,7 +107,23 @@ func TestInvalidNotificationDestinationType(t *testing.T) {
 					  type = "slack_channel"
 					}
 				`,
-				ExpectError: regexp.MustCompile("`slack_channel_config` is required when type is 'slack_channel'"),
+				ExpectError: regexp.MustCompile("`slack_channel_config` is required when type is 'slack_channel'."),
+			},
+			// Valid type but conflicting email_config for slack_channel type
+			{
+				Config: providerConfig + `
+					resource "trocco_notification_destination" "slack_channel_with_email_config" {
+					  type = "slack_channel"
+					  email_config = {
+							email = "test@example.com"
+					  }
+					  slack_channel_config = {
+							channel = "trocco-log2"
+							webhook_url = "https://hooks.slack.com/services/test"
+						}
+					}
+				`,
+				ExpectError: regexp.MustCompile("`email_config` cannot be specified when type is 'slack_channel'."),
 			},
 		},
 	})
