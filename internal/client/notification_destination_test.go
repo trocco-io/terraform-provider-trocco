@@ -156,7 +156,7 @@ func TestCreateNotificationDestinationSlackChannel(t *testing.T) {
 	out, err := c.CreateNotificationDestination("slack_channel", &CreateNotificationDestinationInput{
 		SlackChannelConfig: &notification_parameter.SlackChannelConfigInput{
 			Channel:    lo.ToPtr("general"),
-			WebhookURL: lo.ToPtr(("https://slack-webhook-url.com")),
+			WebhookURL: lo.ToPtr("https://slack-webhook-url.com"),
 		},
 	})
 
@@ -187,7 +187,7 @@ func TestUpdateNotificationDestinationSlackChannel(t *testing.T) {
 	result, err := c.UpdateNotificationDestination("slack_channel", 1, &UpdateNotificationDestinationInput{
 		SlackChannelConfig: &notification_parameter.SlackChannelConfigInput{
 			Channel:    lo.ToPtr("general"),
-			WebhookURL: lo.ToPtr(("https://slack-webhook-url.com")),
+			WebhookURL: lo.ToPtr("https://slack-webhook-url.com"),
 		},
 	})
 
