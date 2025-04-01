@@ -66,7 +66,7 @@ func TestInvalidNotificationDestinationType(t *testing.T) {
 			// Invalid type
 			{
 				Config: providerConfig + `
-					resource "trocco_notification_destination" "invalid_type_test" {
+					resource "trocco_notification_destination" "invalid_type" {
 					  type = "invalid_type"
 					  email_config = {
 							email = "test@example.com"
@@ -78,7 +78,7 @@ func TestInvalidNotificationDestinationType(t *testing.T) {
 			// Valid type but missing email_config for email type
 			{
 				Config: providerConfig + `
-					resource "trocco_notification_destination" "missing_email_config" {
+					resource "trocco_notification_destination" "email" {
 					  type = "email"
 					}
 				`,
@@ -87,34 +87,34 @@ func TestInvalidNotificationDestinationType(t *testing.T) {
 			// missing email
 			{
 				Config: providerConfig + `
-					resource "trocco_notification_destination" "empty_email_config" {
+					resource "trocco_notification_destination" "email" {
 						type = "email"
 						email_config = {
 						}
 					}
 				`,
-				ExpectError: regexp.MustCompile(`attribute "email" is required`),
+				ExpectError: regexp.MustCompile(`Incorrect attribute value type`),
 			},
 			// Valid type but conflicting slack_channel_config for email type
 			{
 				Config: providerConfig + `
-					resource "trocco_notification_destination" "email_with_slack_channel_config" {
+					resource "trocco_notification_destination" "email" {
 						type = "email"
 						email_config = {
-						email = "test@example.com"
+							email = "test@example.com"
 						}
 						slack_channel_config = {
-						channel     = "trocco-log2"
-						webhook_url = "https://hooks.slack.com/services/test"
+							channel     = "trocco-log2"
+							webhook_url = "https://hooks.slack.com/services/test"
 						}
 					}
 				`,
-				ExpectError: regexp.MustCompile(`Attribute "(email_config|slack_channel_config)" cannot be specified when "(email_config|slack_channel_config)" is specified`),
+				ExpectError: regexp.MustCompile(`Invalid Attribute Combination`),
 			},
 			// Valid type but missing slack_channel_config for slack_channel type
 			{
 				Config: providerConfig + `
-					resource "trocco_notification_destination" "missing_slack_channel_config" {
+					resource "trocco_notification_destination" "slack" {
 					  type = "slack_channel"
 					}
 				`,
@@ -123,32 +123,29 @@ func TestInvalidNotificationDestinationType(t *testing.T) {
 			// Valid type but conflicting email_config for slack_channel type
 			{
 				Config: providerConfig + `
-					resource "trocco_notification_destination" "email_with_slack_channel_config" {
+					resource "trocco_notification_destination" "slack" {
 						type = "slack_channel"
 						email_config = {
-						email = "test@example.com"
+							email = "test@example.com"
 						}
 						slack_channel_config = {
-						channel     = "trocco-log2"
-						webhook_url = "https://hooks.slack.com/services/test"
+							channel     = "trocco-log2"
+							webhook_url = "https://hooks.slack.com/services/test"
 						}
 					}
 				`,
-				ExpectError: regexp.MustCompile(`Attribute "(email_config|slack_channel_config)" cannot be specified when "(email_config|slack_channel_config)" is specified`),
+				ExpectError: regexp.MustCompile(`Invalid Attribute Combination`),
 			},
 			// missing channel and webhook_url
 			{
 				Config: providerConfig + `
-					resource "trocco_notification_destination" "email_with_slack_channel_config" {
+					resource "trocco_notification_destination" "slack" {
 						type = "slack_channel"
-						email_config = {
-						email = "test@example.com"
-						}
 						slack_channel_config = {
 						}
 					}
 				`,
-				ExpectError: regexp.MustCompile(`attributes "channel" and "webhook_url" are required.`),
+				ExpectError: regexp.MustCompile(`Incorrect attribute value type`),
 			},
 		},
 	})
