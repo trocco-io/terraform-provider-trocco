@@ -150,3 +150,51 @@ func TestInvalidNotificationDestinationType(t *testing.T) {
 		},
 	})
 }
+
+func TestInvalidEmailValidation(t *testing.T) {
+	invalidEmails := []struct {
+		email         string
+		expectedError string
+	}{
+		// Invalid email address: Missing dot in domain
+		{"notify@examplecom", `invalid email address`},
+
+		// Invalid email address: Domain part incomplete
+		{"notify@.com", `invalid email address`},
+
+		// Invalid email address: Missing username
+		{"@example.com", `invalid email address`},
+
+		// Invalid email address: Extra dot in domain
+		{"notify@com.", `invalid email address`},
+
+		// Invalid email address: Incomplete domain
+		{"notify@example", `invalid email address`},
+
+		// Invalid email address: Space in domain
+		{"notify@exa mple.com", `invalid email address`},
+
+		// Invalid email address: Multiple '@' symbols
+		{"notify@com@domain.com", `invalid email address`},
+	}
+	for _, testCase := range invalidEmails {
+		t.Run(testCase.email, func(t *testing.T) {
+			resource.Test(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{
+						Config: providerConfig + `
+							resource "trocco_notification_destination" "email" {
+								type = "email"
+								email_config = {
+									email = "` + testCase.email + `"
+								}
+							}
+						`,
+						ExpectError: regexp.MustCompile(testCase.expectedError),
+					},
+				},
+			})
+		})
+	}
+}

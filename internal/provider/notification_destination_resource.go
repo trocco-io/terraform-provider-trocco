@@ -147,7 +147,7 @@ func (r *notificationDestinationResource) Schema(ctx context.Context, req resour
 						Required: true,
 						Validators: []validator.String{
 							stringvalidator.RegexMatches(
-								regexp.MustCompile(`^[^@\s]+@[^@\s]+$`),
+								regexp.MustCompile(`^[^@\s]+@[^@\s]+\.[^@\s]+$`),
 								"invalid email address",
 							),
 						},
