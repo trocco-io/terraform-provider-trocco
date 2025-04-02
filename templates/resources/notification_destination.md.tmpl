@@ -37,4 +37,4 @@ terraform import trocco_notification_destination.example <type>,<id>
 
 ### Note
 
-After importing a `slack_channel` resource, running `terraform plan` or `terraform apply` will result in the `webhook_url` being set to an empty string (`""`), which prevents the plan or apply from completing successfully. This happens because `webhook_url` is treated as sensitive data and is not returned by the API. Therefore, it defaults to an empty string in the state.
+After importing a slack_channel resource, running terraform plan or terraform apply may cause discrepancies with the webhook_url. Make sure to manually set the webhook_url.
