@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -33,27 +34,27 @@ type bigqueryDatamartDefinitionResource struct {
 }
 
 type bigqueryDatamartDefinitionModel struct {
-	ID                     types.Int64                  `tfsdk:"id"`
-	Name                   types.String                 `tfsdk:"name"`
-	Description            types.String                 `tfsdk:"description"`
-	IsRunnableConcurrently types.Bool                   `tfsdk:"is_runnable_concurrently"`
-	ResourceGroupID        types.Int64                  `tfsdk:"resource_group_id"`
-	CustomVariableSettings []customVariableSettingModel `tfsdk:"custom_variable_settings"`
-	BigqueryConnectionID   types.Int64                  `tfsdk:"bigquery_connection_id"`
-	QueryMode              types.String                 `tfsdk:"query_mode"`
-	Query                  trimmedStringValue           `tfsdk:"query"`
-	DestinationDataset     types.String                 `tfsdk:"destination_dataset"`
-	DestinationTable       types.String                 `tfsdk:"destination_table"`
-	WriteDisposition       types.String                 `tfsdk:"write_disposition"`
-	BeforeLoad             types.String                 `tfsdk:"before_load"`
-	Partitioning           types.String                 `tfsdk:"partitioning"`
-	PartitioningTime       types.String                 `tfsdk:"partitioning_time"`
-	PartitioningField      types.String                 `tfsdk:"partitioning_field"`
-	ClusteringFields       []types.String               `tfsdk:"clustering_fields"`
-	Location               types.String                 `tfsdk:"location"`
-	Notifications          []datamartNotificationModel  `tfsdk:"notifications"`
-	Schedules              []scheduleModel              `tfsdk:"schedules"`
-	Labels                 []labelModel                 `tfsdk:"labels"`
+	ID                     types.Int64                 `tfsdk:"id"`
+	Name                   types.String                `tfsdk:"name"`
+	Description            types.String                `tfsdk:"description"`
+	IsRunnableConcurrently types.Bool                  `tfsdk:"is_runnable_concurrently"`
+	ResourceGroupID        types.Int64                 `tfsdk:"resource_group_id"`
+	CustomVariableSettings types.List                  `tfsdk:"custom_variable_settings"`
+	BigqueryConnectionID   types.Int64                 `tfsdk:"bigquery_connection_id"`
+	QueryMode              types.String                `tfsdk:"query_mode"`
+	Query                  trimmedStringValue          `tfsdk:"query"`
+	DestinationDataset     types.String                `tfsdk:"destination_dataset"`
+	DestinationTable       types.String                `tfsdk:"destination_table"`
+	WriteDisposition       types.String                `tfsdk:"write_disposition"`
+	BeforeLoad             types.String                `tfsdk:"before_load"`
+	Partitioning           types.String                `tfsdk:"partitioning"`
+	PartitioningTime       types.String                `tfsdk:"partitioning_time"`
+	PartitioningField      types.String                `tfsdk:"partitioning_field"`
+	ClusteringFields       []types.String              `tfsdk:"clustering_fields"`
+	Location               types.String                `tfsdk:"location"`
+	Notifications          []datamartNotificationModel `tfsdk:"notifications"`
+	Schedules              []scheduleModel             `tfsdk:"schedules"`
+	Labels                 []labelModel                `tfsdk:"labels"`
 }
 
 type customVariableSettingModel struct {
@@ -420,9 +421,16 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 	if !plan.ResourceGroupID.IsNull() {
 		input.SetResourceGroupID(plan.ResourceGroupID.ValueInt64())
 	}
-	if plan.CustomVariableSettings != nil {
-		customVariableSettingInputs := make([]client.CustomVariableSettingInput, len(plan.CustomVariableSettings))
-		for i, v := range plan.CustomVariableSettings {
+	if !plan.CustomVariableSettings.IsNull() && !plan.CustomVariableSettings.IsUnknown() {
+		var settings []customVariableSettingModel
+		diags := plan.CustomVariableSettings.ElementsAs(ctx, &settings, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		customVariableSettingInputs := make([]client.CustomVariableSettingInput, len(settings))
+		for i, v := range settings {
 			if v.Type.ValueString() == "string" {
 				customVariableSettingInputs[i] = client.NewStringTypeCustomVariableSettingInput(
 					v.Name.ValueString(),
@@ -574,7 +582,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		return
 	}
 
-	data, err := parseToBigqueryDatamartDefinitionModel(res.DatamartDefinition)
+	data, err := parseToBigqueryDatamartDefinitionModel(ctx, res.DatamartDefinition)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Reading datamart_definition",
@@ -594,7 +602,7 @@ func (r *bigqueryDatamartDefinitionResource) Read(ctx context.Context, req resou
 	}
 
 	id := state.ID.ValueInt64()
-	data, err := r.fetchModel(id)
+	data, err := r.fetchModel(ctx, id)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Reading datamart_definition",
@@ -627,9 +635,16 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 	} else {
 		input.SetResourceGroupIDEmpty()
 	}
-	if plan.CustomVariableSettings != nil {
-		customVariableSettingInputs := make([]client.CustomVariableSettingInput, len(plan.CustomVariableSettings))
-		for i, v := range plan.CustomVariableSettings {
+	if !plan.CustomVariableSettings.IsNull() && !plan.CustomVariableSettings.IsUnknown() {
+		var settings []customVariableSettingModel
+		diags := plan.CustomVariableSettings.ElementsAs(ctx, &settings, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		customVariableSettingInputs := make([]client.CustomVariableSettingInput, len(settings))
+		for i, v := range settings {
 			if v.Type.ValueString() == "string" {
 				customVariableSettingInputs[i] = client.NewStringTypeCustomVariableSettingInput(
 					v.Name.ValueString(),
@@ -796,7 +811,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 		)
 		return
 	}
-	model, err := parseToBigqueryDatamartDefinitionModel(data.DatamartDefinition)
+	model, err := parseToBigqueryDatamartDefinitionModel(ctx, data.DatamartDefinition)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parsing datamart definition",
@@ -888,7 +903,7 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 	}
 }
 
-func parseToBigqueryDatamartDefinitionModel(response client.DatamartDefinition) (*bigqueryDatamartDefinitionModel, error) {
+func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition) (*bigqueryDatamartDefinitionModel, error) {
 	model := bigqueryDatamartDefinitionModel{
 		ID:                     types.Int64Value(response.ID),
 		Name:                   types.StringValue(response.Name),
@@ -926,8 +941,22 @@ func parseToBigqueryDatamartDefinitionModel(response client.DatamartDefinition) 
 				customVariableSettings[i].TimeZone = types.StringValue(*v.TimeZone)
 			}
 		}
-		model.CustomVariableSettings = customVariableSettings
+
+		objectType := types.ObjectType{
+			AttrTypes: customVariableSettingModel{}.attrTypes(),
+		}
+
+		listValue, diags := types.ListValueFrom(ctx, objectType, customVariableSettings)
+		if diags.HasError() {
+			return nil, fmt.Errorf("failed to convert to ListValue")
+		}
+		model.CustomVariableSettings = listValue
+	} else {
+		model.CustomVariableSettings = types.ListNull(types.ObjectType{
+			AttrTypes: customVariableSettingModel{}.attrTypes(),
+		})
 	}
+
 	if response.DatamartBigqueryOption != nil {
 		model.BigqueryConnectionID = types.Int64Value(response.DatamartBigqueryOption.BigqueryConnectionID)
 		model.QueryMode = types.StringValue(response.DatamartBigqueryOption.QueryMode)
@@ -1026,11 +1055,24 @@ func parseToBigqueryDatamartDefinitionModel(response client.DatamartDefinition) 
 	return &model, nil
 }
 
-func (r *bigqueryDatamartDefinitionResource) fetchModel(id int64) (*bigqueryDatamartDefinitionModel, error) {
+func (c customVariableSettingModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":      types.StringType,
+		"type":      types.StringType,
+		"value":     types.StringType,
+		"quantity":  types.Int32Type,
+		"unit":      types.StringType,
+		"direction": types.StringType,
+		"format":    types.StringType,
+		"time_zone": types.StringType,
+	}
+}
+
+func (r *bigqueryDatamartDefinitionResource) fetchModel(ctx context.Context, id int64) (*bigqueryDatamartDefinitionModel, error) {
 	datamartDefinition, err := r.client.GetDatamartDefinition(id)
 	if err != nil {
 		return nil, err
 	}
-	model, _ := parseToBigqueryDatamartDefinitionModel(datamartDefinition.DatamartDefinition)
+	model, _ := parseToBigqueryDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition)
 	return model, nil
 }
