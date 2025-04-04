@@ -956,7 +956,6 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			AttrTypes: customVariableSettingModel{}.attrTypes(),
 		})
 	}
-
 	if response.DatamartBigqueryOption != nil {
 		model.BigqueryConnectionID = types.Int64Value(response.DatamartBigqueryOption.BigqueryConnectionID)
 		model.QueryMode = types.StringValue(response.DatamartBigqueryOption.QueryMode)
@@ -1055,6 +1054,15 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 	return &model, nil
 }
 
+func (r *bigqueryDatamartDefinitionResource) fetchModel(ctx context.Context, id int64) (*bigqueryDatamartDefinitionModel, error) {
+	datamartDefinition, err := r.client.GetDatamartDefinition(id)
+	if err != nil {
+		return nil, err
+	}
+	model, _ := parseToBigqueryDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition)
+	return model, nil
+}
+
 func (c customVariableSettingModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"name":      types.StringType,
@@ -1066,13 +1074,4 @@ func (c customVariableSettingModel) attrTypes() map[string]attr.Type {
 		"format":    types.StringType,
 		"time_zone": types.StringType,
 	}
-}
-
-func (r *bigqueryDatamartDefinitionResource) fetchModel(ctx context.Context, id int64) (*bigqueryDatamartDefinitionModel, error) {
-	datamartDefinition, err := r.client.GetDatamartDefinition(id)
-	if err != nil {
-		return nil, err
-	}
-	model, _ := parseToBigqueryDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition)
-	return model, nil
 }
