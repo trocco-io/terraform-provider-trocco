@@ -1,3 +1,10 @@
+## 0.13.0
+FEATURES:
+- Added `trocco_notification_destination` resource.
+
+CHORE:
+- Fix `custom_variable_settings` in `trocco_bigquery_datamart_definition` resource.
+
 ## 0.12.0
 FEATURES:
 - Added `kintone` type for `trocco_connection` resource.
