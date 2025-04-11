@@ -20,6 +20,7 @@ func InputOptionSchema() schema.Attribute {
 			"bigquery_input_option":            BigqueryInputOptionSchema(),
 			"postgresql_input_option":          PostgresqlInputOptionSchema(),
 			"google_analytics4_input_option":   GoogleAnalytics4InputOptionSchema(),
+			"http_input_option":                HttpInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planmodifier2.InputOptionPlanModifier{},
