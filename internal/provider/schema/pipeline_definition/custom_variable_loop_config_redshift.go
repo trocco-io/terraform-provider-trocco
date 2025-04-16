@@ -3,8 +3,11 @@ package pipeline_definition
 import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
 )
 
 func RedshiftCustomVariableLoopConfig() schema.Attribute {
@@ -19,6 +22,9 @@ func RedshiftCustomVariableLoopConfig() schema.Attribute {
 			"query": schema.StringAttribute{
 				MarkdownDescription: "Query to expand custom variables",
 				Required:            true,
+				PlanModifiers: []planmodifier.String{
+					troccoPlanModifier.NormalizeSQLQuery(),
+				},
 			},
 			"variables": schema.ListAttribute{
 				MarkdownDescription: "Custom variables to be expanded",
