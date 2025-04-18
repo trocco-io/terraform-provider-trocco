@@ -2,6 +2,9 @@ package pipeline_definition
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+
+	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
 )
 
 func BigqueryDatacheckTaskConfig() schema.Attribute {
@@ -20,6 +23,9 @@ func BigqueryDatacheckTaskConfig() schema.Attribute {
 			"query": schema.StringAttribute{
 				MarkdownDescription: "The query of the datacheck task",
 				Optional:            true,
+				PlanModifiers: []planmodifier.String{
+					troccoPlanModifier.NormalizeSQLQuery(),
+				},
 			},
 			"operator": schema.StringAttribute{
 				MarkdownDescription: "The operator of the datacheck task",
