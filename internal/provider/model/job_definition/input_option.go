@@ -16,6 +16,7 @@ type InputOption struct {
 	BigqueryInputOption           *input_options.BigqueryInputOption           `tfsdk:"bigquery_input_option"`
 	PostgreSQLInputOption         *input_options.PostgreSQLInputOption         `tfsdk:"postgresql_input_option"`
 	GoogleAnalytics4InputOption   *input_options.GoogleAnalytics4InputOption   `tfsdk:"google_analytics4_input_option"`
+	KintoneInputOption            *input_options.KintoneInputOption            `tfsdk:"kintone_input_option"`
 }
 
 func NewInputOption(inputOption client.InputOption) *InputOption {
@@ -29,6 +30,7 @@ func NewInputOption(inputOption client.InputOption) *InputOption {
 		BigqueryInputOption:           input_options.NewBigqueryInputOption(inputOption.BigqueryInputOption),
 		PostgreSQLInputOption:         input_options.NewPostgreSQLInputOption(inputOption.PostgreSQLInputOption),
 		GoogleAnalytics4InputOption:   input_options.NewGoogleAnalytics4InputOption(inputOption.GoogleAnalytics4InputOption),
+		KintoneInputOption:            input_options.NewKintoneInputOption(inputOption.KintoneInputOption),
 	}
 }
 
@@ -43,6 +45,7 @@ func (o InputOption) ToInput() client.InputOptionInput {
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToInput()),
 		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToInput()),
 		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToInput()),
+		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToInput()),
 	}
 }
 
@@ -57,5 +60,6 @@ func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToUpdateInput()),
 		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToUpdateInput()),
 		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToUpdateInput()),
+		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToUpdateInput()),
 	}
 }
