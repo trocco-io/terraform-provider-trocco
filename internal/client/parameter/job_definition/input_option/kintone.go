@@ -7,7 +7,7 @@ import (
 type KintoneInputOptionInput struct {
 	AppID                  string                                  `json:"app_id"`
 	GuestSpaceID           *parameter.NullableString               `json:"guest_space_id,omitempty"`
-	ExpandSubtable         *parameter.NullableBool                 `json:"expand_subtable"`
+	ExpandSubtable         *parameter.NullableBool                 `json:"expand_subtable,omitempty"`
 	Query                  *parameter.NullableString               `json:"query,omitempty"`
 	KintoneConnectionID    int64                                   `json:"kintone_connection_id"`
 	InputOptionColumns     []KintoneInputOptionColumn              `json:"input_option_columns"`

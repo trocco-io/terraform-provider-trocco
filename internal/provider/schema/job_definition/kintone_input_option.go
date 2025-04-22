@@ -1,7 +1,7 @@
 package job_definition
 
 import (
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
@@ -51,6 +51,7 @@ func KintoneInputOptionSchema() schema.Attribute {
 				},
 				MarkdownDescription: "ID of kintone connection",
 			},
+			"custom_variable_settings": CustomVariableSettingsSchema(),
 			"input_option_columns": schema.ListNestedAttribute{
 				Required:            true,
 				MarkdownDescription: "List of columns to be retrieved and their types",
@@ -78,15 +79,14 @@ func KintoneInputOptionSchema() schema.Attribute {
 							},
 						},
 					},
+					PlanModifiers: []planmodifier.Object{
+						&troccoPlanModifier.KintoneInputOptionColumnPlanModifier{},
+					},
 				},
 				Validators: []validator.List{
 					listvalidator.SizeAtLeast(1),
 				},
 			},
-			"custom_variable_settings": CustomVariableSettingsSchema(),
-		},
-		PlanModifiers: []planmodifier.Object{
-			&planmodifier2.KintoneInputOptionPlanModifier{},
 		},
 	}
 }

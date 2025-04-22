@@ -8,19 +8,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ planmodifier.Object = &KintoneInputOptionPlanModifier{}
+var _ planmodifier.Object = &KintoneInputOptionColumnPlanModifier{}
 
-type KintoneInputOptionPlanModifier struct{}
+type KintoneInputOptionColumnPlanModifier struct{}
 
-func (d *KintoneInputOptionPlanModifier) Description(ctx context.Context) string {
-	return "Modifier for validating kintone input option attributes"
+func (d *KintoneInputOptionColumnPlanModifier) Description(ctx context.Context) string {
+	return "Modifier for validating kintone input option column attributes"
 }
 
-func (d *KintoneInputOptionPlanModifier) MarkdownDescription(ctx context.Context) string {
+func (d *KintoneInputOptionColumnPlanModifier) MarkdownDescription(ctx context.Context) string {
 	return d.Description(ctx)
 }
 
-func (d *KintoneInputOptionPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
+func (d *KintoneInputOptionColumnPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
 	var typ types.String
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("type"), &typ)...)
 	if resp.Diagnostics.HasError() {
