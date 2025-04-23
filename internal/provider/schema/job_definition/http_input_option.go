@@ -24,9 +24,9 @@ func HttpInputOptionSchema() schema.Attribute {
 			},
 			"method": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "HTTP method (GET, POST, etc.)",
+				MarkdownDescription: "HTTP method (GET or POST)",
 				Validators: []validator.String{
-					stringvalidator.OneOf("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"),
+					stringvalidator.OneOf("GET", "POST"),
 				},
 			},
 			"user_agent": schema.StringAttribute{
@@ -38,10 +38,10 @@ func HttpInputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Character set of the response",
 			},
 			"pager_type": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "Type of pagination (offset, cursor, none)",
+				Optional:            true,
+				MarkdownDescription: "Type of pagination (offset, cursor, disable)",
 				Validators: []validator.String{
-					stringvalidator.OneOf("offset", "cursor", "none"),
+					stringvalidator.OneOf("offset", "cursor", "disable"),
 				},
 			},
 			"pager_from_param": schema.StringAttribute{
@@ -126,7 +126,7 @@ func HttpInputOptionSchema() schema.Attribute {
 			},
 			"success_code": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "HTTP status code(s) that indicate success",
+				MarkdownDescription: "HTTP status code that indicate success",
 			},
 			"open_timeout": schema.Int64Attribute{
 				Optional:            true,
@@ -163,12 +163,14 @@ func HttpInputOptionSchema() schema.Attribute {
 					int64validator.AtLeast(0),
 				},
 			},
-			"jsonpath_parser":          parser.JsonpathParserSchema(),
-			"xml_parser":               parser.XmlParserSchema(),
-			"excel_parser":             parser.ExcelParserSchema(),
-			"ltsv_parser":              parser.LtsvParserSchema(),
-			"jsonl_parser":             parser.JsonlParserSchema(),
-			"csv_parser":               parser.CsvParserSchema(),
+			"jsonpath_parser": parser.JsonpathParserSchema(),
+			"xml_parser":      parser.XmlParserSchema(),
+			"excel_parser":    parser.ExcelParserSchema(),
+			"ltsv_parser":     parser.LtsvParserSchema(),
+			"jsonl_parser":    parser.JsonlParserSchema(),
+			"csv_parser":      parser.CsvParserSchema(),
+			// Unsupported: Parquet parser stub (here only to keep FileParserPlanModifier quiet).
+			"parquet_parser":           parser.ParquetParserSchema(),
 			"custom_variable_settings": CustomVariableSettingsSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{

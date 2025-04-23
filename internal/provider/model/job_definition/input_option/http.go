@@ -51,6 +51,7 @@ type HttpInputOption struct {
 	LtsvParser                            *parser.LtsvParser             `tfsdk:"ltsv_parser"`
 	ExcelParser                           *parser.ExcelParser            `tfsdk:"excel_parser"`
 	XmlParser                             *parser.XmlParser              `tfsdk:"xml_parser"`
+	ParquetParser                         *parser.ParquetParser          `tfsdk:"parquet_parser"`
 	CustomVariableSettings                *[]model.CustomVariableSetting `tfsdk:"custom_variable_settings"`
 }
 
@@ -151,22 +152,22 @@ func (httpInputOption *HttpInputOption) ToInput() *input_options2.HttpInputOptio
 	return &input_options2.HttpInputOptionInput{
 		URL:                                   httpInputOption.URL.ValueString(),
 		Method:                                httpInputOption.Method.ValueString(),
-		UserAgent:                             model.NewNullableString(httpInputOption.UserAgent),
-		Charset:                               model.NewNullableString(httpInputOption.Charset),
+		UserAgent:                             httpInputOption.UserAgent.ValueStringPointer(),
+		Charset:                               httpInputOption.Charset.ValueStringPointer(),
 		PagerType:                             httpInputOption.PagerType.ValueString(),
-		PagerFromParam:                        model.NewNullableString(httpInputOption.PagerFromParam),
-		PagerToParam:                          model.NewNullableString(httpInputOption.PagerToParam),
+		PagerFromParam:                        httpInputOption.PagerFromParam.ValueStringPointer(),
+		PagerToParam:                          httpInputOption.PagerToParam.ValueStringPointer(),
 		PagerPages:                            httpInputOption.PagerPages.ValueInt64Pointer(),
 		PagerStart:                            httpInputOption.PagerStart.ValueInt64Pointer(),
 		PagerStep:                             httpInputOption.PagerStep.ValueInt64Pointer(),
-		CursorRequestParameterCursorName:      model.NewNullableString(httpInputOption.CursorRequestParameterCursorName),
-		CursorResponseParameterCursorJsonPath: model.NewNullableString(httpInputOption.CursorResponseParameterCursorJsonPath),
-		CursorRequestParameterLimitName:       model.NewNullableString(httpInputOption.CursorRequestParameterLimitName),
+		CursorRequestParameterCursorName:      httpInputOption.CursorRequestParameterCursorName.ValueStringPointer(),
+		CursorResponseParameterCursorJsonPath: httpInputOption.CursorResponseParameterCursorJsonPath.ValueStringPointer(),
+		CursorRequestParameterLimitName:       httpInputOption.CursorRequestParameterLimitName.ValueStringPointer(),
 		CursorRequestParameterLimitValue:      httpInputOption.CursorRequestParameterLimitValue.ValueInt64Pointer(),
 		RequestParams:                         requestParamsPtr,
-		RequestBody:                           model.NewNullableString(httpInputOption.RequestBody),
+		RequestBody:                           httpInputOption.RequestBody.ValueStringPointer(),
 		RequestHeaders:                        requestHeadersPtr,
-		SuccessCode:                           model.NewNullableString(httpInputOption.SuccessCode),
+		SuccessCode:                           httpInputOption.SuccessCode.ValueStringPointer(),
 		OpenTimeout:                           httpInputOption.OpenTimeout.ValueInt64Pointer(),
 		ReadTimeout:                           httpInputOption.ReadTimeout.ValueInt64Pointer(),
 		MaxRetries:                            httpInputOption.MaxRetries.ValueInt64Pointer(),
@@ -218,22 +219,22 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() *input_options2.UpdateHt
 	return &input_options2.UpdateHttpInputOptionInput{
 		URL:                                   httpInputOption.URL.ValueStringPointer(),
 		Method:                                httpInputOption.Method.ValueStringPointer(),
-		UserAgent:                             model.NewNullableString(httpInputOption.UserAgent),
-		Charset:                               model.NewNullableString(httpInputOption.Charset),
+		UserAgent:                             httpInputOption.UserAgent.ValueStringPointer(),
+		Charset:                               httpInputOption.Charset.ValueStringPointer(),
 		PagerType:                             httpInputOption.PagerType.ValueStringPointer(),
-		PagerFromParam:                        model.NewNullableString(httpInputOption.PagerFromParam),
-		PagerToParam:                          model.NewNullableString(httpInputOption.PagerToParam),
+		PagerFromParam:                        httpInputOption.PagerFromParam.ValueStringPointer(),
+		PagerToParam:                          httpInputOption.PagerToParam.ValueStringPointer(),
 		PagerPages:                            httpInputOption.PagerPages.ValueInt64Pointer(),
 		PagerStart:                            httpInputOption.PagerStart.ValueInt64Pointer(),
 		PagerStep:                             httpInputOption.PagerStep.ValueInt64Pointer(),
-		CursorRequestParameterCursorName:      model.NewNullableString(httpInputOption.CursorRequestParameterCursorName),
-		CursorResponseParameterCursorJsonPath: model.NewNullableString(httpInputOption.CursorResponseParameterCursorJsonPath),
-		CursorRequestParameterLimitName:       model.NewNullableString(httpInputOption.CursorRequestParameterLimitName),
+		CursorRequestParameterCursorName:      httpInputOption.CursorRequestParameterCursorName.ValueStringPointer(),
+		CursorResponseParameterCursorJsonPath: httpInputOption.CursorResponseParameterCursorJsonPath.ValueStringPointer(),
+		CursorRequestParameterLimitName:       httpInputOption.CursorRequestParameterLimitName.ValueStringPointer(),
 		CursorRequestParameterLimitValue:      httpInputOption.CursorRequestParameterLimitValue.ValueInt64Pointer(),
 		RequestParams:                         requestParamsPtr,
-		RequestBody:                           model.NewNullableString(httpInputOption.RequestBody),
+		RequestBody:                           httpInputOption.RequestBody.ValueStringPointer(),
 		RequestHeaders:                        requestHeadersPtr,
-		SuccessCode:                           model.NewNullableString(httpInputOption.SuccessCode),
+		SuccessCode:                           httpInputOption.SuccessCode.ValueStringPointer(),
 		OpenTimeout:                           httpInputOption.OpenTimeout.ValueInt64Pointer(),
 		ReadTimeout:                           httpInputOption.ReadTimeout.ValueInt64Pointer(),
 		MaxRetries:                            httpInputOption.MaxRetries.ValueInt64Pointer(),
@@ -248,4 +249,3 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() *input_options2.UpdateHt
 		CustomVariableSettings:                model.ToCustomVariableSettingInputs(httpInputOption.CustomVariableSettings),
 	}
 }
-
