@@ -22,7 +22,7 @@ type HttpInputOptionInput struct {
 	Method                                string                                  `json:"method"`
 	UserAgent                             *string                                 `json:"user_agent,omitempty"`
 	Charset                               *string                                 `json:"charset,omitempty"`
-	PagerType                             string                                  `json:"pager_type"`
+	PagerType                             *string                                 `json:"pager_type,omitempty"`
 	PagerFromParam                        *string                                 `json:"pager_from_param,omitempty"`
 	PagerToParam                          *string                                 `json:"pager_to_param,omitempty"`
 	PagerPages                            *int64                                  `json:"pager_pages,omitempty"`

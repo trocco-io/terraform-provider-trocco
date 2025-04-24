@@ -1,13 +1,16 @@
 package job_definition
 
 import (
+	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+	"terraform-provider-trocco/internal/provider/schema/job_definition/parser"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
-	"terraform-provider-trocco/internal/provider/schema/job_definition/parser"
 )
 
 func HttpInputOptionSchema() schema.Attribute {
@@ -35,10 +38,14 @@ func HttpInputOptionSchema() schema.Attribute {
 			},
 			"charset": schema.StringAttribute{
 				Optional:            true,
+				Computed:            true,
+				Default:             stringdefault.StaticString("UTF-8"),
 				MarkdownDescription: "Character set of the response",
 			},
 			"pager_type": schema.StringAttribute{
 				Optional:            true,
+				Computed:            true,
+				Default:             stringdefault.StaticString("disable"),
 				MarkdownDescription: "Type of pagination (offset, cursor, disable)",
 				Validators: []validator.String{
 					stringvalidator.OneOf("offset", "cursor", "disable"),
@@ -126,10 +133,14 @@ func HttpInputOptionSchema() schema.Attribute {
 			},
 			"success_code": schema.StringAttribute{
 				Optional:            true,
+				Computed:            true,
+				Default:             stringdefault.StaticString("200"),
 				MarkdownDescription: "HTTP status code that indicate success",
 			},
 			"open_timeout": schema.Int64Attribute{
 				Optional:            true,
+				Computed:            true,
+				Default:             int64default.StaticInt64(2000),
 				MarkdownDescription: "Timeout for opening connection in seconds",
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
@@ -137,6 +148,8 @@ func HttpInputOptionSchema() schema.Attribute {
 			},
 			"read_timeout": schema.Int64Attribute{
 				Optional:            true,
+				Computed:            true,
+				Default:             int64default.StaticInt64(10000),
 				MarkdownDescription: "Timeout for reading response in seconds",
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
@@ -144,6 +157,8 @@ func HttpInputOptionSchema() schema.Attribute {
 			},
 			"max_retries": schema.Int64Attribute{
 				Optional:            true,
+				Computed:            true,
+				Default:             int64default.StaticInt64(5),
 				MarkdownDescription: "Maximum number of retry attempts",
 				Validators: []validator.Int64{
 					int64validator.AtLeast(0),
@@ -151,6 +166,8 @@ func HttpInputOptionSchema() schema.Attribute {
 			},
 			"retry_interval": schema.Int64Attribute{
 				Optional:            true,
+				Computed:            true,
+				Default:             int64default.StaticInt64(10000),
 				MarkdownDescription: "Interval between retry attempts in seconds",
 				Validators: []validator.Int64{
 					int64validator.AtLeast(0),
@@ -158,6 +175,8 @@ func HttpInputOptionSchema() schema.Attribute {
 			},
 			"request_interval": schema.Int64Attribute{
 				Optional:            true,
+				Computed:            true,
+				Default:             int64default.StaticInt64(0),
 				MarkdownDescription: "Interval between requests in seconds",
 				Validators: []validator.Int64{
 					int64validator.AtLeast(0),
