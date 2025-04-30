@@ -521,3 +521,58 @@ func TestAccJobDefinitionResourceGoogleAnalytics4ToSnowflakeInvalid(t *testing.T
 		},
 	})
 }
+
+func TestAccJobDefinitionResourceKintoneToSnowflake(t *testing.T) {
+	resourceName := "trocco_job_definition.kintone_to_snowflake"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextile("../../examples/testdata/job_definition/kintone_to_snowflake/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "kintone to snowflake"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "0"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.snowflake_output_option.batch_size", "50"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.snowflake_output_option.database", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.app_id", "123"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.expand_subtable", "false"),
+					resource.TestCheckNoResourceAttr(resourceName, "input_option.kintone_input_option.guest_space_id"),
+					resource.TestCheckNoResourceAttr(resourceName, "input_option.kintone_input_option.query"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.input_option_columns.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.input_option_columns.0.name", "duration"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.input_option_columns.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.input_option_columns.1.name", "date"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.input_option_columns.1.type", "timestamp"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.input_option_columns.1.format", "%Y%m%d"),
+				),
+			},
+			// ImportState testing
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceKintoneToSnowflakeInvalid(t *testing.T) {
+	resourceName := "trocco_job_definition.kintone_to_snowflake"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextile("../../examples/testdata/job_definition/kintone_to_snowflake/update_app_id_required.tf"),
+				ExpectError:  regexp.MustCompile(`Missing Configuration for Required Attribute`),
+			},
+		},
+	})
+}
