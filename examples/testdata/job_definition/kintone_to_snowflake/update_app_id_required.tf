@@ -21,8 +21,8 @@ resource "trocco_connection" "snowflake" {
 }
 
 resource "trocco_job_definition" "kintone_to_snowflake" {
-  description              = "Test job definition"
-  filter_columns           = [
+  description = "Test job definition"
+  filter_columns = [
     {
       default                      = null
       json_expand_enabled          = false
@@ -42,11 +42,11 @@ resource "trocco_job_definition" "kintone_to_snowflake" {
   ]
   input_option = {
     kintone_input_option = {
-      kintone_connection_id     = trocco_connection.kintone.id
-      app_id                    = null
-      guest_space_id            = null
-      query                     = null
-      expand_subtable           = false
+      kintone_connection_id = trocco_connection.kintone.id
+      app_id                = null
+      guest_space_id        = null
+      query                 = null
+      expand_subtable       = false
       custom_variable_settings = [
         {
           name  = "$string$"
@@ -60,8 +60,8 @@ resource "trocco_job_definition" "kintone_to_snowflake" {
           type = "string"
         },
         {
-          name = "date"
-          type = "timestamp"
+          name   = "date"
+          type   = "timestamp"
           format = "%Y%m%d"
         }
       ]
@@ -70,7 +70,7 @@ resource "trocco_job_definition" "kintone_to_snowflake" {
   input_option_type        = "kintone"
   is_runnable_concurrently = false
   name                     = "kintone to snowflake"
-  output_option            = {
+  output_option = {
     snowflake_output_option = {
       batch_size              = 50
       database                = "test_database"
@@ -87,7 +87,7 @@ resource "trocco_job_definition" "kintone_to_snowflake" {
       warehouse               = "COMPUTE_WH"
     }
   }
-  output_option_type       = "snowflake"
-  resource_enhancement     = "medium"
-  retry_limit              = 0
+  output_option_type   = "snowflake"
+  resource_enhancement = "medium"
+  retry_limit          = 0
 }
