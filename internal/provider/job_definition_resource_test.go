@@ -248,3 +248,129 @@ func TestAccJobDefinitionResourceGoogleSpreadsheetToGoogleSpreadsheet(t *testing
 		},
 	})
 }
+
+func TestAccJobDefinitionResourceGcsToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.gcs_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("../../examples/testdata/job_definition/gcs_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "GCS to BigQuery Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from GCS to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "custom_spec"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "gcs"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.gcs_input_option.bucket", "example_bucket"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.gcs_input_option.path_prefix", "path/to/your/csv_file"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.gcs_input_option.stop_when_file_not_found", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.gcs_input_option.incremental_loading_enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "gcs_to_bigquery_test_table"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.location", "US"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourcePostgresqlToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.postgresql_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("../../examples/testdata/job_definition/postgresql_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "PostgreSQL to BigQuery Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from PostgreSQL to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "3"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "postgresql"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.postgresql_input_option.database", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.postgresql_input_option.schema", "public"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.postgresql_input_option.fetch_rows", "1000"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.postgresql_input_option.default_time_zone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "postgresql_to_bigquery_test_table"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.location", "US"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceS3ToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.s3_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("../../examples/testdata/job_definition/s3_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "S3 to BigQuery Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from S3 to BigQuery with filter_columns"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "custom_spec"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "s3"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.s3_input_option.bucket", "test_bucket"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.s3_input_option.path_prefix", "data/users.csv"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.s3_input_option.region", "ap-northeast-1"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "user_id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.src", "id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.name", "user_name"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.src", "name"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.default", "Unknown"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.3.name", "registration_date"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.3.format", "%Y-%m-%d"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "s3_to_bigquery_test_table"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
