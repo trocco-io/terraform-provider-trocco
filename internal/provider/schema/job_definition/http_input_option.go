@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
@@ -102,6 +103,8 @@ func HttpInputOptionSchema() schema.Attribute {
 						},
 						"masking": schema.BoolAttribute{
 							Optional:            true,
+							Computed:            true,
+							Default:             booldefault.StaticBool(false),
 							MarkdownDescription: "Whether to mask this parameter in logs",
 						},
 					},
@@ -126,6 +129,8 @@ func HttpInputOptionSchema() schema.Attribute {
 						},
 						"masking": schema.BoolAttribute{
 							Optional:            true,
+							Computed:            true,
+							Default:             booldefault.StaticBool(false),
 							MarkdownDescription: "Whether to mask this header in logs",
 						},
 					},
