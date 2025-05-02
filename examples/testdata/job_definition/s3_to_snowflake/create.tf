@@ -1,8 +1,8 @@
 resource "trocco_connection" "s3" {
   connection_type = "s3"
-  name        = "S3 Example"
-  description = "This is a AWS S3 connection example"
-  aws_auth_type = "iam_user"
+  name            = "S3 Example"
+  description     = "This is a AWS S3 connection example"
+  aws_auth_type   = "iam_user"
   aws_iam_user = {
     access_key_id     = "YOUR_ACCESS_KEY_ID"
     secret_access_key = "YOUR_SECRET_ACCESS_KEY"
@@ -23,8 +23,8 @@ resource "trocco_connection" "snowflake" {
 
 
 resource "trocco_job_definition" "s3_test" {
-  description              = ""
-  filter_columns           = [
+  description = ""
+  filter_columns = [
     {
       default                      = null
       json_expand_enabled          = false
@@ -58,14 +58,14 @@ resource "trocco_job_definition" "s3_test" {
       type                         = "string"
     },
   ]
-  input_option             = {
+  input_option = {
     s3_input_option = {
-      bucket                      = "test_bucket"
-      csv_parser                  = {
-        allow_extra_columns     = false
-        allow_optional_columns  = false
-        charset                 = "UTF-8"
-        columns                 = [
+      bucket = "test_bucket"
+      csv_parser = {
+        allow_extra_columns    = false
+        allow_optional_columns = false
+        charset                = "UTF-8"
+        columns = [
           {
             name = "name"
             type = "string"
@@ -111,7 +111,7 @@ resource "trocco_job_definition" "s3_test" {
   input_option_type        = "s3"
   is_runnable_concurrently = false
   name                     = "s3 to snowflake"
-  output_option            = {
+  output_option = {
     snowflake_output_option = {
       batch_size              = 50
       database                = "test_database"
@@ -128,7 +128,7 @@ resource "trocco_job_definition" "s3_test" {
       warehouse               = "COMPUTE_WH"
     }
   }
-  output_option_type       = "snowflake"
-  resource_enhancement     = "custom_spec"
-  retry_limit              = 0
+  output_option_type   = "snowflake"
+  resource_enhancement = "custom_spec"
+  retry_limit          = 0
 }

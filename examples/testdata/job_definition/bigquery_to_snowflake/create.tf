@@ -1,7 +1,7 @@
 resource "trocco_connection" "test_bq" {
-  connection_type = "bigquery"
-  name            = "BigQuery Example"
-  project_id      = "example"
+  connection_type          = "bigquery"
+  name                     = "BigQuery Example"
+  project_id               = "example"
   service_account_json_key = <<JSON
   {
     "type": "service_account",
@@ -23,7 +23,7 @@ resource "trocco_connection" "test_snowflake" {
 }
 
 resource "trocco_team" "test" {
-  name    = "test"
+  name = "test"
   members = [
     {
       user_id = 10626
@@ -35,7 +35,7 @@ resource "trocco_team" "test" {
 resource "trocco_resource_group" "test" {
   name        = "test"
   description = "test"
-  teams       = [
+  teams = [
     {
       team_id = trocco_team.test.id
       role    = "administrator"
@@ -46,11 +46,11 @@ resource "trocco_resource_group" "test" {
 resource "trocco_job_definition" "bigquery_to_snowflake" {
   name                     = "BigQuery to Snowflake Test"
   description              = "Test job definition for transferring data from BigQuery to Snowflake"
-  resource_enhancement      = "medium"
+  resource_enhancement     = "medium"
   resource_group_id        = trocco_resource_group.test.id
   retry_limit              = 2
   is_runnable_concurrently = true
-  
+
   input_option_type = "bigquery"
   input_option = {
     bigquery_input_option = {
@@ -86,7 +86,7 @@ resource "trocco_job_definition" "bigquery_to_snowflake" {
       ]
     }
   }
-  
+
   filter_columns = [
     {
       default                      = null
@@ -122,7 +122,7 @@ resource "trocco_job_definition" "bigquery_to_snowflake" {
       type                         = "timestamp"
     }
   ]
-  
+
   output_option_type = "snowflake"
   output_option = {
     snowflake_output_option = {
@@ -141,7 +141,7 @@ resource "trocco_job_definition" "bigquery_to_snowflake" {
       warehouse               = "COMPUTE_WH"
     }
   }
-  
+
   # please create labels if testing in local environment
   # see https://trocco.io/labels#side-nav-labels
   # labels = [
