@@ -7,8 +7,8 @@ resource "trocco_connection" "test_mysql" {
   password        = "password"
 }
 resource "trocco_connection" "test_bq" {
-  connection_type = "bigquery"
-  name        = "BigQuery Example"
+  connection_type          = "bigquery"
+  name                     = "BigQuery Example"
   project_id               = "example"
   service_account_json_key = <<JSON
   {
@@ -20,8 +20,8 @@ resource "trocco_connection" "test_bq" {
   JSON
 }
 resource "trocco_team" "test" {
-  name        = "test"
-  members     = [
+  name = "test"
+  members = [
     {
       user_id = 10626
       role    = "team_admin"
@@ -31,7 +31,7 @@ resource "trocco_team" "test" {
 resource "trocco_resource_group" "test" {
   name        = "test"
   description = "test"
-  teams     = [
+  teams = [
     {
       team_id = trocco_team.test.id
       role    = "administrator"
@@ -39,16 +39,16 @@ resource "trocco_resource_group" "test" {
   ]
 }
 resource "trocco_job_definition" "mysql_to_bigquery" {
-  name                        = "test job_definition"
-  description                 = "test description"
-  resource_enhancement        = "large"
-  resource_group_id           = trocco_resource_group.test.id
-  retry_limit                 = 1
-  is_runnable_concurrently    = true
-  filter_columns              = [
+  name                     = "test job_definition"
+  description              = "test description"
+  resource_enhancement     = "large"
+  resource_group_id        = trocco_resource_group.test.id
+  retry_limit              = 1
+  is_runnable_concurrently = true
+  filter_columns = [
     {
       default                      = ""
-      format = "%Y"
+      format                       = "%Y"
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "id"
@@ -79,30 +79,30 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
       name                         = "jsontekitou"
       src                          = ""
       type                         = "json"
-      json_expand_columns          = [
+      json_expand_columns = [
         {
           json_path = "path"
           name      = "json_col"
-          format = "%Y"
+          format    = "%Y"
           timezone  = "UTC/ETC"
           type      = "string"
         },
       ]
     }
   ]
-  filter_gsub                 = [
+  filter_gsub = [
     {
       column_name = "regex_col"
       pattern     = "/regex/"
       to          = "replace_string"
     },
   ]
-  filter_hashes               = [
+  filter_hashes = [
     {
       name = "hash_col"
     },
   ]
-  filter_masks                = [
+  filter_masks = [
     {
       length    = 9
       mask_type = "all"
@@ -126,8 +126,8 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
       name        = "mail_partial_string"
     },
   ]
-  filter_rows                 = {
-    condition             = "or"
+  filter_rows = {
+    condition = "or"
     filter_row_conditions = [
       {
         argument = "2"
@@ -137,7 +137,7 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
     ]
   }
 
-  filter_string_transforms    = [
+  filter_string_transforms = [
     {
       column_name = "transforms"
       type        = "normalize_nfkc"
@@ -173,17 +173,17 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
       unixtime_unit     = "second"
     },
   ]
-  input_option_type           = "mysql"
-  input_option                = {
+  input_option_type = "mysql"
+  input_option = {
     mysql_input_option = {
       connect_timeout             = 300
       database                    = "test_database"
       fetch_rows                  = 1000
       incremental_loading_enabled = false
-      table = "test_table"
+      table                       = "test_table"
       default_time_zone           = "Asia/Tokyo"
       use_legacy_datetime_code    = false
-      input_option_columns        = [
+      input_option_columns = [
         {
           name = "id"
           type = "long"
@@ -201,33 +201,33 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
           type = "timestamp"
         },
       ]
-      mysql_connection_id         = trocco_connection.test_mysql.id
-      query                       = <<-EOT
+      mysql_connection_id = trocco_connection.test_mysql.id
+      query               = <<-EOT
                 select
                     *
                 from
       	          example_table;
       EOT
-      socket_timeout              = 1801
+      socket_timeout      = 1801
     }
   }
-  output_option_type          = "bigquery"
-  output_option               = {
+  output_option_type = "bigquery"
+  output_option = {
     bigquery_output_option = {
-      dataset                                    = "test_dataset"
-      table                                      = "test_table"
-      mode                                       = "append"
-      auto_create_dataset                        = true
-      timeout_sec                                = 300
-      open_timeout_sec                           = 300
-      read_timeout_sec                           = 300
-      send_timeout_sec                           = 300
-      retries                                    = 2
-      bigquery_connection_id                     = trocco_connection.test_bq.id
-      location                                   = "us-west1"
-      bigquery_output_option_clustering_fields   = []
-      bigquery_output_option_column_options      = []
-      bigquery_output_option_merge_keys          = []
+      dataset                                  = "test_dataset"
+      table                                    = "test_table"
+      mode                                     = "append"
+      auto_create_dataset                      = true
+      timeout_sec                              = 300
+      open_timeout_sec                         = 300
+      read_timeout_sec                         = 300
+      send_timeout_sec                         = 300
+      retries                                  = 2
+      bigquery_connection_id                   = trocco_connection.test_bq.id
+      location                                 = "us-west1"
+      bigquery_output_option_clustering_fields = []
+      bigquery_output_option_column_options    = []
+      bigquery_output_option_merge_keys        = []
     }
   }
   # please create labels if testing in local environment

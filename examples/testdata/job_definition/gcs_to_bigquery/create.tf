@@ -1,8 +1,8 @@
 resource "trocco_connection" "test_gcs" {
-  connection_type = "gcs"
-  name            = "GCS Example"
-  description     = "This is a Google Cloud Storage(GCS) connection example"
-  project_id      = "example-project-id"
+  connection_type          = "gcs"
+  name                     = "GCS Example"
+  description              = "This is a Google Cloud Storage(GCS) connection example"
+  project_id               = "example-project-id"
   service_account_json_key = <<JSON
   {
     "type": "service_account",
@@ -11,14 +11,14 @@ resource "trocco_connection" "test_gcs" {
     "private_key":"-----BEGIN PRIVATE KEY-----\n..."
   }
   JSON
-  service_account_email = "joe@example-project.iam.gserviceaccount.com"
-  application_name      = "example-application-name"
+  service_account_email    = "joe@example-project.iam.gserviceaccount.com"
+  application_name         = "example-application-name"
 }
 
 resource "trocco_connection" "test_bq" {
-  connection_type = "bigquery"
-  name            = "BigQuery Example"
-  project_id      = "example"
+  connection_type          = "bigquery"
+  name                     = "BigQuery Example"
+  project_id               = "example"
   service_account_json_key = <<JSON
   {
     "type": "service_account",
@@ -30,7 +30,7 @@ resource "trocco_connection" "test_bq" {
 }
 
 resource "trocco_team" "test" {
-  name    = "test"
+  name = "test"
   members = [
     {
       user_id = 10626
@@ -42,7 +42,7 @@ resource "trocco_team" "test" {
 resource "trocco_resource_group" "test" {
   name        = "test"
   description = "test"
-  teams       = [
+  teams = [
     {
       team_id = trocco_team.test.id
       role    = "administrator"
@@ -53,11 +53,11 @@ resource "trocco_resource_group" "test" {
 resource "trocco_job_definition" "gcs_to_bigquery" {
   name                     = "GCS to BigQuery Test"
   description              = "Test job definition for transferring data from GCS to BigQuery"
-  resource_enhancement      = "custom_spec"
+  resource_enhancement     = "custom_spec"
   resource_group_id        = trocco_resource_group.test.id
   retry_limit              = 2
   is_runnable_concurrently = true
-  
+
   input_option_type = "gcs"
   input_option = {
     gcs_input_option = {
@@ -106,7 +106,7 @@ resource "trocco_job_definition" "gcs_to_bigquery" {
       }
     }
   }
-  
+
   filter_columns = [
     {
       default                      = null
@@ -142,7 +142,7 @@ resource "trocco_job_definition" "gcs_to_bigquery" {
       type                         = "timestamp"
     },
   ]
-  
+
   output_option_type = "bigquery"
   output_option = {
     bigquery_output_option = {
@@ -163,7 +163,7 @@ resource "trocco_job_definition" "gcs_to_bigquery" {
       timeout_sec                              = 300
     }
   }
-  
+
   # please create labels if testing in local environment
   # see https://trocco.io/labels#side-nav-labels
   labels = [

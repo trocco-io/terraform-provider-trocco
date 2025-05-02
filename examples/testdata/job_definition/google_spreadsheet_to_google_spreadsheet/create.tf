@@ -19,8 +19,8 @@ resource "trocco_job_definition" "sheets_to_sheets" {
   is_runnable_concurrently = false
   retry_limit              = 0
   resource_enhancement     = "medium"
-  
-  input_option_type        = "google_spreadsheets"
+
+  input_option_type = "google_spreadsheets"
   input_option = {
     google_spreadsheets_input_option = {
       google_spreadsheets_connection_id = trocco_connection.google_spreadsheets.id
@@ -47,7 +47,7 @@ resource "trocco_job_definition" "sheets_to_sheets" {
       ]
     }
   }
-  
+
   output_option_type = "google_spreadsheets"
   output_option = {
     google_spreadsheets_output_option = {
@@ -65,7 +65,7 @@ resource "trocco_job_definition" "sheets_to_sheets" {
       ]
     }
   }
-  
+
   filter_columns = [
     {
       default                      = ""
