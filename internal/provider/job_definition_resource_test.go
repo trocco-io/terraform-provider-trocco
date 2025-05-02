@@ -447,7 +447,7 @@ func TestAccJobDefinitionResourceGoogleAnalytics4ToSnowflake(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				ResourceName: resourceName,
-				Config:       providerConfig + LoadTextile("../../examples/testdata/job_definition/google_analytics4_to_snowflake/create.tf"),
+				Config:       providerConfig + LoadTextFile("../../examples/testdata/job_definition/google_analytics4_to_snowflake/create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "GA4 to Snowflake"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.google_analytics4_input_option.time_series", "dateHour"),
@@ -486,7 +486,7 @@ func TestAccJobDefinitionResourceGoogleAnalytics4ToSnowflake(t *testing.T) {
 			// Update testing with null dimension
 			{
 				ResourceName: resourceName,
-				Config:       providerConfig + LoadTextile("../../examples/testdata/job_definition/google_analytics4_to_snowflake/update_dimension_null.tf"),
+				Config:       providerConfig + LoadTextFile("../../examples/testdata/job_definition/google_analytics4_to_snowflake/update_dimension_null.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "GA4 to Snowflake"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.google_analytics4_input_option.time_series", "dateHour"),
@@ -505,17 +505,17 @@ func TestAccJobDefinitionResourceGoogleAnalytics4ToSnowflakeInvalid(t *testing.T
 		Steps: []resource.TestStep{
 			{
 				ResourceName: resourceName,
-				Config:       providerConfig + LoadTextile("../../examples/testdata/job_definition/google_analytics4_to_snowflake/update_dimension_too_many.tf"),
+				Config:       providerConfig + LoadTextFile("../../examples/testdata/job_definition/google_analytics4_to_snowflake/update_dimension_too_many.tf"),
 				ExpectError:  regexp.MustCompile(`list must contain at most 8 elements, got: 9`),
 			},
 			{
 				ResourceName: resourceName,
-				Config:       providerConfig + LoadTextile("../../examples/testdata/job_definition/google_analytics4_to_snowflake/update_metrics_required.tf"),
+				Config:       providerConfig + LoadTextFile("../../examples/testdata/job_definition/google_analytics4_to_snowflake/update_metrics_required.tf"),
 				ExpectError:  regexp.MustCompile(`"google_analytics4_input_option_metrics" is required.`),
 			},
 			{
 				ResourceName: resourceName,
-				Config:       providerConfig + LoadTextile("../../examples/testdata/job_definition/google_analytics4_to_snowflake/update_metrics_too_many.tf"),
+				Config:       providerConfig + LoadTextFile("../../examples/testdata/job_definition/google_analytics4_to_snowflake/update_metrics_too_many.tf"),
 				ExpectError:  regexp.MustCompile(`list must contain at least 1 elements and at most 10 elements, got: 11`),
 			},
 		},
@@ -529,7 +529,7 @@ func TestAccJobDefinitionResourceKintoneToSnowflake(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				ResourceName: resourceName,
-				Config:       providerConfig + LoadTextile("../../examples/testdata/job_definition/kintone_to_snowflake/create.tf"),
+				Config:       providerConfig + LoadTextFile("../../examples/testdata/job_definition/kintone_to_snowflake/create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "kintone to snowflake"),
 					resource.TestCheckResourceAttr(resourceName, "retry_limit", "0"),
@@ -570,7 +570,7 @@ func TestAccJobDefinitionResourceKintoneToSnowflakeInvalid(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				ResourceName: resourceName,
-				Config:       providerConfig + LoadTextile("../../examples/testdata/job_definition/kintone_to_snowflake/update_app_id_required.tf"),
+				Config:       providerConfig + LoadTextFile("../../examples/testdata/job_definition/kintone_to_snowflake/update_app_id_required.tf"),
 				ExpectError:  regexp.MustCompile(`Missing Configuration for Required Attribute`),
 			},
 		},

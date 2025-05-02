@@ -20,8 +20,8 @@ var (
 	}
 )
 
-// LoadTextile loads a file from the filesystem and returns its content as a string.
-func LoadTextile(filePath string) string {
+// LoadTextFile reads a file from the filesystem and returns its content as a string.
+func LoadTextFile(filePath string) string {
 	content, err := os.ReadFile(filePath)
 	if err != nil {
 		panic("Error loading file: " + err.Error())
