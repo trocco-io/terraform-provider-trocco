@@ -15,7 +15,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Pin actions
-        uses: suzuki-shunsuke/pinact-action@v1.0.0
+        uses: suzuki-shunsuke/pinact-action@49cbd6acd0dbab6a6be2585d1dbdaa43b4410133 # v1.0.0
         with:
           app_id: ${{ secrets.PINACT_GITHUB_APP_ID }}
           app_private_key: ${{ secrets.PINACT_GITHUB_APP_PRIVATE_KEY }}
