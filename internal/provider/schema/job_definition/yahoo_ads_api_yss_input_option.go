@@ -33,9 +33,10 @@ func YahooAdsApiYssInputOptionSchema() schema.Attribute {
 				},
 			},
 			"service": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "service",
+				Optional:            true,
+				Computed:            true,
 				Default:             stringdefault.StaticString("ReportDefinitionService"),
+				MarkdownDescription: "service",
 				Validators: []validator.String{
 					stringvalidator.OneOf("ReportDefinitionService", "CampaignExportService"),
 				},
@@ -58,12 +59,12 @@ func YahooAdsApiYssInputOptionSchema() schema.Attribute {
 				Default:             booldefault.StaticBool(false),
 				MarkdownDescription: "exclude_zero_impressions",
 			},
-			"yahoo_ads_api_yss_connection_id": schema.Int64Attribute{
+			"yahoo_ads_api_connection_id": schema.Int64Attribute{
 				Required: true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
-				MarkdownDescription: "ID of yahoo_ads_api_yss connection",
+				MarkdownDescription: "ID of yahoo_ads_api connection",
 			},
 			"custom_variable_settings": CustomVariableSettingsSchema(),
 			"input_option_columns": schema.ListNestedAttribute{
@@ -94,7 +95,7 @@ func YahooAdsApiYssInputOptionSchema() schema.Attribute {
 						},
 					},
 					PlanModifiers: []planmodifier.Object{
-						&troccoPlanModifier.KintoneInputOptionColumnPlanModifier{},
+						&troccoPlanModifier.YahooAdsApiYssInputOptionColumnPlanModifier{},
 					},
 				},
 				Validators: []validator.List{
