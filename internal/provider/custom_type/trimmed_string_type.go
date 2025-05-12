@@ -102,7 +102,7 @@ func (v TrimmedStringValue) StringSemanticEquals(ctx context.Context, newValuabl
 		return false, diags
 	}
 
-	priorTrimmed := strings.TrimSpace(v.StringValue.ValueString())
+	priorTrimmed := strings.TrimSpace(v.ValueString())
 	newTrimmed := strings.TrimSpace(newValue.ValueString())
 
 	return priorTrimmed == newTrimmed, diags

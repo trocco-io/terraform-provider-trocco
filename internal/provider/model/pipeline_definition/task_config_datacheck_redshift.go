@@ -28,7 +28,7 @@ func NewRedshiftDataCheckTaskConfig(c *we.RedshiftDataCheckTaskConfig) *Redshift
 	return &RedshiftDataCheckTaskConfig{
 		Name:            types.StringValue(c.Name),
 		ConnectionID:    types.Int64Value(c.ConnectionID),
-		Query:           custom_type.TrimmedStringValue{types.StringValue(c.Query)},
+		Query:           custom_type.TrimmedStringValue{StringValue: types.StringValue(c.Query)},
 		Operator:        types.StringValue(c.Operator),
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
