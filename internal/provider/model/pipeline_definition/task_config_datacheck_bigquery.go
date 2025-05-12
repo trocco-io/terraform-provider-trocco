@@ -4,18 +4,19 @@ import (
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	"terraform-provider-trocco/internal/provider/custom_type"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type BigqueryDataCheckTaskConfig struct {
-	Name            types.String     `tfsdk:"name"`
-	ConnectionID    types.Int64      `tfsdk:"connection_id"`
-	Query           types.String     `tfsdk:"query"`
-	Operator        types.String     `tfsdk:"operator"`
-	QueryResult     types.Int64      `tfsdk:"query_result"`
-	AcceptsNull     types.Bool       `tfsdk:"accepts_null"`
-	CustomVariables []CustomVariable `tfsdk:"custom_variables"`
+	Name            types.String                   `tfsdk:"name"`
+	ConnectionID    types.Int64                    `tfsdk:"connection_id"`
+	Query           custom_type.TrimmedStringValue `tfsdk:"query"`
+	Operator        types.String                   `tfsdk:"operator"`
+	QueryResult     types.Int64                    `tfsdk:"query_result"`
+	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
+	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
 }
 
 func NewBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig) *BigqueryDataCheckTaskConfig {
@@ -26,7 +27,7 @@ func NewBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig) *Bigquery
 	return &BigqueryDataCheckTaskConfig{
 		Name:            types.StringValue(c.Name),
 		ConnectionID:    types.Int64Value(c.ConnectionID),
-		Query:           types.StringValue(c.Query),
+		Query:           custom_type.TrimmedStringValue{types.StringValue(c.Query)},
 		Operator:        types.StringValue(c.Operator),
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
