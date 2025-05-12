@@ -1,10 +1,10 @@
 resource "trocco_connection" "my_snowflake_conn" {
   connection_type = "snowflake"
-  name = "Snowflake Test"
-  host = "example.snowflakecomputing.com"
-  auth_method = "user_password"
-  user_name = "test_user"
-  password = "test_password"
+  name            = "Snowflake Test"
+  host            = "example.snowflakecomputing.com"
+  auth_method     = "user_password"
+  user_name       = "test_user"
+  password        = "test_password"
 }
 
 
@@ -25,7 +25,7 @@ resource "trocco_pipeline_definition" "snowflake_data_check_query_check" {
         operator      = "equal"
         query_result  = 1
         accepts_null  = false
-        warehouse = "COMPUTE_WH"
+        warehouse     = "COMPUTE_WH"
       }
     }
   ]

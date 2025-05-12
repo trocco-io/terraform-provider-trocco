@@ -15,7 +15,7 @@ resource "trocco_pipeline_definition" "redshift_data_check_query_check" {
         operator      = "equal"
         query_result  = 1
         accepts_null  = false
-        database = "example_db"
+        database      = "example_db"
       }
     }
   ]
