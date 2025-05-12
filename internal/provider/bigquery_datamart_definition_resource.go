@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"terraform-provider-trocco/internal/client"
+	"terraform-provider-trocco/internal/provider/custom_type"
 	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
 	troccoValidator "terraform-provider-trocco/internal/provider/validator"
 
@@ -34,27 +35,27 @@ type bigqueryDatamartDefinitionResource struct {
 }
 
 type bigqueryDatamartDefinitionModel struct {
-	ID                     types.Int64                 `tfsdk:"id"`
-	Name                   types.String                `tfsdk:"name"`
-	Description            types.String                `tfsdk:"description"`
-	IsRunnableConcurrently types.Bool                  `tfsdk:"is_runnable_concurrently"`
-	ResourceGroupID        types.Int64                 `tfsdk:"resource_group_id"`
-	CustomVariableSettings types.List                  `tfsdk:"custom_variable_settings"`
-	BigqueryConnectionID   types.Int64                 `tfsdk:"bigquery_connection_id"`
-	QueryMode              types.String                `tfsdk:"query_mode"`
-	Query                  trimmedStringValue          `tfsdk:"query"`
-	DestinationDataset     types.String                `tfsdk:"destination_dataset"`
-	DestinationTable       types.String                `tfsdk:"destination_table"`
-	WriteDisposition       types.String                `tfsdk:"write_disposition"`
-	BeforeLoad             types.String                `tfsdk:"before_load"`
-	Partitioning           types.String                `tfsdk:"partitioning"`
-	PartitioningTime       types.String                `tfsdk:"partitioning_time"`
-	PartitioningField      types.String                `tfsdk:"partitioning_field"`
-	ClusteringFields       []types.String              `tfsdk:"clustering_fields"`
-	Location               types.String                `tfsdk:"location"`
-	Notifications          []datamartNotificationModel `tfsdk:"notifications"`
-	Schedules              []scheduleModel             `tfsdk:"schedules"`
-	Labels                 []labelModel                `tfsdk:"labels"`
+	ID                     types.Int64                    `tfsdk:"id"`
+	Name                   types.String                   `tfsdk:"name"`
+	Description            types.String                   `tfsdk:"description"`
+	IsRunnableConcurrently types.Bool                     `tfsdk:"is_runnable_concurrently"`
+	ResourceGroupID        types.Int64                    `tfsdk:"resource_group_id"`
+	CustomVariableSettings types.List                     `tfsdk:"custom_variable_settings"`
+	BigqueryConnectionID   types.Int64                    `tfsdk:"bigquery_connection_id"`
+	QueryMode              types.String                   `tfsdk:"query_mode"`
+	Query                  custom_type.TrimmedStringValue `tfsdk:"query"`
+	DestinationDataset     types.String                   `tfsdk:"destination_dataset"`
+	DestinationTable       types.String                   `tfsdk:"destination_table"`
+	WriteDisposition       types.String                   `tfsdk:"write_disposition"`
+	BeforeLoad             types.String                   `tfsdk:"before_load"`
+	Partitioning           types.String                   `tfsdk:"partitioning"`
+	PartitioningTime       types.String                   `tfsdk:"partitioning_time"`
+	PartitioningField      types.String                   `tfsdk:"partitioning_field"`
+	ClusteringFields       []types.String                 `tfsdk:"clustering_fields"`
+	Location               types.String                   `tfsdk:"location"`
+	Notifications          []datamartNotificationModel    `tfsdk:"notifications"`
+	Schedules              []scheduleModel                `tfsdk:"schedules"`
+	Labels                 []labelModel                   `tfsdk:"labels"`
 }
 
 type customVariableSettingModel struct {
@@ -220,7 +221,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 			},
 			"query": schema.StringAttribute{
 				Required:            true,
-				CustomType:          trimmedStringType{},
+				CustomType:          custom_type.TrimmedStringType{},
 				MarkdownDescription: "Query to be executed.",
 			},
 			"destination_dataset": schema.StringAttribute{
@@ -959,7 +960,7 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 	if response.DatamartBigqueryOption != nil {
 		model.BigqueryConnectionID = types.Int64Value(response.DatamartBigqueryOption.BigqueryConnectionID)
 		model.QueryMode = types.StringValue(response.DatamartBigqueryOption.QueryMode)
-		model.Query = trimmedStringValue{types.StringValue(response.DatamartBigqueryOption.Query)}
+		model.Query = custom_type.TrimmedStringValue{StringValue: types.StringValue(response.DatamartBigqueryOption.Query)}
 		if response.DatamartBigqueryOption.DestinationDataset != nil {
 			model.DestinationDataset = types.StringValue(*response.DatamartBigqueryOption.DestinationDataset)
 		}

@@ -1,8 +1,12 @@
 default: testacc
 
+.PHONY: clean
+clean:
+	go clean -testcache
+
 # Run acceptance tests
 .PHONY: testacc
-testacc:
+testacc: clean
 	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
 
 # example)
