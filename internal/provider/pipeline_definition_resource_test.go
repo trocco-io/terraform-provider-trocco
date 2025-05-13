@@ -7,6 +7,7 @@ import (
 )
 
 func TestAccPipelineDefinitionResourceForDatacheckBigquery(t *testing.T) {
+	resourceName := "trocco_pipeline_definition.bigquery_data_check_query_check"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
@@ -14,8 +15,8 @@ func TestAccPipelineDefinitionResourceForDatacheckBigquery(t *testing.T) {
 				Config:      providerConfig + LoadTextile("../../examples/testdata/pipeline_definition/bigquery_data_check/create.tf"),
 				ExpectError: nil,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_pipeline_definition.bigquery_data_check_query_check", "name", "bigquery_data_check"),
-					resource.TestCheckResourceAttr("trocco_pipeline_definition.bigquery_data_check_query_check", "tasks.0.bigquery_data_check_config.query", "          SELECT COUNT(*) FROM examples\n"),
+					resource.TestCheckResourceAttr(resourceName, "name", "bigquery_data_check"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.bigquery_data_check_config.query", "          SELECT COUNT(*) FROM examples\n"),
 				),
 			},
 		},
@@ -23,6 +24,7 @@ func TestAccPipelineDefinitionResourceForDatacheckBigquery(t *testing.T) {
 }
 
 func TestAccPipelineDefinitionResourceForDatacheckSnowflake(t *testing.T) {
+	resourceName := "trocco_pipeline_definition.snowflake_data_check_query_check"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
@@ -30,8 +32,8 @@ func TestAccPipelineDefinitionResourceForDatacheckSnowflake(t *testing.T) {
 				Config:      providerConfig + LoadTextile("../../examples/testdata/pipeline_definition/snowflake_data_check/create.tf"),
 				ExpectError: nil,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_pipeline_definition.snowflake_data_check_query_check", "name", "snowflake_data_check"),
-					resource.TestCheckResourceAttr("trocco_pipeline_definition.snowflake_data_check_query_check", "tasks.0.snowflake_data_check_config.query", "          SELECT COUNT(*) FROM examples\n"),
+					resource.TestCheckResourceAttr(resourceName, "name", "snowflake_data_check"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.snowflake_data_check_config.query", "          SELECT COUNT(*) FROM examples\n"),
 				),
 			},
 		},
@@ -39,6 +41,7 @@ func TestAccPipelineDefinitionResourceForDatacheckSnowflake(t *testing.T) {
 }
 
 func TestAccPipelineDefinitionResourceForDatacheckRedshift(t *testing.T) {
+	resourceName := "trocco_pipeline_definition.redshift_data_check_query_check"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
@@ -46,8 +49,8 @@ func TestAccPipelineDefinitionResourceForDatacheckRedshift(t *testing.T) {
 				Config:      providerConfig + LoadTextile("../../examples/testdata/pipeline_definition/redshift_data_check/create.tf"),
 				ExpectError: nil,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_pipeline_definition.redshift_data_check_query_check", "name", "redshift_data_check"),
-					resource.TestCheckResourceAttr("trocco_pipeline_definition.redshift_data_check_query_check", "tasks.0.redshift_data_check_config.query", "          SELECT COUNT(*) FROM examples\n"),
+					resource.TestCheckResourceAttr(resourceName, "name", "redshift_data_check"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.redshift_data_check_config.query", "          SELECT COUNT(*) FROM examples\n"),
 				),
 			},
 		},
