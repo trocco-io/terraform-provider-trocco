@@ -1,3 +1,10 @@
+## 0.14.0
+FEATURES:
+- Added `kintone` input in `trocco_job_definition` resource.
+
+CHORE:
+- Add pinact-action
+
 ## 0.13.0
 FEATURES:
 - Added `trocco_notification_destination` resource.
