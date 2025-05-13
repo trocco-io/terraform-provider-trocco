@@ -16,7 +16,7 @@ import (
 func YahooAdsApiYssInputOptionSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Optional:            true,
-		MarkdownDescription: "Attributes of source kintone",
+		MarkdownDescription: "Attributes of source yahoo_ads_api_yss",
 		Attributes: map[string]schema.Attribute{
 			"account_id": schema.StringAttribute{
 				Required:            true,
@@ -35,23 +35,32 @@ func YahooAdsApiYssInputOptionSchema() schema.Attribute {
 			"service": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				Default:             stringdefault.StaticString("ReportDefinitionService"),
+				Default:             stringdefault.StaticString("report_definition_service"),
 				MarkdownDescription: "service",
 				Validators: []validator.String{
-					stringvalidator.OneOf("ReportDefinitionService", "CampaignExportService"),
+					stringvalidator.OneOf("report_definition_service", "campaign_export_service"),
 				},
 			},
 			"report_type": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "report_type",
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
 			},
 			"start_date": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "report_type",
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
 			},
 			"end_date": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "report_type",
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
 			},
 			"exclude_zero_impressions": schema.BoolAttribute{
 				Optional:            true,
@@ -102,6 +111,9 @@ func YahooAdsApiYssInputOptionSchema() schema.Attribute {
 					listvalidator.SizeAtLeast(1),
 				},
 			},
+		},
+		PlanModifiers: []planmodifier.Object{
+			&troccoPlanModifier.YahooAdsApiYssInputOptionPlanModifier{},
 		},
 	}
 }

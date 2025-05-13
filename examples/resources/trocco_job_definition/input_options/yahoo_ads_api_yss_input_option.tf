@@ -5,7 +5,7 @@ resource "trocco_job_definition" "yahoo_ads_api_yss_input_example" {
       yahoo_ads_api_connection_id = 1
       base_account_id             = "base-1234"
       account_id                  = "acc-5678"
-      service                     = "ReportDefinitionService"
+      service                     = "report_definition_service"
       report_type                 = "ADGROUP"
       start_date                  = "2024-05-01"
       end_date                    = "2024-05-31"

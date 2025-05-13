@@ -7,7 +7,7 @@ import (
 type YahooAdsApiYssInputOptionInput struct {
 	AccountID               string                                  `json:"account_id"`
 	BaseAccountID           string                                  `json:"base_account_id"`
-	Service                 *parameter.NullableString               `json:"srrvice"`
+	Service                 *parameter.NullableString               `json:"service"`
 	ExcludeZeroImpressions  bool                                    `json:"exclude_zero_impressions"`
 	ReportType              *parameter.NullableString               `json:"report_type,omitempty"`
 	StartDate               *parameter.NullableString               `json:"start_date,omitempty"`
@@ -20,7 +20,7 @@ type YahooAdsApiYssInputOptionInput struct {
 type UpdateYahooAdsApiYssInputOptionInput struct {
 	AccountID               *parameter.NullableString               `json:"account_id,omitempty"`
 	BaseAccountID           *parameter.NullableString               `json:"base_account_id,omitempty"`
-	Service                 *parameter.NullableString               `json:"srrvice,omitempty"`
+	Service                 *parameter.NullableString               `json:"service,omitempty"`
 	ExcludeZeroImpressions  *parameter.NullableBool                 `json:"exclude_zero_impressions,omitempty"`
 	ReportType              *parameter.NullableString               `json:"report_type,omitempty"`
 	StartDate               *parameter.NullableString               `json:"start_date,omitempty"`

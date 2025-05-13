@@ -1121,7 +1121,7 @@ resource "trocco_job_definition" "yahoo_ads_api_yss_input_example" {
       yahoo_ads_api_connection_id = 1
       base_account_id             = "base-1234"
       account_id                  = "acc-5678"
-      service                     = "ReportDefinitionService"
+      service                     = "report_definition_service"
       report_type                 = "ADGROUP"
       start_date                  = "2024-05-01"
       end_date                    = "2024-05-31"
@@ -1416,7 +1416,7 @@ Optional:
 - `s3_input_option` (Attributes) Attributes about source S3 (see [below for nested schema](#nestedatt--input_option--s3_input_option))
 - `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
-- `yahoo_ads_api_yss_input_option` (Attributes) Attributes of source kintone (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_yss_input_option))
+- `yahoo_ads_api_yss_input_option` (Attributes) Attributes of source yahoo_ads_api_yss (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_yss_input_option))
 
 <a id="nestedatt--input_option--bigquery_input_option"></a>
 ### Nested Schema for `input_option.bigquery_input_option`
