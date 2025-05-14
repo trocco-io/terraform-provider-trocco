@@ -14,6 +14,6 @@ testacc:
 # 	make testacc TESTARGS="-run TestAccConnectionResource"
 
 
-.PHONY: testacc-html
+.PHONY: cover-html
 cover-html:
 	go tool cover -html=tmp/cover.out -o tmp/cover.html
