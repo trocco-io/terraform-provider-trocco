@@ -12,7 +12,7 @@ func TestAccDatamartDefinitionResourceForBigquery(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:      providerConfig + LoadTextile("../../examples/testdata/bigquery_datamart_definition/create.tf"),
+				Config:      providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/create.tf"),
 				ExpectError: nil,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "test_bigquery_datamart"),
