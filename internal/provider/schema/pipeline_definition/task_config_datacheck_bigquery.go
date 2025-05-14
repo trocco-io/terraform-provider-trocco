@@ -1,6 +1,8 @@
 package pipeline_definition
 
 import (
+	"terraform-provider-trocco/internal/provider/custom_type"
+
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
@@ -20,6 +22,7 @@ func BigqueryDatacheckTaskConfig() schema.Attribute {
 			"query": schema.StringAttribute{
 				MarkdownDescription: "The query of the datacheck task",
 				Optional:            true,
+				CustomType:          custom_type.TrimmedStringType{},
 			},
 			"operator": schema.StringAttribute{
 				MarkdownDescription: "The operator of the datacheck task",
