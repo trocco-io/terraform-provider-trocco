@@ -32,3 +32,10 @@ jobs:
         env:
           TROCCO_API_KEY: ${{ secrets.TROCCO_API_KEY }}
           TROCCO_TEST_URL: https://trocco.io
+      - run: |
+          make cover-html
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: tmp/cover.html
