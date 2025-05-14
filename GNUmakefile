@@ -4,6 +4,7 @@ default: testacc
 .PHONY: testacc
 testacc:
 	TF_ACC=1 go test -cover ./... -v $(TESTARGS) \
+		-count=1 \
 		-timeout 120m \
 		-coverprofile=tmp/cover.out
 
