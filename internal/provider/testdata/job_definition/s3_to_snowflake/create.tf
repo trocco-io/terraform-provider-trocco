@@ -15,7 +15,7 @@ resource "trocco_connection" "snowflake" {
   name        = "Snowflake Example"
   description = "This is a Snowflake connection example"
 
-  host        = "exmaple.snowflakecomputing.com"
+  host        = "example.snowflakecomputing.com"
   auth_method = "user_password"
   user_name   = "dummy_name"
   password    = "dummy_password"
