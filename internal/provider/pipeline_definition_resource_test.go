@@ -12,7 +12,7 @@ func TestAccPipelineDefinitionResourceForDatacheckBigquery(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:      providerConfig + LoadTextile("../../examples/testdata/pipeline_definition/bigquery_data_check/create.tf"),
+				Config:      providerConfig + LoadTextFile("../../examples/testdata/pipeline_definition/bigquery_data_check/create.tf"),
 				ExpectError: nil,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "bigquery_data_check"),
@@ -29,7 +29,7 @@ func TestAccPipelineDefinitionResourceForDatacheckSnowflake(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:      providerConfig + LoadTextile("../../examples/testdata/pipeline_definition/snowflake_data_check/create.tf"),
+				Config:      providerConfig + LoadTextFile("../../examples/testdata/pipeline_definition/snowflake_data_check/create.tf"),
 				ExpectError: nil,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "snowflake_data_check"),
@@ -46,7 +46,7 @@ func TestAccPipelineDefinitionResourceForDatacheckRedshift(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config:      providerConfig + LoadTextile("../../examples/testdata/pipeline_definition/redshift_data_check/create.tf"),
+				Config:      providerConfig + LoadTextFile("../../examples/testdata/pipeline_definition/redshift_data_check/create.tf"),
 				ExpectError: nil,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "redshift_data_check"),
