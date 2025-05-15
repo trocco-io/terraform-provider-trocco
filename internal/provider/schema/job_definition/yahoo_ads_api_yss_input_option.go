@@ -74,10 +74,9 @@ func YahooAdsApiYssInputOptionSchema() schema.Attribute {
 				Optional:            true,
 				MarkdownDescription: "start_date",
 				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(4),
 					stringvalidator.RegexMatches(
-						regexp.MustCompile(`^(?:(\$\{[^}]+\})|(%[A-Za-z%/:.\-]+)|(\d{8,20})|(\d{4}[-/]\d{2}[-/]\d{2}))$`),
-						"must be a valid date or template string (e.g. 20240501, ${start_date}, %Y/%m/%d)",
+						regexp.MustCompile(`^(.*\$.*|%[A-Za-z0-9%/:.\-]+|\d{8,20}|\d{4}[-/]\d{2}[-/]\d{2})$`),
+						"must be a valid date or template string (e.g. 20240501, ${start_date}, $startdate$01, %Y/%m/%d)",
 					),
 				},
 			},
@@ -85,10 +84,9 @@ func YahooAdsApiYssInputOptionSchema() schema.Attribute {
 				Optional:            true,
 				MarkdownDescription: "end_date",
 				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(4),
 					stringvalidator.RegexMatches(
-						regexp.MustCompile(`^(?:(\$\{[^}]+\})|(%[A-Za-z%/:.\-]+)|(\d{8,20})|(\d{4}[-/]\d{2}[-/]\d{2}))$`),
-						"must be a valid date or template string (e.g. 20240501, ${start_date}, %Y/%m/%d)",
+						regexp.MustCompile(`^(.*\$.*|%[A-Za-z0-9%/:.\-]+|\d{8,20}|\d{4}[-/]\d{2}[-/]\d{2})$`),
+						"must be a valid date or template string (e.g. 20240501, ${start_date}, $startdate$01, %Y/%m/%d)",
 					),
 				},
 			},
