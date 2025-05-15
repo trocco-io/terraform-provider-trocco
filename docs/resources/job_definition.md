@@ -1111,6 +1111,45 @@ resource "trocco_job_definition" "kintone_input_example" {
 }
 ```
 
+#### YahooAdsApiYssInputOption
+
+```terraform
+resource "trocco_job_definition" "yahoo_ads_api_yss_input_example" {
+  input_option_type = "yahoo_ads_api_yss"
+  input_option = {
+    yahoo_ads_api_yss_input_option = {
+      yahoo_ads_api_connection_id = 1
+      base_account_id             = "base-1234"
+      account_id                  = "acc-5678"
+      service                     = "report_definition_service"
+      report_type                 = "ADGROUP"
+      start_date                  = "20240501"
+      end_date                    = "20240531"
+      exclude_zero_impressions    = true
+      input_option_columns = [
+        {
+          name = "id"
+          type = "long"
+        },
+        {
+          name = "name"
+          type = "string"
+        },
+        {
+          name = "email"
+          type = "string"
+        },
+        {
+          name   = "test"
+          type   = "timestamp"
+          format = "%Y-%m-%d %H:%M:%S"
+        },
+      ]
+    }
+  }
+}
+```
+
 ### OutputOptions
 
 #### BigqueryOutputOption
@@ -1377,6 +1416,7 @@ Optional:
 - `s3_input_option` (Attributes) Attributes about source S3 (see [below for nested schema](#nestedatt--input_option--s3_input_option))
 - `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
+- `yahoo_ads_api_yss_input_option` (Attributes) Attributes of source yahoo_ads_api_yss (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_yss_input_option))
 
 <a id="nestedatt--input_option--bigquery_input_option"></a>
 ### Nested Schema for `input_option.bigquery_input_option`
@@ -2306,6 +2346,57 @@ Required:
 
 <a id="nestedatt--input_option--snowflake_input_option--custom_variable_settings"></a>
 ### Nested Schema for `input_option.snowflake_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--input_option--yahoo_ads_api_yss_input_option"></a>
+### Nested Schema for `input_option.yahoo_ads_api_yss_input_option`
+
+Required:
+
+- `account_id` (String) account id
+- `base_account_id` (String) base account id
+- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_yss_input_option--input_option_columns))
+- `yahoo_ads_api_connection_id` (Number) ID of yahoo_ads_api connection
+
+Optional:
+
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_yss_input_option--custom_variable_settings))
+- `end_date` (String) end_date
+- `exclude_zero_impressions` (Boolean) exclude_zero_impressions
+- `report_type` (String) report_type
+- `service` (String) service
+- `start_date` (String) start_date
+
+<a id="nestedatt--input_option--yahoo_ads_api_yss_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.yahoo_ads_api_yss_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Column format
+
+
+<a id="nestedatt--input_option--yahoo_ads_api_yss_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.yahoo_ads_api_yss_input_option.custom_variable_settings`
 
 Required:
 
