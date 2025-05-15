@@ -1,6 +1,7 @@
 package job_definition
 
 import (
+	"regexp"
 	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
@@ -45,21 +46,50 @@ func YahooAdsApiYssInputOptionSchema() schema.Attribute {
 				Optional:            true,
 				MarkdownDescription: "report_type",
 				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
+					stringvalidator.OneOf(
+						"ACCOUNT",
+						"CAMPAIGN",
+						"ADGROUP",
+						"AD",
+						"KEYWORDS",
+						"SEARCH_QUERY",
+						"GEO",
+						"GEO_TARGET",
+						"SCHEDULE_TARGET",
+						"BID_STRATEGY",
+						"ADGROUP_TARGET_LIST",
+						"CAMPAIGN_TARGET_LIST",
+						"LANDING_PAGE_URL",
+						"KEYWORDLESS_QUERY",
+						"WEBPAGE_CRITERION",
+						"BID_MODIFIER",
+						"CAMPAIGN_ASSET",
+						"ADGROUP_ASSET",
+						"RESPONSIVE_ADS_FOR_SEARCH_ASSET",
+						"ASSET_COMBINATIONS",
+					),
 				},
 			},
 			"start_date": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "report_type",
+				MarkdownDescription: "start_date",
 				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
+					stringvalidator.UTF8LengthAtLeast(4),
+					stringvalidator.RegexMatches(
+						regexp.MustCompile(`^(?:(\$\{[^}]+\})|(%[A-Za-z%/:.\-]+)|(\d{8,20})|(\d{4}[-/]\d{2}[-/]\d{2}))$`),
+						"must be a valid date or template string (e.g. 20240501, ${start_date}, %Y/%m/%d)",
+					),
 				},
 			},
 			"end_date": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "report_type",
+				MarkdownDescription: "end_date",
 				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
+					stringvalidator.UTF8LengthAtLeast(4),
+					stringvalidator.RegexMatches(
+						regexp.MustCompile(`^(?:(\$\{[^}]+\})|(%[A-Za-z%/:.\-]+)|(\d{8,20})|(\d{4}[-/]\d{2}[-/]\d{2}))$`),
+						"must be a valid date or template string (e.g. 20240501, ${start_date}, %Y/%m/%d)",
+					),
 				},
 			},
 			"exclude_zero_impressions": schema.BoolAttribute{

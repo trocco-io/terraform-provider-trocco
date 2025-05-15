@@ -1123,8 +1123,8 @@ resource "trocco_job_definition" "yahoo_ads_api_yss_input_example" {
       account_id                  = "acc-5678"
       service                     = "report_definition_service"
       report_type                 = "ADGROUP"
-      start_date                  = "2024-05-01"
-      end_date                    = "2024-05-31"
+      start_date                  = "20240501"
+      end_date                    = "20240531"
       exclude_zero_impressions    = true
       input_option_columns = [
         {
@@ -2376,11 +2376,11 @@ Required:
 Optional:
 
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_yss_input_option--custom_variable_settings))
-- `end_date` (String) report_type
+- `end_date` (String) end_date
 - `exclude_zero_impressions` (Boolean) exclude_zero_impressions
 - `report_type` (String) report_type
 - `service` (String) service
-- `start_date` (String) report_type
+- `start_date` (String) start_date
 
 <a id="nestedatt--input_option--yahoo_ads_api_yss_input_option--input_option_columns"></a>
 ### Nested Schema for `input_option.yahoo_ads_api_yss_input_option.input_option_columns`

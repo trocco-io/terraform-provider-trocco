@@ -7,8 +7,8 @@ resource "trocco_job_definition" "yahoo_ads_api_yss_input_example" {
       account_id                  = "acc-5678"
       service                     = "report_definition_service"
       report_type                 = "ADGROUP"
-      start_date                  = "2024-05-01"
-      end_date                    = "2024-05-31"
+      start_date                  = "20240501"
+      end_date                    = "20240531"
       exclude_zero_impressions    = true
       input_option_columns = [
         {
