@@ -1,3 +1,16 @@
+## 0.15.0
+FEATURES:
+- Added support for `yahoo_ads_api_yss` input option in `trocco_job_definition` resource.
+
+CHORE:
+- Use custom type TrimStringValue in `pipeline_definition` resource.
+    - `bigquery_data_check_config.query`
+    - `redshift_data_check_config.query`
+    - `snowflake_data_check_config.query`
+- Add tests & coverage report.
+- Fix connection types in documentation.
+- Fix import block example in documentation.
+
 ## 0.14.0
 FEATURES:
 - Added `kintone` input in `trocco_job_definition` resource.
