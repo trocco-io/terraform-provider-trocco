@@ -21,6 +21,7 @@ func InputOptionSchema() schema.Attribute {
 			"postgresql_input_option":          PostgresqlInputOptionSchema(),
 			"google_analytics4_input_option":   GoogleAnalytics4InputOptionSchema(),
 			"kintone_input_option":             KintoneInputOptionSchema(),
+			"yahoo_ads_api_yss_input_option":   YahooAdsApiYssInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planmodifier2.InputOptionPlanModifier{},
