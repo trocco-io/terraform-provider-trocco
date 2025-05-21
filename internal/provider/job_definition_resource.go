@@ -790,6 +790,19 @@ func (r *jobDefinitionResource) Create(ctx context.Context, req resource.CreateR
 		})
 	}
 
+	if jobDefinition.FilterMasks != nil {
+		filterMasks := filter.NewFilterMasks(jobDefinition.FilterMasks)
+		filterMasksValue, diags := types.ListValueFrom(ctx, types.ObjectType{
+			AttrTypes: filter.FilterMask{}.AttrTypes(),
+		}, filterMasks)
+		resp.Diagnostics.Append(diags...)
+		newState.FilterMasks = filterMasksValue
+	} else {
+		newState.FilterMasks = types.ListNull(types.ObjectType{
+			AttrTypes: filter.FilterMask{}.AttrTypes(),
+		})
+	}
+
 	if jobDefinition.FilterStringTransforms != nil {
 		values := filter.NewFilterStringTransforms(jobDefinition.FilterStringTransforms)
 		v, diags := types.ListValueFrom(ctx, types.ObjectType{
