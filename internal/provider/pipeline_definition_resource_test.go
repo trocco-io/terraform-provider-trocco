@@ -23,7 +23,7 @@ func TestAccPipelineDefinitionResourceForDataCheckBigquery(t *testing.T) {
 					// The `key` attribute does not exist in the TROCCO API,
 					// therefore there is no value for it during import.
 					"tasks.0.key",
-					// FIXME: The `query` attribute is not trimmed in the import state.
+					// INFO: The `query` attribute is trimmed and set in state, so different from the resource config.
 					"tasks.0.bigquery_data_check_config.query",
 				},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
@@ -57,7 +57,7 @@ func TestAccPipelineDefinitionResourceForDataCheckSnowflake(t *testing.T) {
 					// The `key` attribute does not exist in the TROCCO API,
 					// therefore there is no value for it during import.
 					"tasks.0.key",
-					// FIXME: The `query` attribute is not trimmed in the import state.
+					// INFO: The `query` attribute is trimmed and set in state, so different from the resource config.
 					"tasks.0.snowflake_data_check_config.query",
 				},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
@@ -91,7 +91,7 @@ func TestAccPipelineDefinitionResourceForDataCheckRedshift(t *testing.T) {
 					// The `key` attribute does not exist in the TROCCO API,
 					// therefore there is no value for it during import.
 					"tasks.0.key",
-					// FIXME: The `query` attribute is not trimmed in the import state.
+					// INFO: The `query` attribute is trimmed and set in state, so different from the resource config.
 					"tasks.0.redshift_data_check_config.query",
 				},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
