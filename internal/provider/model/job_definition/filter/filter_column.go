@@ -4,6 +4,7 @@ import (
 	"terraform-provider-trocco/internal/client/entity/job_definition/filter"
 	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -82,4 +83,29 @@ func jsonExpandColumns(columns []jsonExpandColumn) []filter2.JSONExpandColumnInp
 		outputs = append(outputs, column)
 	}
 	return outputs
+}
+
+func (c FilterColumn) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":                         types.StringType,
+		"src":                          types.StringType,
+		"type":                         types.StringType,
+		"default":                      types.StringType,
+		"format":                       types.StringType,
+		"json_expand_enabled":          types.BoolType,
+		"json_expand_keep_base_column": types.BoolType,
+		"json_expand_columns": types.ListType{ElemType: types.ObjectType{
+			AttrTypes: jsonExpandColumn{}.AttrTypes(),
+		}},
+	}
+}
+
+func (c jsonExpandColumn) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":      types.StringType,
+		"json_path": types.StringType,
+		"type":      types.StringType,
+		"format":    types.StringType,
+		"timezone":  types.StringType,
+	}
 }

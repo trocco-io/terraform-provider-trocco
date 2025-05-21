@@ -4,6 +4,7 @@ import (
 	"terraform-provider-trocco/internal/client/entity/job_definition/filter"
 	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -41,5 +42,15 @@ func (filterUnixTimeConversion FilterUnixTimeConversion) ToInput() filter2.Filte
 		UnixtimeUnit:     filterUnixTimeConversion.UnixtimeUnit.ValueString(),
 		DatetimeFormat:   filterUnixTimeConversion.DatetimeFormat.ValueString(),
 		DatetimeTimezone: filterUnixTimeConversion.DatetimeTimezone.ValueString(),
+	}
+}
+
+func (u FilterUnixTimeConversion) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"column_name":       types.StringType,
+		"kind":              types.StringType,
+		"unixtime_unit":     types.StringType,
+		"datetime_format":   types.StringType,
+		"datetime_timezone": types.StringType,
 	}
 }
