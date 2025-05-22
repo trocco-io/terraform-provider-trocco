@@ -1,8 +1,8 @@
 package input_options
 
 import (
-	input_options "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	entity "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	parameter "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/input_option/parser"
 
@@ -55,7 +55,7 @@ type HttpInputOption struct {
 	CustomVariableSettings                *[]model.CustomVariableSetting `tfsdk:"custom_variable_settings"`
 }
 
-func NewHttpInputOption(httpInputOption *input_options.HttpInputOption, previous *HttpInputOption) *HttpInputOption {
+func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpInputOption) *HttpInputOption {
 	if httpInputOption == nil || previous == nil {
 		return nil
 	}
@@ -101,7 +101,7 @@ func NewHttpInputOption(httpInputOption *input_options.HttpInputOption, previous
 	}
 }
 
-func NewRequestParams(params *[]input_options.RequestParam, previous []RequestParam) []RequestParam {
+func NewRequestParams(params *[]entity.RequestParam, previous []RequestParam) []RequestParam {
 	if params == nil || len(*params) == 0 {
 		return nil
 	}
@@ -117,7 +117,7 @@ func NewRequestParams(params *[]input_options.RequestParam, previous []RequestPa
 	return ret
 }
 
-func NewRequestParam(param input_options.RequestParam, previous RequestParam) RequestParam {
+func NewRequestParam(param entity.RequestParam, previous RequestParam) RequestParam {
 	value := types.StringValue(param.Value)
 	if param.Masking != nil && *param.Masking && previous != (RequestParam{}) {
 		value = previous.Value
@@ -130,7 +130,7 @@ func NewRequestParam(param input_options.RequestParam, previous RequestParam) Re
 	}
 }
 
-func NewRequestHeaders(headers *[]input_options.RequestHeader, previous []RequestHeader) []RequestHeader {
+func NewRequestHeaders(headers *[]entity.RequestHeader, previous []RequestHeader) []RequestHeader {
 	if headers == nil || len(*headers) == 0 {
 		return nil
 	}
@@ -146,7 +146,7 @@ func NewRequestHeaders(headers *[]input_options.RequestHeader, previous []Reques
 	return ret
 }
 
-func NewRequestHeader(header input_options.RequestHeader, previous RequestHeader) RequestHeader {
+func NewRequestHeader(header entity.RequestHeader, previous RequestHeader) RequestHeader {
 	value := types.StringValue(header.Value)
 	if header.Masking != nil && *header.Masking && previous != (RequestHeader{}) {
 		value = previous.Value
@@ -159,40 +159,40 @@ func NewRequestHeader(header input_options.RequestHeader, previous RequestHeader
 	}
 }
 
-func (httpInputOption *HttpInputOption) ToInput() *input_options2.HttpInputOptionInput {
+func (httpInputOption *HttpInputOption) ToInput() *parameter.HttpInputOptionInput {
 	if httpInputOption == nil {
 		return nil
 	}
 
-	var requestParams []input_options2.RequestParamInput
+	var requestParams []parameter.RequestParamInput
 	for _, param := range httpInputOption.RequestParams {
-		requestParams = append(requestParams, input_options2.RequestParamInput{
+		requestParams = append(requestParams, parameter.RequestParamInput{
 			Key:     param.Key.ValueString(),
 			Value:   param.Value.ValueString(),
 			Masking: param.Masking.ValueBoolPointer(),
 		})
 	}
 
-	var requestHeaders []input_options2.RequestHeaderInput
+	var requestHeaders []parameter.RequestHeaderInput
 	for _, header := range httpInputOption.RequestHeaders {
-		requestHeaders = append(requestHeaders, input_options2.RequestHeaderInput{
+		requestHeaders = append(requestHeaders, parameter.RequestHeaderInput{
 			Key:     header.Key.ValueString(),
 			Value:   header.Value.ValueString(),
 			Masking: header.Masking.ValueBoolPointer(),
 		})
 	}
 
-	var requestParamsPtr *[]input_options2.RequestParamInput
+	var requestParamsPtr *[]parameter.RequestParamInput
 	if len(requestParams) > 0 {
 		requestParamsPtr = &requestParams
 	}
 
-	var requestHeadersPtr *[]input_options2.RequestHeaderInput
+	var requestHeadersPtr *[]parameter.RequestHeaderInput
 	if len(requestHeaders) > 0 {
 		requestHeadersPtr = &requestHeaders
 	}
 
-	return &input_options2.HttpInputOptionInput{
+	return &parameter.HttpInputOptionInput{
 		URL:                                   httpInputOption.URL.ValueString(),
 		Method:                                httpInputOption.Method.ValueString(),
 		UserAgent:                             httpInputOption.UserAgent.ValueStringPointer(),
@@ -226,40 +226,40 @@ func (httpInputOption *HttpInputOption) ToInput() *input_options2.HttpInputOptio
 	}
 }
 
-func (httpInputOption *HttpInputOption) ToUpdateInput() *input_options2.UpdateHttpInputOptionInput {
+func (httpInputOption *HttpInputOption) ToUpdateInput() *parameter.UpdateHttpInputOptionInput {
 	if httpInputOption == nil {
 		return nil
 	}
 
-	var requestParams []input_options2.RequestParamInput
+	var requestParams []parameter.RequestParamInput
 	for _, param := range httpInputOption.RequestParams {
-		requestParams = append(requestParams, input_options2.RequestParamInput{
+		requestParams = append(requestParams, parameter.RequestParamInput{
 			Key:     param.Key.ValueString(),
 			Value:   param.Value.ValueString(),
 			Masking: param.Masking.ValueBoolPointer(),
 		})
 	}
 
-	var requestHeaders []input_options2.RequestHeaderInput
+	var requestHeaders []parameter.RequestHeaderInput
 	for _, header := range httpInputOption.RequestHeaders {
-		requestHeaders = append(requestHeaders, input_options2.RequestHeaderInput{
+		requestHeaders = append(requestHeaders, parameter.RequestHeaderInput{
 			Key:     header.Key.ValueString(),
 			Value:   header.Value.ValueString(),
 			Masking: header.Masking.ValueBoolPointer(),
 		})
 	}
 
-	var requestParamsPtr *[]input_options2.RequestParamInput
+	var requestParamsPtr *[]parameter.RequestParamInput
 	if len(requestParams) > 0 {
 		requestParamsPtr = &requestParams
 	}
 
-	var requestHeadersPtr *[]input_options2.RequestHeaderInput
+	var requestHeadersPtr *[]parameter.RequestHeaderInput
 	if len(requestHeaders) > 0 {
 		requestHeadersPtr = &requestHeaders
 	}
 
-	return &input_options2.UpdateHttpInputOptionInput{
+	return &parameter.UpdateHttpInputOptionInput{
 		URL:                                   httpInputOption.URL.ValueStringPointer(),
 		Method:                                httpInputOption.Method.ValueStringPointer(),
 		UserAgent:                             httpInputOption.UserAgent.ValueStringPointer(),

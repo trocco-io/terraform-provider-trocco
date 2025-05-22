@@ -1,7 +1,7 @@
 package job_definition
 
 import (
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
 	"terraform-provider-trocco/internal/provider/schema/job_definition/parser"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
@@ -200,7 +200,7 @@ func HttpInputOptionSchema() schema.Attribute {
 			"custom_variable_settings": CustomVariableSettingsSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
-			&planmodifier2.FileParserPlanModifier{},
+			&troccoPlanModifier.FileParserPlanModifier{},
 		},
 	}
 }
