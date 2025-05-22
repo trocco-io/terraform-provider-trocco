@@ -112,17 +112,24 @@ func (r *resourceGroupResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
+	var repusetTeamModels []model.TeamRoleResourceModel
+	diags := plan.Teams.ElementsAs(ctx, &repusetTeamModels, false)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	input := client.CreateResourceGroupInput{
 		Name:        plan.Name.ValueString(),
 		Description: plan.Description.ValueStringPointer(),
 		Teams:       []client.TeamRoleInput{},
 	}
-	for _, m := range plan.Teams {
+
+	for _, m := range repusetTeamModels {
 		input.Teams = append(input.Teams, client.TeamRoleInput{
 			TeamID: m.TeamID.ValueInt64(),
 			Role:   m.Role.ValueString(),
 		})
-
 	}
 
 	resourceGroup, err := r.client.CreateResourceGroup(&input)
@@ -134,17 +141,30 @@ func (r *resourceGroupResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
+	teamModels := []model.TeamRoleResourceModel{}
+	for _, m := range resourceGroup.Teams {
+		teamModels = append(teamModels, model.TeamRoleResourceModel{
+			TeamID: types.Int64Value(m.TeamID),
+			Role:   types.StringValue(m.Role),
+		})
+	}
+
+	objectType := types.ObjectType{
+		AttrTypes: model.TeamRoleResourceModel{}.AttrTypes(),
+	}
+
+	teamsSet, diags := types.SetValueFrom(ctx, objectType, teamModels)
+
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	newState := model.ResourceGroupResourceModel{
 		ID:          types.Int64Value(resourceGroup.ID),
 		Name:        types.StringValue(resourceGroup.Name),
 		Description: types.StringPointerValue(resourceGroup.Description),
-		Teams:       []model.TeamRoleResourceModel{},
-	}
-	for _, m := range resourceGroup.Teams {
-		newState.Teams = append(newState.Teams, model.TeamRoleResourceModel{
-			TeamID: types.Int64Value(m.TeamID),
-			Role:   types.StringValue(m.Role),
-		})
+		Teams:       teamsSet,
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
@@ -166,25 +186,46 @@ func (r *resourceGroupResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	newState := model.ResourceGroupResourceModel{
-		ID:          types.Int64Value(resourceGroup.ID),
-		Name:        types.StringValue(resourceGroup.Name),
-		Description: types.StringPointerValue(resourceGroup.Description),
-		Teams:       []model.TeamRoleResourceModel{},
-	}
+	teamModels := []model.TeamRoleResourceModel{}
 	for _, m := range resourceGroup.Teams {
-		newState.Teams = append(newState.Teams, model.TeamRoleResourceModel{
+		teamModels = append(teamModels, model.TeamRoleResourceModel{
 			TeamID: types.Int64Value(m.TeamID),
 			Role:   types.StringValue(m.Role),
 		})
 	}
 
+	objectType := types.ObjectType{
+		AttrTypes: model.TeamRoleResourceModel{}.AttrTypes(),
+	}
+
+	teamsSet, diags := types.SetValueFrom(ctx, objectType, teamModels)
+
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	newState := model.ResourceGroupResourceModel{
+		ID:          types.Int64Value(resourceGroup.ID),
+		Name:        types.StringValue(resourceGroup.Name),
+		Description: types.StringPointerValue(resourceGroup.Description),
+		Teams:       teamsSet,
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
+
 func (r *resourceGroupResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var plan, state model.ResourceGroupResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	var repusetTeamModels []model.TeamRoleResourceModel
+	diags := plan.Teams.ElementsAs(ctx, &repusetTeamModels, false)
+	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -194,7 +235,8 @@ func (r *resourceGroupResource) Update(ctx context.Context, req resource.UpdateR
 		Description: plan.Description.ValueStringPointer(),
 		Teams:       []client.TeamRoleInput{},
 	}
-	for _, m := range plan.Teams {
+
+	for _, m := range repusetTeamModels {
 		input.Teams = append(input.Teams, client.TeamRoleInput{
 			TeamID: m.TeamID.ValueInt64(),
 			Role:   m.Role.ValueString(),
@@ -210,17 +252,30 @@ func (r *resourceGroupResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
+	teamModels := []model.TeamRoleResourceModel{}
+	for _, m := range resourceGroup.Teams {
+		teamModels = append(teamModels, model.TeamRoleResourceModel{
+			TeamID: types.Int64Value(m.TeamID),
+			Role:   types.StringValue(m.Role),
+		})
+	}
+
+	objectType := types.ObjectType{
+		AttrTypes: model.TeamRoleResourceModel{}.AttrTypes(),
+	}
+
+	teamsSet, diags := types.SetValueFrom(ctx, objectType, teamModels)
+
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	newState := model.ResourceGroupResourceModel{
 		ID:          types.Int64Value(resourceGroup.ID),
 		Name:        types.StringValue(resourceGroup.Name),
 		Description: types.StringPointerValue(resourceGroup.Description),
-		Teams:       []model.TeamRoleResourceModel{},
-	}
-	for _, m := range resourceGroup.Teams {
-		newState.Teams = append(newState.Teams, model.TeamRoleResourceModel{
-			TeamID: types.Int64Value(m.TeamID),
-			Role:   types.StringValue(m.Role),
-		})
+		Teams:       teamsSet,
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
