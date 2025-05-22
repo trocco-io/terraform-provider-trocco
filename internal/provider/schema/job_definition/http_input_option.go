@@ -99,6 +99,7 @@ func HttpInputOptionSchema() schema.Attribute {
 						},
 						"value": schema.StringAttribute{
 							Required:            true,
+							Sensitive:           true,
 							MarkdownDescription: "Parameter value",
 						},
 						"masking": schema.BoolAttribute{
@@ -125,6 +126,7 @@ func HttpInputOptionSchema() schema.Attribute {
 						},
 						"value": schema.StringAttribute{
 							Required:            true,
+							Sensitive:           true,
 							MarkdownDescription: "Header value",
 						},
 						"masking": schema.BoolAttribute{

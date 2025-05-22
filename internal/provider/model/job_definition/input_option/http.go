@@ -55,31 +55,16 @@ type HttpInputOption struct {
 	CustomVariableSettings                *[]model.CustomVariableSetting `tfsdk:"custom_variable_settings"`
 }
 
-func NewHttpInputOption(httpInputOption *input_options.HttpInputOption) *HttpInputOption {
-	if httpInputOption == nil {
+func NewHttpInputOption(httpInputOption *input_options.HttpInputOption, previous *HttpInputOption) *HttpInputOption {
+	if httpInputOption == nil || previous == nil {
 		return nil
 	}
 
-	var requestParams []RequestParam
-	if httpInputOption.RequestParams != nil {
-		for _, param := range *httpInputOption.RequestParams {
-			requestParams = append(requestParams, RequestParam{
-				Key:     types.StringValue(param.Key),
-				Value:   types.StringValue(param.Value),
-				Masking: types.BoolPointerValue(param.Masking),
-			})
-		}
-	}
-
-	var requestHeaders []RequestHeader
-	if httpInputOption.RequestHeaders != nil {
-		for _, header := range *httpInputOption.RequestHeaders {
-			requestHeaders = append(requestHeaders, RequestHeader{
-				Key:     types.StringValue(header.Key),
-				Value:   types.StringValue(header.Value),
-				Masking: types.BoolPointerValue(header.Masking),
-			})
-		}
+	var previousRequestHeaders []RequestHeader
+	var previousRequestParameters []RequestParam
+	if previous != nil {
+		previousRequestHeaders = previous.RequestHeaders
+		previousRequestParameters = previous.RequestParams
 	}
 
 	return &HttpInputOption{
@@ -97,9 +82,9 @@ func NewHttpInputOption(httpInputOption *input_options.HttpInputOption) *HttpInp
 		CursorResponseParameterCursorJsonPath: types.StringPointerValue(httpInputOption.CursorResponseParameterCursorJsonPath),
 		CursorRequestParameterLimitName:       types.StringPointerValue(httpInputOption.CursorRequestParameterLimitName),
 		CursorRequestParameterLimitValue:      types.Int64PointerValue(httpInputOption.CursorRequestParameterLimitValue),
-		RequestParams:                         requestParams,
+		RequestParams:                         NewRequestParams(httpInputOption.RequestParams, previousRequestParameters),
 		RequestBody:                           types.StringPointerValue(httpInputOption.RequestBody),
-		RequestHeaders:                        requestHeaders,
+		RequestHeaders:                        NewRequestHeaders(httpInputOption.RequestHeaders, previousRequestHeaders),
 		SuccessCode:                           types.StringPointerValue(httpInputOption.SuccessCode),
 		OpenTimeout:                           types.Int64PointerValue(httpInputOption.OpenTimeout),
 		ReadTimeout:                           types.Int64PointerValue(httpInputOption.ReadTimeout),
@@ -113,6 +98,64 @@ func NewHttpInputOption(httpInputOption *input_options.HttpInputOption) *HttpInp
 		ExcelParser:                           parser.NewExcelParser(httpInputOption.ExcelParser),
 		XmlParser:                             parser.NewXmlParser(httpInputOption.XmlParser),
 		CustomVariableSettings:                model.NewCustomVariableSettings(httpInputOption.CustomVariableSettings),
+	}
+}
+
+func NewRequestParams(params *[]input_options.RequestParam, previous []RequestParam) []RequestParam {
+	if params == nil || len(*params) == 0 {
+		return nil
+	}
+	var ret []RequestParam
+	for i, param := range *params {
+		var previousRequestParameters RequestParam
+		if len(previous) > i {
+			previousRequestParameters = previous[i]
+		}
+
+		ret = append(ret, NewRequestParam(param, previousRequestParameters))
+	}
+	return ret
+}
+
+func NewRequestParam(param input_options.RequestParam, previous RequestParam) RequestParam {
+	value := types.StringValue(param.Value)
+	if param.Masking != nil && *param.Masking && previous != (RequestParam{}) {
+		value = previous.Value
+	}
+
+	return RequestParam{
+		Key:     types.StringValue(param.Key),
+		Value:   value,
+		Masking: types.BoolPointerValue(param.Masking),
+	}
+}
+
+func NewRequestHeaders(headers *[]input_options.RequestHeader, previous []RequestHeader) []RequestHeader {
+	if headers == nil || len(*headers) == 0 {
+		return nil
+	}
+	var ret []RequestHeader
+	for i, header := range *headers {
+		var previousRequestHeader RequestHeader
+		if len(previous) > i {
+			previousRequestHeader = previous[i]
+		}
+
+		ret = append(ret, NewRequestHeader(header, previousRequestHeader))
+	}
+	return ret
+}
+
+func NewRequestHeader(header input_options.RequestHeader, previous RequestHeader) RequestHeader {
+	value := types.StringValue(header.Value)
+	if header.Masking != nil && *header.Masking && previous != (RequestHeader{}) {
+		value = previous.Value
+	}
+
+	return RequestHeader{
+		Key:     types.StringValue(header.Key),
+		Value:   value,
+		Masking: types.BoolPointerValue(header.Masking),
 	}
 }
 
