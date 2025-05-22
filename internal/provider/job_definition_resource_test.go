@@ -509,13 +509,13 @@ func TestAccJobDefinitionResourceNotifications(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "notifications_test"),
 					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition with notifications"),
-					// Emailの通知メッセージが正しく設定されていることを確認
-					resource.TestCheckResourceAttr(resourceName, "notifications.0.message", "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  \n"),
+					// Email message
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.message", "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  "),
 					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "email"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "exec_time"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.0.minutes", "30"),
-					// Slackの通知メッセージが正しく設定されていることを確認
-					resource.TestCheckResourceAttr(resourceName, "notifications.1.message", "This is a multi-line message\nwith several lines\n  and some indentation\n    to test TrimmedStringType\n"),
+					// Slack message
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.message", "This is a multi-line message\nwith several lines\n  and some indentation\n    to test TrimmedStringType"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "slack"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "job"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.notify_when", "finished"),
