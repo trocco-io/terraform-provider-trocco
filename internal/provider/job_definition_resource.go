@@ -201,11 +201,16 @@ type jobDefinitionResourceModel struct {
 	Labels                    types.Set                     `tfsdk:"labels"`
 }
 
-func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.CreateJobDefinitionInput {
+func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Context, resp *resource.CreateResponse) *client.CreateJobDefinitionInput {
 	var labels []string
 	if !m.Labels.IsNull() && !m.Labels.IsUnknown() {
 		var labelValues []job_definitions.Label
-		_ = m.Labels.ElementsAs(context.Background(), &labelValues, false)
+		diags := m.Labels.ElementsAs(ctx, &labelValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
+
 		for _, l := range labelValues {
 			labels = append(labels, l.Name.ValueString())
 		}
@@ -214,7 +219,11 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 	var notifications []params.JobDefinitionNotificationInput
 	if !m.Notifications.IsNull() && !m.Notifications.IsUnknown() {
 		var notificationValues []job_definitions.JobDefinitionNotification
-		_ = m.Notifications.ElementsAs(context.Background(), &notificationValues, false)
+		diags := m.Notifications.ElementsAs(ctx, &notificationValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
 		for _, n := range notificationValues {
 			notifications = append(notifications, n.ToInput())
 		}
@@ -223,7 +232,11 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 	var schedules []parameter.ScheduleInput
 	if !m.Schedules.IsNull() && !m.Schedules.IsUnknown() {
 		var scheduleValues []model.Schedule
-		_ = m.Schedules.ElementsAs(context.Background(), &scheduleValues, false)
+		diags := m.Schedules.ElementsAs(ctx, &scheduleValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
 		for _, s := range scheduleValues {
 			schedules = append(schedules, s.ToInput())
 		}
@@ -232,7 +245,11 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 	var filterColumns []filterParameters.FilterColumnInput
 	if !m.FilterColumns.IsNull() && !m.FilterColumns.IsUnknown() {
 		var filterColumnValues []filter.FilterColumn
-		_ = m.FilterColumns.ElementsAs(context.Background(), &filterColumnValues, false)
+		diags := m.FilterColumns.ElementsAs(ctx, &filterColumnValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
 		for _, f := range filterColumnValues {
 			filterColumns = append(filterColumns, f.ToInput())
 		}
@@ -241,7 +258,11 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 	var filterMasks []filterParameters.FilterMaskInput
 	if !m.FilterMasks.IsNull() && !m.FilterMasks.IsUnknown() {
 		var filterMaskValues []filter.FilterMask
-		_ = m.FilterMasks.ElementsAs(context.Background(), &filterMaskValues, false)
+		diags := m.FilterMasks.ElementsAs(ctx, &filterMaskValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
 		for _, f := range filterMaskValues {
 			filterMasks = append(filterMasks, f.ToInput())
 		}
@@ -250,7 +271,11 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 	var filterGsub []filterParameters.FilterGsubInput
 	if !m.FilterGsub.IsNull() && !m.FilterGsub.IsUnknown() {
 		var filterGsubValues []filter.FilterGsub
-		_ = m.FilterGsub.ElementsAs(context.Background(), &filterGsubValues, false)
+		diags := m.FilterGsub.ElementsAs(ctx, &filterGsubValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
 		for _, f := range filterGsubValues {
 			filterGsub = append(filterGsub, f.ToInput())
 		}
@@ -259,7 +284,11 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 	var filterStringTransforms []filterParameters.FilterStringTransformInput
 	if !m.FilterStringTransforms.IsNull() && !m.FilterStringTransforms.IsUnknown() {
 		var filterStringTransformValues []filter.FilterStringTransform
-		_ = m.FilterStringTransforms.ElementsAs(context.Background(), &filterStringTransformValues, false)
+		diags := m.FilterStringTransforms.ElementsAs(ctx, &filterStringTransformValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
 		for _, f := range filterStringTransformValues {
 			filterStringTransforms = append(filterStringTransforms, f.ToInput())
 		}
@@ -268,7 +297,11 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 	var filterHashes []filterParameters.FilterHashInput
 	if !m.FilterHashes.IsNull() && !m.FilterHashes.IsUnknown() {
 		var filterHashValues []filter.FilterHash
-		_ = m.FilterHashes.ElementsAs(context.Background(), &filterHashValues, false)
+		diags := m.FilterHashes.ElementsAs(ctx, &filterHashValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
 		for _, f := range filterHashValues {
 			filterHashes = append(filterHashes, f.ToInput())
 		}
@@ -277,7 +310,11 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 	var filterUnixTimeconversions []filterParameters.FilterUnixTimeConversionInput
 	if !m.FilterUnixTimeConversions.IsNull() && !m.FilterUnixTimeConversions.IsUnknown() {
 		var filterUnixTimeConversionValues []filter.FilterUnixTimeConversion
-		_ = m.FilterUnixTimeConversions.ElementsAs(context.Background(), &filterUnixTimeConversionValues, false)
+		diags := m.FilterUnixTimeConversions.ElementsAs(ctx, &filterUnixTimeConversionValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
 		for _, f := range filterUnixTimeConversionValues {
 			filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
 		}
@@ -308,11 +345,16 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 	}
 }
 
-func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.UpdateJobDefinitionInput {
+func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Context, resp *resource.UpdateResponse) *client.UpdateJobDefinitionInput {
 	labels := []string{}
 	if !m.Labels.IsNull() && !m.Labels.IsUnknown() {
 		var labelValues []job_definitions.Label
-		_ = m.Labels.ElementsAs(context.Background(), &labelValues, false)
+		diags := m.Labels.ElementsAs(ctx, &labelValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
+
 		for _, l := range labelValues {
 			labels = append(labels, l.Name.ValueString())
 		}
@@ -321,7 +363,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 	notifications := []params.JobDefinitionNotificationInput{}
 	if !m.Notifications.IsNull() && !m.Notifications.IsUnknown() {
 		var notificationValues []job_definitions.JobDefinitionNotification
-		_ = m.Notifications.ElementsAs(context.Background(), &notificationValues, false)
+		diags := m.Notifications.ElementsAs(ctx, &notificationValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
+
 		for _, n := range notificationValues {
 			notifications = append(notifications, n.ToInput())
 		}
@@ -330,7 +377,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 	schedules := []parameter.ScheduleInput{}
 	if !m.Schedules.IsNull() && !m.Schedules.IsUnknown() {
 		var scheduleValues []model.Schedule
-		_ = m.Schedules.ElementsAs(context.Background(), &scheduleValues, false)
+		diags := m.Schedules.ElementsAs(ctx, &scheduleValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
+
 		for _, s := range scheduleValues {
 			schedules = append(schedules, s.ToInput())
 		}
@@ -339,7 +391,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 	filterColumns := []filterParameters.FilterColumnInput{}
 	if !m.FilterColumns.IsNull() && !m.FilterColumns.IsUnknown() {
 		var filterColumnValues []filter.FilterColumn
-		_ = m.FilterColumns.ElementsAs(context.Background(), &filterColumnValues, false)
+		diags := m.FilterColumns.ElementsAs(ctx, &filterColumnValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
+
 		for _, f := range filterColumnValues {
 			filterColumns = append(filterColumns, f.ToInput())
 		}
@@ -348,7 +405,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 	filterMasks := []filterParameters.FilterMaskInput{}
 	if !m.FilterMasks.IsNull() && !m.FilterMasks.IsUnknown() {
 		var filterMaskValues []filter.FilterMask
-		_ = m.FilterMasks.ElementsAs(context.Background(), &filterMaskValues, false)
+		diags := m.FilterMasks.ElementsAs(ctx, &filterMaskValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
+
 		for _, f := range filterMaskValues {
 			filterMasks = append(filterMasks, f.ToInput())
 		}
@@ -357,7 +419,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 	filterGsub := []filterParameters.FilterGsubInput{}
 	if !m.FilterGsub.IsNull() && !m.FilterGsub.IsUnknown() {
 		var filterGsubValues []filter.FilterGsub
-		_ = m.FilterGsub.ElementsAs(context.Background(), &filterGsubValues, false)
+		diags := m.FilterGsub.ElementsAs(ctx, &filterGsubValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
+
 		for _, f := range filterGsubValues {
 			filterGsub = append(filterGsub, f.ToInput())
 		}
@@ -366,7 +433,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 	filterStringTransforms := []filterParameters.FilterStringTransformInput{}
 	if !m.FilterStringTransforms.IsNull() && !m.FilterStringTransforms.IsUnknown() {
 		var filterStringTransformValues []filter.FilterStringTransform
-		_ = m.FilterStringTransforms.ElementsAs(context.Background(), &filterStringTransformValues, false)
+		diags := m.FilterStringTransforms.ElementsAs(ctx, &filterStringTransformValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
+
 		for _, f := range filterStringTransformValues {
 			filterStringTransforms = append(filterStringTransforms, f.ToInput())
 		}
@@ -375,7 +447,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 	filterHashes := []filterParameters.FilterHashInput{}
 	if !m.FilterHashes.IsNull() && !m.FilterHashes.IsUnknown() {
 		var filterHashValues []filter.FilterHash
-		_ = m.FilterHashes.ElementsAs(context.Background(), &filterHashValues, false)
+		diags := m.FilterHashes.ElementsAs(ctx, &filterHashValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
+
 		for _, f := range filterHashValues {
 			filterHashes = append(filterHashes, f.ToInput())
 		}
@@ -384,7 +461,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 	filterUnixTimeconversions := []filterParameters.FilterUnixTimeConversionInput{}
 	if !m.FilterUnixTimeConversions.IsNull() && !m.FilterUnixTimeConversions.IsUnknown() {
 		var filterUnixTimeConversionValues []filter.FilterUnixTimeConversion
-		_ = m.FilterUnixTimeConversions.ElementsAs(context.Background(), &filterUnixTimeConversionValues, false)
+		diags := m.FilterUnixTimeConversions.ElementsAs(ctx, &filterUnixTimeConversionValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return nil
+		}
+
 		for _, f := range filterUnixTimeConversionValues {
 			filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
 		}
@@ -413,25 +495,25 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 	}
 }
 
-func (r *jobDefinitionResource) Update(ctx context.Context, request resource.UpdateRequest, response *resource.UpdateResponse) {
+func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	state := &jobDefinitionResourceModel{}
-	response.Diagnostics.Append(request.State.Get(ctx, &state)...)
-	if response.Diagnostics.HasError() {
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	plan := &jobDefinitionResourceModel{}
-	response.Diagnostics.Append(request.Plan.Get(ctx, &plan)...)
-	if response.Diagnostics.HasError() {
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	jobDefinition, err := r.client.UpdateJobDefinition(
 		state.ID.ValueInt64(),
-		plan.ToUpdateJobDefinitionInput(),
+		plan.ToUpdateJobDefinitionInput(ctx, resp),
 	)
 	if err != nil {
-		response.Diagnostics.AddError(
+		resp.Diagnostics.AddError(
 			"Updating job definition",
 			fmt.Sprintf("Unable to update job definition, got error: %s", err),
 		)
@@ -454,11 +536,13 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
 
-	filterColumns := filter.NewFilterColumns(jobDefinition.FilterColumns)
+	filterColumns, diags := filter.NewFilterColumns(jobDefinition.FilterColumns)
+	resp.Diagnostics.Append(diags...)
+
 	filterColumnsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 		AttrTypes: filter.FilterColumn{}.AttrTypes(),
 	}, filterColumns)
-	response.Diagnostics.Append(diags...)
+	resp.Diagnostics.Append(diags...)
 	newState.FilterColumns = filterColumnsValue
 
 	if jobDefinition.FilterMasks != nil {
@@ -466,7 +550,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		filterMasksValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: filter.FilterMask{}.AttrTypes(),
 		}, filterMasks)
-		response.Diagnostics.Append(diags...)
+		resp.Diagnostics.Append(diags...)
 		newState.FilterMasks = filterMasksValue
 	} else {
 		newState.FilterMasks = types.ListNull(types.ObjectType{
@@ -479,7 +563,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		filterGsubValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: filter.FilterGsub{}.AttrTypes(),
 		}, filterGsub)
-		response.Diagnostics.Append(diags...)
+		resp.Diagnostics.Append(diags...)
 		newState.FilterGsub = filterGsubValue
 	} else {
 		newState.FilterGsub = types.ListNull(types.ObjectType{
@@ -492,7 +576,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		filterStringTransformsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: filter.FilterStringTransform{}.AttrTypes(),
 		}, filterStringTransforms)
-		response.Diagnostics.Append(diags...)
+		resp.Diagnostics.Append(diags...)
 		newState.FilterStringTransforms = filterStringTransformsValue
 	} else {
 		newState.FilterStringTransforms = types.ListNull(types.ObjectType{
@@ -505,7 +589,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		filterHashesValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: filter.FilterHash{}.AttrTypes(),
 		}, filterHashes)
-		response.Diagnostics.Append(diags...)
+		resp.Diagnostics.Append(diags...)
 		newState.FilterHashes = filterHashesValue
 	} else {
 		newState.FilterHashes = types.ListNull(types.ObjectType{
@@ -518,7 +602,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		filterUTCValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: filter.FilterUnixTimeConversion{}.AttrTypes(),
 		}, filterUTC)
-		response.Diagnostics.Append(diags...)
+		resp.Diagnostics.Append(diags...)
 		newState.FilterUnixTimeConversions = filterUTCValue
 	} else {
 		newState.FilterUnixTimeConversions = types.ListNull(types.ObjectType{
@@ -531,7 +615,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		notificationsValue, diags := types.SetValueFrom(ctx, types.ObjectType{
 			AttrTypes: job_definitions.JobDefinitionNotification{}.AttrTypes(),
 		}, notifications)
-		response.Diagnostics.Append(diags...)
+		resp.Diagnostics.Append(diags...)
 		newState.Notifications = notificationsValue
 	} else {
 		newState.Notifications = types.SetNull(types.ObjectType{
@@ -544,7 +628,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		schedulesValue, diags := types.SetValueFrom(ctx, types.ObjectType{
 			AttrTypes: model.Schedule{}.AttrTypes(),
 		}, schedules)
-		response.Diagnostics.Append(diags...)
+		resp.Diagnostics.Append(diags...)
 		newState.Schedules = schedulesValue
 	} else {
 		newState.Schedules = types.SetNull(types.ObjectType{
@@ -557,7 +641,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		labelsValue, diags := types.SetValueFrom(ctx, types.ObjectType{
 			AttrTypes: job_definitions.Label{}.AttrTypes(),
 		}, labels)
-		response.Diagnostics.Append(diags...)
+		resp.Diagnostics.Append(diags...)
 		newState.Labels = labelsValue
 	} else {
 		newState.Labels = types.SetNull(types.ObjectType{
@@ -565,7 +649,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		})
 	}
 
-	response.Diagnostics.Append(response.State.Set(ctx, newState)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
 
 func (r *jobDefinitionResource) Read(
@@ -604,7 +688,9 @@ func (r *jobDefinitionResource) Read(
 		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
 
-	filterColumns := filter.NewFilterColumns(jobDefinition.FilterColumns)
+	filterColumns, diags := filter.NewFilterColumns(jobDefinition.FilterColumns)
+	resp.Diagnostics.Append(diags...)
+
 	filterColumnsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 		AttrTypes: filter.FilterColumn{}.AttrTypes(),
 	}, filterColumns)
@@ -745,7 +831,7 @@ func (r *jobDefinitionResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	jobDefinition, err := r.client.CreateJobDefinition(plan.ToCreateJobDefinitionInput())
+	jobDefinition, err := r.client.CreateJobDefinition(plan.ToCreateJobDefinitionInput(ctx, resp))
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Creating job definition",
@@ -770,25 +856,14 @@ func (r *jobDefinitionResource) Create(ctx context.Context, req resource.CreateR
 		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
 
-	filterColumns := filter.NewFilterColumns(jobDefinition.FilterColumns)
+	filterColumns, diags := filter.NewFilterColumns(jobDefinition.FilterColumns)
+	resp.Diagnostics.Append(diags...)
+
 	filterColumnsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 		AttrTypes: filter.FilterColumn{}.AttrTypes(),
 	}, filterColumns)
 	resp.Diagnostics.Append(diags...)
 	newState.FilterColumns = filterColumnsValue
-
-	if jobDefinition.FilterGsub != nil {
-		filterGsub := filter.NewFilterGsub(jobDefinition.FilterGsub)
-		filterGsubValue, diags := types.ListValueFrom(ctx, types.ObjectType{
-			AttrTypes: filter.FilterGsub{}.AttrTypes(),
-		}, filterGsub)
-		resp.Diagnostics.Append(diags...)
-		newState.FilterGsub = filterGsubValue
-	} else {
-		newState.FilterGsub = types.ListNull(types.ObjectType{
-			AttrTypes: filter.FilterGsub{}.AttrTypes(),
-		})
-	}
 
 	if jobDefinition.FilterMasks != nil {
 		filterMasks := filter.NewFilterMasks(jobDefinition.FilterMasks)
@@ -803,13 +878,26 @@ func (r *jobDefinitionResource) Create(ctx context.Context, req resource.CreateR
 		})
 	}
 
-	if jobDefinition.FilterStringTransforms != nil {
-		values := filter.NewFilterStringTransforms(jobDefinition.FilterStringTransforms)
-		v, diags := types.ListValueFrom(ctx, types.ObjectType{
-			AttrTypes: filter.FilterStringTransform{}.AttrTypes(),
-		}, values)
+	if jobDefinition.FilterGsub != nil {
+		filterGsub := filter.NewFilterGsub(jobDefinition.FilterGsub)
+		filterGsubValue, diags := types.ListValueFrom(ctx, types.ObjectType{
+			AttrTypes: filter.FilterGsub{}.AttrTypes(),
+		}, filterGsub)
 		resp.Diagnostics.Append(diags...)
-		newState.FilterStringTransforms = v
+		newState.FilterGsub = filterGsubValue
+	} else {
+		newState.FilterGsub = types.ListNull(types.ObjectType{
+			AttrTypes: filter.FilterGsub{}.AttrTypes(),
+		})
+	}
+
+	if jobDefinition.FilterStringTransforms != nil {
+		filterStringTransforms := filter.NewFilterStringTransforms(jobDefinition.FilterStringTransforms)
+		filterStringTransformsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
+			AttrTypes: filter.FilterStringTransform{}.AttrTypes(),
+		}, filterStringTransforms)
+		resp.Diagnostics.Append(diags...)
+		newState.FilterStringTransforms = filterStringTransformsValue
 	} else {
 		newState.FilterStringTransforms = types.ListNull(types.ObjectType{
 			AttrTypes: filter.FilterStringTransform{}.AttrTypes(),
@@ -817,12 +905,12 @@ func (r *jobDefinitionResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	if jobDefinition.FilterHashes != nil {
-		values := filter.NewFilterHashes(jobDefinition.FilterHashes)
-		v, diags := types.ListValueFrom(ctx, types.ObjectType{
+		filterHashes := filter.NewFilterHashes(jobDefinition.FilterHashes)
+		filterHashesValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: filter.FilterHash{}.AttrTypes(),
-		}, values)
+		}, filterHashes)
 		resp.Diagnostics.Append(diags...)
-		newState.FilterHashes = v
+		newState.FilterHashes = filterHashesValue
 	} else {
 		newState.FilterHashes = types.ListNull(types.ObjectType{
 			AttrTypes: filter.FilterHash{}.AttrTypes(),
@@ -830,12 +918,12 @@ func (r *jobDefinitionResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	if jobDefinition.FilterUnixTimeConversions != nil {
-		values := filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions)
-		v, diags := types.ListValueFrom(ctx, types.ObjectType{
+		filterUTC := filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions)
+		filterUTCValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: filter.FilterUnixTimeConversion{}.AttrTypes(),
-		}, values)
+		}, filterUTC)
 		resp.Diagnostics.Append(diags...)
-		newState.FilterUnixTimeConversions = v
+		newState.FilterUnixTimeConversions = filterUTCValue
 	} else {
 		newState.FilterUnixTimeConversions = types.ListNull(types.ObjectType{
 			AttrTypes: filter.FilterUnixTimeConversion{}.AttrTypes(),
@@ -843,12 +931,12 @@ func (r *jobDefinitionResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	if jobDefinition.Notifications != nil {
-		values := job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications)
-		v, diags := types.SetValueFrom(ctx, types.ObjectType{
+		notifications := job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications)
+		notificationsValue, diags := types.SetValueFrom(ctx, types.ObjectType{
 			AttrTypes: job_definitions.JobDefinitionNotification{}.AttrTypes(),
-		}, values)
+		}, notifications)
 		resp.Diagnostics.Append(diags...)
-		newState.Notifications = v
+		newState.Notifications = notificationsValue
 	} else {
 		newState.Notifications = types.SetNull(types.ObjectType{
 			AttrTypes: job_definitions.JobDefinitionNotification{}.AttrTypes(),
@@ -856,12 +944,12 @@ func (r *jobDefinitionResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	if jobDefinition.Schedules != nil {
-		values := model.NewSchedules(jobDefinition.Schedules)
-		v, diags := types.SetValueFrom(ctx, types.ObjectType{
+		schedules := model.NewSchedules(jobDefinition.Schedules)
+		schedulesValue, diags := types.SetValueFrom(ctx, types.ObjectType{
 			AttrTypes: model.Schedule{}.AttrTypes(),
-		}, values)
+		}, schedules)
 		resp.Diagnostics.Append(diags...)
-		newState.Schedules = v
+		newState.Schedules = schedulesValue
 	} else {
 		newState.Schedules = types.SetNull(types.ObjectType{
 			AttrTypes: model.Schedule{}.AttrTypes(),
@@ -869,12 +957,12 @@ func (r *jobDefinitionResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	if jobDefinition.Labels != nil {
-		values := job_definitions.NewLabels(jobDefinition.Labels)
-		v, diags := types.SetValueFrom(ctx, types.ObjectType{
+		labels := job_definitions.NewLabels(jobDefinition.Labels)
+		labelsValue, diags := types.SetValueFrom(ctx, types.ObjectType{
 			AttrTypes: job_definitions.Label{}.AttrTypes(),
-		}, values)
+		}, labels)
 		resp.Diagnostics.Append(diags...)
-		newState.Labels = v
+		newState.Labels = labelsValue
 	} else {
 		newState.Labels = types.SetNull(types.ObjectType{
 			AttrTypes: job_definitions.Label{}.AttrTypes(),

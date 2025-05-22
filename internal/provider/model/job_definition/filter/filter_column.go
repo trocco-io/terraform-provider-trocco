@@ -1,22 +1,24 @@
 package filter
 
 import (
+	"context"
 	"terraform-provider-trocco/internal/client/entity/job_definition/filter"
 	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type FilterColumn struct {
-	Name                     types.String       `tfsdk:"name"`
-	Src                      types.String       `tfsdk:"src"`
-	Type                     types.String       `tfsdk:"type"`
-	Default                  types.String       `tfsdk:"default"`
-	Format                   types.String       `tfsdk:"format"`
-	JSONExpandEnabled        types.Bool         `tfsdk:"json_expand_enabled"`
-	JSONExpandKeepBaseColumn types.Bool         `tfsdk:"json_expand_keep_base_column"`
-	JSONExpandColumns        []jsonExpandColumn `tfsdk:"json_expand_columns"`
+	Name                     types.String `tfsdk:"name"`
+	Src                      types.String `tfsdk:"src"`
+	Type                     types.String `tfsdk:"type"`
+	Default                  types.String `tfsdk:"default"`
+	Format                   types.String `tfsdk:"format"`
+	JSONExpandEnabled        types.Bool   `tfsdk:"json_expand_enabled"`
+	JSONExpandKeepBaseColumn types.Bool   `tfsdk:"json_expand_keep_base_column"`
+	JSONExpandColumns        types.List   `tfsdk:"json_expand_columns"`
 }
 
 type jsonExpandColumn struct {
@@ -27,19 +29,36 @@ type jsonExpandColumn struct {
 	Timezone types.String `tfsdk:"timezone"`
 }
 
-func NewFilterColumns(filterColumns []filter.FilterColumn) []FilterColumn {
+func NewFilterColumns(filterColumns []filter.FilterColumn) ([]FilterColumn, diag.Diagnostics) {
 	outputs := make([]FilterColumn, 0, len(filterColumns))
+	var diags diag.Diagnostics
+
 	for _, input := range filterColumns {
 		var expandColumns []jsonExpandColumn
-		for _, input := range input.JSONExpandColumns {
+		for _, jc := range input.JSONExpandColumns {
 			column := jsonExpandColumn{
-				Name:     types.StringValue(input.Name),
-				JSONPath: types.StringValue(input.JSONPath),
-				Type:     types.StringValue(input.Type),
-				Format:   types.StringPointerValue(input.Format),
-				Timezone: types.StringPointerValue(input.Timezone),
+				Name:     types.StringValue(jc.Name),
+				JSONPath: types.StringValue(jc.JSONPath),
+				Type:     types.StringValue(jc.Type),
+				Format:   types.StringPointerValue(jc.Format),
+				Timezone: types.StringPointerValue(jc.Timezone),
 			}
 			expandColumns = append(expandColumns, column)
+		}
+
+		var expandColumnsValue types.List
+		if len(expandColumns) > 0 {
+			v, d := types.ListValueFrom(
+				context.Background(),
+				types.ObjectType{AttrTypes: jsonExpandColumn{}.AttrTypes()},
+				expandColumns,
+			)
+			diags.Append(d...)
+			expandColumnsValue = v
+		} else {
+			expandColumnsValue = types.ListNull(types.ObjectType{
+				AttrTypes: jsonExpandColumn{}.AttrTypes(),
+			})
 		}
 
 		filterColumn := FilterColumn{
@@ -50,14 +69,20 @@ func NewFilterColumns(filterColumns []filter.FilterColumn) []FilterColumn {
 			Format:                   types.StringPointerValue(input.Format),
 			JSONExpandEnabled:        types.BoolValue(input.JSONExpandEnabled),
 			JSONExpandKeepBaseColumn: types.BoolValue(input.JSONExpandKeepBaseColumn),
-			JSONExpandColumns:        expandColumns,
+			JSONExpandColumns:        expandColumnsValue,
 		}
 		outputs = append(outputs, filterColumn)
 	}
-	return outputs
+
+	return outputs, diags
 }
 
 func (filterColumn FilterColumn) ToInput() filter2.FilterColumnInput {
+	var expandColumns []jsonExpandColumn
+	if !filterColumn.JSONExpandColumns.IsNull() && !filterColumn.JSONExpandColumns.IsUnknown() {
+		_ = filterColumn.JSONExpandColumns.ElementsAs(context.Background(), &expandColumns, false)
+	}
+
 	return filter2.FilterColumnInput{
 		Name:                     filterColumn.Name.ValueString(),
 		Src:                      filterColumn.Src.ValueString(),
@@ -66,7 +91,7 @@ func (filterColumn FilterColumn) ToInput() filter2.FilterColumnInput {
 		Format:                   filterColumn.Format.ValueStringPointer(),
 		JSONExpandEnabled:        filterColumn.JSONExpandEnabled.ValueBool(),
 		JSONExpandKeepBaseColumn: filterColumn.JSONExpandKeepBaseColumn.ValueBool(),
-		JSONExpandColumns:        jsonExpandColumns(filterColumn.JSONExpandColumns),
+		JSONExpandColumns:        jsonExpandColumns(expandColumns),
 	}
 }
 
