@@ -4,6 +4,7 @@ import (
 	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	params "terraform-provider-trocco/internal/client/parameter/job_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -57,4 +58,19 @@ func (notification JobDefinitionNotification) ToInput() params.JobDefinitionNoti
 		Minutes:          notification.Minutes.ValueInt64Pointer(),
 	}
 	return input
+}
+
+func (n JobDefinitionNotification) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"destination_type":  types.StringType,
+		"slack_channel_id":  types.Int64Type,
+		"email_id":          types.Int64Type,
+		"notification_type": types.StringType,
+		"notify_when":       types.StringType,
+		"message":           types.StringType,
+		"record_count":      types.Int64Type,
+		"record_operator":   types.StringType,
+		"record_type":       types.StringType,
+		"minutes":           types.Int64Type,
+	}
 }
