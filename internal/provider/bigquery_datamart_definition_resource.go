@@ -70,14 +70,14 @@ type customVariableSettingModel struct {
 }
 
 type datamartNotificationModel struct {
-	DestinationType  types.String `tfsdk:"destination_type"`
-	SlackChannelID   types.Int64  `tfsdk:"slack_channel_id"`
-	EmailID          types.Int64  `tfsdk:"email_id"`
-	NotificationType types.String `tfsdk:"notification_type"`
-	NotifyWhen       types.String `tfsdk:"notify_when"`
-	RecordCount      types.Int64  `tfsdk:"record_count"`
-	RecordOperator   types.String `tfsdk:"record_operator"`
-	Message          types.String `tfsdk:"message"`
+	DestinationType  types.String                   `tfsdk:"destination_type"`
+	SlackChannelID   types.Int64                    `tfsdk:"slack_channel_id"`
+	EmailID          types.Int64                    `tfsdk:"email_id"`
+	NotificationType types.String                   `tfsdk:"notification_type"`
+	NotifyWhen       types.String                   `tfsdk:"notify_when"`
+	RecordCount      types.Int64                    `tfsdk:"record_count"`
+	RecordOperator   types.String                   `tfsdk:"record_operator"`
+	Message          custom_type.TrimmedStringValue `tfsdk:"message"`
 }
 
 type scheduleModel struct {
@@ -375,6 +375,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						},
 						"message": schema.StringAttribute{
 							Required:            true,
+							CustomType:          custom_type.TrimmedStringType{},
 							MarkdownDescription: "The message to be sent with the notification",
 						},
 					},
@@ -1001,7 +1002,7 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			notifications[i] = datamartNotificationModel{
 				DestinationType:  types.StringValue(v.DestinationType),
 				NotificationType: types.StringValue(v.NotificationType),
-				Message:          types.StringValue(v.Message),
+				Message:          custom_type.TrimmedStringValue{StringValue: types.StringValue(v.Message)},
 			}
 			if v.SlackChannelID != nil {
 				notifications[i].SlackChannelID = types.Int64Value(*v.SlackChannelID)
