@@ -26,7 +26,7 @@ resource "trocco_notification_destination" "slack" {
 resource "trocco_notification_destination" "email" {
   type = "email"
   email_config = {
-    email = "example@example.com"
+    email = "joe@example.com"
   }
 }
 
@@ -52,7 +52,7 @@ MESSAGE
     {
       type             = "job_execution"
       destination_type = "email"
-      time             = 5
+      notify_when      = "finished"
 
       email_config = {
         notification_id = trocco_notification_destination.email.id
