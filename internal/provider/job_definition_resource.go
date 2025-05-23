@@ -522,3 +522,39 @@ func (r *jobDefinitionResource) Delete(
 		return
 	}
 }
+
+func (r *jobDefinitionResource) ValidateConfig(
+	ctx context.Context,
+	req resource.ValidateConfigRequest,
+	resp *resource.ValidateConfigResponse,
+) {
+	data := &jobDefinitionResourceModel{}
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if data.InputOptionType.ValueString() == "http" {
+		httpInputOption := data.InputOption.HttpInputOption
+
+		bodySet := !httpInputOption.RequestBody.IsNull() && !httpInputOption.RequestBody.IsUnknown()
+		paramsSet := len(httpInputOption.RequestParams) > 0
+
+		if bodySet && httpInputOption.Method.ValueString() != "POST" {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("request_body"),
+				"request_body is only allowed when method == \"POST\"",
+				fmt.Sprintf("method is %q, so request_body must be removed or method changed to \"POST\".",
+					httpInputOption.Method.ValueString()),
+			)
+		}
+
+		if bodySet && paramsSet {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("request_body"),
+				"request_body conflicts with request_params",
+				"When request_body is set, request_params must be omitted.",
+			)
+		}
+	}
+}

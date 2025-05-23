@@ -56,7 +56,7 @@ type HttpInputOption struct {
 }
 
 func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpInputOption) *HttpInputOption {
-	if httpInputOption == nil || previous == nil {
+	if httpInputOption == nil {
 		return nil
 	}
 
@@ -182,16 +182,6 @@ func (httpInputOption *HttpInputOption) ToInput() *parameter.HttpInputOptionInpu
 		})
 	}
 
-	var requestParamsPtr *[]parameter.RequestParamInput
-	if len(requestParams) > 0 {
-		requestParamsPtr = &requestParams
-	}
-
-	var requestHeadersPtr *[]parameter.RequestHeaderInput
-	if len(requestHeaders) > 0 {
-		requestHeadersPtr = &requestHeaders
-	}
-
 	return &parameter.HttpInputOptionInput{
 		URL:                                   httpInputOption.URL.ValueString(),
 		Method:                                httpInputOption.Method.ValueString(),
@@ -207,9 +197,9 @@ func (httpInputOption *HttpInputOption) ToInput() *parameter.HttpInputOptionInpu
 		CursorResponseParameterCursorJsonPath: httpInputOption.CursorResponseParameterCursorJsonPath.ValueStringPointer(),
 		CursorRequestParameterLimitName:       httpInputOption.CursorRequestParameterLimitName.ValueStringPointer(),
 		CursorRequestParameterLimitValue:      httpInputOption.CursorRequestParameterLimitValue.ValueInt64Pointer(),
-		RequestParams:                         requestParamsPtr,
+		RequestParams:                         &requestParams,
 		RequestBody:                           httpInputOption.RequestBody.ValueStringPointer(),
-		RequestHeaders:                        requestHeadersPtr,
+		RequestHeaders:                        &requestHeaders,
 		SuccessCode:                           httpInputOption.SuccessCode.ValueStringPointer(),
 		OpenTimeout:                           httpInputOption.OpenTimeout.ValueInt64Pointer(),
 		ReadTimeout:                           httpInputOption.ReadTimeout.ValueInt64Pointer(),
@@ -249,16 +239,6 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() *parameter.UpdateHttpInp
 		})
 	}
 
-	var requestParamsPtr *[]parameter.RequestParamInput
-	if len(requestParams) > 0 {
-		requestParamsPtr = &requestParams
-	}
-
-	var requestHeadersPtr *[]parameter.RequestHeaderInput
-	if len(requestHeaders) > 0 {
-		requestHeadersPtr = &requestHeaders
-	}
-
 	return &parameter.UpdateHttpInputOptionInput{
 		URL:                                   httpInputOption.URL.ValueStringPointer(),
 		Method:                                httpInputOption.Method.ValueStringPointer(),
@@ -274,9 +254,9 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() *parameter.UpdateHttpInp
 		CursorResponseParameterCursorJsonPath: httpInputOption.CursorResponseParameterCursorJsonPath.ValueStringPointer(),
 		CursorRequestParameterLimitName:       httpInputOption.CursorRequestParameterLimitName.ValueStringPointer(),
 		CursorRequestParameterLimitValue:      httpInputOption.CursorRequestParameterLimitValue.ValueInt64Pointer(),
-		RequestParams:                         requestParamsPtr,
+		RequestParams:                         &requestParams,
 		RequestBody:                           httpInputOption.RequestBody.ValueStringPointer(),
-		RequestHeaders:                        requestHeadersPtr,
+		RequestHeaders:                        &requestHeaders,
 		SuccessCode:                           httpInputOption.SuccessCode.ValueStringPointer(),
 		OpenTimeout:                           httpInputOption.OpenTimeout.ValueInt64Pointer(),
 		ReadTimeout:                           httpInputOption.ReadTimeout.ValueInt64Pointer(),
