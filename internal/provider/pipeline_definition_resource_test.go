@@ -113,7 +113,12 @@ func TestAccPipelineDefinitionResourceForNotifications(t *testing.T) {
 				ExpectError: nil,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "notifications_test"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.type", "job_execution"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.0.slack_config.message", "This is a multi-line message\nwith several lines\n  and some indentation\n    to test TrimmedStringType\n"),
+
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.type", "job_time_alert"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "email"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.email_config.message", "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  \n"),
 				),
 			},

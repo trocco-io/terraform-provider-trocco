@@ -50,9 +50,9 @@ MESSAGE
       }
     },
     {
-      type             = "job_execution"
+      type             = "job_time_alert"
       destination_type = "email"
-      notify_when      = "finished"
+      time             = 5
 
       email_config = {
         notification_id = trocco_notification_destination.email.id
