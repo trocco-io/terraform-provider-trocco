@@ -115,8 +115,8 @@ MESSAGE
     {
       destination_type   = "email"
       email_id           = trocco_notification_destination.email.id
-      notification_type  = "exec_time"
-      minutes            = 30
+      notification_type  = "job"
+      notify_when        = "finished"
       message            = <<MESSAGE
   This is another multi-line message
 with leading and trailing whitespace

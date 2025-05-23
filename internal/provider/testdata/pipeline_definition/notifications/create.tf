@@ -50,7 +50,7 @@ MESSAGE
       }
     },
     {
-      type             = "job_time_alert"
+      type             = "job_execution"
       destination_type = "email"
       time             = 5
 
