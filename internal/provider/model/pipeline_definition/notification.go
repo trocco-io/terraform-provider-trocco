@@ -3,6 +3,7 @@ package pipeline_definition
 import (
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	"terraform-provider-trocco/internal/provider/custom_type"
 	model "terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -73,8 +74,8 @@ func (n *Notification) ToInput() *wp.Notification {
 //
 
 type EmailNotificationConfig struct {
-	NotificationID types.Int64  `tfsdk:"notification_id"`
-	Message        types.String `tfsdk:"message"`
+	NotificationID types.Int64                    `tfsdk:"notification_id"`
+	Message        custom_type.TrimmedStringValue `tfsdk:"message"`
 }
 
 func NewEmailNotificationConfig(en *we.EmailNotificationConfig) *EmailNotificationConfig {
@@ -84,7 +85,7 @@ func NewEmailNotificationConfig(en *we.EmailNotificationConfig) *EmailNotificati
 
 	return &EmailNotificationConfig{
 		NotificationID: types.Int64Value(en.NotificationID),
-		Message:        types.StringValue(en.Message),
+		Message:        custom_type.TrimmedStringValue{StringValue: types.StringValue(en.Message)},
 	}
 }
 
@@ -100,8 +101,8 @@ func (c *EmailNotificationConfig) ToInput() *wp.EmailNotificationConfig {
 //
 
 type SlackNotificationConfig struct {
-	NotificationID types.Int64  `tfsdk:"notification_id"`
-	Message        types.String `tfsdk:"message"`
+	NotificationID types.Int64                    `tfsdk:"notification_id"`
+	Message        custom_type.TrimmedStringValue `tfsdk:"message"`
 }
 
 func NewSlackNotificationConfig(en *we.SlackNotificationConfig) *SlackNotificationConfig {
@@ -111,7 +112,7 @@ func NewSlackNotificationConfig(en *we.SlackNotificationConfig) *SlackNotificati
 
 	return &SlackNotificationConfig{
 		NotificationID: types.Int64Value(en.NotificationID),
-		Message:        types.StringValue(en.Message),
+		Message:        custom_type.TrimmedStringValue{StringValue: types.StringValue(en.Message)},
 	}
 }
 

@@ -1,6 +1,8 @@
 package job_definition
 
 import (
+	"terraform-provider-trocco/internal/provider/custom_type"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -68,6 +70,7 @@ func NotificationsSchema() schema.Attribute {
 				"message": schema.StringAttribute{
 					Required:            true,
 					MarkdownDescription: "The message to be sent with the notification",
+					CustomType:          custom_type.TrimmedStringType{},
 				},
 				"minutes": schema.Int64Attribute{
 					Optional: true,
