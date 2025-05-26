@@ -1,11 +1,14 @@
 package input_options
 
 import (
+	"context"
+	"fmt"
 	entity "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
 	parameter "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/input_option/parser"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -36,9 +39,9 @@ type HttpInputOption struct {
 	CursorResponseParameterCursorJsonPath types.String                   `tfsdk:"cursor_response_parameter_cursor_json_path"`
 	CursorRequestParameterLimitName       types.String                   `tfsdk:"cursor_request_parameter_limit_name"`
 	CursorRequestParameterLimitValue      types.Int64                    `tfsdk:"cursor_request_parameter_limit_value"`
-	RequestParams                         []RequestParam                 `tfsdk:"request_params"`
+	RequestParams                         types.Set                 `tfsdk:"request_params"`
 	RequestBody                           types.String                   `tfsdk:"request_body"`
-	RequestHeaders                        []RequestHeader                `tfsdk:"request_headers"`
+	RequestHeaders                        types.Set                `tfsdk:"request_headers"`
 	SuccessCode                           types.String                   `tfsdk:"success_code"`
 	OpenTimeout                           types.Int64                    `tfsdk:"open_timeout"`
 	ReadTimeout                           types.Int64                    `tfsdk:"read_timeout"`
@@ -63,8 +66,8 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 	var previousRequestHeaders []RequestHeader
 	var previousRequestParameters []RequestParam
 	if previous != nil {
-		previousRequestHeaders = previous.RequestHeaders
-		previousRequestParameters = previous.RequestParams
+		previous.RequestHeaders.ElementsAs(context.Background(), &previousRequestHeaders, false)
+		previous.RequestParams.ElementsAs(context.Background(), &previousRequestParameters, false)
 	}
 
 	return &HttpInputOption{
@@ -101,9 +104,9 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 	}
 }
 
-func NewRequestParams(params *[]entity.RequestParam, previous []RequestParam) []RequestParam {
+func NewRequestParams(params *[]entity.RequestParam, previous []RequestParam) types.Set {
 	if params == nil || len(*params) == 0 {
-		return nil
+		return types.SetNull(types.SetType{})
 	}
 	var ret []RequestParam
 	for i, param := range *params {
@@ -114,7 +117,20 @@ func NewRequestParams(params *[]entity.RequestParam, previous []RequestParam) []
 
 		ret = append(ret, NewRequestParam(param, previousRequestParameters))
 	}
-	return ret
+
+	attrTypes := types.ObjectType{
+		AttrTypes: map[string]attr.Type{
+			"key":     types.StringType,
+			"value":   types.StringType,
+			"masking": types.BoolType,
+		},
+	}
+	setValue, diags := types.SetValueFrom(context.Background(), attrTypes, ret)
+	if diags.HasError() {
+		// TODO: Handle error appropriately
+		return types.SetNull(types.SetType{})
+	}
+	return setValue
 }
 
 func NewRequestParam(param entity.RequestParam, previous RequestParam) RequestParam {
