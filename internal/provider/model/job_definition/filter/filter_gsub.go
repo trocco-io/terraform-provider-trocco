@@ -4,6 +4,7 @@ import (
 	filterEntities "terraform-provider-trocco/internal/client/entity/job_definition/filter"
 	"terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -35,5 +36,13 @@ func (filterGsub FilterGsub) ToInput() filter.FilterGsubInput {
 		ColumnName: filterGsub.ColumnName.ValueString(),
 		Pattern:    filterGsub.Pattern.ValueString(),
 		To:         filterGsub.To.ValueString(),
+	}
+}
+
+func (g FilterGsub) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"column_name": types.StringType,
+		"pattern":     types.StringType,
+		"to":          types.StringType,
 	}
 }
