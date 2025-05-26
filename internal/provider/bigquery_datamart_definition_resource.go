@@ -471,7 +471,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		if !plan.PartitioningField.IsNull() {
 			optionInput.SetPartitioningField(plan.PartitioningField.ValueString())
 		}
-		if !plan.ClusteringFields.IsNull() && !plan.ClusteringFields.IsUnknown() {
+		if !plan.ClusteringFields.IsNull() {
 			var clusteringFieldsValues []types.String
 			diags := plan.ClusteringFields.ElementsAs(ctx, &clusteringFieldsValues, false)
 			resp.Diagnostics.Append(diags...)
@@ -588,7 +588,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		input.SetNotifications(notificationInputs)
 	}
-	if !plan.Labels.IsNull() && !plan.Labels.IsUnknown() {
+	if !plan.Labels.IsNull() {
 		var labelValues []labelModel
 		diags := plan.Labels.ElementsAs(ctx, &labelValues, false)
 		resp.Diagnostics.Append(diags...)
@@ -724,7 +724,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 	if !plan.PartitioningField.IsNull() {
 		optionInput.SetPartitioningField(plan.PartitioningField.ValueString())
 	}
-	if !plan.ClusteringFields.IsNull() && !plan.ClusteringFields.IsUnknown() {
+	if !plan.ClusteringFields.IsNull() {
 		var clusteringFieldsValues []types.String
 		diags := plan.ClusteringFields.ElementsAs(ctx, &clusteringFieldsValues, false)
 		resp.Diagnostics.Append(diags...)
@@ -842,7 +842,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 	} else {
 		input.SetNotifications([]client.DatamartNotificationInput{})
 	}
-	if !plan.Labels.IsNull() && !plan.Labels.IsUnknown() {
+	if !plan.Labels.IsNull() {
 		var labelValues []labelModel
 		diags := plan.Labels.ElementsAs(ctx, &labelValues, false)
 		resp.Diagnostics.Append(diags...)
