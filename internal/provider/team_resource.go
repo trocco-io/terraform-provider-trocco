@@ -105,17 +105,23 @@ func (r *teamResource) Create(ctx context.Context, req resource.CreateRequest, r
 		return
 	}
 
+	var requestMemberModels []model.TeamMemberResourceModel
+	diags := plan.Members.ElementsAs(ctx, &requestMemberModels, false)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	input := client.CreateTeamInput{
 		Name:        plan.Name.ValueString(),
 		Description: plan.Description.ValueStringPointer(),
 		Members:     []client.MemberInput{},
 	}
-	for _, m := range plan.Members {
+	for _, m := range requestMemberModels {
 		input.Members = append(input.Members, client.MemberInput{
 			UserID: m.UserID.ValueInt64(),
 			Role:   m.Role.ValueString(),
 		})
-
 	}
 
 	team, err := r.client.CreateTeam(&input)
@@ -127,17 +133,29 @@ func (r *teamResource) Create(ctx context.Context, req resource.CreateRequest, r
 		return
 	}
 
+	memberModels := []model.TeamMemberResourceModel{}
+	for _, m := range team.Members {
+		memberModels = append(memberModels, model.TeamMemberResourceModel{
+			UserID: types.Int64Value(m.UserID),
+			Role:   types.StringValue(m.Role),
+		})
+	}
+
+	objectType := types.ObjectType{
+		AttrTypes: model.TeamMemberResourceModel{}.AttrTypes(),
+	}
+
+	membersSet, diags := types.SetValueFrom(ctx, objectType, memberModels)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	newState := model.TeamResourceModel{
 		ID:          types.Int64Value(team.ID),
 		Name:        types.StringValue(team.Name),
 		Description: types.StringPointerValue(team.Description),
-		Members:     []model.TeamMemberResourceModel{},
-	}
-	for _, m := range team.Members {
-		newState.Members = append(newState.Members, model.TeamMemberResourceModel{
-			UserID: types.Int64Value(m.UserID),
-			Role:   types.StringValue(m.Role),
-		})
+		Members:     membersSet,
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
@@ -159,25 +177,45 @@ func (r *teamResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 		return
 	}
 
-	newState := model.TeamResourceModel{
-		ID:          types.Int64Value(team.ID),
-		Name:        types.StringValue(team.Name),
-		Description: types.StringPointerValue(team.Description),
-		Members:     []model.TeamMemberResourceModel{},
-	}
+	memberModels := []model.TeamMemberResourceModel{}
 	for _, m := range team.Members {
-		newState.Members = append(newState.Members, model.TeamMemberResourceModel{
+		memberModels = append(memberModels, model.TeamMemberResourceModel{
 			UserID: types.Int64Value(m.UserID),
 			Role:   types.StringValue(m.Role),
 		})
 	}
 
+	objectType := types.ObjectType{
+		AttrTypes: model.TeamMemberResourceModel{}.AttrTypes(),
+	}
+
+	membersSet, diags := types.SetValueFrom(ctx, objectType, memberModels)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	newState := model.TeamResourceModel{
+		ID:          types.Int64Value(team.ID),
+		Name:        types.StringValue(team.Name),
+		Description: types.StringPointerValue(team.Description),
+		Members:     membersSet,
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
+
 func (r *teamResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var plan, state model.TeamResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	var requestMemberModels []model.TeamMemberResourceModel
+	diags := plan.Members.ElementsAs(ctx, &requestMemberModels, false)
+	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -187,7 +225,8 @@ func (r *teamResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		Description: plan.Description.ValueStringPointer(),
 		Members:     []client.MemberInput{},
 	}
-	for _, m := range plan.Members {
+
+	for _, m := range requestMemberModels {
 		input.Members = append(input.Members, client.MemberInput{
 			UserID: m.UserID.ValueInt64(),
 			Role:   m.Role.ValueString(),
@@ -203,21 +242,34 @@ func (r *teamResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		return
 	}
 
-	newState := model.TeamResourceModel{
-		ID:          types.Int64Value(team.ID),
-		Name:        types.StringValue(team.Name),
-		Description: types.StringPointerValue(team.Description),
-		Members:     []model.TeamMemberResourceModel{},
-	}
+	memberModels := []model.TeamMemberResourceModel{}
 	for _, m := range team.Members {
-		newState.Members = append(newState.Members, model.TeamMemberResourceModel{
+		memberModels = append(memberModels, model.TeamMemberResourceModel{
 			UserID: types.Int64Value(m.UserID),
 			Role:   types.StringValue(m.Role),
 		})
 	}
 
+	objectType := types.ObjectType{
+		AttrTypes: model.TeamMemberResourceModel{}.AttrTypes(),
+	}
+
+	membersSet, diags := types.SetValueFrom(ctx, objectType, memberModels)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	newState := model.TeamResourceModel{
+		ID:          types.Int64Value(team.ID),
+		Name:        types.StringValue(team.Name),
+		Description: types.StringPointerValue(team.Description),
+		Members:     membersSet,
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
+
 func (r *teamResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var state model.TeamResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
