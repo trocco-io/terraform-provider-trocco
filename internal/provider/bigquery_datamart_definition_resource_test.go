@@ -17,6 +17,7 @@ func TestAccDatamartDefinitionResourceForBigquery(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "test_bigquery_datamart"),
 					resource.TestCheckResourceAttr(resourceName, "query", "    SELECT * FROM examples\n"),
+					resource.TestCheckResourceAttr(resourceName, "before_load", "    DELETE FROM examples\n    WHERE created_at < '2024-01-01'\n"),
 				),
 			},
 		},
