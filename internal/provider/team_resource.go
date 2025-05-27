@@ -273,7 +273,6 @@ func (r *teamResource) Update(ctx context.Context, req resource.UpdateRequest, r
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
-
 func (r *teamResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var state model.TeamResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
