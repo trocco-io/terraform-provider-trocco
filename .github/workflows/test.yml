@@ -21,13 +21,13 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
         with:
           go-version-file: "go.mod"
-          cache: true
+          cache: false
       - run: go mod download
       - run: go build -v .
       - name: Run linters
@@ -42,7 +42,7 @@ jobs:
       - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
         with:
           go-version-file: "go.mod"
-          cache: true
+          cache: false
       # Temporarily download Terraform 1.8 prerelease for function documentation support.
       # When Terraform 1.8.0 final is released, this can be removed.
       - uses: hashicorp/setup-terraform@651471c36a6092792c552e8b1bef71e592b462d8 # v3.1.1
@@ -76,7 +76,7 @@ jobs:
       - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
         with:
           go-version-file: "go.mod"
-          cache: true
+          cache: false
       - uses: hashicorp/setup-terraform@651471c36a6092792c552e8b1bef71e592b462d8 # v3.1.1
         #   with:
         #     terraform_version: ${{ matrix.terraform }}
