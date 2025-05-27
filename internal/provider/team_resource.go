@@ -106,10 +106,12 @@ func (r *teamResource) Create(ctx context.Context, req resource.CreateRequest, r
 	}
 
 	var requestMemberModels []model.TeamMemberResourceModel
-	diags := plan.Members.ElementsAs(ctx, &requestMemberModels, false)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
+	if !plan.Members.IsUnknown() && !plan.Members.IsNull() {
+		diags := plan.Members.ElementsAs(ctx, &requestMemberModels, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
 	input := client.CreateTeamInput{
@@ -214,10 +216,12 @@ func (r *teamResource) Update(ctx context.Context, req resource.UpdateRequest, r
 	}
 
 	var requestMemberModels []model.TeamMemberResourceModel
-	diags := plan.Members.ElementsAs(ctx, &requestMemberModels, false)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
+	if !plan.Members.IsUnknown() && !plan.Members.IsNull() {
+		diags := plan.Members.ElementsAs(ctx, &requestMemberModels, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
 	input := client.UpdateTeamInput{

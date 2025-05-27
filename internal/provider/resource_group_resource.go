@@ -112,11 +112,13 @@ func (r *resourceGroupResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	var repusetTeamModels []model.TeamRoleResourceModel
-	diags := plan.Teams.ElementsAs(ctx, &repusetTeamModels, false)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
+	var requsetTeamModels []model.TeamRoleResourceModel
+	if !plan.Teams.IsUnknown() && !plan.Teams.IsNull() {
+		diags := plan.Teams.ElementsAs(ctx, &requsetTeamModels, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
 	input := client.CreateResourceGroupInput{
@@ -125,7 +127,7 @@ func (r *resourceGroupResource) Create(ctx context.Context, req resource.CreateR
 		Teams:       []client.TeamRoleInput{},
 	}
 
-	for _, m := range repusetTeamModels {
+	for _, m := range requsetTeamModels {
 		input.Teams = append(input.Teams, client.TeamRoleInput{
 			TeamID: m.TeamID.ValueInt64(),
 			Role:   m.Role.ValueString(),
@@ -223,11 +225,13 @@ func (r *resourceGroupResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	var repusetTeamModels []model.TeamRoleResourceModel
-	diags := plan.Teams.ElementsAs(ctx, &repusetTeamModels, false)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
+	var requsetTeamModels []model.TeamRoleResourceModel
+	if !plan.Teams.IsUnknown() && !plan.Teams.IsNull() {
+		diags := plan.Teams.ElementsAs(ctx, &requsetTeamModels, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
 	input := client.UpdateResourceGroupInput{
@@ -236,7 +240,7 @@ func (r *resourceGroupResource) Update(ctx context.Context, req resource.UpdateR
 		Teams:       []client.TeamRoleInput{},
 	}
 
-	for _, m := range repusetTeamModels {
+	for _, m := range requsetTeamModels {
 		input.Teams = append(input.Teams, client.TeamRoleInput{
 			TeamID: m.TeamID.ValueInt64(),
 			Role:   m.Role.ValueString(),
