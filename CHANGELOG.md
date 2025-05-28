@@ -1,3 +1,11 @@
+## 0.15.1
+CHORE:
+- Add tests
+- Fix GitHub Actions timeout settings
+- Update fields to use TrimmedStringValue custom type
+    - `before_load` in `trocco_bigquery_datamart_definition` resource
+    - `message` in `trocco_bigquery_datamart_definition.notifications` resource
+
 ## 0.15.0
 FEATURES:
 - Added support for `yahoo_ads_api_yss` input option in `trocco_job_definition` resource.
