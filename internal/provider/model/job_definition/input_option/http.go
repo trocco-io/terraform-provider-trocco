@@ -39,9 +39,9 @@ type HttpInputOption struct {
 	CursorResponseParameterCursorJsonPath types.String                   `tfsdk:"cursor_response_parameter_cursor_json_path"`
 	CursorRequestParameterLimitName       types.String                   `tfsdk:"cursor_request_parameter_limit_name"`
 	CursorRequestParameterLimitValue      types.Int64                    `tfsdk:"cursor_request_parameter_limit_value"`
-	RequestParams                         types.Set                 `tfsdk:"request_params"`
+	RequestParams                         types.Set                      `tfsdk:"request_params"`
 	RequestBody                           types.String                   `tfsdk:"request_body"`
-	RequestHeaders                        types.Set                `tfsdk:"request_headers"`
+	RequestHeaders                        types.Set                      `tfsdk:"request_headers"`
 	SuccessCode                           types.String                   `tfsdk:"success_code"`
 	OpenTimeout                           types.Int64                    `tfsdk:"open_timeout"`
 	ReadTimeout                           types.Int64                    `tfsdk:"read_timeout"`
@@ -110,9 +110,9 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 	}, diags
 }
 
-func NewRequestParams(params *[]entity.RequestParam, previous []RequestParam) ( types.Set, diag.Diagnostics ) {
+func NewRequestParams(params *[]entity.RequestParam, previous []RequestParam) (types.Set, diag.Diagnostics) {
 	if params == nil || len(*params) == 0 {
-		return types.SetNull(types.SetType{ElemType: headerParamType()}), nil
+		return types.SetNull(headerParamType()), nil
 	}
 	var ret []RequestParam
 	for i, param := range *params {
@@ -127,7 +127,7 @@ func NewRequestParams(params *[]entity.RequestParam, previous []RequestParam) ( 
 	setValue, diags := types.SetValueFrom(context.Background(), headerParamType(), ret)
 
 	if diags.HasError() {
-		return types.SetNull(types.SetType{ElemType: headerParamType()}), diags
+		return types.SetNull(headerParamType()), diags
 	}
 	return setValue, diags
 }
@@ -147,7 +147,7 @@ func NewRequestParam(param entity.RequestParam, previous RequestParam) RequestPa
 
 func NewRequestHeaders(headers *[]entity.RequestHeader, previous []RequestHeader) (types.Set, diag.Diagnostics) {
 	if headers == nil || len(*headers) == 0 {
-		return types.SetNull(types.SetType{ElemType: headerParamType()}), nil
+		return types.SetNull(headerParamType()), nil
 	}
 	var ret []RequestHeader
 	for i, header := range *headers {
@@ -162,7 +162,7 @@ func NewRequestHeaders(headers *[]entity.RequestHeader, previous []RequestHeader
 	setValue, diags := types.SetValueFrom(context.Background(), headerParamType(), ret)
 
 	if diags.HasError() {
-		return types.SetNull(types.SetType{ElemType: headerParamType()}), diags
+		return types.SetNull(headerParamType()), diags
 	}
 	return setValue, diags
 }
