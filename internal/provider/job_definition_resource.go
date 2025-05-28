@@ -303,6 +303,12 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		return
 	}
 
+	inputOption, diags := job_definitions.NewInputOption(jobDefinition.InputOption, plan.InputOption)
+	if diags.HasError() {
+		response.Diagnostics.Append(diags...)
+		return
+	}
+
 	newState := jobDefinitionResourceModel{
 		ID:                        types.Int64Value(jobDefinition.ID),
 		Name:                      types.StringValue(jobDefinition.Name),
@@ -312,7 +318,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
 		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
 		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
-		InputOption:               job_definitions.NewInputOption(jobDefinition.InputOption, plan.InputOption),
+		InputOption:               inputOption,
 		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
 		OutputOption:              job_definitions.NewOutputOption(jobDefinition.OutputOption),
 		FilterColumns:             filter.NewFilterColumns(jobDefinition.FilterColumns),
@@ -428,6 +434,12 @@ func (r *jobDefinitionResource) Create(
 		return
 	}
 
+	inputOption, diags := job_definitions.NewInputOption(jobDefinition.InputOption, plan.InputOption)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
+
 	newState := jobDefinitionResourceModel{
 		ID:                        types.Int64Value(jobDefinition.ID),
 		Name:                      types.StringValue(jobDefinition.Name),
@@ -437,7 +449,7 @@ func (r *jobDefinitionResource) Create(
 		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
 		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
 		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
-		InputOption:               job_definitions.NewInputOption(jobDefinition.InputOption, plan.InputOption),
+		InputOption:               inputOption,
 		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
 		OutputOption:              job_definitions.NewOutputOption(jobDefinition.OutputOption),
 		FilterColumns:             filter.NewFilterColumns(jobDefinition.FilterColumns),
@@ -474,6 +486,11 @@ func (r *jobDefinitionResource) Read(
 		)
 		return
 	}
+	inputOption, diags := job_definitions.NewInputOption(jobDefinition.InputOption, state.InputOption)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
 
 	newState := jobDefinitionResourceModel{
 		ID:                        types.Int64Value(jobDefinition.ID),
@@ -484,7 +501,7 @@ func (r *jobDefinitionResource) Read(
 		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
 		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
 		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
-		InputOption:               job_definitions.NewInputOption(jobDefinition.InputOption, state.InputOption),
+		InputOption:               inputOption,
 		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
 		OutputOption:              job_definitions.NewOutputOption(jobDefinition.OutputOption),
 		FilterColumns:             filter.NewFilterColumns(jobDefinition.FilterColumns),
@@ -538,7 +555,7 @@ func (r *jobDefinitionResource) ValidateConfig(
 		httpInputOption := data.InputOption.HttpInputOption
 
 		bodySet := !httpInputOption.RequestBody.IsNull() && !httpInputOption.RequestBody.IsUnknown()
-		paramsSet := len(httpInputOption.RequestParams) > 0
+		paramsSet := !httpInputOption.RequestParams.IsNull() && len(httpInputOption.RequestParams.Elements()) > 0
 
 		if bodySet && httpInputOption.Method.ValueString() != "POST" {
 			resp.Diagnostics.AddAttributeError(

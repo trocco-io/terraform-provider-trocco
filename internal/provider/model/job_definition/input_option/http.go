@@ -2,13 +2,13 @@ package input_options
 
 import (
 	"context"
-	"fmt"
 	entity "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
 	parameter "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/input_option/parser"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -58,9 +58,9 @@ type HttpInputOption struct {
 	CustomVariableSettings                *[]model.CustomVariableSetting `tfsdk:"custom_variable_settings"`
 }
 
-func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpInputOption) *HttpInputOption {
+func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpInputOption) (*HttpInputOption, diag.Diagnostics) {
 	if httpInputOption == nil {
-		return nil
+		return nil, nil
 	}
 
 	var previousRequestHeaders []RequestHeader
@@ -69,6 +69,12 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 		previous.RequestHeaders.ElementsAs(context.Background(), &previousRequestHeaders, false)
 		previous.RequestParams.ElementsAs(context.Background(), &previousRequestParameters, false)
 	}
+
+	var diags diag.Diagnostics
+	requestParams, d := NewRequestParams(httpInputOption.RequestParams, previousRequestParameters)
+	diags.Append(d...)
+	requestHeaders, d := NewRequestHeaders(httpInputOption.RequestHeaders, previousRequestHeaders)
+	diags.Append(d...)
 
 	return &HttpInputOption{
 		URL:                                   types.StringValue(httpInputOption.URL),
@@ -85,9 +91,9 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 		CursorResponseParameterCursorJsonPath: types.StringPointerValue(httpInputOption.CursorResponseParameterCursorJsonPath),
 		CursorRequestParameterLimitName:       types.StringPointerValue(httpInputOption.CursorRequestParameterLimitName),
 		CursorRequestParameterLimitValue:      types.Int64PointerValue(httpInputOption.CursorRequestParameterLimitValue),
-		RequestParams:                         NewRequestParams(httpInputOption.RequestParams, previousRequestParameters),
+		RequestParams:                         requestParams,
 		RequestBody:                           types.StringPointerValue(httpInputOption.RequestBody),
-		RequestHeaders:                        NewRequestHeaders(httpInputOption.RequestHeaders, previousRequestHeaders),
+		RequestHeaders:                        requestHeaders,
 		SuccessCode:                           types.StringPointerValue(httpInputOption.SuccessCode),
 		OpenTimeout:                           types.Int64PointerValue(httpInputOption.OpenTimeout),
 		ReadTimeout:                           types.Int64PointerValue(httpInputOption.ReadTimeout),
@@ -101,12 +107,12 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 		ExcelParser:                           parser.NewExcelParser(httpInputOption.ExcelParser),
 		XmlParser:                             parser.NewXmlParser(httpInputOption.XmlParser),
 		CustomVariableSettings:                model.NewCustomVariableSettings(httpInputOption.CustomVariableSettings),
-	}
+	}, diags
 }
 
-func NewRequestParams(params *[]entity.RequestParam, previous []RequestParam) types.Set {
+func NewRequestParams(params *[]entity.RequestParam, previous []RequestParam) ( types.Set, diag.Diagnostics ) {
 	if params == nil || len(*params) == 0 {
-		return types.SetNull(types.SetType{})
+		return types.SetNull(types.SetType{ElemType: headerParamType()}), nil
 	}
 	var ret []RequestParam
 	for i, param := range *params {
@@ -118,19 +124,12 @@ func NewRequestParams(params *[]entity.RequestParam, previous []RequestParam) ty
 		ret = append(ret, NewRequestParam(param, previousRequestParameters))
 	}
 
-	attrTypes := types.ObjectType{
-		AttrTypes: map[string]attr.Type{
-			"key":     types.StringType,
-			"value":   types.StringType,
-			"masking": types.BoolType,
-		},
-	}
-	setValue, diags := types.SetValueFrom(context.Background(), attrTypes, ret)
+	setValue, diags := types.SetValueFrom(context.Background(), headerParamType(), ret)
+
 	if diags.HasError() {
-		// TODO: Handle error appropriately
-		return types.SetNull(types.SetType{})
+		return types.SetNull(types.SetType{ElemType: headerParamType()}), diags
 	}
-	return setValue
+	return setValue, diags
 }
 
 func NewRequestParam(param entity.RequestParam, previous RequestParam) RequestParam {
@@ -146,9 +145,9 @@ func NewRequestParam(param entity.RequestParam, previous RequestParam) RequestPa
 	}
 }
 
-func NewRequestHeaders(headers *[]entity.RequestHeader, previous []RequestHeader) []RequestHeader {
+func NewRequestHeaders(headers *[]entity.RequestHeader, previous []RequestHeader) (types.Set, diag.Diagnostics) {
 	if headers == nil || len(*headers) == 0 {
-		return nil
+		return types.SetNull(types.SetType{ElemType: headerParamType()}), nil
 	}
 	var ret []RequestHeader
 	for i, header := range *headers {
@@ -159,7 +158,13 @@ func NewRequestHeaders(headers *[]entity.RequestHeader, previous []RequestHeader
 
 		ret = append(ret, NewRequestHeader(header, previousRequestHeader))
 	}
-	return ret
+
+	setValue, diags := types.SetValueFrom(context.Background(), headerParamType(), ret)
+
+	if diags.HasError() {
+		return types.SetNull(types.SetType{ElemType: headerParamType()}), diags
+	}
+	return setValue, diags
 }
 
 func NewRequestHeader(header entity.RequestHeader, previous RequestHeader) RequestHeader {
@@ -175,13 +180,25 @@ func NewRequestHeader(header entity.RequestHeader, previous RequestHeader) Reque
 	}
 }
 
+func headerParamType() types.ObjectType {
+	return types.ObjectType{
+		AttrTypes: map[string]attr.Type{
+			"key":     types.StringType,
+			"value":   types.StringType,
+			"masking": types.BoolType,
+		},
+	}
+}
+
 func (httpInputOption *HttpInputOption) ToInput() *parameter.HttpInputOptionInput {
 	if httpInputOption == nil {
 		return nil
 	}
 
+	var httpInputParams []RequestParam
+	httpInputOption.RequestParams.ElementsAs(context.Background(), &httpInputParams, false)
 	var requestParams []parameter.RequestParamInput
-	for _, param := range httpInputOption.RequestParams {
+	for _, param := range httpInputParams {
 		requestParams = append(requestParams, parameter.RequestParamInput{
 			Key:     param.Key.ValueString(),
 			Value:   param.Value.ValueString(),
@@ -189,8 +206,10 @@ func (httpInputOption *HttpInputOption) ToInput() *parameter.HttpInputOptionInpu
 		})
 	}
 
+	var httpInputHeaders []RequestHeader
+	httpInputOption.RequestHeaders.ElementsAs(context.Background(), &httpInputHeaders, false)
 	var requestHeaders []parameter.RequestHeaderInput
-	for _, header := range httpInputOption.RequestHeaders {
+	for _, header := range httpInputHeaders {
 		requestHeaders = append(requestHeaders, parameter.RequestHeaderInput{
 			Key:     header.Key.ValueString(),
 			Value:   header.Value.ValueString(),
@@ -237,8 +256,10 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() *parameter.UpdateHttpInp
 		return nil
 	}
 
+	var httpInputParams []RequestParam
+	httpInputOption.RequestParams.ElementsAs(context.Background(), &httpInputParams, false)
 	var requestParams []parameter.RequestParamInput
-	for _, param := range httpInputOption.RequestParams {
+	for _, param := range httpInputParams {
 		requestParams = append(requestParams, parameter.RequestParamInput{
 			Key:     param.Key.ValueString(),
 			Value:   param.Value.ValueString(),
@@ -246,8 +267,10 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() *parameter.UpdateHttpInp
 		})
 	}
 
+	var httpInputHeaders []RequestHeader
+	httpInputOption.RequestHeaders.ElementsAs(context.Background(), &httpInputHeaders, false)
 	var requestHeaders []parameter.RequestHeaderInput
-	for _, header := range httpInputOption.RequestHeaders {
+	for _, header := range httpInputHeaders {
 		requestHeaders = append(requestHeaders, parameter.RequestHeaderInput{
 			Key:     header.Key.ValueString(),
 			Value:   header.Value.ValueString(),

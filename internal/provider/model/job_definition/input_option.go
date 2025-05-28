@@ -4,6 +4,8 @@ import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
 	input_options "terraform-provider-trocco/internal/provider/model/job_definition/input_option"
+
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 )
 
 type InputOption struct {
@@ -19,7 +21,8 @@ type InputOption struct {
 	HttpInputOption               *input_options.HttpInputOption               `tfsdk:"http_input_option"`
 }
 
-func NewInputOption(inputOption client.InputOption, previous *InputOption) *InputOption {
+func NewInputOption(inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics){
+	httpInputOption, diags := input_options.NewHttpInputOption(inputOption.HttpInputOption, previous.HttpInputOption)
 	return &InputOption{
 		GcsInputOption:                input_options.NewGcsInputOption(inputOption.GcsInputOption),
 		MySQLInputOption:              input_options.NewMysqlInputOption(inputOption.MySQLInputOption),
@@ -30,8 +33,8 @@ func NewInputOption(inputOption client.InputOption, previous *InputOption) *Inpu
 		BigqueryInputOption:           input_options.NewBigqueryInputOption(inputOption.BigqueryInputOption),
 		PostgreSQLInputOption:         input_options.NewPostgreSQLInputOption(inputOption.PostgreSQLInputOption),
 		GoogleAnalytics4InputOption:   input_options.NewGoogleAnalytics4InputOption(inputOption.GoogleAnalytics4InputOption),
-		HttpInputOption:               input_options.NewHttpInputOption(inputOption.HttpInputOption, previous.HttpInputOption),
-	}
+		HttpInputOption:               httpInputOption,
+	}, diags
 }
 
 func (o InputOption) ToInput() client.InputOptionInput {

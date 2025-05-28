@@ -88,7 +88,7 @@ func HttpInputOptionSchema() schema.Attribute {
 				Optional:            true,
 				MarkdownDescription: "Value for limit parameter in cursor-based pagination",
 			},
-			"request_params": schema.ListNestedAttribute{
+			"request_params": schema.SetNestedAttribute{
 				Optional:            true,
 				MarkdownDescription: "Request parameters to include in the URL",
 				NestedObject: schema.NestedAttributeObject{
@@ -115,7 +115,7 @@ func HttpInputOptionSchema() schema.Attribute {
 				Optional:            true,
 				MarkdownDescription: "Request body for POST/PUT requests",
 			},
-			"request_headers": schema.ListNestedAttribute{
+			"request_headers": schema.SetNestedAttribute{
 				Optional:            true,
 				MarkdownDescription: "HTTP headers to include in the request",
 				NestedObject: schema.NestedAttributeObject{
