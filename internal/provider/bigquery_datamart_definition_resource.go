@@ -47,7 +47,7 @@ type bigqueryDatamartDefinitionModel struct {
 	DestinationDataset     types.String                   `tfsdk:"destination_dataset"`
 	DestinationTable       types.String                   `tfsdk:"destination_table"`
 	WriteDisposition       types.String                   `tfsdk:"write_disposition"`
-	BeforeLoad             types.String                   `tfsdk:"before_load"`
+	BeforeLoad             custom_type.TrimmedStringValue `tfsdk:"before_load"`
 	Partitioning           types.String                   `tfsdk:"partitioning"`
 	PartitioningTime       types.String                   `tfsdk:"partitioning_time"`
 	PartitioningField      types.String                   `tfsdk:"partitioning_field"`
@@ -241,6 +241,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 			},
 			"before_load": schema.StringAttribute{
 				Optional:            true,
+				CustomType:          custom_type.TrimmedStringType{},
 				MarkdownDescription: "The query to be executed before loading the data into the destination table. Available only in `insert` mode",
 			},
 			"partitioning": schema.StringAttribute{
@@ -972,7 +973,7 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			model.WriteDisposition = types.StringValue(*response.DatamartBigqueryOption.WriteDisposition)
 		}
 		if response.DatamartBigqueryOption.BeforeLoad != nil {
-			model.BeforeLoad = types.StringValue(*response.DatamartBigqueryOption.BeforeLoad)
+			model.BeforeLoad = custom_type.TrimmedStringValue{StringValue: types.StringValue(*response.DatamartBigqueryOption.BeforeLoad)}
 		}
 		if response.DatamartBigqueryOption.Partitioning != nil {
 			model.Partitioning = types.StringValue(*response.DatamartBigqueryOption.Partitioning)
