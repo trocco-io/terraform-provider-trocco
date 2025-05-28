@@ -864,7 +864,7 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	
+
 	if !data.WriteDisposition.IsNull() && data.WriteDisposition.ValueString() == "truncate" {
 		if !data.BeforeLoad.IsNull() {
 			resp.Diagnostics.AddAttributeError(
