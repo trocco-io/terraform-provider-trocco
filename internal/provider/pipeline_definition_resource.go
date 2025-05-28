@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
+	"terraform-provider-trocco/internal/provider/custom_type"
 	pdm "terraform-provider-trocco/internal/provider/model/pipeline_definition"
 	pds "terraform-provider-trocco/internal/provider/schema/pipeline_definition"
 
@@ -101,6 +102,7 @@ func (r *pipelineDefinitionResource) Schema(
 				Optional:            true,
 				Computed:            true,
 				Default:             stringdefault.StaticString(""),
+				CustomType:          custom_type.TrimmedStringType{},
 			},
 			"max_task_parallelism": schema.Int64Attribute{
 				MarkdownDescription: "The maximum number of tasks that the pipeline can run in parallel",
