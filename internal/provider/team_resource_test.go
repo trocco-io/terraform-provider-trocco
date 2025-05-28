@@ -42,7 +42,7 @@ func TestAccTeamResource(t *testing.T) {
 			// Update testing
 			{
 				Config: providerConfig + `
-					
+
 					resource "trocco_team" "test" {
 					  name = "updated"
 					  description = "updated"
@@ -110,4 +110,32 @@ func TestAccTeamInvalidRole(t *testing.T) {
 		},
 	})
 
+}
+
+const moduleConfig = `
+module "team" {
+  source = "./internal/provider/testdata/modules/team"
+  team_name        = "test"
+  team_description = "module test"
+  team_members = [
+    {
+      user_id = 10626
+      role    = "team_admin"
+    }
+  ]
+}
+`
+
+func TestAccTeamResourceModule(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + moduleConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("module.team.trocco_team.this", "name", "test"),
+				),
+			},
+		},
+	})
 }
