@@ -5,6 +5,8 @@ CHORE:
 - Update fields to use TrimmedStringValue custom type
     - `before_load` in `trocco_bigquery_datamart_definition` resource
     - `message` in `trocco_bigquery_datamart_definition.notifications` resource
+    - `message` in `trocco_job_definition.notifications` resource
+    - `message` in `trocco_pipeline_definition.notifications` resource
 
 ## 0.15.0
 FEATURES:
