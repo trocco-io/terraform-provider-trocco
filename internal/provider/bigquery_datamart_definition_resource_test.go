@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -46,6 +47,28 @@ func TestAccDatamartDefinitionResourceForBigqueryNotifications(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "slack"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "job"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.notify_when", "finished"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccDatamartDefinitionResourceForBigqueryTruncateWriteDisposition(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				// Test case: write_disposition is "truncate" and before_load is set (should fail)
+				Config:      providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/truncate_with_before_load.tf"),
+				ExpectError: regexp.MustCompile("before_load is not supported in truncate query mode"),
+			},
+			{
+				// Test case: write_disposition is "truncate" and before_load is not set (should pass)
+				Config:      providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/truncate_without_before_load.tf"),
+				ExpectError: nil,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("trocco_bigquery_datamart_definition.test_truncate_without_before_load", "name", "test_truncate_without_before_load"),
+					resource.TestCheckResourceAttr("trocco_bigquery_datamart_definition.test_truncate_without_before_load", "write_disposition", "truncate"),
 				),
 			},
 		},

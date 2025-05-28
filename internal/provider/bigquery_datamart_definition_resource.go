@@ -864,6 +864,16 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	
+	if !data.WriteDisposition.IsNull() && data.WriteDisposition.ValueString() == "truncate" {
+		if !data.BeforeLoad.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("before_load"),
+				"Invalid Before Load Query",
+				"before_load is not supported in truncate query mode",
+			)
+		}
+	}
 
 	if data.QueryMode.ValueString() == "insert" {
 		if data.DestinationDataset.IsNull() {
