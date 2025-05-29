@@ -2,6 +2,7 @@ package output_options
 
 import (
 	"context"
+	"fmt"
 	"terraform-provider-trocco/internal/client/entity/job_definition/output_option"
 	output_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
 	"terraform-provider-trocco/internal/provider/model"
@@ -43,6 +44,7 @@ func NewSnowflakeOutputOption(snowflakeOutputOption *output_option.SnowflakeOutp
 	}
 
 	ctx := context.Background()
+
 	result := &SnowflakeOutputOption{
 		Warehouse:             types.StringValue(snowflakeOutputOption.Warehouse),
 		Database:              types.StringValue(snowflakeOutputOption.Database),
@@ -59,46 +61,68 @@ func NewSnowflakeOutputOption(snowflakeOutputOption *output_option.SnowflakeOutp
 		SnowflakeConnectionId: types.Int64Value(snowflakeOutputOption.SnowflakeConnectionId),
 	}
 
-	if snowflakeOutputOption.SnowflakeOutputOptionColumnOptions != nil {
-		columnOptions := make([]snowflakeOutputOptionColumnOption, 0, len(snowflakeOutputOption.SnowflakeOutputOptionColumnOptions))
-		for _, input := range snowflakeOutputOption.SnowflakeOutputOptionColumnOptions {
-			columnOption := snowflakeOutputOptionColumnOption{
-				Name:            types.StringValue(input.Name),
-				Type:            types.StringValue(input.Type),
-				ValueType:       types.StringPointerValue(input.ValueType),
-				TimestampFormat: types.StringPointerValue(input.TimestampFormat),
-				Timezone:        types.StringPointerValue(input.Timezone),
-			}
-			columnOptions = append(columnOptions, columnOption)
-		}
-
-		objectType := types.ObjectType{
-			AttrTypes: snowflakeOutputOptionColumnOption{}.attrTypes(),
-		}
-
-		listValue, _ := types.ListValueFrom(ctx, objectType, columnOptions)
-		result.SnowflakeOutputOptionColumnOptions = listValue
-	} else {
-		result.SnowflakeOutputOptionColumnOptions = types.ListNull(types.ObjectType{
-			AttrTypes: snowflakeOutputOptionColumnOption{}.attrTypes(),
-		})
+	SnowflakeOutputOptionMergeKeys, err := newSnowflakeOutputOptionMergeKeys(ctx, snowflakeOutputOption.SnowflakeOutputOptionMergeKeys)
+	if err != nil {
+		return nil
 	}
+	result.SnowflakeOutputOptionMergeKeys = SnowflakeOutputOptionMergeKeys
 
-	if snowflakeOutputOption.SnowflakeOutputOptionMergeKeys != nil {
-		mergeKeys := make([]types.String, 0, len(snowflakeOutputOption.SnowflakeOutputOptionMergeKeys))
-		for _, input := range snowflakeOutputOption.SnowflakeOutputOptionMergeKeys {
-			mergeKeys = append(mergeKeys, types.StringValue(input))
-		}
-
-		listValue, _ := types.ListValueFrom(ctx, types.StringType, mergeKeys)
-		result.SnowflakeOutputOptionMergeKeys = listValue
-	} else {
-		result.SnowflakeOutputOptionMergeKeys = types.ListNull(types.StringType)
+	SnowflakeOutputOptionColumnOptions, err := newSnowflakeOutputOptionColumnOptions(ctx, snowflakeOutputOption.SnowflakeOutputOptionColumnOptions)
+	if err != nil {
+		return nil
 	}
+	result.SnowflakeOutputOptionColumnOptions = SnowflakeOutputOptionColumnOptions
 
-	result.CustomVariableSettings = ConvertCustomVariableSettingsToList(ctx, snowflakeOutputOption.CustomVariableSettings)
+	CustomVariableSettings, err := ConvertCustomVariableSettingsToList(ctx, snowflakeOutputOption.CustomVariableSettings)
+	if err != nil {
+		return nil
+	}
+	result.CustomVariableSettings = CustomVariableSettings
 
 	return result
+}
+
+func newSnowflakeOutputOptionMergeKeys(ctx context.Context, mergeKeys []string) (types.List, error) {
+	if mergeKeys != nil {
+		values := make([]types.String, len(mergeKeys))
+		for i, v := range mergeKeys {
+			values[i] = types.StringValue(v)
+		}
+		listValue, diags := types.ListValueFrom(ctx, types.StringType, values)
+		if diags.HasError() {
+			return types.ListNull(types.StringType), fmt.Errorf("failed to convert to ListValue: %v", diags)
+		}
+		return listValue, nil
+	}
+	return types.ListNull(types.StringType), nil
+}
+
+func newSnowflakeOutputOptionColumnOptions(ctx context.Context, inputOptions []output_option.SnowflakeOutputOptionColumnOption) (types.List, error) {
+	objectType := types.ObjectType{
+		AttrTypes: snowflakeOutputOptionColumnOption{}.attrTypes(),
+	}
+
+	if inputOptions == nil {
+		return types.ListNull(objectType), nil
+	}
+
+	columnOptions := make([]snowflakeOutputOptionColumnOption, 0, len(inputOptions))
+	for _, input := range inputOptions {
+		columnOption := snowflakeOutputOptionColumnOption{
+			Name:            types.StringValue(input.Name),
+			Type:            types.StringValue(input.Type),
+			ValueType:       types.StringPointerValue(input.ValueType),
+			TimestampFormat: types.StringPointerValue(input.TimestampFormat),
+			Timezone:        types.StringPointerValue(input.Timezone),
+		}
+		columnOptions = append(columnOptions, columnOption)
+	}
+
+	listValue, diags := types.ListValueFrom(ctx, objectType, columnOptions)
+	if diags.HasError() {
+		return types.ListNull(objectType), fmt.Errorf("failed to convert to ListValue: %v", diags)
+	}
+	return listValue, nil
 }
 
 func (s snowflakeOutputOptionColumnOption) attrTypes() map[string]attr.Type {
@@ -121,7 +145,10 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToInput() *output_options2.S
 	var mergeKeys *[]string
 	if !snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.IsNull() && !snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.IsUnknown() {
 		var mergeKeyValues []types.String
-		snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.ElementsAs(ctx, &mergeKeyValues, false)
+		diags := snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.ElementsAs(ctx, &mergeKeyValues, false)
+		if diags.HasError() {
+			return nil
+		}
 		mk := make([]string, 0, len(mergeKeyValues))
 		for _, input := range mergeKeyValues {
 			mk = append(mk, input.ValueString())
@@ -132,7 +159,10 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToInput() *output_options2.S
 	var columnOptions *[]output_options2.SnowflakeOutputOptionColumnOptionInput
 	if !snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.IsNull() && !snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.IsUnknown() {
 		var columnOptionValues []snowflakeOutputOptionColumnOption
-		snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.ElementsAs(ctx, &columnOptionValues, false)
+		diags := snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.ElementsAs(ctx, &columnOptionValues, false)
+		if diags.HasError() {
+			return nil
+		}
 
 		outputs := make([]output_options2.SnowflakeOutputOptionColumnOptionInput, 0, len(columnOptionValues))
 		for _, input := range columnOptionValues {
@@ -179,7 +209,11 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput() *output_opti
 	var mergeKeys *[]string
 	if !snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.IsNull() && !snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.IsUnknown() {
 		var mergeKeyValues []types.String
-		snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.ElementsAs(ctx, &mergeKeyValues, false)
+		diags := snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.ElementsAs(ctx, &mergeKeyValues, false)
+		if diags.HasError() {
+			return nil
+		}
+
 		mk := make([]string, 0, len(mergeKeyValues))
 		for _, input := range mergeKeyValues {
 			mk = append(mk, input.ValueString())
@@ -190,7 +224,10 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput() *output_opti
 	var columnOptions *[]output_options2.SnowflakeOutputOptionColumnOptionInput
 	if !snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.IsNull() && !snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.IsUnknown() {
 		var columnOptionValues []snowflakeOutputOptionColumnOption
-		snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.ElementsAs(ctx, &columnOptionValues, false)
+		diags := snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.ElementsAs(ctx, &columnOptionValues, false)
+		if diags.HasError() {
+			return nil
+		}
 
 		outputs := make([]output_options2.SnowflakeOutputOptionColumnOptionInput, 0, len(columnOptionValues))
 		for _, input := range columnOptionValues {

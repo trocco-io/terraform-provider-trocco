@@ -2,6 +2,7 @@ package output_options
 
 import (
 	"context"
+	"fmt"
 	"terraform-provider-trocco/internal/client/entity"
 	"terraform-provider-trocco/internal/provider/model"
 
@@ -22,25 +23,28 @@ func GetCustomVariableSettingAttrTypes() map[string]attr.Type {
 	}
 }
 
-func ConvertCustomVariableSettingsToList(ctx context.Context, customVariableSettings *[]entity.CustomVariableSetting) types.List {
+func ConvertCustomVariableSettingsToList(ctx context.Context, customVariableSettings *[]entity.CustomVariableSetting) (types.List, error) {
 	if customVariableSettings == nil {
 		return types.ListNull(types.ObjectType{
 			AttrTypes: GetCustomVariableSettingAttrTypes(),
-		})
+		}), nil
 	}
 
 	settings := model.NewCustomVariableSettings(customVariableSettings)
 	if settings == nil {
 		return types.ListNull(types.ObjectType{
 			AttrTypes: GetCustomVariableSettingAttrTypes(),
-		})
+		}), nil
 	}
 
 	objectType := types.ObjectType{
 		AttrTypes: GetCustomVariableSettingAttrTypes(),
 	}
-	listValue, _ := types.ListValueFrom(ctx, objectType, *settings)
-	return listValue
+	listValue, diags := types.ListValueFrom(ctx, objectType, *settings)
+	if diags.HasError() {
+		return types.ListNull(objectType), fmt.Errorf("failed to convert to ListValue: %v", diags)
+	}
+	return listValue, nil
 }
 
 func ExtractCustomVariableSettings(ctx context.Context, list types.List) *[]model.CustomVariableSetting {
@@ -49,6 +53,9 @@ func ExtractCustomVariableSettings(ctx context.Context, list types.List) *[]mode
 	}
 
 	var settings []model.CustomVariableSetting
-	list.ElementsAs(ctx, &settings, false)
+	diags := list.ElementsAs(ctx, &settings, false)
+	if diags.HasError() {
+		return nil
+	}
 	return &settings
 }

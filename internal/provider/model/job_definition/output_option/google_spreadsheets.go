@@ -2,6 +2,7 @@ package output_options
 
 import (
 	"context"
+	"fmt"
 	"terraform-provider-trocco/internal/client/entity/job_definition/output_option"
 	parameter "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
 	"terraform-provider-trocco/internal/provider/model"
@@ -48,31 +49,44 @@ func NewGoogleSpreadsheetsOutputOption(googleSpreadsheetsOutputOption *output_op
 		Mode:                           types.StringValue(googleSpreadsheetsOutputOption.Mode),
 	}
 
-	if googleSpreadsheetsOutputOption.GoogleSpreadsheetsOutputOptionSorts != nil {
-		sorts := make([]googleSpreadsheetsOutputOptionSorts, 0, len(*googleSpreadsheetsOutputOption.GoogleSpreadsheetsOutputOptionSorts))
-		for _, input := range *googleSpreadsheetsOutputOption.GoogleSpreadsheetsOutputOptionSorts {
-			newSort := googleSpreadsheetsOutputOptionSorts{
-				Column: types.StringValue(input.Column),
-				Order:  types.StringValue(input.Order),
-			}
-			sorts = append(sorts, newSort)
-		}
+	GoogleSpreadsheetsOutputOptionSorts, err := newGoogleSpreadsheetsOutputOptionSorts(ctx, googleSpreadsheetsOutputOption.GoogleSpreadsheetsOutputOptionSorts)
+	if err != nil {
+		return nil
+	}
+	result.GoogleSpreadsheetsOutputOptionSorts = GoogleSpreadsheetsOutputOptionSorts
 
-		objectType := types.ObjectType{
-			AttrTypes: googleSpreadsheetsOutputOptionSorts{}.attrTypes(),
-		}
+	CustomVariableSettings, err := ConvertCustomVariableSettingsToList(ctx, googleSpreadsheetsOutputOption.CustomVariableSettings)
+	if err != nil {
+		return nil
+	}
+	result.CustomVariableSettings = CustomVariableSettings
+	return result
+}
 
-		listValue, _ := types.ListValueFrom(ctx, objectType, sorts)
-		result.GoogleSpreadsheetsOutputOptionSorts = listValue
-	} else {
-		result.GoogleSpreadsheetsOutputOptionSorts = types.ListNull(types.ObjectType{
-			AttrTypes: googleSpreadsheetsOutputOptionSorts{}.attrTypes(),
-		})
+func newGoogleSpreadsheetsOutputOptionSorts(ctx context.Context, sorts *[]output_option.GoogleSpreadsheetsOutputOptionSorts) (types.List, error) {
+	objectType := types.ObjectType{
+		AttrTypes: googleSpreadsheetsOutputOptionSorts{}.attrTypes(),
 	}
 
-	result.CustomVariableSettings = ConvertCustomVariableSettingsToList(ctx, googleSpreadsheetsOutputOption.CustomVariableSettings)
+	if sorts == nil {
+		return types.ListNull(objectType), nil
+	}
 
-	return result
+	converted := make([]googleSpreadsheetsOutputOptionSorts, 0, len(*sorts))
+	for _, input := range *sorts {
+		newSort := googleSpreadsheetsOutputOptionSorts{
+			Column: types.StringValue(input.Column),
+			Order:  types.StringValue(input.Order),
+		}
+		converted = append(converted, newSort)
+	}
+
+	listValue, diags := types.ListValueFrom(ctx, objectType, converted)
+	if diags.HasError() {
+		return types.ListNull(objectType), fmt.Errorf("failed to convert to ListValue: %v", diags)
+	}
+
+	return listValue, nil
 }
 
 func (outputOption *GoogleSpreadsheetsOutputOption) ToInput() *parameter.GoogleSpreadsheetsOutputOptionInput {
@@ -85,7 +99,10 @@ func (outputOption *GoogleSpreadsheetsOutputOption) ToInput() *parameter.GoogleS
 	var sorts *[]parameter.GoogleSpreadsheetsOutputOptionSortsInput
 	if !outputOption.GoogleSpreadsheetsOutputOptionSorts.IsNull() && !outputOption.GoogleSpreadsheetsOutputOptionSorts.IsUnknown() {
 		var sortValues []googleSpreadsheetsOutputOptionSorts
-		outputOption.GoogleSpreadsheetsOutputOptionSorts.ElementsAs(ctx, &sortValues, false)
+		diags := outputOption.GoogleSpreadsheetsOutputOptionSorts.ElementsAs(ctx, &sortValues, false)
+		if diags.HasError() {
+			return nil
+		}
 
 		s := make([]parameter.GoogleSpreadsheetsOutputOptionSortsInput, 0, len(sortValues))
 		for _, input := range sortValues {
@@ -121,7 +138,10 @@ func (outputOption *GoogleSpreadsheetsOutputOption) ToUpdateInput() *parameter.U
 	var sorts *[]parameter.GoogleSpreadsheetsOutputOptionSortsInput
 	if !outputOption.GoogleSpreadsheetsOutputOptionSorts.IsNull() && !outputOption.GoogleSpreadsheetsOutputOptionSorts.IsUnknown() {
 		var sortValues []googleSpreadsheetsOutputOptionSorts
-		outputOption.GoogleSpreadsheetsOutputOptionSorts.ElementsAs(ctx, &sortValues, false)
+		diags := outputOption.GoogleSpreadsheetsOutputOptionSorts.ElementsAs(ctx, &sortValues, false)
+		if diags.HasError() {
+			return nil
+		}
 
 		s := make([]parameter.GoogleSpreadsheetsOutputOptionSortsInput, 0, len(sortValues))
 		for _, input := range sortValues {
