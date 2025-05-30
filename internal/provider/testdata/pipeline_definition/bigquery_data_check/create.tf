@@ -18,6 +18,11 @@ resource "trocco_connection" "my_conn" {
 resource "trocco_pipeline_definition" "bigquery_data_check_query_check" {
   name = "bigquery_data_check"
 
+  description = <<EOF
+    This is a pipeline definition for BigQuery data check.
+    It checks if the count of rows in the 'examples' table equals 1.
+  EOF
+
   tasks = [
     {
       key  = "bigquery_data_check"
