@@ -865,6 +865,16 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 		return
 	}
 
+	if data.WriteDisposition.ValueString() != "insert" {
+		if !data.BeforeLoad.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("before_load"),
+				"Invalid Before Load Query",
+				"before_load is only available in insert query mode",
+			)
+		}
+	}
+
 	if data.QueryMode.ValueString() == "insert" {
 		if data.DestinationDataset.IsNull() {
 			resp.Diagnostics.AddAttributeError(
