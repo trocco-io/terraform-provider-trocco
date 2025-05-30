@@ -865,12 +865,12 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 		return
 	}
 
-	if !data.WriteDisposition.IsNull() && data.WriteDisposition.ValueString() == "truncate" {
+	if !data.WriteDisposition.IsNull() && data.WriteDisposition.ValueString() != "append" {
 		if !data.BeforeLoad.IsNull() {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("before_load"),
 				"Invalid Before Load Query",
-				"before_load is only available in insert query mode",
+				"before_load is only available in insert query mode and write_disposition is append",
 			)
 		}
 	}
