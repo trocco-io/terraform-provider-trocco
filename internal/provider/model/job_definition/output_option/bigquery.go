@@ -139,7 +139,7 @@ func newBigqueryOutputOptionColumnOptions(
 		AttrTypes: bigQueryOutputOptionColumnOption{}.attrTypes(),
 	}
 
-	if len(bigQueryOutputOptionColumnOptions) == 0 {
+	if bigQueryOutputOptionColumnOptions == nil {
 		return types.ListNull(objectType), nil
 	}
 
