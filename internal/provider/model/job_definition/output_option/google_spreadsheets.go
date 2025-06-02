@@ -6,6 +6,7 @@ import (
 	"terraform-provider-trocco/internal/client/entity/job_definition/output_option"
 	parameter "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
 	"terraform-provider-trocco/internal/provider/model"
+	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -55,7 +56,7 @@ func NewGoogleSpreadsheetsOutputOption(googleSpreadsheetsOutputOption *output_op
 	}
 	result.GoogleSpreadsheetsOutputOptionSorts = GoogleSpreadsheetsOutputOptionSorts
 
-	CustomVariableSettings, err := ConvertCustomVariableSettingsToList(ctx, googleSpreadsheetsOutputOption.CustomVariableSettings)
+	CustomVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, googleSpreadsheetsOutputOption.CustomVariableSettings)
 	if err != nil {
 		return nil
 	}
@@ -114,7 +115,7 @@ func (outputOption *GoogleSpreadsheetsOutputOption) ToInput() *parameter.GoogleS
 		sorts = &s
 	}
 
-	customVarSettings := ExtractCustomVariableSettings(ctx, outputOption.CustomVariableSettings)
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, outputOption.CustomVariableSettings)
 
 	return &parameter.GoogleSpreadsheetsOutputOptionInput{
 		GoogleSpreadsheetsConnectionId:      outputOption.GoogleSpreadsheetsConnectionId.ValueInt64(),
@@ -153,7 +154,7 @@ func (outputOption *GoogleSpreadsheetsOutputOption) ToUpdateInput() *parameter.U
 		sorts = &s
 	}
 
-	customVarSettings := ExtractCustomVariableSettings(ctx, outputOption.CustomVariableSettings)
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, outputOption.CustomVariableSettings)
 
 	return &parameter.UpdateGoogleSpreadsheetsOutputOptionInput{
 		GoogleSpreadsheetsConnectionId:      outputOption.GoogleSpreadsheetsConnectionId.ValueInt64Pointer(),

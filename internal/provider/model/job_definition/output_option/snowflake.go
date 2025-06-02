@@ -6,6 +6,7 @@ import (
 	"terraform-provider-trocco/internal/client/entity/job_definition/output_option"
 	output_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
 	"terraform-provider-trocco/internal/provider/model"
+	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -73,7 +74,7 @@ func NewSnowflakeOutputOption(snowflakeOutputOption *output_option.SnowflakeOutp
 	}
 	result.SnowflakeOutputOptionColumnOptions = SnowflakeOutputOptionColumnOptions
 
-	CustomVariableSettings, err := ConvertCustomVariableSettingsToList(ctx, snowflakeOutputOption.CustomVariableSettings)
+	CustomVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, snowflakeOutputOption.CustomVariableSettings)
 	if err != nil {
 		return nil
 	}
@@ -177,7 +178,7 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToInput() *output_options2.S
 		columnOptions = &outputs
 	}
 
-	customVarSettings := ExtractCustomVariableSettings(ctx, snowflakeOutputOption.CustomVariableSettings)
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, snowflakeOutputOption.CustomVariableSettings)
 
 	return &output_options2.SnowflakeOutputOptionInput{
 		Warehouse:                          snowflakeOutputOption.Warehouse.ValueString(),
@@ -242,7 +243,7 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput() *output_opti
 		columnOptions = &outputs
 	}
 
-	customVarSettings := ExtractCustomVariableSettings(ctx, snowflakeOutputOption.CustomVariableSettings)
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, snowflakeOutputOption.CustomVariableSettings)
 
 	return &output_options2.UpdateSnowflakeOutputOptionInput{
 		Warehouse:                          snowflakeOutputOption.Warehouse.ValueStringPointer(),
