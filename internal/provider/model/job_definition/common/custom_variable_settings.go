@@ -1,4 +1,4 @@
-package output_options
+package common
 
 import (
 	"context"

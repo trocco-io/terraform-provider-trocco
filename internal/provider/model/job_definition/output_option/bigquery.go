@@ -6,6 +6,7 @@ import (
 	"terraform-provider-trocco/internal/client/entity/job_definition/output_option"
 	output_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
 	"terraform-provider-trocco/internal/provider/model"
+	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -30,8 +31,8 @@ type BigQueryOutputOption struct {
 	BigQueryConnectionID                 types.Int64  `tfsdk:"bigquery_connection_id"`
 	CustomVariableSettings               types.List   `tfsdk:"custom_variable_settings"`
 	BigQueryOutputOptionColumnOptions    types.List   `tfsdk:"bigquery_output_option_column_options"`
-	BigQueryOutputOptionClusteringFields types.List   `tfsdk:"bigquery_output_option_clustering_fields"`
-	BigQueryOutputOptionMergeKeys        types.List   `tfsdk:"bigquery_output_option_merge_keys"`
+	BigQueryOutputOptionClusteringFields types.Set    `tfsdk:"bigquery_output_option_clustering_fields"`
+	BigQueryOutputOptionMergeKeys        types.Set    `tfsdk:"bigquery_output_option_merge_keys"`
 }
 
 type bigQueryOutputOptionColumnOption struct {
@@ -68,7 +69,7 @@ func NewBigQueryOutputOption(bigQueryOutputOption *output_option.BigQueryOutputO
 		BigQueryConnectionID:         types.Int64Value(bigQueryOutputOption.BigQueryConnectionID),
 	}
 
-	CustomVariableSettings, err := ConvertCustomVariableSettingsToList(ctx, bigQueryOutputOption.CustomVariableSettings)
+	CustomVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, bigQueryOutputOption.CustomVariableSettings)
 	if err != nil {
 		return nil
 	}
@@ -95,9 +96,9 @@ func NewBigQueryOutputOption(bigQueryOutputOption *output_option.BigQueryOutputO
 	return result
 }
 
-func newBigQueryOutputOptionMergeKeys(ctx context.Context, mergeKeys []string) (types.List, error) {
+func newBigQueryOutputOptionMergeKeys(ctx context.Context, mergeKeys []string) (types.Set, error) {
 	if mergeKeys == nil {
-		return types.ListNull(types.StringType), nil
+		return types.SetNull(types.StringType), nil
 	}
 
 	values := make([]types.String, len(mergeKeys))
@@ -105,17 +106,17 @@ func newBigQueryOutputOptionMergeKeys(ctx context.Context, mergeKeys []string) (
 		values[i] = types.StringValue(v)
 	}
 
-	listValue, diags := types.ListValueFrom(ctx, types.StringType, values)
+	setValue, diags := types.SetValueFrom(ctx, types.StringType, values)
 	if diags.HasError() {
-		return types.ListNull(types.StringType), fmt.Errorf("failed to convert mergeKeys to ListValue: %v", diags)
+		return types.SetNull(types.StringType), fmt.Errorf("failed to convert mergeKeys to SetValue: %v", diags)
 	}
 
-	return listValue, nil
+	return setValue, nil
 }
 
-func newBigQueryOutputOptionClusteringFields(ctx context.Context, fields []string) (types.List, error) {
+func newBigQueryOutputOptionClusteringFields(ctx context.Context, fields []string) (types.Set, error) {
 	if fields == nil {
-		return types.ListNull(types.StringType), nil
+		return types.SetNull(types.StringType), nil
 	}
 
 	values := make([]types.String, len(fields))
@@ -123,12 +124,12 @@ func newBigQueryOutputOptionClusteringFields(ctx context.Context, fields []strin
 		values[i] = types.StringValue(v)
 	}
 
-	listValue, diags := types.ListValueFrom(ctx, types.StringType, values)
+	setValue, diags := types.SetValueFrom(ctx, types.StringType, values)
 	if diags.HasError() {
-		return types.ListNull(types.StringType), fmt.Errorf("failed to convert to ListValue: %v", diags)
+		return types.SetNull(types.StringType), fmt.Errorf("failed to convert to SetValue: %v", diags)
 	}
 
-	return listValue, nil
+	return setValue, nil
 }
 
 func newBigqueryOutputOptionColumnOptions(
@@ -211,7 +212,7 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.Big
 		}
 	}
 
-	customVarSettings := ExtractCustomVariableSettings(ctx, bigqueryOutputOption.CustomVariableSettings)
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, bigqueryOutputOption.CustomVariableSettings)
 
 	var columnOptionValues []bigQueryOutputOptionColumnOption
 	if !bigqueryOutputOption.BigQueryOutputOptionColumnOptions.IsNull() && !bigqueryOutputOption.BigQueryOutputOptionColumnOptions.IsUnknown() {
@@ -293,7 +294,7 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_option
 	}
 	columnOptions := toInputBigqueryOutputOptionColumnOptions(&columnOptionValues)
 
-	customVarSettings := ExtractCustomVariableSettings(ctx, bigqueryOutputOption.CustomVariableSettings)
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, bigqueryOutputOption.CustomVariableSettings)
 
 	return &output_options2.UpdateBigQueryOutputOptionInput{
 		Dataset:                              bigqueryOutputOption.Dataset.ValueStringPointer(),

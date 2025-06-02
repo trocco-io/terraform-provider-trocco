@@ -3,6 +3,7 @@ package planmodifier
 import (
 	"context"
 	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -25,7 +26,7 @@ func (d *BigqueryOutputOptionPlanModifier) PlanModifyObject(ctx context.Context,
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	var bigqueryOutputOptionMergeKeys types.List
+	var bigqueryOutputOptionMergeKeys types.Set
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("bigquery_output_option_merge_keys"), &bigqueryOutputOptionMergeKeys)...)
 	if resp.Diagnostics.HasError() {
 		return
