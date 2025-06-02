@@ -224,6 +224,8 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.Big
 		}
 	}
 
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, bigqueryOutputOption.CustomVariableSettings)
+
 	var columnOptionValues []bigQueryOutputOptionColumnOption
 	if !bigqueryOutputOption.BigQueryOutputOptionColumnOptions.IsNull() && !bigqueryOutputOption.BigQueryOutputOptionColumnOptions.IsUnknown() {
 		diags := bigqueryOutputOption.BigQueryOutputOptionColumnOptions.ElementsAs(ctx, &columnOptionValues, false)
@@ -232,8 +234,6 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.Big
 		}
 	}
 	columnOptions := toInputBigqueryOutputOptionColumnOptions(&columnOptionValues)
-
-	customVarSettings := common.ExtractCustomVariableSettings(ctx, bigqueryOutputOption.CustomVariableSettings)
 
 	return &output_options2.BigQueryOutputOptionInput{
 		Dataset:                              bigqueryOutputOption.Dataset.ValueString(),
