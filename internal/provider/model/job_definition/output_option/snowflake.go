@@ -143,7 +143,7 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToInput() *output_options2.S
 	ctx := context.Background()
 
 	var mergeKeys *[]string
-	if !snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.IsNull() && !snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.IsUnknown() {
+	if !snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.IsNull() {
 		var mergeKeyValues []types.String
 		diags := snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.ElementsAs(ctx, &mergeKeyValues, false)
 		if diags.HasError() {
@@ -207,7 +207,7 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput() *output_opti
 	ctx := context.Background()
 
 	var mergeKeys *[]string
-	if !snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.IsNull() && !snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.IsUnknown() {
+	if !snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.IsNull() {
 		var mergeKeyValues []types.String
 		diags := snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.ElementsAs(ctx, &mergeKeyValues, false)
 		if diags.HasError() {

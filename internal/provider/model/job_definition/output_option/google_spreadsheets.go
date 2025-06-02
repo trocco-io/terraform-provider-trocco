@@ -97,7 +97,7 @@ func (outputOption *GoogleSpreadsheetsOutputOption) ToInput() *parameter.GoogleS
 	ctx := context.Background()
 
 	var sorts *[]parameter.GoogleSpreadsheetsOutputOptionSortsInput
-	if !outputOption.GoogleSpreadsheetsOutputOptionSorts.IsNull() && !outputOption.GoogleSpreadsheetsOutputOptionSorts.IsUnknown() {
+	if !outputOption.GoogleSpreadsheetsOutputOptionSorts.IsNull() {
 		var sortValues []googleSpreadsheetsOutputOptionSorts
 		diags := outputOption.GoogleSpreadsheetsOutputOptionSorts.ElementsAs(ctx, &sortValues, false)
 		if diags.HasError() {
@@ -136,7 +136,7 @@ func (outputOption *GoogleSpreadsheetsOutputOption) ToUpdateInput() *parameter.U
 	ctx := context.Background()
 
 	var sorts *[]parameter.GoogleSpreadsheetsOutputOptionSortsInput
-	if !outputOption.GoogleSpreadsheetsOutputOptionSorts.IsNull() && !outputOption.GoogleSpreadsheetsOutputOptionSorts.IsUnknown() {
+	if !outputOption.GoogleSpreadsheetsOutputOptionSorts.IsNull() {
 		var sortValues []googleSpreadsheetsOutputOptionSorts
 		diags := outputOption.GoogleSpreadsheetsOutputOptionSorts.ElementsAs(ctx, &sortValues, false)
 		if diags.HasError() {
