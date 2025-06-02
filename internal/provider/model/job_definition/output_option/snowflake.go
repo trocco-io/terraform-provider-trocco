@@ -26,7 +26,7 @@ type SnowflakeOutputOption struct {
 	DefaultTimeZone                    types.String `tfsdk:"default_time_zone"`
 	SnowflakeConnectionId              types.Int64  `tfsdk:"snowflake_connection_id"`
 	SnowflakeOutputOptionColumnOptions types.List   `tfsdk:"snowflake_output_option_column_options"`
-	SnowflakeOutputOptionMergeKeys     types.List   `tfsdk:"snowflake_output_option_merge_keys"`
+	SnowflakeOutputOptionMergeKeys     types.Set    `tfsdk:"snowflake_output_option_merge_keys"`
 	CustomVariableSettings             types.List   `tfsdk:"custom_variable_settings"`
 }
 
@@ -82,19 +82,19 @@ func NewSnowflakeOutputOption(snowflakeOutputOption *output_option.SnowflakeOutp
 	return result
 }
 
-func newSnowflakeOutputOptionMergeKeys(ctx context.Context, mergeKeys []string) (types.List, error) {
+func newSnowflakeOutputOptionMergeKeys(ctx context.Context, mergeKeys []string) (types.Set, error) {
 	if mergeKeys != nil {
 		values := make([]types.String, len(mergeKeys))
 		for i, v := range mergeKeys {
 			values[i] = types.StringValue(v)
 		}
-		listValue, diags := types.ListValueFrom(ctx, types.StringType, values)
+		setValue, diags := types.SetValueFrom(ctx, types.StringType, values)
 		if diags.HasError() {
-			return types.ListNull(types.StringType), fmt.Errorf("failed to convert to ListValue: %v", diags)
+			return types.SetNull(types.StringType), fmt.Errorf("failed to convert to ListValue: %v", diags)
 		}
-		return listValue, nil
+		return setValue, nil
 	}
-	return types.ListNull(types.StringType), nil
+	return types.SetNull(types.StringType), nil
 }
 
 func newSnowflakeOutputOptionColumnOptions(ctx context.Context, inputOptions []output_option.SnowflakeOutputOptionColumnOption) (types.List, error) {
