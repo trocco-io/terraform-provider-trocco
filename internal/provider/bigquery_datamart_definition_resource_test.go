@@ -60,7 +60,7 @@ func TestAccDatamartDefinitionResourceForBigqueryTruncateWriteDisposition(t *tes
 			{
 				// Test case: write_disposition is "truncate" and before_load is set (should fail)
 				Config:      providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/truncate_with_before_load.tf"),
-				ExpectError: regexp.MustCompile("before_load is only available in insert query mode and write_disposition is append"),
+				ExpectError: regexp.MustCompile("before_load is only available in insert query mode"),
 			},
 			{
 				// Test case: write_disposition is "truncate" and before_load is not set (should pass)

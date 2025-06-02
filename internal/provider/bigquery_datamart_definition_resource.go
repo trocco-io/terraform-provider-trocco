@@ -865,8 +865,8 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 		return
 	}
 
-	if !data.WriteDisposition.IsNull() && data.WriteDisposition.ValueString() != "append" {
-		if !data.BeforeLoad.IsNull() {
+	if !data.BeforeLoad.IsNull() {
+		if data.WriteDisposition.ValueString() != "append" {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("before_load"),
 				"Invalid Before Load Query",
