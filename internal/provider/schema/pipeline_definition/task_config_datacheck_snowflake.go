@@ -1,6 +1,8 @@
 package pipeline_definition
 
 import (
+	"terraform-provider-trocco/internal/provider/custom_type"
+
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
@@ -20,6 +22,7 @@ func SnowflakeDatacheckTaskConfig() schema.Attribute {
 			"query": schema.StringAttribute{
 				MarkdownDescription: "The query to run for the datacheck task",
 				Optional:            true,
+				CustomType:          custom_type.TrimmedStringType{},
 			},
 			"operator": schema.StringAttribute{
 				MarkdownDescription: "The operator to use for the datacheck task",

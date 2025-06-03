@@ -1,4 +1,4 @@
-package provider
+package custom_type
 
 import (
 	"context"
@@ -11,14 +11,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
 
-var _ basetypes.StringTypable = trimmedStringType{}
+var _ basetypes.StringTypable = TrimmedStringType{}
 
-type trimmedStringType struct {
+type TrimmedStringType struct {
 	basetypes.StringType
 }
 
-func (t trimmedStringType) Equal(o attr.Type) bool {
-	other, ok := o.(trimmedStringType)
+func (t TrimmedStringType) Equal(o attr.Type) bool {
+	other, ok := o.(TrimmedStringType)
 
 	if !ok {
 		return false
@@ -27,19 +27,19 @@ func (t trimmedStringType) Equal(o attr.Type) bool {
 	return t.StringType.Equal(other.StringType)
 }
 
-func (t trimmedStringType) String() string {
-	return "trimmedStringType"
+func (t TrimmedStringType) String() string {
+	return "TrimmedStringType"
 }
 
-func (t trimmedStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
-	value := trimmedStringValue{
+func (t TrimmedStringType) ValueFromString(ctx context.Context, in basetypes.StringValue) (basetypes.StringValuable, diag.Diagnostics) {
+	value := TrimmedStringValue{
 		StringValue: in,
 	}
 
 	return value, nil
 }
 
-func (t trimmedStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
+func (t TrimmedStringType) ValueFromTerraform(ctx context.Context, in tftypes.Value) (attr.Value, error) {
 	attrValue, err := t.StringType.ValueFromTerraform(ctx, in)
 
 	if err != nil {
@@ -61,18 +61,18 @@ func (t trimmedStringType) ValueFromTerraform(ctx context.Context, in tftypes.Va
 	return stringValuable, nil
 }
 
-func (t trimmedStringType) ValueType(ctx context.Context) attr.Value {
-	return trimmedStringValue{}
+func (t TrimmedStringType) ValueType(ctx context.Context) attr.Value {
+	return TrimmedStringValue{}
 }
 
-var _ basetypes.StringValuable = trimmedStringValue{}
+var _ basetypes.StringValuable = TrimmedStringValue{}
 
-type trimmedStringValue struct {
+type TrimmedStringValue struct {
 	basetypes.StringValue
 }
 
-func (v trimmedStringValue) Equal(o attr.Value) bool {
-	other, ok := o.(trimmedStringValue)
+func (v TrimmedStringValue) Equal(o attr.Value) bool {
+	other, ok := o.(TrimmedStringValue)
 
 	if !ok {
 		return false
@@ -81,14 +81,14 @@ func (v trimmedStringValue) Equal(o attr.Value) bool {
 	return v.StringValue.Equal(other.StringValue)
 }
 
-func (v trimmedStringValue) Type(ctx context.Context) attr.Type {
-	return trimmedStringType{}
+func (v TrimmedStringValue) Type(ctx context.Context) attr.Type {
+	return TrimmedStringType{}
 }
 
-func (v trimmedStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
+func (v TrimmedStringValue) StringSemanticEquals(ctx context.Context, newValuable basetypes.StringValuable) (bool, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	newValue, ok := newValuable.(trimmedStringValue)
+	newValue, ok := newValuable.(TrimmedStringValue)
 
 	if !ok {
 		diags.AddError(
@@ -102,7 +102,7 @@ func (v trimmedStringValue) StringSemanticEquals(ctx context.Context, newValuabl
 		return false, diags
 	}
 
-	priorTrimmed := strings.TrimSpace(v.StringValue.ValueString())
+	priorTrimmed := strings.TrimSpace(v.ValueString())
 	newTrimmed := strings.TrimSpace(newValue.ValueString())
 
 	return priorTrimmed == newTrimmed, diags

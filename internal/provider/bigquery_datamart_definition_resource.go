@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"terraform-provider-trocco/internal/client"
+	"terraform-provider-trocco/internal/provider/custom_type"
 	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
 	troccoValidator "terraform-provider-trocco/internal/provider/validator"
 
@@ -34,27 +35,27 @@ type bigqueryDatamartDefinitionResource struct {
 }
 
 type bigqueryDatamartDefinitionModel struct {
-	ID                     types.Int64                 `tfsdk:"id"`
-	Name                   types.String                `tfsdk:"name"`
-	Description            types.String                `tfsdk:"description"`
-	IsRunnableConcurrently types.Bool                  `tfsdk:"is_runnable_concurrently"`
-	ResourceGroupID        types.Int64                 `tfsdk:"resource_group_id"`
-	CustomVariableSettings types.List                  `tfsdk:"custom_variable_settings"`
-	BigqueryConnectionID   types.Int64                 `tfsdk:"bigquery_connection_id"`
-	QueryMode              types.String                `tfsdk:"query_mode"`
-	Query                  trimmedStringValue          `tfsdk:"query"`
-	DestinationDataset     types.String                `tfsdk:"destination_dataset"`
-	DestinationTable       types.String                `tfsdk:"destination_table"`
-	WriteDisposition       types.String                `tfsdk:"write_disposition"`
-	BeforeLoad             types.String                `tfsdk:"before_load"`
-	Partitioning           types.String                `tfsdk:"partitioning"`
-	PartitioningTime       types.String                `tfsdk:"partitioning_time"`
-	PartitioningField      types.String                `tfsdk:"partitioning_field"`
-	ClusteringFields       []types.String              `tfsdk:"clustering_fields"`
-	Location               types.String                `tfsdk:"location"`
-	Notifications          []datamartNotificationModel `tfsdk:"notifications"`
-	Schedules              []scheduleModel             `tfsdk:"schedules"`
-	Labels                 []labelModel                `tfsdk:"labels"`
+	ID                     types.Int64                    `tfsdk:"id"`
+	Name                   types.String                   `tfsdk:"name"`
+	Description            types.String                   `tfsdk:"description"`
+	IsRunnableConcurrently types.Bool                     `tfsdk:"is_runnable_concurrently"`
+	ResourceGroupID        types.Int64                    `tfsdk:"resource_group_id"`
+	CustomVariableSettings types.List                     `tfsdk:"custom_variable_settings"`
+	BigqueryConnectionID   types.Int64                    `tfsdk:"bigquery_connection_id"`
+	QueryMode              types.String                   `tfsdk:"query_mode"`
+	Query                  custom_type.TrimmedStringValue `tfsdk:"query"`
+	DestinationDataset     types.String                   `tfsdk:"destination_dataset"`
+	DestinationTable       types.String                   `tfsdk:"destination_table"`
+	WriteDisposition       types.String                   `tfsdk:"write_disposition"`
+	BeforeLoad             custom_type.TrimmedStringValue `tfsdk:"before_load"`
+	Partitioning           types.String                   `tfsdk:"partitioning"`
+	PartitioningTime       types.String                   `tfsdk:"partitioning_time"`
+	PartitioningField      types.String                   `tfsdk:"partitioning_field"`
+	ClusteringFields       []types.String                 `tfsdk:"clustering_fields"`
+	Location               types.String                   `tfsdk:"location"`
+	Notifications          []datamartNotificationModel    `tfsdk:"notifications"`
+	Schedules              []scheduleModel                `tfsdk:"schedules"`
+	Labels                 []labelModel                   `tfsdk:"labels"`
 }
 
 type customVariableSettingModel struct {
@@ -69,14 +70,14 @@ type customVariableSettingModel struct {
 }
 
 type datamartNotificationModel struct {
-	DestinationType  types.String `tfsdk:"destination_type"`
-	SlackChannelID   types.Int64  `tfsdk:"slack_channel_id"`
-	EmailID          types.Int64  `tfsdk:"email_id"`
-	NotificationType types.String `tfsdk:"notification_type"`
-	NotifyWhen       types.String `tfsdk:"notify_when"`
-	RecordCount      types.Int64  `tfsdk:"record_count"`
-	RecordOperator   types.String `tfsdk:"record_operator"`
-	Message          types.String `tfsdk:"message"`
+	DestinationType  types.String                   `tfsdk:"destination_type"`
+	SlackChannelID   types.Int64                    `tfsdk:"slack_channel_id"`
+	EmailID          types.Int64                    `tfsdk:"email_id"`
+	NotificationType types.String                   `tfsdk:"notification_type"`
+	NotifyWhen       types.String                   `tfsdk:"notify_when"`
+	RecordCount      types.Int64                    `tfsdk:"record_count"`
+	RecordOperator   types.String                   `tfsdk:"record_operator"`
+	Message          custom_type.TrimmedStringValue `tfsdk:"message"`
 }
 
 type scheduleModel struct {
@@ -220,7 +221,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 			},
 			"query": schema.StringAttribute{
 				Required:            true,
-				CustomType:          trimmedStringType{},
+				CustomType:          custom_type.TrimmedStringType{},
 				MarkdownDescription: "Query to be executed.",
 			},
 			"destination_dataset": schema.StringAttribute{
@@ -240,6 +241,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 			},
 			"before_load": schema.StringAttribute{
 				Optional:            true,
+				CustomType:          custom_type.TrimmedStringType{},
 				MarkdownDescription: "The query to be executed before loading the data into the destination table. Available only in `insert` mode",
 			},
 			"partitioning": schema.StringAttribute{
@@ -374,6 +376,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						},
 						"message": schema.StringAttribute{
 							Required:            true,
+							CustomType:          custom_type.TrimmedStringType{},
 							MarkdownDescription: "The message to be sent with the notification",
 						},
 					},
@@ -862,6 +865,16 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 		return
 	}
 
+	if !data.BeforeLoad.IsNull() {
+		if data.WriteDisposition.ValueString() != "append" {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("before_load"),
+				"Invalid Before Load Query",
+				"before_load is only available in insert query mode and write_disposition is append",
+			)
+		}
+	}
+
 	if data.QueryMode.ValueString() == "insert" {
 		if data.DestinationDataset.IsNull() {
 			resp.Diagnostics.AddAttributeError(
@@ -959,7 +972,7 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 	if response.DatamartBigqueryOption != nil {
 		model.BigqueryConnectionID = types.Int64Value(response.DatamartBigqueryOption.BigqueryConnectionID)
 		model.QueryMode = types.StringValue(response.DatamartBigqueryOption.QueryMode)
-		model.Query = trimmedStringValue{types.StringValue(response.DatamartBigqueryOption.Query)}
+		model.Query = custom_type.TrimmedStringValue{StringValue: types.StringValue(response.DatamartBigqueryOption.Query)}
 		if response.DatamartBigqueryOption.DestinationDataset != nil {
 			model.DestinationDataset = types.StringValue(*response.DatamartBigqueryOption.DestinationDataset)
 		}
@@ -970,7 +983,7 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			model.WriteDisposition = types.StringValue(*response.DatamartBigqueryOption.WriteDisposition)
 		}
 		if response.DatamartBigqueryOption.BeforeLoad != nil {
-			model.BeforeLoad = types.StringValue(*response.DatamartBigqueryOption.BeforeLoad)
+			model.BeforeLoad = custom_type.TrimmedStringValue{StringValue: types.StringValue(*response.DatamartBigqueryOption.BeforeLoad)}
 		}
 		if response.DatamartBigqueryOption.Partitioning != nil {
 			model.Partitioning = types.StringValue(*response.DatamartBigqueryOption.Partitioning)
@@ -1000,7 +1013,7 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			notifications[i] = datamartNotificationModel{
 				DestinationType:  types.StringValue(v.DestinationType),
 				NotificationType: types.StringValue(v.NotificationType),
-				Message:          types.StringValue(v.Message),
+				Message:          custom_type.TrimmedStringValue{StringValue: types.StringValue(v.Message)},
 			}
 			if v.SlackChannelID != nil {
 				notifications[i].SlackChannelID = types.Int64Value(*v.SlackChannelID)

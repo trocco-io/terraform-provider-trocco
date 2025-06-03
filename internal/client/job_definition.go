@@ -97,6 +97,8 @@ type InputOption struct {
 	PostgreSQLInputOption         *inputOptionEntities.PostgreSQLInputOption         `json:"postgresql_input_option"`
 	GoogleAnalytics4InputOption   *inputOptionEntities.GoogleAnalytics4InputOption   `json:"google_analytics4_input_option"`
 	HttpInputOption               *inputOptionEntities.HttpInputOption               `json:"http_input_option"`
+	KintoneInputOption            *inputOptionEntities.KintoneInputOption            `json:"kintone_input_option"`
+	YahooAdsApiYssInputOption     *inputOptionEntities.YahooAdsApiYssInputOption     `json:"yahoo_ads_api_yss_input_option"`
 }
 
 type InputOptionInput struct {
@@ -110,6 +112,8 @@ type InputOptionInput struct {
 	PostgreSQLInputOption         *parameter.NullableObject[input_options.PostgreSQLInputOptionInput]         `json:"postgresql_input_option,omitempty"`
 	GoogleAnalytics4InputOption   *parameter.NullableObject[input_options.GoogleAnalytics4InputOptionInput]   `json:"google_analytics4_input_option,omitempty"`
 	HttpInputOption               *parameter.NullableObject[input_options.HttpInputOptionInput]               `json:"http_input_option,omitempty"`
+	KintoneInputOption            *parameter.NullableObject[input_options.KintoneInputOptionInput]            `json:"kintone_input_option,omitempty"`
+	YahooAdsApiYssInputOption     *parameter.NullableObject[input_options.YahooAdsApiYssInputOptionInput]     `json:"yahoo_ads_api_yss_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
@@ -123,6 +127,8 @@ type UpdateInputOptionInput struct {
 	PostgreSQLInputOption         *parameter.NullableObject[input_options.UpdatePostgreSQLInputOptionInput]         `json:"postgresql_input_option,omitempty"`
 	GoogleAnalytics4InputOption   *parameter.NullableObject[input_options.UpdateGoogleAnalytics4InputOptionInput]   `json:"google_analytics4_input_option,omitempty"`
 	HttpInputOption               *parameter.NullableObject[input_options.UpdateHttpInputOptionInput]               `json:"http_input_option,omitempty"`
+	KintoneInputOption            *parameter.NullableObject[input_options.UpdateKintoneInputOptionInput]            `json:"kintone_input_option,omitempty"`
+	YahooAdsApiYssInputOption     *parameter.NullableObject[input_options.UpdateYahooAdsApiYssInputOptionInput]     `json:"yahoo_ads_api_yss_input_option,omitempty"`
 }
 
 type OutputOption struct {
