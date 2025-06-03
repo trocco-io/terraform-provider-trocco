@@ -2431,8 +2431,8 @@ Optional:
 Required:
 
 - `bigquery_connection_id` (Number) Id of BigQuery connection
-- `bigquery_output_option_clustering_fields` (List of String) Clustered column. Clustering can only be set when creating a new table. A maximum of four clustered columns can be specified.
-- `bigquery_output_option_merge_keys` (List of String) Merge key. The column to be used as the merge key.
+- `bigquery_output_option_clustering_fields` (Set of String) Clustered column. Clustering can only be set when creating a new table. A maximum of four clustered columns can be specified.
+- `bigquery_output_option_merge_keys` (Set of String) Merge key. The column to be used as the merge key.
 - `dataset` (String) Dataset name
 - `table` (String) Table name
 

@@ -1,6 +1,8 @@
 package job_definition
 
 import (
+	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -10,7 +12,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
 )
 
 func BigqueryOutputOptionSchema() schema.Attribute {
@@ -182,12 +183,12 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 					},
 				},
 			},
-			"bigquery_output_option_clustering_fields": schema.ListAttribute{
+			"bigquery_output_option_clustering_fields": schema.SetAttribute{
 				Required:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Clustered column. Clustering can only be set when creating a new table. A maximum of four clustered columns can be specified.",
 			},
-			"bigquery_output_option_merge_keys": schema.ListAttribute{
+			"bigquery_output_option_merge_keys": schema.SetAttribute{
 				Required:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Merge key. The column to be used as the merge key.",
