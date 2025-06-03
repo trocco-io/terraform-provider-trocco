@@ -38,7 +38,7 @@ type HttpInputOption struct {
 	CursorRequestParameterCursorName      types.String                   `tfsdk:"cursor_request_parameter_cursor_name"`
 	CursorResponseParameterCursorJsonPath types.String                   `tfsdk:"cursor_response_parameter_cursor_json_path"`
 	CursorRequestParameterLimitName       types.String                   `tfsdk:"cursor_request_parameter_limit_name"`
-	CursorRequestParameterLimitValue      types.Int64                    `tfsdk:"cursor_request_parameter_limit_value"`
+	CursorRequestParameterLimitValue      types.String                   `tfsdk:"cursor_request_parameter_limit_value"`
 	RequestParams                         types.Set                      `tfsdk:"request_params"`
 	RequestBody                           types.String                   `tfsdk:"request_body"`
 	RequestHeaders                        types.Set                      `tfsdk:"request_headers"`
@@ -90,7 +90,7 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 		CursorRequestParameterCursorName:      types.StringPointerValue(httpInputOption.CursorRequestParameterCursorName),
 		CursorResponseParameterCursorJsonPath: types.StringPointerValue(httpInputOption.CursorResponseParameterCursorJsonPath),
 		CursorRequestParameterLimitName:       types.StringPointerValue(httpInputOption.CursorRequestParameterLimitName),
-		CursorRequestParameterLimitValue:      types.Int64PointerValue(httpInputOption.CursorRequestParameterLimitValue),
+		CursorRequestParameterLimitValue:      types.StringPointerValue(httpInputOption.CursorRequestParameterLimitValue),
 		RequestParams:                         requestParams,
 		RequestBody:                           types.StringPointerValue(httpInputOption.RequestBody),
 		RequestHeaders:                        requestHeaders,
@@ -231,7 +231,7 @@ func (httpInputOption *HttpInputOption) ToInput() *parameter.HttpInputOptionInpu
 		CursorRequestParameterCursorName:      model.NewNullableString(httpInputOption.CursorRequestParameterCursorName),
 		CursorResponseParameterCursorJsonPath: model.NewNullableString(httpInputOption.CursorResponseParameterCursorJsonPath),
 		CursorRequestParameterLimitName:       model.NewNullableString(httpInputOption.CursorRequestParameterLimitName),
-		CursorRequestParameterLimitValue:      model.NewNullableInt64(httpInputOption.CursorRequestParameterLimitValue),
+		CursorRequestParameterLimitValue:      model.NewNullableString(httpInputOption.CursorRequestParameterLimitValue),
 		RequestParams:                         &requestParams,
 		RequestBody:                           model.NewNullableString(httpInputOption.RequestBody),
 		RequestHeaders:                        &requestHeaders,
@@ -292,7 +292,7 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() *parameter.UpdateHttpInp
 		CursorRequestParameterCursorName:      model.NewNullableString(httpInputOption.CursorRequestParameterCursorName),
 		CursorResponseParameterCursorJsonPath: model.NewNullableString(httpInputOption.CursorResponseParameterCursorJsonPath),
 		CursorRequestParameterLimitName:       model.NewNullableString(httpInputOption.CursorRequestParameterLimitName),
-		CursorRequestParameterLimitValue:      model.NewNullableInt64(httpInputOption.CursorRequestParameterLimitValue),
+		CursorRequestParameterLimitValue:      model.NewNullableString(httpInputOption.CursorRequestParameterLimitValue),
 		RequestParams:                         &requestParams,
 		RequestBody:                           model.NewNullableString(httpInputOption.RequestBody),
 		RequestHeaders:                        &requestHeaders,

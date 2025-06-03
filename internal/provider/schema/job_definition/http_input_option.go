@@ -115,7 +115,7 @@ func HttpInputOptionSchema() schema.Attribute {
 				Optional:            true,
 				MarkdownDescription: "Parameter name for limit in cursor-based pagination",
 			},
-			"cursor_request_parameter_limit_value": schema.Int64Attribute{
+			"cursor_request_parameter_limit_value": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "Value for limit parameter in cursor-based pagination",
 			},

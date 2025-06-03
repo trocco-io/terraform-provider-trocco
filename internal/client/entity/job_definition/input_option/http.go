@@ -30,7 +30,7 @@ type HttpInputOption struct {
 	CursorRequestParameterCursorName      *string                         `json:"cursor_request_parameter_cursor_name"`
 	CursorResponseParameterCursorJsonPath *string                         `json:"cursor_response_parameter_cursor_json_path"`
 	CursorRequestParameterLimitName       *string                         `json:"cursor_request_parameter_limit_name"`
-	CursorRequestParameterLimitValue      *int64                          `json:"cursor_request_parameter_limit_value"`
+	CursorRequestParameterLimitValue      *string                         `json:"cursor_request_parameter_limit_value"`
 	RequestParams                         *[]RequestParam                 `json:"request_params"`
 	RequestBody                           *string                         `json:"request_body"`
 	RequestHeaders                        *[]RequestHeader                `json:"request_headers"`

@@ -553,6 +553,9 @@ func (r *jobDefinitionResource) ValidateConfig(
 	}
 
 	if data.InputOptionType.ValueString() == "http" {
+		if data.InputOption.HttpInputOption == nil {
+			return
+		}
 		httpInputOption := data.InputOption.HttpInputOption
 		validateHttpInputOption(httpInputOption, resp)
 	}

@@ -24,7 +24,11 @@ type InputOption struct {
 }
 
 func NewInputOption(inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics){
-	httpInputOption, diags := input_options.NewHttpInputOption(inputOption.HttpInputOption, previous.HttpInputOption)
+	var previousHttpInputOption *input_options.HttpInputOption
+	if previous != nil {
+		previousHttpInputOption = previous.HttpInputOption
+	}
+	httpInputOption, diags := input_options.NewHttpInputOption(inputOption.HttpInputOption, previousHttpInputOption)
 	return &InputOption{
 		GcsInputOption:                input_options.NewGcsInputOption(inputOption.GcsInputOption),
 		MySQLInputOption:              input_options.NewMysqlInputOption(inputOption.MySQLInputOption),
