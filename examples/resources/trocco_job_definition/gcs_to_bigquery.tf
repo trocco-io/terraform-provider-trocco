@@ -97,7 +97,7 @@ resource "trocco_job_definition" "gcs_to_bigquery_example" {
       bigquery_connection_id                   = 1
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []
-      bigquery_output_option_merge_keys        = []
+      bigquery_output_option_merge_keys        = nil
       dataset                                  = "example_dataset"
       location                                 = "US"
       mode                                     = "append"

@@ -115,7 +115,7 @@ resource "trocco_job_definition" "gcs_to_bigquery_example" {
       bigquery_connection_id                   = 1
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []
-      bigquery_output_option_merge_keys        = []
+      bigquery_output_option_merge_keys        = nil
       dataset                                  = "example_dataset"
       location                                 = "US"
       mode                                     = "append"
@@ -210,7 +210,7 @@ resource "trocco_job_definition" "mysql_to_bigquery_example" {
       bigquery_connection_id                   = 1
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []
-      bigquery_output_option_merge_keys        = []
+      bigquery_output_option_merge_keys        = nil
       dataset                                  = "example_dataset"
       location                                 = "US"
       mode                                     = "append"
@@ -2432,7 +2432,6 @@ Required:
 
 - `bigquery_connection_id` (Number) Id of BigQuery connection
 - `bigquery_output_option_clustering_fields` (List of String) Clustered column. Clustering can only be set when creating a new table. A maximum of four clustered columns can be specified.
-- `bigquery_output_option_merge_keys` (List of String) Merge key. The column to be used as the merge key.
 - `dataset` (String) Dataset name
 - `table` (String) Table name
 
@@ -2440,6 +2439,7 @@ Optional:
 
 - `auto_create_dataset` (Boolean) Option for automatic data set generation
 - `bigquery_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options))
+- `bigquery_output_option_merge_keys` (List of String) Merge key. The column to be used as the merge key. Required when mode is 'merge'.
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--custom_variable_settings))
 - `location` (String) Location
 - `mode` (String) Transfer mode

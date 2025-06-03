@@ -70,7 +70,7 @@ func NewBigQueryOutputOption(bigQueryOutputOption *output_option.BigQueryOutputO
 }
 
 func newBigQueryOutputOptionMergeKeys(mergeKeys *[]string) *[]types.String {
-	if mergeKeys == nil {
+	if mergeKeys == nil || len(*mergeKeys) == 0 {
 		return nil
 	}
 
@@ -199,7 +199,7 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_option
 		CustomVariableSettings:               model.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
 		BigQueryOutputOptionColumnOptions:    toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOption.BigQueryOutputOptionColumnOptions),
 		BigQueryOutputOptionClusteringFields: &clusteringFields,
-		BigQueryOutputOptionMergeKeys:        &mergeKeys,
+		BigQueryOutputOptionMergeKeys:        model.WrapObjectList(&mergeKeys),
 	}
 }
 
