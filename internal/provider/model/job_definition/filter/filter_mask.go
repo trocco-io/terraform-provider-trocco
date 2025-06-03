@@ -4,6 +4,7 @@ import (
 	filterEntities "terraform-provider-trocco/internal/client/entity/job_definition/filter"
 	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -46,4 +47,15 @@ func (filterMask FilterMask) ToInput() filter2.FilterMaskInput {
 		EndIndex:   filterMask.EndIndex.ValueInt64Pointer(),
 	}
 	return input
+}
+
+func (m FilterMask) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":        types.StringType,
+		"mask_type":   types.StringType,
+		"length":      types.Int64Type,
+		"pattern":     types.StringType,
+		"start_index": types.Int64Type,
+		"end_index":   types.Int64Type,
+	}
 }
