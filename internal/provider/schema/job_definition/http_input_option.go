@@ -6,6 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
@@ -62,15 +63,45 @@ func HttpInputOptionSchema() schema.Attribute {
 			},
 			"pager_pages": schema.Int64Attribute{
 				Optional:            true,
-				MarkdownDescription: "Number of pages to fetch",
+				Computed:            true,
+				MarkdownDescription: "Number of requests to fetch",
+				PlanModifiers: []planmodifier.Int64{
+					&troccoPlanModifier.ConditionalInt64DefaultPlanModifier{
+						CondAttrPath: path.Root("input_option").
+							AtName("http_input_option").
+							AtName("pager_type"),
+						TargetValue:  "offset",
+						DefaultValue: 1,
+					},
+				},
 			},
 			"pager_start": schema.Int64Attribute{
 				Optional:            true,
+				Computed:            true,
 				MarkdownDescription: "Starting page number",
+				PlanModifiers: []planmodifier.Int64{
+					&troccoPlanModifier.ConditionalInt64DefaultPlanModifier{
+						CondAttrPath: path.Root("input_option").
+							AtName("http_input_option").
+							AtName("pager_type"),
+						TargetValue:  "offset",
+						DefaultValue: 0,
+					},
+				},
 			},
 			"pager_step": schema.Int64Attribute{
 				Optional:            true,
+				Computed:            true,
 				MarkdownDescription: "Step size for pagination",
+				PlanModifiers: []planmodifier.Int64{
+					&troccoPlanModifier.ConditionalInt64DefaultPlanModifier{
+						CondAttrPath: path.Root("input_option").
+							AtName("http_input_option").
+							AtName("pager_type"),
+						TargetValue:  "offset",
+						DefaultValue: 1,
+					},
+				},
 			},
 			"cursor_request_parameter_cursor_name": schema.StringAttribute{
 				Optional:            true,
