@@ -70,13 +70,21 @@ func NewBigQueryOutputOption(bigQueryOutputOption *output_option.BigQueryOutputO
 		BigQueryOutputOptionColumnOptions: newBigqueryOutputOptionColumnOptions(bigQueryOutputOption.BigQueryOutputOptionColumnOptions),
 	}
 
-	BigQueryOutputOptionClusteringFields, err := newBigQueryOutputOptionClusteringFields(ctx, *bigQueryOutputOption.BigQueryOutputOptionClusteringFields)
+	var clusteringFields []string
+	if bigQueryOutputOption.BigQueryOutputOptionClusteringFields != nil {
+		clusteringFields = *bigQueryOutputOption.BigQueryOutputOptionClusteringFields
+	}
+	BigQueryOutputOptionClusteringFields, err := newBigQueryOutputOptionClusteringFields(ctx, clusteringFields)
 	if err != nil {
 		return nil
 	}
 	result.BigQueryOutputOptionClusteringFields = BigQueryOutputOptionClusteringFields
 
-	BigQueryOutputOptionMergeKeys, err := newBigQueryOutputOptionMergeKeys(ctx, *bigQueryOutputOption.BigQueryOutputOptionMergeKeys)
+	var mergeKeys []string
+	if bigQueryOutputOption.BigQueryOutputOptionMergeKeys != nil {
+		mergeKeys = *bigQueryOutputOption.BigQueryOutputOptionMergeKeys
+	}
+	BigQueryOutputOptionMergeKeys, err := newBigQueryOutputOptionMergeKeys(ctx, mergeKeys)
 	if err != nil {
 		return nil
 	}
