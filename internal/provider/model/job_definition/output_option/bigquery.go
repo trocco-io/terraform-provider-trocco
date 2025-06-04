@@ -209,14 +209,14 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_option
 	ctx := context.Background()
 
 	var clusteringFields []string
-	if !bigqueryOutputOption.BigQueryOutputOptionClusteringFields.IsNull() &&
-		!bigqueryOutputOption.BigQueryOutputOptionClusteringFields.IsUnknown() {
+	if !bigqueryOutputOption.BigQueryOutputOptionClusteringFields.IsNull() {
 		var clusteringFieldValues []types.String
-		diags := bigqueryOutputOption.BigQueryOutputOptionClusteringFields.ElementsAs(ctx, &clusteringFieldValues, false)
-		if diags.HasError() {
-			return nil
+		if !bigqueryOutputOption.BigQueryOutputOptionClusteringFields.IsUnknown() {
+			diags := bigqueryOutputOption.BigQueryOutputOptionClusteringFields.ElementsAs(ctx, &clusteringFieldValues, false)
+			if diags.HasError() {
+				return nil
+			}
 		}
-
 		clusteringFields = make([]string, 0, len(clusteringFieldValues))
 		for _, input := range clusteringFieldValues {
 			clusteringFields = append(clusteringFields, input.ValueString())
@@ -224,14 +224,14 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_option
 	}
 
 	var mergeKeys []string
-	if !bigqueryOutputOption.BigQueryOutputOptionMergeKeys.IsNull() &&
-		!bigqueryOutputOption.BigQueryOutputOptionMergeKeys.IsUnknown() {
+	if !bigqueryOutputOption.BigQueryOutputOptionMergeKeys.IsNull() {
 		var mergeKeyValues []types.String
-		diags := bigqueryOutputOption.BigQueryOutputOptionMergeKeys.ElementsAs(ctx, &mergeKeyValues, false)
-		if diags.HasError() {
-			return nil
+		if !bigqueryOutputOption.BigQueryOutputOptionMergeKeys.IsUnknown() {
+			diags := bigqueryOutputOption.BigQueryOutputOptionMergeKeys.ElementsAs(ctx, &mergeKeyValues, false)
+			if diags.HasError() {
+				return nil
+			}
 		}
-
 		mergeKeys = make([]string, 0, len(mergeKeyValues))
 		for _, input := range mergeKeyValues {
 			mergeKeys = append(mergeKeys, input.ValueString())
