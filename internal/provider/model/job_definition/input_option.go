@@ -23,7 +23,7 @@ type InputOption struct {
 	YahooAdsApiYssInputOption     *input_options.YahooAdsApiYssInputOption     `tfsdk:"yahoo_ads_api_yss_input_option"`
 }
 
-func NewInputOption(inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics){
+func NewInputOption(inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics) {
 	var previousHttpInputOption *input_options.HttpInputOption
 	if previous != nil {
 		previousHttpInputOption = previous.HttpInputOption

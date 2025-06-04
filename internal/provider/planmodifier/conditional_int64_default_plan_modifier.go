@@ -27,10 +27,13 @@ func (m ConditionalInt64DefaultPlanModifier) MarkdownDescription(ctx context.Con
 }
 
 // If the string at CondAttrPath == TargetValue,
-//   set *this* int64 attribute to DefaultValue (else null).
+//
+//	set *this* int64 attribute to DefaultValue (else null).
+//
 // Handy for cases like:
-//   pager_type == "offset" → pager_pages = 1
-//   otherwise              → pager_pages = null
+//
+//	pager_type == "offset" → pager_pages = 1
+//	otherwise              → pager_pages = null
 func (m ConditionalInt64DefaultPlanModifier) PlanModifyInt64(
 	ctx context.Context,
 	req planmodifier.Int64Request,

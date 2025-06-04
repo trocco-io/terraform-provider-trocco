@@ -545,19 +545,19 @@ func TestAccJobDefinitionResourceHttpToBigQueryInvalid(t *testing.T) {
 			{
 				ResourceName: resourceName,
 				Config:       providerConfig + LoadTextFile("testdata/job_definition/http_to_bigquery/conflict_body_and_param.tf"),
-				PlanOnly: true,
+				PlanOnly:     true,
 				ExpectError:  regexp.MustCompile(`Error: request_body conflicts with request_params`),
 			},
 			{
 				ResourceName: resourceName,
 				Config:       providerConfig + LoadTextFile("testdata/job_definition/http_to_bigquery/pager_offset_missing_param.tf"),
-				PlanOnly: true,
+				PlanOnly:     true,
 				ExpectError:  regexp.MustCompile(`Error: pager_from_param is required when pager_type is offset`),
 			},
 			{
 				ResourceName: resourceName,
 				Config:       providerConfig + LoadTextFile("testdata/job_definition/http_to_bigquery/pager_cursor_missing_param.tf"),
-				PlanOnly: true,
+				PlanOnly:     true,
 				ExpectError:  regexp.MustCompile(`Error: cursor_request_parameter_cursor_name is required when pager_type is cursor`),
 			},
 		},
