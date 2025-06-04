@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ validator.List = mergeKeysRequiredOnlyForMergeModeValidator{}
+var _ validator.Set = mergeKeysRequiredOnlyForMergeModeValidator{}
 
 type mergeKeysRequiredOnlyForMergeModeValidator struct{}
 
@@ -19,7 +19,7 @@ func (v mergeKeysRequiredOnlyForMergeModeValidator) MarkdownDescription(ctx cont
 	return v.Description(ctx)
 }
 
-func (v mergeKeysRequiredOnlyForMergeModeValidator) ValidateList(ctx context.Context, req validator.ListRequest, resp *validator.ListResponse) {
+func (v mergeKeysRequiredOnlyForMergeModeValidator) ValidateSet(ctx context.Context, req validator.SetRequest, resp *validator.SetResponse) {
 	modePath := req.Path.ParentPath().AtName("mode")
 	var mode types.String
 
@@ -59,6 +59,6 @@ func (v mergeKeysRequiredOnlyForMergeModeValidator) ValidateList(ctx context.Con
 	}
 }
 
-func MergeKeysRequiredOnlyForMergeMode() validator.List {
+func MergeKeysRequiredOnlyForMergeMode() validator.Set {
 	return mergeKeysRequiredOnlyForMergeModeValidator{}
 }

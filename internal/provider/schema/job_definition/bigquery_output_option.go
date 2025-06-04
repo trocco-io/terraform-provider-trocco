@@ -184,23 +184,25 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 					},
 				},
 			},
-			"bigquery_output_option_clustering_fields": schema.ListAttribute{
+			"bigquery_output_option_clustering_fields": schema.SetAttribute{
 				Optional:            true,
+				Computed:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Clustered column. Clustering can only be set when creating a new table. A maximum of four clustered columns can be specified.",
-				PlanModifiers: []planmodifier.List{
-					planmodifier2.EmptyListForNull(),
+				PlanModifiers: []planmodifier.Set{
+					planmodifier2.EmptySetForNull(),
 				},
 			},
-			"bigquery_output_option_merge_keys": schema.ListAttribute{
+			"bigquery_output_option_merge_keys": schema.SetAttribute{
 				Optional:            true,
+				Computed:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Merge key. The column to be used as the merge key. Required when mode is 'merge'.",
-				Validators: []validator.List{
+				Validators: []validator.Set{
 					mergeKeysValidator.MergeKeysRequiredOnlyForMergeMode(),
 				},
-				PlanModifiers: []planmodifier.List{
-					planmodifier2.EmptyListForNull(),
+				PlanModifiers: []planmodifier.Set{
+					planmodifier2.EmptySetForNull(),
 				},
 			},
 			"custom_variable_settings": CustomVariableSettingsSchema(),
