@@ -29,14 +29,23 @@ func (v mergeKeysRequiredOnlyForMergeModeValidator) ValidateList(ctx context.Con
 		return
 	}
 
-	isMergeKeysSet := !req.ConfigValue.IsNull() && !req.ConfigValue.IsUnknown()
+	isMergeKeysSet := false
+
+	if !req.ConfigValue.IsNull() && !req.ConfigValue.IsUnknown() {
+		var mergeKeys []types.String
+		diags := req.ConfigValue.ElementsAs(ctx, &mergeKeys, false)
+		resp.Diagnostics.Append(diags...)
+		if !resp.Diagnostics.HasError() && len(mergeKeys) > 0 {
+			isMergeKeysSet = true
+		}
+	}
 
 	if mode.ValueString() == "merge" {
 		if !isMergeKeysSet {
 			resp.Diagnostics.AddAttributeError(
 				req.Path,
 				"Missing Required Merge Keys",
-				"The `merge_keys` field must be set when `mode` is `merge`.",
+				"The `merge_keys` field must be set and contain at least one element when `mode` is `merge`.",
 			)
 		}
 	} else {

@@ -185,9 +185,12 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 				},
 			},
 			"bigquery_output_option_clustering_fields": schema.ListAttribute{
-				Required:            true,
+				Optional:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Clustered column. Clustering can only be set when creating a new table. A maximum of four clustered columns can be specified.",
+				PlanModifiers: []planmodifier.List{
+					planmodifier2.EmptyListForNull(),
+				},
 			},
 			"bigquery_output_option_merge_keys": schema.ListAttribute{
 				Optional:            true,
@@ -195,6 +198,9 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Merge key. The column to be used as the merge key. Required when mode is 'merge'.",
 				Validators: []validator.List{
 					mergeKeysValidator.MergeKeysRequiredOnlyForMergeMode(),
+				},
+				PlanModifiers: []planmodifier.List{
+					planmodifier2.EmptyListForNull(),
 				},
 			},
 			"custom_variable_settings": CustomVariableSettingsSchema(),

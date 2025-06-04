@@ -47,7 +47,7 @@ type UpdateBigQueryOutputOptionInput struct {
 	BigQueryConnectionID                 *int64                                   `json:"bigquery_connection_id,omitempty"`
 	BigQueryOutputOptionColumnOptions    *[]BigQueryOutputOptionColumnOptionInput `json:"bigquery_output_option_column_options,omitempty"`
 	BigQueryOutputOptionClusteringFields *[]string                                `json:"bigquery_output_option_clustering_fields,omitempty"`
-	BigQueryOutputOptionMergeKeys        *parameter.NullableObjectList[string]    `json:"bigquery_output_option_merge_keys,omitempty"`
+	BigQueryOutputOptionMergeKeys        *[]string                                `json:"bigquery_output_option_merge_keys,omitempty"`
 }
 
 type BigQueryOutputOptionColumnOptionInput struct {
