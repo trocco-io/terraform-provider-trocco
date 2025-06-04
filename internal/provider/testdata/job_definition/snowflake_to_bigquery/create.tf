@@ -130,9 +130,7 @@ resource "trocco_job_definition" "snowflake_to_bigquery" {
       retries                                  = 3
       bigquery_connection_id                   = trocco_connection.test_bq.id
       location                                 = "US"
-      bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []
-      bigquery_output_option_merge_keys        = []
     }
   }
 
