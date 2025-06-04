@@ -563,10 +563,8 @@ func (r *jobDefinitionResource) ValidateConfig(
 
 func validateHttpInputOption(httpInputOption *input_options.HttpInputOption, resp *resource.ValidateConfigResponse) {
 	// validate that request_body and request_params are not set at the same time
-	bodySet := !httpInputOption.RequestBody.IsNull() &&
-		!httpInputOption.RequestBody.IsUnknown()
-	paramsSet := !httpInputOption.RequestParams.IsNull() &&
-		len(httpInputOption.RequestParams.Elements()) > 0
+	bodySet := !httpInputOption.RequestBody.IsNull() && !httpInputOption.RequestBody.IsUnknown()
+	paramsSet := !httpInputOption.RequestParams.IsNull() && len(httpInputOption.RequestParams.Elements()) > 0
 
 	if bodySet && httpInputOption.Method.ValueString() != "POST" {
 		resp.Diagnostics.AddAttributeError(
