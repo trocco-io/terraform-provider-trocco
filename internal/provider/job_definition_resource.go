@@ -563,8 +563,10 @@ func (r *jobDefinitionResource) ValidateConfig(
 
 func validateHttpInputOption(httpInputOption *input_options.HttpInputOption, resp *resource.ValidateConfigResponse) {
 	// validate that request_body and request_params are not set at the same time
-	bodySet := !httpInputOption.RequestBody.IsNull() && !httpInputOption.RequestBody.IsUnknown()
-	paramsSet := !httpInputOption.RequestParams.IsNull() && len(httpInputOption.RequestParams.Elements()) > 0
+	bodySet := !httpInputOption.RequestBody.IsNull() &&
+		!httpInputOption.RequestBody.IsUnknown()
+	paramsSet := !httpInputOption.RequestParams.IsNull() &&
+		len(httpInputOption.RequestParams.Elements()) > 0
 
 	if bodySet && httpInputOption.Method.ValueString() != "POST" {
 		resp.Diagnostics.AddAttributeError(
@@ -586,8 +588,8 @@ func validateHttpInputOption(httpInputOption *input_options.HttpInputOption, res
 	// validate pagination settings
 	switch httpInputOption.PagerType.ValueString() {
 	case "offset":
-		if httpInputOption.PagerFromParam.IsNull() || 
-		httpInputOption.PagerFromParam.IsUnknown() {
+		if httpInputOption.PagerFromParam.IsNull() ||
+			httpInputOption.PagerFromParam.IsUnknown() {
 			resp.Diagnostics.AddAttributeError(
 				path.Root("pager_from_param"),
 				"pager_from_param is required when pager_type is offset",
