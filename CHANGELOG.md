@@ -1,3 +1,10 @@
+## 0.15.2
+CHORE:
+- Add validation for `before_load` in `trocco_bigquery_datamart_definition` resource
+  - `before_load` is only available when `write_disposition` is "append"
+- Use custom type TrimmedStringValue in `pipeline_definition` resource
+  - `description` field
+
 ## 0.15.1
 CHORE:
 - Add tests
