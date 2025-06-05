@@ -135,6 +135,7 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 			},
 			"bigquery_output_option_column_options": schema.ListNestedAttribute{
 				Optional: true,
+				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
@@ -182,6 +183,9 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 							MarkdownDescription: "Description",
 						},
 					},
+				},
+				PlanModifiers: []planmodifier.List{
+					planmodifier2.EmptyListForNull(),
 				},
 			},
 			"bigquery_output_option_clustering_fields": schema.SetAttribute{
