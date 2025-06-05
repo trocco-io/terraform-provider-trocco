@@ -47,7 +47,7 @@ func JsonlParserSchema() schema.Attribute {
 						"type": schema.StringAttribute{
 							Required:            true,
 							MarkdownDescription: "Column type",
-							Validators:          []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean")},
+							Validators:          []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
 						},
 						"time_zone": schema.StringAttribute{
 							Optional:            true,
