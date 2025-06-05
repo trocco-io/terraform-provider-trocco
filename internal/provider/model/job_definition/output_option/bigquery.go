@@ -70,7 +70,11 @@ func NewBigQueryOutputOption(bigQueryOutputOption *output_option.BigQueryOutputO
 		BigQueryConnectionID:         types.Int64Value(bigQueryOutputOption.BigQueryConnectionID),
 	}
 
-	BigQueryOutputOptionColumnOptions, err := newBigqueryOutputOptionColumnOptions(ctx, *bigQueryOutputOption.BigQueryOutputOptionColumnOptions)
+	var columnOptions []output_option.BigQueryOutputOptionColumnOption
+	if bigQueryOutputOption.BigQueryOutputOptionColumnOptions != nil {
+		columnOptions = *bigQueryOutputOption.BigQueryOutputOptionColumnOptions
+	}
+	BigQueryOutputOptionColumnOptions, err := newBigqueryOutputOptionColumnOptions(ctx, columnOptions)
 	if err != nil {
 		return nil
 	}
