@@ -17,7 +17,7 @@ type HTTPRequestTaskConfig struct {
 	RequestBody       types.String            `tfsdk:"request_body"`
 	RequestHeaders    []*HTTPRequestHeader    `tfsdk:"request_headers"`
 	RequestParameters []*HTTPRequestParameter `tfsdk:"request_parameters"`
-	CustomVariables   []CustomVariable        `tfsdk:"custom_variables"`
+	CustomVariables   types.Set               `tfsdk:"custom_variables"`
 }
 
 func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
@@ -32,6 +32,11 @@ func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPReques
 		previousRequestParameters = previous.RequestParameters
 	}
 
+	CustomVariables, err := NewCustomVariables(en.CustomVariables)
+	if err != nil {
+		return nil
+	}
+
 	return &HTTPRequestTaskConfig{
 		Name:              types.StringValue(en.Name),
 		ConnectionID:      types.Int64PointerValue(en.ConnectionID),
@@ -40,7 +45,7 @@ func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPReques
 		RequestBody:       types.StringPointerValue(en.RequestBody),
 		RequestHeaders:    NewHTTPRequestHeaders(en.RequestHeaders, previousRequestHeaders),
 		RequestParameters: NewHTTPRequestParameters(en.RequestParameters, previousRequestParameters),
-		CustomVariables:   NewCustomVariables(en.CustomVariables),
+		CustomVariables:   CustomVariables,
 	}
 }
 
@@ -63,11 +68,6 @@ func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 		})
 	}
 
-	customVariables := []wp.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, v.ToInput())
-	}
-
 	return &wp.HTTPRequestTaskConfig{
 		Name:              c.Name.ValueString(),
 		ConnectionID:      &p.NullableInt64{Valid: !c.ConnectionID.IsNull(), Value: c.ConnectionID.ValueInt64()},
@@ -76,7 +76,7 @@ func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 		RequestBody:       c.RequestBody.ValueStringPointer(),
 		RequestHeaders:    requestHeaders,
 		RequestParameters: requestParameters,
-		CustomVariables:   customVariables,
+		CustomVariables:   CustomVariablesToInput(c.CustomVariables),
 	}
 }
 

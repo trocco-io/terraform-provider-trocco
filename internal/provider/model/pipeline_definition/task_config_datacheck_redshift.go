@@ -17,11 +17,16 @@ type RedshiftDataCheckTaskConfig struct {
 	QueryResult     types.Int64                    `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
 	Database        types.String                   `tfsdk:"database"`
-	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
+	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
 func NewRedshiftDataCheckTaskConfig(c *we.RedshiftDataCheckTaskConfig) *RedshiftDataCheckTaskConfig {
 	if c == nil {
+		return nil
+	}
+
+	CustomVariables, err := NewCustomVariables(c.CustomVariables)
+	if err != nil {
 		return nil
 	}
 
@@ -33,16 +38,11 @@ func NewRedshiftDataCheckTaskConfig(c *we.RedshiftDataCheckTaskConfig) *Redshift
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
 		Database:        types.StringValue(c.Database),
-		CustomVariables: NewCustomVariables(c.CustomVariables),
+		CustomVariables: CustomVariables,
 	}
 }
 
 func (c *RedshiftDataCheckTaskConfig) ToInput() *wp.RedshiftDataCheckTaskConfigInput {
-	customVariables := []wp.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, v.ToInput())
-	}
-
 	return &wp.RedshiftDataCheckTaskConfigInput{
 		Name:            c.Name.ValueString(),
 		ConnectionID:    c.ConnectionID.ValueInt64(),
@@ -51,6 +51,6 @@ func (c *RedshiftDataCheckTaskConfig) ToInput() *wp.RedshiftDataCheckTaskConfigI
 		QueryResult:     &p.NullableInt64{Valid: !c.QueryResult.IsNull(), Value: c.QueryResult.ValueInt64()},
 		AcceptsNull:     &p.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
 		Database:        c.Database.ValueString(),
-		CustomVariables: customVariables,
+		CustomVariables: CustomVariablesToInput(c.CustomVariables),
 	}
 }

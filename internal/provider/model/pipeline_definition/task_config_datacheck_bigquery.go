@@ -16,11 +16,16 @@ type BigqueryDataCheckTaskConfig struct {
 	Operator        types.String                   `tfsdk:"operator"`
 	QueryResult     types.Int64                    `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
-	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
+	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
 func NewBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig) *BigqueryDataCheckTaskConfig {
 	if c == nil {
+		return nil
+	}
+
+	CustomVariables, err := NewCustomVariables(c.CustomVariables)
+	if err != nil {
 		return nil
 	}
 
@@ -31,16 +36,11 @@ func NewBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig) *Bigquery
 		Operator:        types.StringValue(c.Operator),
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
-		CustomVariables: NewCustomVariables(c.CustomVariables),
+		CustomVariables: CustomVariables,
 	}
 }
 
 func (c *BigqueryDataCheckTaskConfig) ToInput() *wp.BigqueryDataCheckTaskConfigInput {
-	customVariables := []wp.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, v.ToInput())
-	}
-
 	return &wp.BigqueryDataCheckTaskConfigInput{
 		Name:            c.Name.ValueString(),
 		ConnectionID:    c.ConnectionID.ValueInt64(),
@@ -48,6 +48,6 @@ func (c *BigqueryDataCheckTaskConfig) ToInput() *wp.BigqueryDataCheckTaskConfigI
 		Operator:        c.Operator.ValueString(),
 		QueryResult:     &p.NullableInt64{Valid: !c.QueryResult.IsNull(), Value: c.QueryResult.ValueInt64()},
 		AcceptsNull:     &p.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
-		CustomVariables: customVariables,
+		CustomVariables: CustomVariablesToInput(c.CustomVariables),
 	}
 }

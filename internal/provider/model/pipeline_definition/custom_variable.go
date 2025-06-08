@@ -1,10 +1,13 @@
 package pipeline_definition
 
 import (
+	"context"
+	"fmt"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -19,10 +22,9 @@ type CustomVariable struct {
 	TimeZone  types.String `tfsdk:"time_zone"`
 }
 
-func NewCustomVariables(ens []we.CustomVariable) []CustomVariable {
+func NewCustomVariables(ens []we.CustomVariable) (types.Set, error) {
 	if len(ens) == 0 {
-		// If no custom variables are present, the API returns an empty array but the provider should set `null`.
-		return nil
+		return types.SetNull(types.ObjectType{AttrTypes: CustomVariableAttrTypes()}), nil
 	}
 
 	var mds []CustomVariable
@@ -30,7 +32,13 @@ func NewCustomVariables(ens []we.CustomVariable) []CustomVariable {
 		mds = append(mds, NewCustomVariable(en))
 	}
 
-	return mds
+	ctx := context.Background()
+
+	customVariables, diags := types.SetValueFrom(ctx, types.ObjectType{AttrTypes: CustomVariableAttrTypes()}, mds)
+	if diags.HasError() {
+		return types.SetNull(types.StringType), fmt.Errorf("failed to convert customVariables to SetValue: %v", diags)
+	}
+	return customVariables, nil
 }
 
 func NewCustomVariable(en we.CustomVariable) CustomVariable {
@@ -57,4 +65,35 @@ func (v *CustomVariable) ToInput() wp.CustomVariable {
 		Format:    v.Format.ValueStringPointer(),
 		TimeZone:  v.TimeZone.ValueStringPointer(),
 	}
+}
+
+func CustomVariableAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":      types.StringType,
+		"type":      types.StringType,
+		"value":     types.StringType,
+		"quantity":  types.Int64Type,
+		"unit":      types.StringType,
+		"direction": types.StringType,
+		"format":    types.StringType,
+		"time_zone": types.StringType,
+	}
+}
+
+func CustomVariablesToInput(set types.Set) []wp.CustomVariable {
+	if set.IsNull() || set.IsUnknown() {
+		return nil
+	}
+
+	var tfVars []CustomVariable
+	diags := set.ElementsAs(context.Background(), &tfVars, false)
+	if diags.HasError() {
+		return nil
+	}
+
+	inputs := make([]wp.CustomVariable, 0, len(tfVars))
+	for _, v := range tfVars {
+		inputs = append(inputs, v.ToInput())
+	}
+	return inputs
 }

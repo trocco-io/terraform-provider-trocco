@@ -17,11 +17,16 @@ type SnowflakeDataCheckTaskConfig struct {
 	QueryResult     types.Int64                    `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
 	Warehouse       types.String                   `tfsdk:"warehouse"`
-	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
+	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
 func NewSnowflakeDataCheckTaskConfig(c *we.SnowflakeDataCheckTaskConfig) *SnowflakeDataCheckTaskConfig {
 	if c == nil {
+		return nil
+	}
+
+	CustomVariables, err := NewCustomVariables(c.CustomVariables)
+	if err != nil {
 		return nil
 	}
 
@@ -33,16 +38,11 @@ func NewSnowflakeDataCheckTaskConfig(c *we.SnowflakeDataCheckTaskConfig) *Snowfl
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
 		Warehouse:       types.StringValue(c.Warehouse),
-		CustomVariables: NewCustomVariables(c.CustomVariables),
+		CustomVariables: CustomVariables,
 	}
 }
 
 func (c *SnowflakeDataCheckTaskConfig) ToInput() *wp.SnowflakeDataCheckTaskConfigInput {
-	customVariables := []wp.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, v.ToInput())
-	}
-
 	return &wp.SnowflakeDataCheckTaskConfigInput{
 		Name:            c.Name.ValueString(),
 		ConnectionID:    c.ConnectionID.ValueInt64(),
@@ -51,6 +51,6 @@ func (c *SnowflakeDataCheckTaskConfig) ToInput() *wp.SnowflakeDataCheckTaskConfi
 		QueryResult:     &p.NullableInt64{Valid: !c.QueryResult.IsNull(), Value: c.QueryResult.ValueInt64()},
 		AcceptsNull:     &p.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
 		Warehouse:       c.Warehouse.ValueString(),
-		CustomVariables: customVariables,
+		CustomVariables: CustomVariablesToInput(c.CustomVariables),
 	}
 }
