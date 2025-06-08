@@ -36,7 +36,7 @@ func NewCustomVariables(ens []we.CustomVariable) (types.Set, error) {
 
 	customVariables, diags := types.SetValueFrom(ctx, types.ObjectType{AttrTypes: CustomVariableAttrTypes()}, mds)
 	if diags.HasError() {
-		return types.SetNull(types.StringType), fmt.Errorf("failed to convert customVariables to SetValue: %v", diags)
+		return types.SetNull(types.ObjectType{AttrTypes: CustomVariableAttrTypes()}), fmt.Errorf("failed to convert customVariables to SetValue: %v", diags)
 	}
 	return customVariables, nil
 }
