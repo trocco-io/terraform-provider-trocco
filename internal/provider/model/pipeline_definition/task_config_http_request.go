@@ -13,14 +13,14 @@ import (
 )
 
 type HTTPRequestTaskConfig struct {
-	Name              types.String            `tfsdk:"name"`
-	ConnectionID      types.Int64             `tfsdk:"connection_id"`
-	Method            types.String            `tfsdk:"http_method"`
-	URL               types.String            `tfsdk:"url"`
-	RequestBody       types.String            `tfsdk:"request_body"`
-	RequestHeaders    types.List              `tfsdk:"request_headers"`
-	RequestParameters []*HTTPRequestParameter `tfsdk:"request_parameters"`
-	CustomVariables   types.Set               `tfsdk:"custom_variables"`
+	Name              types.String `tfsdk:"name"`
+	ConnectionID      types.Int64  `tfsdk:"connection_id"`
+	Method            types.String `tfsdk:"http_method"`
+	URL               types.String `tfsdk:"url"`
+	RequestBody       types.String `tfsdk:"request_body"`
+	RequestHeaders    types.List   `tfsdk:"request_headers"`
+	RequestParameters types.List   `tfsdk:"request_parameters"`
+	CustomVariables   types.Set    `tfsdk:"custom_variables"`
 }
 
 func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
@@ -29,7 +29,7 @@ func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPReques
 	}
 
 	var previousRequestHeaders types.List
-	var previousRequestParameters []*HTTPRequestParameter
+	var previousRequestParameters types.List
 	if previous != nil {
 		previousRequestHeaders = previous.RequestHeaders
 		previousRequestParameters = previous.RequestParameters
@@ -45,6 +45,11 @@ func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPReques
 		return nil
 	}
 
+	requestParameters, err := NewHTTPRequestParameters(en.RequestParameters, previousRequestParameters)
+	if err != nil {
+		return nil
+	}
+
 	return &HTTPRequestTaskConfig{
 		Name:              types.StringValue(en.Name),
 		ConnectionID:      types.Int64PointerValue(en.ConnectionID),
@@ -52,14 +57,14 @@ func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPReques
 		URL:               types.StringValue(en.URL),
 		RequestBody:       types.StringPointerValue(en.RequestBody),
 		RequestHeaders:    requestHeaders,
-		RequestParameters: NewHTTPRequestParameters(en.RequestParameters, previousRequestParameters),
+		RequestParameters: requestParameters,
 		CustomVariables:   CustomVariables,
 	}
 }
 
 func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 	requestHeaders := []wp.RequestHeader{}
-	if !c.RequestHeaders.IsNull() && !c.RequestHeaders.IsUnknown() {
+	if !c.RequestHeaders.IsNull() {
 		var headers []HTTPRequestHeader
 		diags := c.RequestHeaders.ElementsAs(context.Background(), &headers, false)
 		if !diags.HasError() {
@@ -74,12 +79,18 @@ func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 	}
 
 	requestParameters := []wp.RequestParameter{}
-	for _, e := range c.RequestParameters {
-		requestParameters = append(requestParameters, wp.RequestParameter{
-			Key:     e.Key.ValueString(),
-			Value:   e.Value.ValueString(),
-			Masking: model.NewNullableBool(e.Masking),
-		})
+	if !c.RequestParameters.IsNull() {
+		var parameters []HTTPRequestParameter
+		diags := c.RequestParameters.ElementsAs(context.Background(), &parameters, false)
+		if !diags.HasError() {
+			for _, parameter := range parameters {
+				requestParameters = append(requestParameters, wp.RequestParameter{
+					Key:     parameter.Key.ValueString(),
+					Value:   parameter.Value.ValueString(),
+					Masking: model.NewNullableBool(parameter.Masking),
+				})
+			}
+		}
 	}
 
 	return &wp.HTTPRequestTaskConfig{
@@ -110,7 +121,7 @@ func NewHTTPRequestHeaders(ens []we.RequestHeader, previous types.List) (types.L
 		headers = append(headers, NewHTTPRequestHeader(en, nil))
 	}
 
-	if !previous.IsNull() && !previous.IsUnknown() {
+	if !previous.IsNull() {
 		var previousHeaders []HTTPRequestHeader
 		diags := previous.ElementsAs(context.Background(), &previousHeaders, false)
 		if !diags.HasError() {
@@ -150,22 +161,35 @@ type HTTPRequestParameter struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-func NewHTTPRequestParameters(ens []we.RequestParameter, previous []*HTTPRequestParameter) []*HTTPRequestParameter {
+func NewHTTPRequestParameters(ens []we.RequestParameter, previous types.List) (types.List, error) {
 	if len(ens) == 0 {
-		return nil
+		return types.ListNull(types.ObjectType{AttrTypes: HTTPRequestParametersAttrTypes()}), nil
 	}
 
-	var mds []*HTTPRequestParameter
-	for i, en := range ens {
-		var previousHTTPRequestParameter *HTTPRequestParameter
-		if len(previous) > i {
-			previousHTTPRequestParameter = previous[i]
+	var parameters []*HTTPRequestParameter
+	for _, en := range ens {
+		parameters = append(parameters, NewHTTPRequestParameter(en, nil))
+	}
+
+	if !previous.IsNull() {
+		var previousParameters []HTTPRequestParameter
+		diags := previous.ElementsAs(context.Background(), &previousParameters, false)
+		if !diags.HasError() {
+			for i := range parameters {
+				if len(previousParameters) > i {
+					parameters[i].Value = previousParameters[i].Value
+				}
+			}
 		}
-
-		mds = append(mds, NewHTTPRequestParameter(en, previousHTTPRequestParameter))
 	}
 
-	return mds
+	ctx := context.Background()
+	list, diags := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: HTTPRequestParametersAttrTypes()}, parameters)
+	if diags.HasError() {
+		return types.ListNull(types.ObjectType{AttrTypes: HTTPRequestParametersAttrTypes()}), fmt.Errorf("failed to convert HTTPRequestParameter to ListValue: %v", diags)
+	}
+
+	return list, nil
 }
 
 func NewHTTPRequestParameter(en we.RequestParameter, previous *HTTPRequestParameter) *HTTPRequestParameter {
@@ -182,6 +206,14 @@ func NewHTTPRequestParameter(en we.RequestParameter, previous *HTTPRequestParame
 }
 
 func HTTPRequestHeadersAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"key":     types.StringType,
+		"value":   types.StringType,
+		"masking": types.BoolType,
+	}
+}
+
+func HTTPRequestParametersAttrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"key":     types.StringType,
 		"value":   types.StringType,

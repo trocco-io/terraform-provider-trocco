@@ -81,7 +81,7 @@ func CustomVariableAttrTypes() map[string]attr.Type {
 }
 
 func CustomVariablesToInput(set types.Set) []wp.CustomVariable {
-	if set.IsNull() || set.IsUnknown() {
+	if set.IsNull() {
 		return nil
 	}
 
