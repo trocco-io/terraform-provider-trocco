@@ -2574,7 +2574,7 @@ Optional:
 - `retry_limit` (Number) Maximum retry limit
 - `retry_wait` (Number) Retry wait time (milliseconds)
 - `snowflake_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--snowflake_output_option--snowflake_output_option_column_options))
-- `snowflake_output_option_merge_keys` (List of String) Merge keys (only applicable if mode is 'merge')
+- `snowflake_output_option_merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
 
 <a id="nestedatt--output_option--snowflake_output_option--custom_variable_settings"></a>
 ### Nested Schema for `output_option.snowflake_output_option.custom_variable_settings`

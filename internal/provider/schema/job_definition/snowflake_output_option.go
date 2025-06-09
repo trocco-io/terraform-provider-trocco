@@ -1,6 +1,8 @@
 package job_definition
 
 import (
+	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -10,7 +12,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
 )
 
 func SnowflakeOutputOptionSchema() schema.Attribute {
@@ -131,7 +132,7 @@ func SnowflakeOutputOptionSchema() schema.Attribute {
 					},
 				},
 			},
-			"snowflake_output_option_merge_keys": schema.ListAttribute{
+			"snowflake_output_option_merge_keys": schema.SetAttribute{
 				Optional:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Merge keys (only applicable if mode is 'merge')",
