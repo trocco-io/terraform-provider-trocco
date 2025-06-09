@@ -482,6 +482,9 @@ func TestAccJobDefinitionResourceSnowflakeToBigQuery(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "snowflake_to_bigquery_test_table"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.bigquery_output_option_merge_keys.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.bigquery_output_option_clustering_fields.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.bigquery_output_option_column_options.#", "0"),
 				),
 			},
 			{
