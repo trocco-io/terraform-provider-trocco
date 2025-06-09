@@ -1070,6 +1070,48 @@ resource "trocco_job_definition" "ga4_input_example" {
 }
 ```
 
+#### HttpInputOption
+
+```terraform
+resource "trocco_job_definition" "http_to_bigquery_maximum" {
+  input_option_type = "http"
+  input_option = {
+    http_input_option = {
+      method                                     = "POST"
+      url                                        = "http://example.com"
+      user_agent                                 = "user-agent-example"
+      pager_type                                 = "cursor"
+      cursor_request_parameter_cursor_name       = "next_cursor"
+      cursor_response_parameter_cursor_json_path = "$.next_cursor"
+      request_headers = [
+        { key = "Content-Type", value = "application/json", masking = false },
+        { key = "Authorization", value = "Bearer example_token", masking = true },
+      ]
+      request_params = [
+        { key = "foo", value = "bar" },
+      ]
+      success_code = "200"
+      jsonl_parser = {
+        stop_on_invalid_record = true
+        default_time_zone      = "UTC"
+        newline                = "LF"
+        charset                = "UTF-8"
+        columns = [
+          {
+            name = "id"
+            type = "long"
+          },
+          {
+            name = "name"
+            type = "string"
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
 #### KintoneInputOption
 
 ```terraform
@@ -1410,6 +1452,7 @@ Optional:
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
 - `google_analytics4_input_option` (Attributes) Attributes about source Google Analytics 4 (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option))
 - `google_spreadsheets_input_option` (Attributes) Attributes about source Google Spreadsheets (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option))
+- `http_input_option` (Attributes) Attributes about source HTTP (see [below for nested schema](#nestedatt--input_option--http_input_option))
 - `kintone_input_option` (Attributes) Attributes of source kintone (see [below for nested schema](#nestedatt--input_option--kintone_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
 - `postgresql_input_option` (Attributes) Attributes of source postgresql (see [below for nested schema](#nestedatt--input_option--postgresql_input_option))
@@ -1852,6 +1895,288 @@ Optional:
 - `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--input_option--http_input_option"></a>
+### Nested Schema for `input_option.http_input_option`
+
+Required:
+
+- `method` (String) HTTP method (GET or POST)
+- `url` (String) URL to fetch data from
+
+Optional:
+
+- `charset` (String) Character set of the response
+- `csv_parser` (Attributes) For files in CSV format, this parameter is required (see [below for nested schema](#nestedatt--input_option--http_input_option--csv_parser))
+- `cursor_request_parameter_cursor_name` (String) Parameter name for cursor-based pagination
+- `cursor_request_parameter_limit_name` (String) Parameter name for limit in cursor-based pagination
+- `cursor_request_parameter_limit_value` (String) Value for limit parameter in cursor-based pagination
+- `cursor_response_parameter_cursor_json_path` (String) JSONPath to extract cursor value from response
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--http_input_option--custom_variable_settings))
+- `excel_parser` (Attributes) For files in excel format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--http_input_option--excel_parser))
+- `jsonl_parser` (Attributes) For files in JSONL format, this parameter is required (see [below for nested schema](#nestedatt--input_option--http_input_option--jsonl_parser))
+- `jsonpath_parser` (Attributes) For files in jsonpath format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--http_input_option--jsonpath_parser))
+- `ltsv_parser` (Attributes) For files in LTSV format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--http_input_option--ltsv_parser))
+- `max_retries` (Number) Maximum number of retry attempts
+- `open_timeout` (Number) Timeout for opening connection in seconds
+- `pager_from_param` (String) Parameter name for the starting offset/page
+- `pager_pages` (Number) Number of requests to fetch
+- `pager_start` (Number) Starting page number
+- `pager_step` (Number) Step size for pagination
+- `pager_to_param` (String) Parameter name for the ending offset/page
+- `pager_type` (String) Type of pagination (offset, cursor, disable)
+- `parquet_parser` (Attributes) For files in parquet format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--http_input_option--parquet_parser))
+- `read_timeout` (Number) Timeout for reading response in seconds
+- `request_body` (String) Request body for POST/PUT requests
+- `request_headers` (Attributes Set) HTTP headers to include in the request (see [below for nested schema](#nestedatt--input_option--http_input_option--request_headers))
+- `request_interval` (Number) Interval between requests in seconds
+- `request_params` (Attributes Set) Request parameters to include in the URL (see [below for nested schema](#nestedatt--input_option--http_input_option--request_params))
+- `retry_interval` (Number) Interval between retry attempts in seconds
+- `success_code` (String) HTTP status code that indicate success
+- `user_agent` (String) User agent string to use for requests
+- `xml_parser` (Attributes) For files in xml format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--http_input_option--xml_parser))
+
+<a id="nestedatt--input_option--http_input_option--csv_parser"></a>
+### Nested Schema for `input_option.http_input_option.csv_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--http_input_option--csv_parser--columns))
+
+Optional:
+
+- `allow_extra_columns` (Boolean) If true, ignore the column. If false, treat as invalid record.
+- `allow_optional_columns` (Boolean) If true, NULL-complete the missing columns. If false, treat as invalid record.
+- `charset` (String) Character set
+- `comment_line_marker` (String) Comment line marker. Skip if this character is at the beginning of a line
+- `default_date` (String) Default date
+- `default_time_zone` (String) Default time zone
+- `delimiter` (String) Delimiter
+- `escape` (String) Escape character
+- `max_quoted_size_limit` (Number) Maximum amount of data that can be enclosed in quotation marks.
+- `newline` (String) Newline character
+- `null_string` (String) Replacement source string to be converted to NULL
+- `null_string_enabled` (Boolean) Flag whether or not to set the string to be replaced by NULL
+- `quote` (String) Quote character
+- `quotes_in_quoted_fields` (String) Processing method for irregular quarts
+- `skip_header_lines` (Number) Number of header lines to skip
+- `stop_on_invalid_record` (Boolean) Flag whether or not to abort the transfer if an invalid record is found.
+- `trim_if_not_quoted` (Boolean) Flag whether or not to remove spaces from the value if it is not quoted
+
+<a id="nestedatt--input_option--http_input_option--csv_parser--columns"></a>
+### Nested Schema for `input_option.http_input_option.csv_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `date` (String) Date
+- `format` (String) Format of the column
+
+
+
+<a id="nestedatt--input_option--http_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.http_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--http_input_option--excel_parser"></a>
+### Nested Schema for `input_option.http_input_option.excel_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--http_input_option--excel_parser--columns))
+- `sheet_name` (String) Sheet name
+
+Optional:
+
+- `default_time_zone` (String) Default time zone
+- `skip_header_lines` (Number) Number of header lines to skip
+
+<a id="nestedatt--input_option--http_input_option--excel_parser--columns"></a>
+### Nested Schema for `input_option.http_input_option.excel_parser.columns`
+
+Required:
+
+- `formula_handling` (String) Formula handling
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+
+
+
+<a id="nestedatt--input_option--http_input_option--jsonl_parser"></a>
+### Nested Schema for `input_option.http_input_option.jsonl_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--http_input_option--jsonl_parser--columns))
+
+Optional:
+
+- `charset` (String) Character set
+- `default_time_zone` (String) Default time zone
+- `newline` (String) Newline character
+- `stop_on_invalid_record` (Boolean) Flag whether the transfer should stop if an invalid record is found
+
+<a id="nestedatt--input_option--http_input_option--jsonl_parser--columns"></a>
+### Nested Schema for `input_option.http_input_option.jsonl_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column
+- `time_zone` (String) time zone
+
+
+
+<a id="nestedatt--input_option--http_input_option--jsonpath_parser"></a>
+### Nested Schema for `input_option.http_input_option.jsonpath_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--http_input_option--jsonpath_parser--columns))
+- `root` (String) JSONPath
+
+Optional:
+
+- `default_time_zone` (String) Default time zone
+
+<a id="nestedatt--input_option--http_input_option--jsonpath_parser--columns"></a>
+### Nested Schema for `input_option.http_input_option.jsonpath_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+- `time_zone` (String) time zone
+
+
+
+<a id="nestedatt--input_option--http_input_option--ltsv_parser"></a>
+### Nested Schema for `input_option.http_input_option.ltsv_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--http_input_option--ltsv_parser--columns))
+
+Optional:
+
+- `charset` (String) Character set
+- `newline` (String) Newline character
+
+<a id="nestedatt--input_option--http_input_option--ltsv_parser--columns"></a>
+### Nested Schema for `input_option.http_input_option.ltsv_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+
+
+
+<a id="nestedatt--input_option--http_input_option--parquet_parser"></a>
+### Nested Schema for `input_option.http_input_option.parquet_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--http_input_option--parquet_parser--columns))
+
+<a id="nestedatt--input_option--http_input_option--parquet_parser--columns"></a>
+### Nested Schema for `input_option.http_input_option.parquet_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+
+
+
+<a id="nestedatt--input_option--http_input_option--request_headers"></a>
+### Nested Schema for `input_option.http_input_option.request_headers`
+
+Required:
+
+- `key` (String) Header key
+- `value` (String, Sensitive) Header value
+
+Optional:
+
+- `masking` (Boolean) Whether to mask this header
+
+
+<a id="nestedatt--input_option--http_input_option--request_params"></a>
+### Nested Schema for `input_option.http_input_option.request_params`
+
+Required:
+
+- `key` (String) Parameter key
+- `value` (String, Sensitive) Parameter value
+
+Optional:
+
+- `masking` (Boolean) Whether to mask this parameter
+
+
+<a id="nestedatt--input_option--http_input_option--xml_parser"></a>
+### Nested Schema for `input_option.http_input_option.xml_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--http_input_option--xml_parser--columns))
+- `root` (String) Root element
+
+<a id="nestedatt--input_option--http_input_option--xml_parser--columns"></a>
+### Nested Schema for `input_option.http_input_option.xml_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `path` (String) XPath
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+- `timezone` (String) time zone
+
 
 
 
