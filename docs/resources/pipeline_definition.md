@@ -571,7 +571,7 @@ resource "trocco_pipeline_definition" "trocco_pipeline" {
 - `max_retries` (Number) The maximum number of retries that the pipeline can have
 - `max_task_parallelism` (Number) The maximum number of tasks that the pipeline can run in parallel
 - `min_retry_interval` (Number) The minimum time in minutes between retries
-- `notifications` (Attributes List) The notifications of the pipeline definition (see [below for nested schema](#nestedatt--notifications))
+- `notifications` (Attributes Set) The notifications of the pipeline definition (see [below for nested schema](#nestedatt--notifications))
 - `resource_group_id` (Number) The resource group ID of the pipeline definition
 - `schedules` (Attributes Set) The schedules of the pipeline definition (see [below for nested schema](#nestedatt--schedules))
 - `task_dependencies` (Attributes Set) The task dependencies of the workflow. (see [below for nested schema](#nestedatt--task_dependencies))
