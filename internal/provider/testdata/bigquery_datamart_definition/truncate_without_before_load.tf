@@ -15,19 +15,15 @@ resource "trocco_connection" "my_conn" {
   JSON
 }
 
-resource "trocco_bigquery_datamart_definition" "test_bigquery_datamart" {
-  name                     = "test_bigquery_datamart"
+resource "trocco_bigquery_datamart_definition" "test_truncate_without_before_load" {
+  name                     = "test_truncate_without_before_load"
   is_runnable_concurrently = false
   bigquery_connection_id   = trocco_connection.my_conn.id
   query                    = <<SQL
     SELECT * FROM examples
   SQL
   query_mode               = "insert"
-  before_load              = <<SQL
-    DELETE FROM examples
-    WHERE created_at < '2024-01-01'
-  SQL
   destination_dataset      = "dist_datasets"
   destination_table        = "dist_tables"
-  write_disposition        = "append"
+  write_disposition        = "truncate"
 }

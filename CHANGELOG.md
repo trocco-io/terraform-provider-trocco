@@ -1,3 +1,20 @@
+## 0.15.2
+CHORE:
+- Add validation for `before_load` in `trocco_bigquery_datamart_definition` resource
+  - `before_load` is only available when `write_disposition` is "append"
+- Use custom type TrimmedStringValue in `pipeline_definition` resource
+  - `description` field
+
+## 0.15.1
+CHORE:
+- Add tests
+- Fix GitHub Actions timeout settings
+- Update fields to use TrimmedStringValue custom type
+    - `before_load` in `trocco_bigquery_datamart_definition` resource
+    - `message` in `trocco_bigquery_datamart_definition.notifications` resource
+    - `message` in `trocco_job_definition.notifications` resource
+    - `message` in `trocco_pipeline_definition.notifications` resource
+
 ## 0.15.0
 FEATURES:
 - Added support for `yahoo_ads_api_yss` input option in `trocco_job_definition` resource.
