@@ -257,8 +257,12 @@ func (r *pipelineDefinitionResource) Read(
 	}
 
 	keys := map[int64]types.String{}
-	for _, t := range state.Tasks {
-		keys[t.TaskIdentifier.ValueInt64()] = t.Key
+	if !state.Tasks.IsNull() && !state.Tasks.IsUnknown() {
+		var tasks []*pdm.Task
+		state.Tasks.ElementsAs(ctx, &tasks, false)
+		for _, t := range tasks {
+			keys[t.TaskIdentifier.ValueInt64()] = t.Key
+		}
 	}
 
 	newState := pdm.NewPipelineDefinition(en, keys, state)
@@ -316,7 +320,9 @@ func (r *pipelineDefinitionResource) ImportState(
 		keys[t.TaskIdentifier] = types.StringValue(strconv.FormatInt(t.TaskIdentifier, 10))
 	}
 
-	newState := pdm.NewPipelineDefinition(en, keys, &pdm.PipelineDefinition{})
+	emptyPipeline := &pdm.PipelineDefinition{}
+	emptyPipeline.Tasks = types.SetNull(types.ObjectType{})
+	newState := pdm.NewPipelineDefinition(en, keys, emptyPipeline)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }

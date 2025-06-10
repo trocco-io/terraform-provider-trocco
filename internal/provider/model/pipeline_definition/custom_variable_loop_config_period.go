@@ -150,3 +150,51 @@ func (o *PeriodCustomVariableLoopVariableOffset) ToInput() wp.PeriodCustomVariab
 		Unit:  o.Unit.ValueString(),
 	}
 }
+
+func PeriodCustomVariableLoopConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"interval":  types.StringType,
+		"time_zone": types.StringType,
+		"from": types.ObjectType{
+			AttrTypes: PeriodCustomVariableLoopFromAttrTypes(),
+		},
+		"to": types.ObjectType{
+			AttrTypes: PeriodCustomVariableLoopToAttrTypes(),
+		},
+		"variables": types.ListType{
+			ElemType: types.ObjectType{
+				AttrTypes: PeriodCustomVariableLoopVariableAttrTypes(),
+			},
+		},
+	}
+}
+
+func PeriodCustomVariableLoopVariableAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name": types.StringType,
+		"offset": types.ObjectType{
+			AttrTypes: PeriodCustomVariableLoopVariableOffsetAttrTypes(),
+		},
+	}
+}
+
+func PeriodCustomVariableLoopVariableOffsetAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"value": types.Int64Type,
+		"unit":  types.StringType,
+	}
+}
+
+func PeriodCustomVariableLoopFromAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"value": types.Int64Type,
+		"unit":  types.StringType,
+	}
+}
+
+func PeriodCustomVariableLoopToAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"value": types.Int64Type,
+		"unit":  types.StringType,
+	}
+}

@@ -220,3 +220,16 @@ func HTTPRequestParametersAttrTypes() map[string]attr.Type {
 		"masking": types.BoolType,
 	}
 }
+
+func HTTPRequestTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":               types.StringType,
+		"connection_id":      types.Int64Type,
+		"http_method":        types.StringType,
+		"url":                types.StringType,
+		"request_body":       types.StringType,
+		"request_headers":    types.ListType{ElemType: types.ObjectType{AttrTypes: HTTPRequestHeadersAttrTypes()}},
+		"request_parameters": types.ListType{ElemType: types.ObjectType{AttrTypes: HTTPRequestParametersAttrTypes()}},
+		"custom_variables":   types.SetType{ElemType: types.ObjectType{AttrTypes: CustomVariableAttrTypes()}},
+	}
+}

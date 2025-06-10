@@ -24,16 +24,13 @@ func NewStringCustomVariableLoopConfig(en *we.StringCustomVariableLoopConfig) *S
 		variables = append(variables, NewStringCustomVariableLoopVariable(variable))
 	}
 
-	variablesList, _ := types.ListValueFrom(
-		context.Background(),
-		types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"name":   types.StringType,
-				"values": types.ListType{ElemType: types.StringType},
-			},
-		},
-		variables,
-	)
+	listType := types.ObjectType{
+		AttrTypes: StringCustomVariableLoopVariableAttrTypes(),
+	}
+	variablesList, diags := types.ListValueFrom(context.Background(), listType, variables)
+	if diags.HasError() {
+		return nil
+	}
 
 	return &StringCustomVariableLoopConfig{
 		Variables: variablesList,
@@ -97,5 +94,20 @@ func (v *StringCustomVariableLoopVariable) ToInput() wp.StringCustomVariableLoop
 	return wp.StringCustomVariableLoopVariable{
 		Name:   v.Name.ValueString(),
 		Values: values,
+	}
+}
+
+func StringCustomVariableLoopVariableAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":   types.StringType,
+		"values": types.ListType{ElemType: types.StringType},
+	}
+}
+
+func StringCustomVariableLoopConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"variables": types.ListType{
+			ElemType: types.ObjectType{AttrTypes: StringCustomVariableLoopVariableAttrTypes()},
+		},
 	}
 }
