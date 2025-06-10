@@ -1,6 +1,9 @@
 package pipeline_definition
 
 import (
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
@@ -8,11 +11,11 @@ import (
 )
 
 type PeriodCustomVariableLoopConfig struct {
-	Interval  types.String                       `tfsdk:"interval"`
-	TimeZone  types.String                       `tfsdk:"time_zone"`
-	From      PeriodCustomVariableLoopFrom       `tfsdk:"from"`
-	To        PeriodCustomVariableLoopTo         `tfsdk:"to"`
-	Variables []PeriodCustomVariableLoopVariable `tfsdk:"variables"`
+	Interval  types.String                 `tfsdk:"interval"`
+	TimeZone  types.String                 `tfsdk:"time_zone"`
+	From      PeriodCustomVariableLoopFrom `tfsdk:"from"`
+	To        PeriodCustomVariableLoopTo   `tfsdk:"to"`
+	Variables types.List                   `tfsdk:"variables"`
 }
 
 func NewPeriodCustomVariableLoopConfig(en *we.PeriodCustomVariableLoopConfig) *PeriodCustomVariableLoopConfig {
@@ -25,19 +28,34 @@ func NewPeriodCustomVariableLoopConfig(en *we.PeriodCustomVariableLoopConfig) *P
 		variables = append(variables, NewPeriodCustomVariableLoopVariable(variable))
 	}
 
+	variablesList, diags := types.ListValueFrom(
+		context.Background(),
+		types.ObjectType{AttrTypes: PeriodCustomVariableLoopVariableAttrTypes()},
+		variables,
+	)
+	if diags.HasError() {
+		return nil
+	}
+
 	return &PeriodCustomVariableLoopConfig{
 		Interval:  types.StringValue(en.Interval),
 		TimeZone:  types.StringValue(en.TimeZone),
 		From:      NewPeriodCustomVariableLoopFrom(en.From),
 		To:        NewPeriodCustomVariableLoopTo(en.To),
-		Variables: variables,
+		Variables: variablesList,
 	}
 }
 
 func (c *PeriodCustomVariableLoopConfig) ToInput() wp.PeriodCustomVariableLoopConfig {
 	vars := []wp.PeriodCustomVariableLoopVariable{}
-	for _, v := range c.Variables {
-		vars = append(vars, v.ToInput())
+	if !c.Variables.IsNull() && !c.Variables.IsUnknown() {
+		var variables []PeriodCustomVariableLoopVariable
+		diags := c.Variables.ElementsAs(context.Background(), &variables, false)
+		if !diags.HasError() {
+			for _, v := range variables {
+				vars = append(vars, v.ToInput())
+			}
+		}
 	}
 
 	return wp.PeriodCustomVariableLoopConfig{
@@ -122,5 +140,52 @@ func (o *PeriodCustomVariableLoopVariableOffset) ToInput() wp.PeriodCustomVariab
 	return wp.PeriodCustomVariableLoopVariableOffset{
 		Value: o.Value.ValueInt64Pointer(),
 		Unit:  o.Unit.ValueString(),
+	}
+}
+func PeriodCustomVariableLoopConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"interval":  types.StringType,
+		"time_zone": types.StringType,
+		"from": types.ObjectType{
+			AttrTypes: PeriodCustomVariableLoopFromAttrTypes(),
+		},
+		"to": types.ObjectType{
+			AttrTypes: PeriodCustomVariableLoopToAttrTypes(),
+		},
+		"variables": types.ListType{
+			ElemType: types.ObjectType{
+				AttrTypes: PeriodCustomVariableLoopVariableAttrTypes(),
+			},
+		},
+	}
+}
+
+func PeriodCustomVariableLoopVariableAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name": types.StringType,
+		"offset": types.ObjectType{
+			AttrTypes: PeriodCustomVariableLoopVariableOffsetAttrTypes(),
+		},
+	}
+}
+
+func PeriodCustomVariableLoopVariableOffsetAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"value": types.Int64Type,
+		"unit":  types.StringType,
+	}
+}
+
+func PeriodCustomVariableLoopFromAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"value": types.Int64Type,
+		"unit":  types.StringType,
+	}
+}
+
+func PeriodCustomVariableLoopToAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"value": types.Int64Type,
+		"unit":  types.StringType,
 	}
 }

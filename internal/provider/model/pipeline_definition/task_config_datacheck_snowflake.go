@@ -1,11 +1,13 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -17,7 +19,7 @@ type SnowflakeDataCheckTaskConfig struct {
 	QueryResult     types.Int64                    `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
 	Warehouse       types.String                   `tfsdk:"warehouse"`
-	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
+	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
 func NewSnowflakeDataCheckTaskConfig(c *we.SnowflakeDataCheckTaskConfig) *SnowflakeDataCheckTaskConfig {
@@ -39,8 +41,15 @@ func NewSnowflakeDataCheckTaskConfig(c *we.SnowflakeDataCheckTaskConfig) *Snowfl
 
 func (c *SnowflakeDataCheckTaskConfig) ToInput() *wp.SnowflakeDataCheckTaskConfigInput {
 	customVariables := []wp.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, v.ToInput())
+	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
+		var variables []CustomVariable
+		diags := c.CustomVariables.ElementsAs(context.Background(), &variables, false)
+		if diags.HasError() {
+			return nil
+		}
+		for _, v := range variables {
+			customVariables = append(customVariables, v.ToInput())
+		}
 	}
 
 	return &wp.SnowflakeDataCheckTaskConfigInput{
@@ -52,5 +61,18 @@ func (c *SnowflakeDataCheckTaskConfig) ToInput() *wp.SnowflakeDataCheckTaskConfi
 		AcceptsNull:     &p.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
 		Warehouse:       c.Warehouse.ValueString(),
 		CustomVariables: customVariables,
+	}
+}
+
+func SnowflakeDataCheckTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":             types.StringType,
+		"connection_id":    types.Int64Type,
+		"query":            types.StringType,
+		"operator":         types.StringType,
+		"query_result":     types.Int64Type,
+		"accepts_null":     types.BoolType,
+		"warehouse":        types.StringType,
+		"custom_variables": types.SetType{ElemType: types.ObjectType{AttrTypes: CustomVariableAttrTypes()}},
 	}
 }

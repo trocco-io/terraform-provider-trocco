@@ -1,11 +1,13 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -17,7 +19,7 @@ type RedshiftDataCheckTaskConfig struct {
 	QueryResult     types.Int64                    `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
 	Database        types.String                   `tfsdk:"database"`
-	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
+	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
 func NewRedshiftDataCheckTaskConfig(c *we.RedshiftDataCheckTaskConfig) *RedshiftDataCheckTaskConfig {
@@ -39,8 +41,15 @@ func NewRedshiftDataCheckTaskConfig(c *we.RedshiftDataCheckTaskConfig) *Redshift
 
 func (c *RedshiftDataCheckTaskConfig) ToInput() *wp.RedshiftDataCheckTaskConfigInput {
 	customVariables := []wp.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, v.ToInput())
+	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
+		var variables []CustomVariable
+		diags := c.CustomVariables.ElementsAs(context.Background(), &variables, false)
+		if diags.HasError() {
+			return nil
+		}
+		for _, v := range variables {
+			customVariables = append(customVariables, v.ToInput())
+		}
 	}
 
 	return &wp.RedshiftDataCheckTaskConfigInput{
@@ -52,5 +61,18 @@ func (c *RedshiftDataCheckTaskConfig) ToInput() *wp.RedshiftDataCheckTaskConfigI
 		AcceptsNull:     &p.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
 		Database:        c.Database.ValueString(),
 		CustomVariables: customVariables,
+	}
+}
+
+func RedshiftDataCheckTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":             types.StringType,
+		"connection_id":    types.Int64Type,
+		"query":            types.StringType,
+		"operator":         types.StringType,
+		"query_result":     types.Int64Type,
+		"accepts_null":     types.BoolType,
+		"database":         types.StringType,
+		"custom_variables": types.SetType{ElemType: types.ObjectType{AttrTypes: CustomVariableAttrTypes()}},
 	}
 }

@@ -1,11 +1,13 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -16,7 +18,7 @@ type BigqueryDataCheckTaskConfig struct {
 	Operator        types.String                   `tfsdk:"operator"`
 	QueryResult     types.Int64                    `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
-	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
+	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
 func NewBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig) *BigqueryDataCheckTaskConfig {
@@ -37,8 +39,16 @@ func NewBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig) *Bigquery
 
 func (c *BigqueryDataCheckTaskConfig) ToInput() *wp.BigqueryDataCheckTaskConfigInput {
 	customVariables := []wp.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, v.ToInput())
+
+	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
+		var variables []CustomVariable
+		diags := c.CustomVariables.ElementsAs(context.Background(), &variables, false)
+		if diags.HasError() {
+			return nil
+		}
+		for _, v := range variables {
+			customVariables = append(customVariables, v.ToInput())
+		}
 	}
 
 	return &wp.BigqueryDataCheckTaskConfigInput{
@@ -49,5 +59,17 @@ func (c *BigqueryDataCheckTaskConfig) ToInput() *wp.BigqueryDataCheckTaskConfigI
 		QueryResult:     &p.NullableInt64{Valid: !c.QueryResult.IsNull(), Value: c.QueryResult.ValueInt64()},
 		AcceptsNull:     &p.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
 		CustomVariables: customVariables,
+	}
+}
+
+func BigqueryDataCheckTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":             types.StringType,
+		"connection_id":    types.Int64Type,
+		"query":            types.StringType,
+		"operator":         types.StringType,
+		"query_result":     types.Int64Type,
+		"accepts_null":     types.BoolType,
+		"custom_variables": types.SetType{ElemType: types.ObjectType{AttrTypes: CustomVariableAttrTypes()}},
 	}
 }

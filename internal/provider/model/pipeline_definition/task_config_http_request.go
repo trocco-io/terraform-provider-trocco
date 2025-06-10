@@ -1,23 +1,25 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	model "terraform-provider-trocco/internal/provider/model"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type HTTPRequestTaskConfig struct {
-	Name              types.String            `tfsdk:"name"`
-	ConnectionID      types.Int64             `tfsdk:"connection_id"`
-	Method            types.String            `tfsdk:"http_method"`
-	URL               types.String            `tfsdk:"url"`
-	RequestBody       types.String            `tfsdk:"request_body"`
-	RequestHeaders    []*HTTPRequestHeader    `tfsdk:"request_headers"`
-	RequestParameters []*HTTPRequestParameter `tfsdk:"request_parameters"`
-	CustomVariables   []CustomVariable        `tfsdk:"custom_variables"`
+	Name              types.String `tfsdk:"name"`
+	ConnectionID      types.Int64  `tfsdk:"connection_id"`
+	Method            types.String `tfsdk:"http_method"`
+	URL               types.String `tfsdk:"url"`
+	RequestBody       types.String `tfsdk:"request_body"`
+	RequestHeaders    types.List   `tfsdk:"request_headers"`
+	RequestParameters types.List   `tfsdk:"request_parameters"`
+	CustomVariables   types.Set    `tfsdk:"custom_variables"`
 }
 
 func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
@@ -25,8 +27,8 @@ func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPReques
 		return nil
 	}
 
-	var previousRequestHeaders []*HTTPRequestHeader
-	var previousRequestParameters []*HTTPRequestParameter
+	var previousRequestHeaders types.List
+	var previousRequestParameters types.List
 	if previous != nil {
 		previousRequestHeaders = previous.RequestHeaders
 		previousRequestParameters = previous.RequestParameters
@@ -46,26 +48,45 @@ func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPReques
 
 func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 	requestHeaders := []wp.RequestHeader{}
-	for _, e := range c.RequestHeaders {
-		requestHeaders = append(requestHeaders, wp.RequestHeader{
-			Key:     e.Key.ValueString(),
-			Value:   e.Value.ValueString(),
-			Masking: model.NewNullableBool(e.Masking),
-		})
+	if !c.RequestHeaders.IsNull() && !c.RequestHeaders.IsUnknown() {
+		var headers []HTTPRequestHeader
+		diags := c.RequestHeaders.ElementsAs(context.Background(), &headers, false)
+		if !diags.HasError() {
+			for _, e := range headers {
+				requestHeaders = append(requestHeaders, wp.RequestHeader{
+					Key:     e.Key.ValueString(),
+					Value:   e.Value.ValueString(),
+					Masking: model.NewNullableBool(e.Masking),
+				})
+			}
+		}
 	}
 
 	requestParameters := []wp.RequestParameter{}
-	for _, e := range c.RequestParameters {
-		requestParameters = append(requestParameters, wp.RequestParameter{
-			Key:     e.Key.ValueString(),
-			Value:   e.Value.ValueString(),
-			Masking: model.NewNullableBool(e.Masking),
-		})
+	if !c.RequestParameters.IsNull() && !c.RequestParameters.IsUnknown() {
+		var parameters []HTTPRequestParameter
+		diags := c.RequestParameters.ElementsAs(context.Background(), &parameters, false)
+		if !diags.HasError() {
+			for _, e := range parameters {
+				requestParameters = append(requestParameters, wp.RequestParameter{
+					Key:     e.Key.ValueString(),
+					Value:   e.Value.ValueString(),
+					Masking: model.NewNullableBool(e.Masking),
+				})
+			}
+		}
 	}
 
 	customVariables := []wp.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, v.ToInput())
+	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
+		var variables []CustomVariable
+		diags := c.CustomVariables.ElementsAs(context.Background(), &variables, false)
+		if diags.HasError() {
+			return nil
+		}
+		for _, v := range variables {
+			customVariables = append(customVariables, v.ToInput())
+		}
 	}
 
 	return &wp.HTTPRequestTaskConfig{
@@ -86,35 +107,47 @@ type HTTPRequestHeader struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-func NewHTTPRequestHeaders(ens []we.RequestHeader, previous []*HTTPRequestHeader) []*HTTPRequestHeader {
+func NewHTTPRequestHeaders(ens []we.RequestHeader, previous types.List) types.List {
 	if len(ens) == 0 {
-		return nil
+		return types.ListNull(types.ObjectType{AttrTypes: HTTPRequestHeadersAttrTypes()})
 	}
 
-	var mds []*HTTPRequestHeader
+	var previousHeaders []HTTPRequestHeader
+	if !previous.IsNull() && !previous.IsUnknown() {
+		previous.ElementsAs(context.Background(), &previousHeaders, false)
+	}
+
+	var elements []attr.Value
 	for i, en := range ens {
 		var previousHTTPRequestHeader *HTTPRequestHeader
-		if len(previous) > i {
-			previousHTTPRequestHeader = previous[i]
+		if len(previousHeaders) > i {
+			header := previousHeaders[i]
+			previousHTTPRequestHeader = &header
 		}
 
-		mds = append(mds, NewHTTPRequestHeader(en, previousHTTPRequestHeader))
+		elements = append(elements, types.ObjectValueMust(
+			map[string]attr.Type{
+				"key":     types.StringType,
+				"value":   types.StringType,
+				"masking": types.BoolType,
+			},
+			map[string]attr.Value{
+				"key":     types.StringValue(en.Key),
+				"value":   NewHTTPRequestHeaderValue(en, previousHTTPRequestHeader),
+				"masking": types.BoolValue(en.Masking),
+			},
+		))
 	}
 
-	return mds
+	return types.ListValueMust(types.ObjectType{AttrTypes: HTTPRequestHeadersAttrTypes()}, elements)
 }
 
-func NewHTTPRequestHeader(en we.RequestHeader, previous *HTTPRequestHeader) *HTTPRequestHeader {
+func NewHTTPRequestHeaderValue(en we.RequestHeader, previous *HTTPRequestHeader) types.String {
 	value := types.StringValue(en.Value)
 	if en.Masking && previous != nil {
 		value = previous.Value
 	}
-
-	return &HTTPRequestHeader{
-		Key:     types.StringValue(en.Key),
-		Value:   value,
-		Masking: types.BoolValue(en.Masking),
-	}
+	return value
 }
 
 type HTTPRequestParameter struct {
@@ -123,33 +156,87 @@ type HTTPRequestParameter struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-func NewHTTPRequestParameters(ens []we.RequestParameter, previous []*HTTPRequestParameter) []*HTTPRequestParameter {
+func NewHTTPRequestParameters(ens []we.RequestParameter, previous types.List) types.List {
 	if len(ens) == 0 {
-		return nil
+		return types.ListNull(types.ObjectType{AttrTypes: map[string]attr.Type{
+			"key":     types.StringType,
+			"value":   types.StringType,
+			"masking": types.BoolType,
+		}})
 	}
 
-	var mds []*HTTPRequestParameter
+	var previousParameters []HTTPRequestParameter
+	if !previous.IsNull() && !previous.IsUnknown() {
+		previous.ElementsAs(context.Background(), &previousParameters, false)
+	}
+
+	var elements []attr.Value
 	for i, en := range ens {
 		var previousHTTPRequestParameter *HTTPRequestParameter
-		if len(previous) > i {
-			previousHTTPRequestParameter = previous[i]
+		if len(previousParameters) > i {
+			param := previousParameters[i]
+			previousHTTPRequestParameter = &param
 		}
 
-		mds = append(mds, NewHTTPRequestParameter(en, previousHTTPRequestParameter))
+		elements = append(elements, types.ObjectValueMust(
+			map[string]attr.Type{
+				"key":     types.StringType,
+				"value":   types.StringType,
+				"masking": types.BoolType,
+			},
+			map[string]attr.Value{
+				"key":     types.StringValue(en.Key),
+				"value":   NewHTTPRequestParameterValue(en, previousHTTPRequestParameter),
+				"masking": types.BoolValue(en.Masking),
+			},
+		))
 	}
 
-	return mds
+	return types.ListValueMust(
+		types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"key":     types.StringType,
+				"value":   types.StringType,
+				"masking": types.BoolType,
+			},
+		},
+		elements,
+	)
 }
 
-func NewHTTPRequestParameter(en we.RequestParameter, previous *HTTPRequestParameter) *HTTPRequestParameter {
+func NewHTTPRequestParameterValue(en we.RequestParameter, previous *HTTPRequestParameter) types.String {
 	value := types.StringValue(en.Value)
 	if en.Masking && previous != nil {
 		value = previous.Value
 	}
+	return value
+}
 
-	return &HTTPRequestParameter{
-		Key:     types.StringValue(en.Key),
-		Value:   value,
-		Masking: types.BoolValue(en.Masking),
+func HTTPRequestHeadersAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"key":     types.StringType,
+		"value":   types.StringType,
+		"masking": types.BoolType,
+	}
+}
+
+func HTTPRequestParametersAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"key":     types.StringType,
+		"value":   types.StringType,
+		"masking": types.BoolType,
+	}
+}
+
+func HTTPRequestTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":               types.StringType,
+		"connection_id":      types.Int64Type,
+		"http_method":        types.StringType,
+		"url":                types.StringType,
+		"request_body":       types.StringType,
+		"request_headers":    types.ListType{ElemType: types.ObjectType{AttrTypes: HTTPRequestHeadersAttrTypes()}},
+		"request_parameters": types.ListType{ElemType: types.ObjectType{AttrTypes: HTTPRequestParametersAttrTypes()}},
+		"custom_variables":   types.SetType{ElemType: types.ObjectType{AttrTypes: CustomVariableAttrTypes()}},
 	}
 }

@@ -175,20 +175,47 @@ func TaskObjectAttrTypes() map[string]attr.Type {
 		"task_identifier": types.Int64Type,
 		"type":            types.StringType,
 
-		// 以下、config フィールドは仮（空の object）として定義
-		"bigquery_data_check_config":                     types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"http_request_config":                            types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"redshift_data_check_config":                     types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"slack_notification_config":                      types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"snowflake_data_check_config":                    types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"tableau_data_extraction_config":                 types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"trocco_bigquery_datamart_config":                types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"trocco_dbt_config":                              types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"trocco_pipeline_config":                         types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"trocco_redshift_datamart_config":                types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"trocco_snowflake_datamart_config":               types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"trocco_azure_synapse_analytics_datamart_config": types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"trocco_transfer_bulk_config":                    types.ObjectType{AttrTypes: map[string]attr.Type{}},
-		"trocco_transfer_config":                         types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"bigquery_data_check_config": types.ObjectType{
+			AttrTypes: BigqueryDataCheckTaskConfigAttrTypes(),
+		},
+		"http_request_config": types.ObjectType{
+			AttrTypes: HTTPRequestTaskConfigAttrTypes(),
+		},
+		"redshift_data_check_config": types.ObjectType{
+			AttrTypes: RedshiftDataCheckTaskConfigAttrTypes(),
+		},
+		"slack_notification_config": types.ObjectType{
+			AttrTypes: SlackNotificationTaskConfigAttrTypes(),
+		},
+		"snowflake_data_check_config": types.ObjectType{
+			AttrTypes: SnowflakeDataCheckTaskConfigAttrTypes(),
+		},
+		"tableau_data_extraction_config": types.ObjectType{
+			AttrTypes: TableauDataExtractionTaskConfigAttrTypes(),
+		},
+		"trocco_bigquery_datamart_config": types.ObjectType{
+			AttrTypes: TroccoBigqueryDatamartTaskConfigAttrTypes(),
+		},
+		"trocco_dbt_config": types.ObjectType{
+			AttrTypes: TroccoDBTTaskConfigAttrTypes(),
+		},
+		"trocco_pipeline_config": types.ObjectType{
+			AttrTypes: TroccoPipelineTaskConfigAttrTypes(),
+		},
+		"trocco_redshift_datamart_config": types.ObjectType{
+			AttrTypes: TroccoRedshiftDatamartTaskConfigAttrTypes(),
+		},
+		"trocco_snowflake_datamart_config": types.ObjectType{
+			AttrTypes: TroccoSnowflakeDatamartTaskConfigAttrTypes(),
+		},
+		"trocco_azure_synapse_analytics_datamart_config": types.ObjectType{
+			AttrTypes: TroccoAzureSynapseAnalyticsDatamartTaskConfigAttrTypes(),
+		},
+		"trocco_transfer_bulk_config": types.ObjectType{
+			AttrTypes: TroccoTransferBulkTaskConfigAttrTypes(),
+		},
+		"trocco_transfer_config": types.ObjectType{
+			AttrTypes: TroccoTransferTaskConfigAttrTypes(),
+		},
 	}
 }
