@@ -7,7 +7,7 @@ import (
 )
 
 func Notifications() schema.Attribute {
-	return schema.ListNestedAttribute{
+	return schema.SetNestedAttribute{
 		MarkdownDescription: "The notifications of the pipeline definition",
 		Optional:            true,
 		NestedObject: schema.NestedAttributeObject{
