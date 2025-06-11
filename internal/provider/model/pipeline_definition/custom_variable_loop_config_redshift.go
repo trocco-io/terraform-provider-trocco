@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
@@ -43,5 +44,14 @@ func (c *RedshiftCustomVariableLoopConfig) ToInput() wp.RedshiftCustomVariableLo
 		Query:        c.Query.ValueString(),
 		Database:     c.Database.ValueString(),
 		Variables:    vs,
+	}
+}
+
+func RedshiftCustomVariableLoopConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"connection_id": types.Int64Type,
+		"query":         types.StringType,
+		"database":      types.StringType,
+		"variables":     types.ListType{ElemType: types.StringType},
 	}
 }
