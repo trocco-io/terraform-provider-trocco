@@ -37,6 +37,13 @@ resource "trocco_pipeline_definition" "bigquery_data_check_query_check" {
         operator      = "equal"
         query_result  = 1
         accepts_null  = false
+        custom_variables = [
+          {
+            name  = "$string$"
+            type  = "string"
+            value = "foo"
+          }
+        ]
       }
     }
   ]

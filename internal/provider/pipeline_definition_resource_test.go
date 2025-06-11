@@ -81,6 +81,10 @@ func TestAccPipelineDefinitionResourceForDataCheckRedshift(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "redshift_data_check"),
 					resource.TestCheckResourceAttr(resourceName, "tasks.0.redshift_data_check_config.query", "          SELECT COUNT(*) FROM examples\n"),
+
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.redshift_data_check_config.custom_variables.0.name", "$string$"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.redshift_data_check_config.custom_variables.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.redshift_data_check_config.custom_variables.0.value", "foo"),
 				),
 			},
 			// Import testing
