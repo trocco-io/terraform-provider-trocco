@@ -19,6 +19,8 @@ func TestAccPipelineDefinitionResourceForDataCheckBigquery(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", "bigquery_data_check"),
 					resource.TestCheckResourceAttr(resourceName, "description", "    This is a pipeline definition for BigQuery data check.\n    It checks if the count of rows in the 'examples' table equals 1.\n"),
 					resource.TestCheckResourceAttr(resourceName, "tasks.0.bigquery_data_check_config.query", "          SELECT COUNT(*) FROM examples\n"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.bigquery_data_check_config.custom_variables.0.name", "$string$"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.bigquery_data_check_config.custom_variables.0.value", "foo"),
 				),
 				ImportStateVerifyIgnore: []string{
 					// The `key` attribute does not exist in the TROCCO API,
