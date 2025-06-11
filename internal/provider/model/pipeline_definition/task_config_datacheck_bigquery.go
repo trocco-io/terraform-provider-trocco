@@ -66,7 +66,7 @@ func BigqueryDataCheckTaskConfigAttrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"name":             types.StringType,
 		"connection_id":    types.Int64Type,
-		"query":            types.StringType,
+		"query":            custom_type.TrimmedStringType{},
 		"operator":         types.StringType,
 		"query_result":     types.Int64Type,
 		"accepts_null":     types.BoolType,
