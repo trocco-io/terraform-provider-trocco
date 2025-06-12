@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
@@ -122,5 +123,52 @@ func (o *PeriodCustomVariableLoopVariableOffset) ToInput() wp.PeriodCustomVariab
 	return wp.PeriodCustomVariableLoopVariableOffset{
 		Value: o.Value.ValueInt64Pointer(),
 		Unit:  o.Unit.ValueString(),
+	}
+}
+func PeriodCustomVariableLoopConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"interval":  types.StringType,
+		"time_zone": types.StringType,
+		"from": types.ObjectType{
+			AttrTypes: PeriodCustomVariableLoopFromAttrTypes(),
+		},
+		"to": types.ObjectType{
+			AttrTypes: PeriodCustomVariableLoopToAttrTypes(),
+		},
+		"variables": types.ListType{
+			ElemType: types.ObjectType{
+				AttrTypes: PeriodCustomVariableLoopVariableAttrTypes(),
+			},
+		},
+	}
+}
+
+func PeriodCustomVariableLoopVariableAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name": types.StringType,
+		"offset": types.ObjectType{
+			AttrTypes: PeriodCustomVariableLoopVariableOffsetAttrTypes(),
+		},
+	}
+}
+
+func PeriodCustomVariableLoopVariableOffsetAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"value": types.Int64Type,
+		"unit":  types.StringType,
+	}
+}
+
+func PeriodCustomVariableLoopFromAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"value": types.Int64Type,
+		"unit":  types.StringType,
+	}
+}
+
+func PeriodCustomVariableLoopToAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"value": types.Int64Type,
+		"unit":  types.StringType,
 	}
 }

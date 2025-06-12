@@ -5,6 +5,7 @@ import (
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	model "terraform-provider-trocco/internal/provider/model"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -34,5 +35,14 @@ func (c *SlackNotificationTaskConfig) ToInput() *wp.SlackNotificationTaskConfig 
 		ConnectionID: c.ConnectionID.ValueInt64(),
 		Message:      c.Message.ValueString(),
 		IgnoreError:  model.NewNullableBool(c.IgnoreError),
+	}
+}
+
+func SlackNotificationTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":          types.StringType,
+		"connection_id": types.Int64Type,
+		"message":       types.StringType,
+		"ignore_error":  types.BoolType,
 	}
 }

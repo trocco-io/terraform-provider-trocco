@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
@@ -63,5 +64,20 @@ func (v *StringCustomVariableLoopVariable) ToInput() wp.StringCustomVariableLoop
 	return wp.StringCustomVariableLoopVariable{
 		Name:   v.Name.ValueString(),
 		Values: values,
+	}
+}
+
+func StringCustomVariableLoopConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"variables": types.ListType{
+			ElemType: types.ObjectType{AttrTypes: StringCustomVariableLoopVariableAttrTypes()},
+		},
+	}
+}
+
+func StringCustomVariableLoopVariableAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":   types.StringType,
+		"values": types.ListType{ElemType: types.StringType},
 	}
 }
