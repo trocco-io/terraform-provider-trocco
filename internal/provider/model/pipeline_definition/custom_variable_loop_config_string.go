@@ -1,6 +1,9 @@
 package pipeline_definition
 
 import (
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
@@ -8,7 +11,7 @@ import (
 )
 
 type StringCustomVariableLoopConfig struct {
-	Variables []StringCustomVariableLoopVariable `tfsdk:"variables"`
+	Variables types.List `tfsdk:"variables"`
 }
 
 func NewStringCustomVariableLoopConfig(en *we.StringCustomVariableLoopConfig) *StringCustomVariableLoopConfig {
@@ -21,15 +24,31 @@ func NewStringCustomVariableLoopConfig(en *we.StringCustomVariableLoopConfig) *S
 		variables = append(variables, NewStringCustomVariableLoopVariable(variable))
 	}
 
+	listType := types.ObjectType{
+		AttrTypes: StringCustomVariableLoopVariableAttrTypes(),
+	}
+
+	variablesList, diags := types.ListValueFrom(context.Background(), listType, variables)
+	if diags.HasError() {
+		return nil
+	}
+
 	return &StringCustomVariableLoopConfig{
-		Variables: variables,
+		Variables: variablesList,
 	}
 }
 
 func (c *StringCustomVariableLoopConfig) ToInput() wp.StringCustomVariableLoopConfig {
 	vs := []wp.StringCustomVariableLoopVariable{}
-	for _, v := range c.Variables {
-		vs = append(vs, v.ToInput())
+
+	if !c.Variables.IsNull() && !c.Variables.IsUnknown() {
+		var variables []StringCustomVariableLoopVariable
+		diags := c.Variables.ElementsAs(context.Background(), &variables, false)
+		if !diags.HasError() {
+			for _, v := range variables {
+				vs = append(vs, v.ToInput())
+			}
+		}
 	}
 
 	return wp.StringCustomVariableLoopConfig{
@@ -38,8 +57,8 @@ func (c *StringCustomVariableLoopConfig) ToInput() wp.StringCustomVariableLoopCo
 }
 
 type StringCustomVariableLoopVariable struct {
-	Name   types.String   `tfsdk:"name"`
-	Values []types.String `tfsdk:"values"`
+	Name   types.String `tfsdk:"name"`
+	Values types.List   `tfsdk:"values"`
 }
 
 func NewStringCustomVariableLoopVariable(en we.StringCustomVariableLoopVariable) StringCustomVariableLoopVariable {
@@ -48,20 +67,47 @@ func NewStringCustomVariableLoopVariable(en we.StringCustomVariableLoopVariable)
 		values = append(values, types.StringValue(val))
 	}
 
+	valuesList, _ := types.ListValueFrom(
+		context.Background(),
+		types.StringType,
+		values,
+	)
+
 	return StringCustomVariableLoopVariable{
 		Name:   types.StringValue(en.Name),
-		Values: values,
+		Values: valuesList,
 	}
 }
 
 func (v *StringCustomVariableLoopVariable) ToInput() wp.StringCustomVariableLoopVariable {
 	values := []string{}
-	for _, val := range v.Values {
-		values = append(values, val.ValueString())
+	if !v.Values.IsNull() && !v.Values.IsUnknown() {
+		var stringValues []types.String
+		diags := v.Values.ElementsAs(context.Background(), &stringValues, false)
+		if !diags.HasError() {
+			for _, val := range stringValues {
+				values = append(values, val.ValueString())
+			}
+		}
 	}
 
 	return wp.StringCustomVariableLoopVariable{
 		Name:   v.Name.ValueString(),
 		Values: values,
+	}
+}
+
+func StringCustomVariableLoopConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"variables": types.ListType{
+			ElemType: types.ObjectType{AttrTypes: StringCustomVariableLoopVariableAttrTypes()},
+		},
+	}
+}
+
+func StringCustomVariableLoopVariableAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":   types.StringType,
+		"values": types.ListType{ElemType: types.StringType},
 	}
 }
