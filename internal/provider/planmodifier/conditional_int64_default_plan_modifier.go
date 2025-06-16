@@ -39,13 +39,28 @@ func (m ConditionalInt64DefaultPlanModifier) PlanModifyInt64(
 	req planmodifier.Int64Request,
 	resp *planmodifier.Int64Response,
 ) {
+	// If the value is already explicitly set, don't modify it
 	if !req.ConfigValue.IsNull() && !req.ConfigValue.IsUnknown() {
 		return
 	}
 
 	var cond types.String
-	req.Config.GetAttribute(ctx, m.CondAttrPath, &cond)
+	diags := req.Config.GetAttribute(ctx, m.CondAttrPath, &cond)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
 
+	// If the condition is unknown (e.g., from a variable),
+	// we need to keep the field unknown to avoid inconsistent plan
+	if cond.IsUnknown() {
+		if req.ConfigValue.IsNull() {
+			resp.PlanValue = types.Int64Unknown()
+		}
+		return
+	}
+
+	// Only do the comparison if we have a known value
 	if cond.ValueString() == m.TargetValue {
 		resp.PlanValue = types.Int64Value(m.DefaultValue)
 	} else {

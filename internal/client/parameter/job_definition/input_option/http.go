@@ -31,7 +31,7 @@ type HttpInputOptionInput struct {
 	CursorRequestParameterCursorName      *parameter.NullableString `json:"cursor_request_parameter_cursor_name,omitempty"`
 	CursorResponseParameterCursorJsonPath *parameter.NullableString `json:"cursor_response_parameter_cursor_json_path,omitempty"`
 	CursorRequestParameterLimitName       *parameter.NullableString `json:"cursor_request_parameter_limit_name,omitempty"`
-	CursorRequestParameterLimitValue      *parameter.NullableString
+	CursorRequestParameterLimitValue      *parameter.NullableString `json:"cursor_request_parameter_limit_value,omitempty"`
 	RequestParams                         *[]RequestParamInput                    `json:"request_params,omitempty"`
 	RequestBody                           *parameter.NullableString               `json:"request_body,omitempty"`
 	RequestHeaders                        *[]RequestHeaderInput                   `json:"request_headers,omitempty"`
