@@ -45,7 +45,12 @@ func NewInputOption(inputOption client.InputOption, previous *InputOption) (*Inp
 	}, diags
 }
 
-func (o InputOption) ToInput() client.InputOptionInput {
+func (o InputOption) ToInput() (client.InputOptionInput, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	
+	httpInput, d := o.HttpInputOption.ToInput()
+	diags.Append(d...)
+
 	return client.InputOptionInput{
 		GcsInputOption:                model.WrapObject(o.GcsInputOption.ToInput()),
 		MySQLInputOption:              model.WrapObject(o.MySQLInputOption.ToInput()),
@@ -56,13 +61,17 @@ func (o InputOption) ToInput() client.InputOptionInput {
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToInput()),
 		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToInput()),
 		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToInput()),
-		HttpInputOption:               model.WrapObject(o.HttpInputOption.ToInput()),
+		HttpInputOption:               model.WrapObject(httpInput),
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToInput()),
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToInput()),
-	}
+	}, diags
 }
 
-func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
+func (o InputOption) ToUpdateInput() ( *client.UpdateInputOptionInput, diag.Diagnostics ) {
+	var diags diag.Diagnostics
+	httpInput, d := o.HttpInputOption.ToUpdateInput()
+	diags.Append(d...)
+
 	return &client.UpdateInputOptionInput{
 		GcsInputOption:                model.WrapObject(o.GcsInputOption.ToUpdateInput()),
 		MySQLInputOption:              model.WrapObject(o.MySQLInputOption.ToUpdateInput()),
@@ -73,8 +82,8 @@ func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToUpdateInput()),
 		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToUpdateInput()),
 		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToUpdateInput()),
-		HttpInputOption:               model.WrapObject(o.HttpInputOption.ToUpdateInput()),
+		HttpInputOption:               model.WrapObject(httpInput),
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToUpdateInput()),
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToUpdateInput()),
-	}
-}
+	}, diags
+} 

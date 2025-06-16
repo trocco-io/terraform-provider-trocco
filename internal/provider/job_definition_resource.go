@@ -17,6 +17,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -202,7 +203,7 @@ type jobDefinitionResourceModel struct {
 	Labels                    []job_definitions.Label                     `tfsdk:"labels"`
 }
 
-func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.CreateJobDefinitionInput {
+func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() (*client.CreateJobDefinitionInput, diag.Diagnostics) {
 	var labels []string
 	if m.Labels != nil {
 		for _, l := range m.Labels {
@@ -254,6 +255,9 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 		filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
 	}
 
+	var diags diag.Diagnostics
+	inputOption, d := m.InputOption.ToInput()
+	diags.Append(d...)
 	return &client.CreateJobDefinitionInput{
 		Name:                      m.Name.ValueString(),
 		Description:               model.NewNullableString(m.Description),
@@ -270,13 +274,13 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 		FilterHashes:              filterHashes,
 		FilterUnixTimeConversions: filterUnixTimeconversions,
 		InputOptionType:           m.InputOptionType.ValueString(),
-		InputOption:               m.InputOption.ToInput(),
+		InputOption:               inputOption,
 		OutputOptionType:          m.OutputOptionType.ValueString(),
 		OutputOption:              m.OutputOption.ToInput(),
 		Labels:                    labels,
 		Schedules:                 schedules,
 		Notifications:             notifications,
-	}
+	}, diags
 }
 
 func (r *jobDefinitionResource) Update(ctx context.Context, request resource.UpdateRequest, response *resource.UpdateResponse) {
@@ -292,9 +296,14 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		return
 	}
 
+	jobDefinitionInput, diags := plan.ToUpdateJobDefinitionInput()
+	if diags.HasError() {
+		response.Diagnostics.Append(diags...)
+		return
+	}
 	jobDefinition, err := r.client.UpdateJobDefinition(
 		state.ID.ValueInt64(),
-		plan.ToUpdateJobDefinitionInput(),
+		jobDefinitionInput,
 	)
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -337,7 +346,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 	response.Diagnostics.Append(response.State.Set(ctx, newState)...)
 }
 
-func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.UpdateJobDefinitionInput {
+func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() (*client.UpdateJobDefinitionInput, diag.Diagnostics) {
 	labels := []string{}
 	if m.Labels != nil {
 		for _, l := range m.Labels {
@@ -390,6 +399,9 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 		filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
 	}
 
+	var diags diag.Diagnostics
+	inputOption, d := m.InputOption.ToUpdateInput()
+	diags.Append(d...)
 	return &client.UpdateJobDefinitionInput{
 		Name:                      m.Name.ValueStringPointer(),
 		Description:               model.NewNullableString(m.Description),
@@ -405,12 +417,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 		FilterStringTransforms:    &filterStringTransforms,
 		FilterHashes:              &filterHashes,
 		FilterUnixTimeConversions: &filterUnixTimeconversions,
-		InputOption:               m.InputOption.ToUpdateInput(),
+		InputOption:               inputOption,
 		OutputOption:              m.OutputOption.ToUpdateInput(),
 		Labels:                    &labels,
 		Schedules:                 &schedules,
 		Notifications:             &notifications,
-	}
+	}, diags
 }
 
 func (r *jobDefinitionResource) Create(
@@ -424,9 +436,12 @@ func (r *jobDefinitionResource) Create(
 		return
 	}
 
-	jobDefinition, err := r.client.CreateJobDefinition(
-		plan.ToCreateJobDefinitionInput(),
-	)
+	jobDefinitionInput, diags := plan.ToCreateJobDefinitionInput()
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
+	jobDefinition, err := r.client.CreateJobDefinition(jobDefinitionInput)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Creating job definition",

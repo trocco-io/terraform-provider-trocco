@@ -63,14 +63,17 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 		return nil, nil
 	}
 
+	var diags diag.Diagnostics
 	var previousRequestHeaders []RequestHeader
 	var previousRequestParameters []RequestParam
 	if previous != nil {
-		previous.RequestHeaders.ElementsAs(context.Background(), &previousRequestHeaders, false)
-		previous.RequestParams.ElementsAs(context.Background(), &previousRequestParameters, false)
+		diags.Append(previous.RequestHeaders.ElementsAs(context.Background(), &previousRequestHeaders, false)...)
+		diags.Append(previous.RequestParams.ElementsAs(context.Background(), &previousRequestParameters, false)...)
+		if diags.HasError() {
+			return nil, diags
+		}
 	}
 
-	var diags diag.Diagnostics
 	requestParams, d := NewRequestParams(httpInputOption.RequestParams, previousRequestParameters)
 	diags.Append(d...)
 	requestHeaders, d := NewRequestHeaders(httpInputOption.RequestHeaders, previousRequestHeaders)
@@ -190,13 +193,17 @@ func headerParamType() types.ObjectType {
 	}
 }
 
-func (httpInputOption *HttpInputOption) ToInput() *parameter.HttpInputOptionInput {
+func (httpInputOption *HttpInputOption) ToInput() (*parameter.HttpInputOptionInput, diag.Diagnostics) {
 	if httpInputOption == nil {
-		return nil
+		return nil, nil
 	}
 
+	var diags diag.Diagnostics
 	var httpInputParams []RequestParam
-	httpInputOption.RequestParams.ElementsAs(context.Background(), &httpInputParams, false)
+	diags.Append(httpInputOption.RequestParams.ElementsAs(context.Background(), &httpInputParams, false)...)
+	if diags.HasError() {
+		return nil, diags
+	}
 	var requestParams []parameter.RequestParamInput
 	for _, param := range httpInputParams {
 		requestParams = append(requestParams, parameter.RequestParamInput{
@@ -207,7 +214,10 @@ func (httpInputOption *HttpInputOption) ToInput() *parameter.HttpInputOptionInpu
 	}
 
 	var httpInputHeaders []RequestHeader
-	httpInputOption.RequestHeaders.ElementsAs(context.Background(), &httpInputHeaders, false)
+	diags.Append(httpInputOption.RequestHeaders.ElementsAs(context.Background(), &httpInputHeaders, false)...)
+	if diags.HasError() {
+		return nil, diags
+	}
 	var requestHeaders []parameter.RequestHeaderInput
 	for _, header := range httpInputHeaders {
 		requestHeaders = append(requestHeaders, parameter.RequestHeaderInput{
@@ -248,16 +258,20 @@ func (httpInputOption *HttpInputOption) ToInput() *parameter.HttpInputOptionInpu
 		ExcelParser:                           httpInputOption.ExcelParser.ToExcelParserInput(),
 		XmlParser:                             httpInputOption.XmlParser.ToXmlParserInput(),
 		CustomVariableSettings:                model.ToCustomVariableSettingInputs(httpInputOption.CustomVariableSettings),
-	}
+	}, diags
 }
 
-func (httpInputOption *HttpInputOption) ToUpdateInput() *parameter.UpdateHttpInputOptionInput {
+func (httpInputOption *HttpInputOption) ToUpdateInput() (*parameter.UpdateHttpInputOptionInput, diag.Diagnostics) {
 	if httpInputOption == nil {
-		return nil
+		return nil, nil
 	}
 
+	var diags diag.Diagnostics
 	var httpInputParams []RequestParam
-	httpInputOption.RequestParams.ElementsAs(context.Background(), &httpInputParams, false)
+	diags.Append(httpInputOption.RequestParams.ElementsAs(context.Background(), &httpInputParams, false)...)
+	if diags.HasError() {
+		return nil, diags
+	}
 	var requestParams []parameter.RequestParamInput
 	for _, param := range httpInputParams {
 		requestParams = append(requestParams, parameter.RequestParamInput{
@@ -268,7 +282,10 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() *parameter.UpdateHttpInp
 	}
 
 	var httpInputHeaders []RequestHeader
-	httpInputOption.RequestHeaders.ElementsAs(context.Background(), &httpInputHeaders, false)
+	diags.Append(httpInputOption.RequestHeaders.ElementsAs(context.Background(), &httpInputHeaders, false)...)
+	if diags.HasError() {
+		return nil, diags
+	}
 	var requestHeaders []parameter.RequestHeaderInput
 	for _, header := range httpInputHeaders {
 		requestHeaders = append(requestHeaders, parameter.RequestHeaderInput{
@@ -309,5 +326,5 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() *parameter.UpdateHttpInp
 		ExcelParser:                           httpInputOption.ExcelParser.ToExcelParserInput(),
 		XmlParser:                             httpInputOption.XmlParser.ToXmlParserInput(),
 		CustomVariableSettings:                model.ToCustomVariableSettingInputs(httpInputOption.CustomVariableSettings),
-	}
+	}, diags
 }
