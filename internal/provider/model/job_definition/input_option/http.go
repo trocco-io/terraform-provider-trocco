@@ -109,6 +109,7 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 		LtsvParser:                            parser.NewLtsvParser(httpInputOption.LtsvParser),
 		ExcelParser:                           parser.NewExcelParser(httpInputOption.ExcelParser),
 		XmlParser:                             parser.NewXmlParser(httpInputOption.XmlParser),
+		ParquetParser:                         nil, // ParquetParser is not supported in Http input
 		CustomVariableSettings:                model.NewCustomVariableSettings(httpInputOption.CustomVariableSettings),
 	}, diags
 }

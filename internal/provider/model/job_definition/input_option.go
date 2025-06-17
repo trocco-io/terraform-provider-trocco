@@ -47,7 +47,7 @@ func NewInputOption(inputOption client.InputOption, previous *InputOption) (*Inp
 
 func (o InputOption) ToInput() (client.InputOptionInput, diag.Diagnostics) {
 	var diags diag.Diagnostics
-	
+
 	httpInput, d := o.HttpInputOption.ToInput()
 	diags.Append(d...)
 
@@ -67,7 +67,7 @@ func (o InputOption) ToInput() (client.InputOptionInput, diag.Diagnostics) {
 	}, diags
 }
 
-func (o InputOption) ToUpdateInput() ( *client.UpdateInputOptionInput, diag.Diagnostics ) {
+func (o InputOption) ToUpdateInput() (*client.UpdateInputOptionInput, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	httpInput, d := o.HttpInputOption.ToUpdateInput()
 	diags.Append(d...)
@@ -86,4 +86,4 @@ func (o InputOption) ToUpdateInput() ( *client.UpdateInputOptionInput, diag.Diag
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToUpdateInput()),
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToUpdateInput()),
 	}, diags
-} 
+}

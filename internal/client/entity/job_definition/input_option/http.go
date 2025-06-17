@@ -47,4 +47,5 @@ type HttpInputOption struct {
 	LtsvParser                            *job_definitions.LtsvParser     `json:"ltsv_parser"`
 	ExcelParser                           *job_definitions.ExcelParser    `json:"excel_parser"`
 	XmlParser                             *job_definitions.XmlParser      `json:"xml_parser"`
+	ParquetParser                         *job_definitions.ParquetParser  `json:"parquet_parser"`
 }
