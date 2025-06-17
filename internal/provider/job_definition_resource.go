@@ -11,11 +11,13 @@ import (
 	"terraform-provider-trocco/internal/provider/model"
 	job_definitions "terraform-provider-trocco/internal/provider/model/job_definition"
 	"terraform-provider-trocco/internal/provider/model/job_definition/filter"
+	input_options "terraform-provider-trocco/internal/provider/model/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/schema/job_definition"
 	"terraform-provider-trocco/internal/provider/schema/job_definition/filters"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -201,7 +203,7 @@ type jobDefinitionResourceModel struct {
 	Labels                    []job_definitions.Label                     `tfsdk:"labels"`
 }
 
-func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.CreateJobDefinitionInput {
+func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() (*client.CreateJobDefinitionInput, diag.Diagnostics) {
 	var labels []string
 	if m.Labels != nil {
 		for _, l := range m.Labels {
@@ -253,6 +255,9 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 		filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
 	}
 
+	var diags diag.Diagnostics
+	inputOption, d := m.InputOption.ToInput()
+	diags.Append(d...)
 	return &client.CreateJobDefinitionInput{
 		Name:                      m.Name.ValueString(),
 		Description:               model.NewNullableString(m.Description),
@@ -269,13 +274,13 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() *client.Create
 		FilterHashes:              filterHashes,
 		FilterUnixTimeConversions: filterUnixTimeconversions,
 		InputOptionType:           m.InputOptionType.ValueString(),
-		InputOption:               m.InputOption.ToInput(),
+		InputOption:               inputOption,
 		OutputOptionType:          m.OutputOptionType.ValueString(),
 		OutputOption:              m.OutputOption.ToInput(),
 		Labels:                    labels,
 		Schedules:                 schedules,
 		Notifications:             notifications,
-	}
+	}, diags
 }
 
 func (r *jobDefinitionResource) Update(ctx context.Context, request resource.UpdateRequest, response *resource.UpdateResponse) {
@@ -291,15 +296,26 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		return
 	}
 
+	jobDefinitionInput, diags := plan.ToUpdateJobDefinitionInput()
+	if diags.HasError() {
+		response.Diagnostics.Append(diags...)
+		return
+	}
 	jobDefinition, err := r.client.UpdateJobDefinition(
 		state.ID.ValueInt64(),
-		plan.ToUpdateJobDefinitionInput(),
+		jobDefinitionInput,
 	)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Updating job definition",
 			fmt.Sprintf("Unable to update job definition, got error: %s", err),
 		)
+		return
+	}
+
+	inputOption, diags := job_definitions.NewInputOption(jobDefinition.InputOption, plan.InputOption)
+	if diags.HasError() {
+		response.Diagnostics.Append(diags...)
 		return
 	}
 
@@ -312,7 +328,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
 		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
 		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
-		InputOption:               job_definitions.NewInputOption(jobDefinition.InputOption),
+		InputOption:               inputOption,
 		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
 		OutputOption:              job_definitions.NewOutputOption(jobDefinition.OutputOption),
 		FilterColumns:             filter.NewFilterColumns(jobDefinition.FilterColumns),
@@ -330,7 +346,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 	response.Diagnostics.Append(response.State.Set(ctx, newState)...)
 }
 
-func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.UpdateJobDefinitionInput {
+func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() (*client.UpdateJobDefinitionInput, diag.Diagnostics) {
 	labels := []string{}
 	if m.Labels != nil {
 		for _, l := range m.Labels {
@@ -383,6 +399,9 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 		filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
 	}
 
+	var diags diag.Diagnostics
+	inputOption, d := m.InputOption.ToUpdateInput()
+	diags.Append(d...)
 	return &client.UpdateJobDefinitionInput{
 		Name:                      m.Name.ValueStringPointer(),
 		Description:               model.NewNullableString(m.Description),
@@ -398,12 +417,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() *client.Update
 		FilterStringTransforms:    &filterStringTransforms,
 		FilterHashes:              &filterHashes,
 		FilterUnixTimeConversions: &filterUnixTimeconversions,
-		InputOption:               m.InputOption.ToUpdateInput(),
+		InputOption:               inputOption,
 		OutputOption:              m.OutputOption.ToUpdateInput(),
 		Labels:                    &labels,
 		Schedules:                 &schedules,
 		Notifications:             &notifications,
-	}
+	}, diags
 }
 
 func (r *jobDefinitionResource) Create(
@@ -417,14 +436,23 @@ func (r *jobDefinitionResource) Create(
 		return
 	}
 
-	jobDefinition, err := r.client.CreateJobDefinition(
-		plan.ToCreateJobDefinitionInput(),
-	)
+	jobDefinitionInput, diags := plan.ToCreateJobDefinitionInput()
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
+	jobDefinition, err := r.client.CreateJobDefinition(jobDefinitionInput)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Creating job definition",
 			fmt.Sprintf("Unable to create job definition, got error: %s", err),
 		)
+		return
+	}
+
+	inputOption, diags := job_definitions.NewInputOption(jobDefinition.InputOption, plan.InputOption)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
 		return
 	}
 
@@ -437,7 +465,7 @@ func (r *jobDefinitionResource) Create(
 		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
 		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
 		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
-		InputOption:               job_definitions.NewInputOption(jobDefinition.InputOption),
+		InputOption:               inputOption,
 		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
 		OutputOption:              job_definitions.NewOutputOption(jobDefinition.OutputOption),
 		FilterColumns:             filter.NewFilterColumns(jobDefinition.FilterColumns),
@@ -474,6 +502,11 @@ func (r *jobDefinitionResource) Read(
 		)
 		return
 	}
+	inputOption, diags := job_definitions.NewInputOption(jobDefinition.InputOption, state.InputOption)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
 
 	newState := jobDefinitionResourceModel{
 		ID:                        types.Int64Value(jobDefinition.ID),
@@ -484,7 +517,7 @@ func (r *jobDefinitionResource) Read(
 		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
 		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
 		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
-		InputOption:               job_definitions.NewInputOption(jobDefinition.InputOption),
+		InputOption:               inputOption,
 		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
 		OutputOption:              job_definitions.NewOutputOption(jobDefinition.OutputOption),
 		FilterColumns:             filter.NewFilterColumns(jobDefinition.FilterColumns),
@@ -520,5 +553,78 @@ func (r *jobDefinitionResource) Delete(
 			fmt.Sprintf("Unable to delete job definition, got error: %s", err),
 		)
 		return
+	}
+}
+
+func (r *jobDefinitionResource) ValidateConfig(
+	ctx context.Context,
+	req resource.ValidateConfigRequest,
+	resp *resource.ValidateConfigResponse,
+) {
+	data := &jobDefinitionResourceModel{}
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if data.InputOptionType.ValueString() == "http" {
+		if data.InputOption.HttpInputOption == nil {
+			return
+		}
+		httpInputOption := data.InputOption.HttpInputOption
+		validateHttpInputOption(httpInputOption, resp)
+	}
+}
+
+func validateHttpInputOption(httpInputOption *input_options.HttpInputOption, resp *resource.ValidateConfigResponse) {
+	// validate that request_body and request_params are not set at the same time
+	bodySet := !httpInputOption.RequestBody.IsNull() && !httpInputOption.RequestBody.IsUnknown()
+	paramsSet := !httpInputOption.RequestParams.IsNull() && len(httpInputOption.RequestParams.Elements()) > 0
+
+	if bodySet && httpInputOption.Method.ValueString() != "POST" {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("request_body"),
+			"request_body is only allowed when method == \"POST\"",
+			fmt.Sprintf("method is %q, so request_body must be removed or method changed to \"POST\".",
+				httpInputOption.Method.ValueString()),
+		)
+	}
+
+	if bodySet && paramsSet {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("request_body"),
+			"request_body conflicts with request_params",
+			"When request_body is set, request_params must be omitted.",
+		)
+	}
+
+	// validate pagination settings
+	switch httpInputOption.PagerType.ValueString() {
+	case "offset":
+		if httpInputOption.PagerFromParam.IsNull() ||
+			httpInputOption.PagerFromParam.IsUnknown() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("pager_from_param"),
+				"pager_from_param is required when pager_type is offset",
+				"pager_from_param must be set to the name of the parameter that specifies the starting offset.",
+			)
+		}
+	case "cursor":
+		if httpInputOption.CursorRequestParameterCursorName.IsNull() ||
+			httpInputOption.CursorRequestParameterCursorName.IsUnknown() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("cursor_request_parameter_cursor_name"),
+				"cursor_request_parameter_cursor_name is required when pager_type is cursor",
+				"cursor_request_parameter_cursor_name must be set to the name of the parameter that specifies the cursor.",
+			)
+		}
+		if httpInputOption.CursorResponseParameterCursorJsonPath.IsNull() ||
+			httpInputOption.CursorResponseParameterCursorJsonPath.IsUnknown() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("cursor_response_parameter_cursor_json_path"),
+				"cursor_response_parameter_cursor_json_path is required when pager_type is cursor",
+				"cursor_response_parameter_cursor_json_path must be set to the JSONPath that extracts the cursor value from the response.",
+			)
+		}
 	}
 }
