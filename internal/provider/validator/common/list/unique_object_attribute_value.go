@@ -9,24 +9,24 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ validator.List = UniqueObjectAttributeValue{}
+var _ validator.Set = UniqueObjectAttributeValue{}
 
 type UniqueObjectAttributeValue struct {
 	AttributeName string
 }
 
 func (v UniqueObjectAttributeValue) Description(ctx context.Context) string {
-	return "Ensures the value of the specified attribute of the object in the list is unique."
+	return "Ensures the value of the specified attribute of the object in the set is unique."
 }
 
 func (v UniqueObjectAttributeValue) MarkdownDescription(ctx context.Context) string {
 	return v.Description(ctx)
 }
 
-func (v UniqueObjectAttributeValue) ValidateList(
+func (v UniqueObjectAttributeValue) ValidateSet(
 	ctx context.Context,
-	req validator.ListRequest,
-	resp *validator.ListResponse,
+	req validator.SetRequest,
+	resp *validator.SetResponse,
 ) {
 	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
 		return
@@ -53,12 +53,12 @@ func (v UniqueObjectAttributeValue) ValidateList(
 			continue
 		}
 
-		// Check if the attribute value is already in the list.
+		// Check if the attribute value is already in the set.
 		for _, existingAttributeValue := range existingAttributeValues {
 			if existingAttributeValue.Equal(attributeValue) {
 				resp.Diagnostics.AddAttributeError(
 					req.Path.AtListIndex(i),
-					"Duplicated Value of Attribute of Object in List",
+					"Duplicated Value of Attribute of Object in Set",
 					fmt.Sprintf(
 						"Attribute value %s of %s is duplicated",
 						attributeValue,

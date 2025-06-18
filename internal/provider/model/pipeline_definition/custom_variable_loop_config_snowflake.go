@@ -1,6 +1,9 @@
 package pipeline_definition
 
 import (
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
@@ -8,10 +11,10 @@ import (
 )
 
 type SnowflakeCustomVariableLoopConfig struct {
-	ConnectionID types.Int64    `tfsdk:"connection_id"`
-	Query        types.String   `tfsdk:"query"`
-	Warehouse    types.String   `tfsdk:"warehouse"`
-	Variables    []types.String `tfsdk:"variables"`
+	ConnectionID types.Int64  `tfsdk:"connection_id"`
+	Query        types.String `tfsdk:"query"`
+	Warehouse    types.String `tfsdk:"warehouse"`
+	Variables    types.List   `tfsdk:"variables"`
 }
 
 func NewSnowflakeCustomVariableLoopConfig(en *we.SnowflakeCustomVariableLoopConfig) *SnowflakeCustomVariableLoopConfig {
@@ -24,18 +27,33 @@ func NewSnowflakeCustomVariableLoopConfig(en *we.SnowflakeCustomVariableLoopConf
 		vs = append(vs, types.StringValue(v))
 	}
 
+	variablesList, diags := types.ListValueFrom(
+		context.Background(),
+		types.StringType,
+		vs,
+	)
+	if diags.HasError() {
+		return nil
+	}
+
 	return &SnowflakeCustomVariableLoopConfig{
 		ConnectionID: types.Int64Value(en.ConnectionID),
 		Query:        types.StringValue(en.Query),
 		Warehouse:    types.StringValue(en.Warehouse),
-		Variables:    vs,
+		Variables:    variablesList,
 	}
 }
 
 func (c *SnowflakeCustomVariableLoopConfig) ToInput() wp.SnowflakeCustomVariableLoopConfig {
 	vs := []string{}
-	for _, v := range c.Variables {
-		vs = append(vs, v.ValueString())
+	if !c.Variables.IsNull() && !c.Variables.IsUnknown() {
+		var stringValues []types.String
+		diags := c.Variables.ElementsAs(context.Background(), &stringValues, false)
+		if !diags.HasError() {
+			for _, v := range stringValues {
+				vs = append(vs, v.ValueString())
+			}
+		}
 	}
 
 	return wp.SnowflakeCustomVariableLoopConfig{
@@ -43,5 +61,14 @@ func (c *SnowflakeCustomVariableLoopConfig) ToInput() wp.SnowflakeCustomVariable
 		Query:        c.Query.ValueString(),
 		Warehouse:    c.Warehouse.ValueString(),
 		Variables:    vs,
+	}
+}
+
+func SnowflakeCustomVariableLoopConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"connection_id": types.Int64Type,
+		"query":         types.StringType,
+		"warehouse":     types.StringType,
+		"variables":     types.ListType{ElemType: types.StringType},
 	}
 }

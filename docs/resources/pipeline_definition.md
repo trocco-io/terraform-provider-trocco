@@ -575,7 +575,7 @@ resource "trocco_pipeline_definition" "trocco_pipeline" {
 - `resource_group_id` (Number) The resource group ID of the pipeline definition
 - `schedules` (Attributes Set) The schedules of the pipeline definition (see [below for nested schema](#nestedatt--schedules))
 - `task_dependencies` (Attributes Set) The task dependencies of the workflow. (see [below for nested schema](#nestedatt--task_dependencies))
-- `tasks` (Attributes List) The tasks of the workflow. (see [below for nested schema](#nestedatt--tasks))
+- `tasks` (Attributes Set) The tasks of the workflow. (see [below for nested schema](#nestedatt--tasks))
 
 ### Read-Only
 
