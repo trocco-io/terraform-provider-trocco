@@ -35,13 +35,13 @@ func NewNotifications(ens []*we.Notification, previousIsNull bool) types.Set {
 			"email_config": types.ObjectType{
 				AttrTypes: map[string]attr.Type{
 					"notification_id": types.Int64Type,
-					"message":         types.StringType,
+					"message":         custom_type.TrimmedStringType{},
 				},
 			},
 			"slack_config": types.ObjectType{
 				AttrTypes: map[string]attr.Type{
 					"notification_id": types.Int64Type,
-					"message":         types.StringType,
+					"message":         custom_type.TrimmedStringType{},
 				},
 			},
 		},
