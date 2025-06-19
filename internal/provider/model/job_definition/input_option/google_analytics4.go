@@ -1,10 +1,13 @@
 package input_options
 
 import (
+	"context"
+	"fmt"
 	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
 	param "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -19,7 +22,7 @@ type GoogleAnalytics4InputOption struct {
 	RetrySleep                   types.Int64                    `tfsdk:"retry_sleep"`
 	RaiseOnOtherRow              types.Bool                     `tfsdk:"raise_on_other_row"`
 	LimitOfRows                  types.Int64                    `tfsdk:"limit_of_rows"`
-	GoogleAnalytics4Dimensions   []GoogleAnalytics4Dimension    `tfsdk:"google_analytics4_input_option_dimensions"`
+	GoogleAnalytics4Dimensions   types.Set                      `tfsdk:"google_analytics4_input_option_dimensions"`
 	GoogleAnalytics4Metrics      []GoogleAnalytics4Metric       `tfsdk:"google_analytics4_input_option_metrics"`
 	InputOptionColumns           []GoogleAnalytics4Column       `tfsdk:"input_option_columns"`
 	CustomVariableSettings       *[]model.CustomVariableSetting `tfsdk:"custom_variable_settings"`
@@ -40,12 +43,12 @@ type GoogleAnalytics4Column struct {
 	Type types.String `tfsdk:"type"`
 }
 
-func NewGoogleAnalytics4InputOption(inputOption *input_option.GoogleAnalytics4InputOption) *GoogleAnalytics4InputOption {
+func NewGoogleAnalytics4InputOption(ctx context.Context, inputOption *input_option.GoogleAnalytics4InputOption) *GoogleAnalytics4InputOption {
 	if inputOption == nil {
 		return nil
 	}
 
-	return &GoogleAnalytics4InputOption{
+	result := &GoogleAnalytics4InputOption{
 		GoogleAnalytics4ConnectionID: types.Int64Value(inputOption.GoogleAnalytics4ConnectionID),
 		PropertyID:                   types.StringValue(inputOption.PropertyID),
 		TimeSeries:                   types.StringValue(inputOption.TimeSeries),
@@ -56,11 +59,26 @@ func NewGoogleAnalytics4InputOption(inputOption *input_option.GoogleAnalytics4In
 		RetrySleep:                   types.Int64PointerValue(inputOption.RetrySleep),
 		RaiseOnOtherRow:              types.BoolPointerValue(inputOption.RaiseOnOtherRow),
 		LimitOfRows:                  types.Int64PointerValue(inputOption.LimitOfRows),
-		GoogleAnalytics4Dimensions:   newGoogleAnalytics4Dimensions(inputOption.GoogleAnalytics4Dimensions),
 		GoogleAnalytics4Metrics:      newGoogleAnalytics4Metrics(inputOption.GoogleAnalytics4Metrics),
 		InputOptionColumns:           newGoogleAnalytics4InputOptionColumns(inputOption.InputOptionColumns),
 		CustomVariableSettings:       model.NewCustomVariableSettings(inputOption.CustomVariableSettings),
 	}
+
+	// Convert GoogleAnalytics4Dimensions to Set
+	dimensions := newGoogleAnalytics4Dimensions(inputOption.GoogleAnalytics4Dimensions)
+	objectType := types.ObjectType{
+		AttrTypes: GoogleAnalytics4Dimension{}.attrTypes(),
+	}
+
+	setValue, diags := types.SetValueFrom(ctx, objectType, dimensions)
+	if diags.HasError() {
+		// In case of error, we cannot return an error here, so we'll create an empty set
+		result.GoogleAnalytics4Dimensions = types.SetNull(objectType)
+	} else {
+		result.GoogleAnalytics4Dimensions = setValue
+	}
+
+	return result
 }
 func newGoogleAnalytics4Dimensions(inputOptionDimensions []input_option.GoogleAnalytics4Dimension) []GoogleAnalytics4Dimension {
 	if inputOptionDimensions == nil {
@@ -110,9 +128,26 @@ func newGoogleAnalytics4InputOptionColumns(inputOptionColumns []input_option.Goo
 	return columns
 }
 
-func (inputOption *GoogleAnalytics4InputOption) ToInput() *param.GoogleAnalytics4InputOptionInput {
+func (g GoogleAnalytics4Dimension) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":       types.StringType,
+		"expression": types.StringType,
+	}
+}
+
+func (inputOption *GoogleAnalytics4InputOption) ToInput(ctx context.Context) *param.GoogleAnalytics4InputOptionInput {
 	if inputOption == nil {
 		return nil
+	}
+
+	// Convert Set back to slice for dimensions
+	var dimensionValues []GoogleAnalytics4Dimension
+	if !inputOption.GoogleAnalytics4Dimensions.IsNull() && !inputOption.GoogleAnalytics4Dimensions.IsUnknown() {
+		diags := inputOption.GoogleAnalytics4Dimensions.ElementsAs(ctx, &dimensionValues, false)
+		if diags.HasError() {
+			// If there's an error, we'll just use an empty slice
+			dimensionValues = []GoogleAnalytics4Dimension{}
+		}
 	}
 
 	return &param.GoogleAnalytics4InputOptionInput{
@@ -126,19 +161,29 @@ func (inputOption *GoogleAnalytics4InputOption) ToInput() *param.GoogleAnalytics
 		RetrySleep:                            model.NewNullableInt64(inputOption.RetrySleep),
 		RaiseOnOtherRow:                       inputOption.RaiseOnOtherRow.ValueBoolPointer(),
 		LimitOfRows:                           model.NewNullableInt64(inputOption.LimitOfRows),
-		GoogleAnalytics4InputOptionDimensions: toGoogleAnalytics4DimensionsInput(inputOption.GoogleAnalytics4Dimensions),
+		GoogleAnalytics4InputOptionDimensions: toGoogleAnalytics4DimensionsInput(dimensionValues),
 		GoogleAnalytics4InputOptionMetrics:    toGoogleAnalytics4MetricsInput(inputOption.GoogleAnalytics4Metrics),
 		InputOptionColumns:                    toGoogleAnalytics4ColumnsInput(inputOption.InputOptionColumns),
 		CustomVariableSettings:                model.ToCustomVariableSettingInputs(inputOption.CustomVariableSettings),
 	}
 }
 
-func (inputOption *GoogleAnalytics4InputOption) ToUpdateInput() *param.UpdateGoogleAnalytics4InputOptionInput {
+func (inputOption *GoogleAnalytics4InputOption) ToUpdateInput(ctx context.Context) *param.UpdateGoogleAnalytics4InputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
 
-	dimensions := toGoogleAnalytics4DimensionsInput(inputOption.GoogleAnalytics4Dimensions)
+	// Convert Set back to slice for dimensions
+	var dimensionValues []GoogleAnalytics4Dimension
+	if !inputOption.GoogleAnalytics4Dimensions.IsNull() && !inputOption.GoogleAnalytics4Dimensions.IsUnknown() {
+		diags := inputOption.GoogleAnalytics4Dimensions.ElementsAs(ctx, &dimensionValues, false)
+		if diags.HasError() {
+			// If there's an error, we'll just use an empty slice
+			dimensionValues = []GoogleAnalytics4Dimension{}
+		}
+	}
+
+	dimensions := toGoogleAnalytics4DimensionsInput(dimensionValues)
 	metrics := toGoogleAnalytics4MetricsInput(inputOption.GoogleAnalytics4Metrics)
 	columns := toGoogleAnalytics4ColumnsInput(inputOption.InputOptionColumns)
 
