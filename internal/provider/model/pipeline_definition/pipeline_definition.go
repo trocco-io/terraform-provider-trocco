@@ -1,6 +1,8 @@
 package pipeline_definition
 
 import (
+	"context"
+
 	"terraform-provider-trocco/internal/client"
 	entity "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	pdp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
@@ -22,11 +24,11 @@ type PipelineDefinition struct {
 	MinRetryInterval             types.Int64                    `tfsdk:"min_retry_interval"`
 	IsConcurrentExecutionSkipped types.Bool                     `tfsdk:"is_concurrent_execution_skipped"`
 	IsStoppedOnErrors            types.Bool                     `tfsdk:"is_stopped_on_errors"`
-	Labels                       []types.String                 `tfsdk:"labels"`
-	Notifications                []*Notification                `tfsdk:"notifications"`
-	Schedules                    []*Schedule                    `tfsdk:"schedules"`
-	Tasks                        []*Task                        `tfsdk:"tasks"`
-	TaskDependencies             []*TaskDependency              `tfsdk:"task_dependencies"`
+	Labels                       types.Set                      `tfsdk:"labels"`
+	Notifications                types.Set                      `tfsdk:"notifications"`
+	Schedules                    types.Set                      `tfsdk:"schedules"`
+	Tasks                        types.Set                      `tfsdk:"tasks"`
+	TaskDependencies             types.Set                      `tfsdk:"task_dependencies"`
 }
 
 func NewPipelineDefinition(en *entity.PipelineDefinition, keys map[int64]types.String, previous *PipelineDefinition) *PipelineDefinition {

@@ -1,10 +1,13 @@
 package pipeline_definition
 
 import (
+	"context"
+
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -58,5 +61,16 @@ func (m *Schedule) ToInput() *wp.Schedule {
 		Day:       &p.NullableInt64{Valid: !m.Day.IsNull(), Value: m.Day.ValueInt64()},
 		DayOfWeek: &p.NullableInt64{Valid: !m.DayOfWeek.IsNull(), Value: m.DayOfWeek.ValueInt64()},
 		Hour:      &p.NullableInt64{Valid: !m.Hour.IsNull(), Value: m.Hour.ValueInt64()},
+	}
+}
+
+func (Schedule) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"frequency":   types.StringType,
+		"time_zone":   types.StringType,
+		"day":         types.Int64Type,
+		"day_of_week": types.Int64Type,
+		"hour":        types.Int64Type,
+		"minute":      types.Int64Type,
 	}
 }

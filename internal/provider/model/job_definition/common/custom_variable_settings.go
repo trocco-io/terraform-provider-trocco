@@ -59,3 +59,40 @@ func ExtractCustomVariableSettings(ctx context.Context, list types.List) *[]mode
 	}
 	return &settings
 }
+
+func ConvertCustomVariableSettingsToSet(ctx context.Context, customVariableSettings *[]entity.CustomVariableSetting) (types.Set, error) {
+	if customVariableSettings == nil {
+		return types.SetNull(types.ObjectType{
+			AttrTypes: GetCustomVariableSettingAttrTypes(),
+		}), nil
+	}
+
+	settings := model.NewCustomVariableSettings(customVariableSettings)
+	if settings == nil {
+		return types.SetNull(types.ObjectType{
+			AttrTypes: GetCustomVariableSettingAttrTypes(),
+		}), nil
+	}
+
+	objectType := types.ObjectType{
+		AttrTypes: GetCustomVariableSettingAttrTypes(),
+	}
+	setValue, diags := types.SetValueFrom(ctx, objectType, *settings)
+	if diags.HasError() {
+		return types.SetNull(objectType), fmt.Errorf("failed to convert to SetValue: %v", diags)
+	}
+	return setValue, nil
+}
+
+func ExtractCustomVariableSettingsFromSet(ctx context.Context, set types.Set) *[]model.CustomVariableSetting {
+	if set.IsNull() && set.IsUnknown() {
+		return nil
+	}
+
+	var settings []model.CustomVariableSetting
+	diags := set.ElementsAs(ctx, &settings, false)
+	if diags.HasError() {
+		return nil
+	}
+	return &settings
+}

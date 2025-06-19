@@ -1,11 +1,14 @@
 package pipeline_definition
 
 import (
+	"context"
+
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 	model "terraform-provider-trocco/internal/provider/model"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -69,6 +72,21 @@ func (n *Notification) ToInput() *wp.Notification {
 	return param
 }
 
+func (Notification) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"type":             types.StringType,
+		"destination_type": types.StringType,
+		"notify_when":      types.StringType,
+		"time":             types.Int64Type,
+		"email_config": types.ObjectType{
+			AttrTypes: EmailNotificationConfig{}.AttrTypes(),
+		},
+		"slack_config": types.ObjectType{
+			AttrTypes: SlackNotificationConfig{}.AttrTypes(),
+		},
+	}
+}
+
 //
 // EmailNotificationConfig
 //
@@ -96,6 +114,13 @@ func (c *EmailNotificationConfig) ToInput() *wp.EmailNotificationConfig {
 	}
 }
 
+func (EmailNotificationConfig) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"notification_id": types.Int64Type,
+		"message":         custom_type.TrimmedStringType{},
+	}
+}
+
 //
 // SlackNotificationConfig
 //
@@ -120,5 +145,12 @@ func (c *SlackNotificationConfig) ToInput() *wp.SlackNotificationConfig {
 	return &wp.SlackNotificationConfig{
 		NotificationID: c.NotificationID.ValueInt64(),
 		Message:        c.Message.ValueString(),
+	}
+}
+
+func (SlackNotificationConfig) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"notification_id": types.Int64Type,
+		"message":         custom_type.TrimmedStringType{},
 	}
 }

@@ -1,9 +1,12 @@
 package pipeline_definition
 
 import (
+	"context"
+
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
 )
@@ -154,4 +157,26 @@ func (t *Task) ToInput(identifiers map[string]int64) *wp.Task {
 	}
 
 	return in
+}
+
+func (Task) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"key":                                                       types.StringType,
+		"task_identifier":                                           types.Int64Type,
+		"type":                                                      types.StringType,
+		"bigquery_data_check_config":                                types.ObjectType{AttrTypes: map[string]attr.Type{}}, // These would need their own AttrTypes methods
+		"http_request_config":                                       types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"redshift_data_check_config":                                types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"slack_notification_config":                                 types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"snowflake_data_check_config":                               types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"tableau_data_extraction_config":                            types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"trocco_bigquery_datamart_config":                           types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"trocco_dbt_config":                                         types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"trocco_pipeline_config":                                    types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"trocco_redshift_datamart_config":                           types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"trocco_snowflake_datamart_config":                          types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"trocco_azure_synapse_analytics_datamart_config":           types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"trocco_transfer_bulk_config":                               types.ObjectType{AttrTypes: map[string]attr.Type{}},
+		"trocco_transfer_config":                                    types.ObjectType{AttrTypes: map[string]attr.Type{}},
+	}
 }

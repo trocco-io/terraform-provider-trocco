@@ -1,10 +1,13 @@
 package pipeline_definition
 
 import (
+	"context"
 	"strconv"
+	
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -58,5 +61,12 @@ func (d *TaskDependency) ToInput() *wp.TaskDependency {
 	return &wp.TaskDependency{
 		Source:      d.Source.ValueString(),
 		Destination: d.Destination.ValueString(),
+	}
+}
+
+func (TaskDependency) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"source":      types.StringType,
+		"destination": types.StringType,
 	}
 }

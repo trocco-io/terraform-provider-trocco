@@ -1,10 +1,13 @@
 package pipeline_definition
 
 import (
+	"context"
+
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -25,12 +28,12 @@ func NewCustomVariables(ens []we.CustomVariable) []CustomVariable {
 		return nil
 	}
 
-	var mds []CustomVariable
-	for _, en := range ens {
-		mds = append(mds, NewCustomVariable(en))
+	models := make([]CustomVariable, len(ens))
+	for i, en := range ens {
+		models[i] = NewCustomVariable(en)
 	}
 
-	return mds
+	return models
 }
 
 func NewCustomVariable(en we.CustomVariable) CustomVariable {
@@ -56,5 +59,18 @@ func (v *CustomVariable) ToInput() wp.CustomVariable {
 		Direction: v.Direction.ValueStringPointer(),
 		Format:    v.Format.ValueStringPointer(),
 		TimeZone:  v.TimeZone.ValueStringPointer(),
+	}
+}
+
+func (CustomVariable) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":      types.StringType,
+		"type":      types.StringType,
+		"value":     types.StringType,
+		"quantity":  types.Int64Type,
+		"unit":      types.StringType,
+		"direction": types.StringType,
+		"format":    types.StringType,
+		"time_zone": types.StringType,
 	}
 }

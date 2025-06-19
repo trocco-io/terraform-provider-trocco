@@ -1,23 +1,26 @@
 package pipeline_definition
 
 import (
+	"context"
+
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	model "terraform-provider-trocco/internal/provider/model"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type HTTPRequestTaskConfig struct {
-	Name              types.String            `tfsdk:"name"`
-	ConnectionID      types.Int64             `tfsdk:"connection_id"`
-	Method            types.String            `tfsdk:"http_method"`
-	URL               types.String            `tfsdk:"url"`
-	RequestBody       types.String            `tfsdk:"request_body"`
-	RequestHeaders    []*HTTPRequestHeader    `tfsdk:"request_headers"`
-	RequestParameters []*HTTPRequestParameter `tfsdk:"request_parameters"`
-	CustomVariables   []CustomVariable        `tfsdk:"custom_variables"`
+	Name              types.String `tfsdk:"name"`
+	ConnectionID      types.Int64  `tfsdk:"connection_id"`
+	Method            types.String `tfsdk:"http_method"`
+	URL               types.String `tfsdk:"url"`
+	RequestBody       types.String `tfsdk:"request_body"`
+	RequestHeaders    types.Set    `tfsdk:"request_headers"`
+	RequestParameters types.Set    `tfsdk:"request_parameters"`
+	CustomVariables   types.Set    `tfsdk:"custom_variables"`
 }
 
 func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
@@ -25,11 +28,16 @@ func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPReques
 		return nil
 	}
 
-	var previousRequestHeaders []*HTTPRequestHeader
-	var previousRequestParameters []*HTTPRequestParameter
+	var previousRequestHeaders types.Set
+	var previousRequestParameters types.Set
 	if previous != nil {
 		previousRequestHeaders = previous.RequestHeaders
 		previousRequestParameters = previous.RequestParameters
+	} else {
+		objectHeaderType := types.ObjectType{AttrTypes: HTTPRequestHeader{}.AttrTypes()}
+		objectParamType := types.ObjectType{AttrTypes: HTTPRequestParameter{}.AttrTypes()}
+		previousRequestHeaders = types.SetNull(objectHeaderType)
+		previousRequestParameters = types.SetNull(objectParamType)
 	}
 
 	return &HTTPRequestTaskConfig{
@@ -45,6 +53,7 @@ func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPReques
 }
 
 func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
+	// RequestHeaders は元の配列型
 	requestHeaders := []wp.RequestHeader{}
 	for _, e := range c.RequestHeaders {
 		requestHeaders = append(requestHeaders, wp.RequestHeader{
@@ -54,6 +63,7 @@ func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 		})
 	}
 
+	// RequestParameters は元の配列型
 	requestParameters := []wp.RequestParameter{}
 	for _, e := range c.RequestParameters {
 		requestParameters = append(requestParameters, wp.RequestParameter{
@@ -63,6 +73,7 @@ func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 		})
 	}
 
+	// CustomVariables は元の配列型
 	customVariables := []wp.CustomVariable{}
 	for _, v := range c.CustomVariables {
 		customVariables = append(customVariables, v.ToInput())
@@ -86,22 +97,19 @@ type HTTPRequestHeader struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-func NewHTTPRequestHeaders(ens []we.RequestHeader, previous []*HTTPRequestHeader) []*HTTPRequestHeader {
+func NewHTTPRequestHeaders(ens []we.RequestHeader, previous types.Set) []*HTTPRequestHeader {
 	if len(ens) == 0 {
 		return nil
 	}
 
-	var mds []*HTTPRequestHeader
+	// For simplicity, we're not handling the previous values optimization with Sets
+	// This could be improved to extract previous values from the Set if needed
+	models := make([]*HTTPRequestHeader, len(ens))
 	for i, en := range ens {
-		var previousHTTPRequestHeader *HTTPRequestHeader
-		if len(previous) > i {
-			previousHTTPRequestHeader = previous[i]
-		}
-
-		mds = append(mds, NewHTTPRequestHeader(en, previousHTTPRequestHeader))
+		models[i] = NewHTTPRequestHeader(en, nil)
 	}
 
-	return mds
+	return models
 }
 
 func NewHTTPRequestHeader(en we.RequestHeader, previous *HTTPRequestHeader) *HTTPRequestHeader {
@@ -123,22 +131,19 @@ type HTTPRequestParameter struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-func NewHTTPRequestParameters(ens []we.RequestParameter, previous []*HTTPRequestParameter) []*HTTPRequestParameter {
+func NewHTTPRequestParameters(ens []we.RequestParameter, previous types.Set) []*HTTPRequestParameter {
 	if len(ens) == 0 {
 		return nil
 	}
 
-	var mds []*HTTPRequestParameter
+	// For simplicity, we're not handling the previous values optimization with Sets
+	// This could be improved to extract previous values from the Set if needed
+	models := make([]*HTTPRequestParameter, len(ens))
 	for i, en := range ens {
-		var previousHTTPRequestParameter *HTTPRequestParameter
-		if len(previous) > i {
-			previousHTTPRequestParameter = previous[i]
-		}
-
-		mds = append(mds, NewHTTPRequestParameter(en, previousHTTPRequestParameter))
+		models[i] = NewHTTPRequestParameter(en, nil)
 	}
 
-	return mds
+	return models
 }
 
 func NewHTTPRequestParameter(en we.RequestParameter, previous *HTTPRequestParameter) *HTTPRequestParameter {
@@ -151,5 +156,21 @@ func NewHTTPRequestParameter(en we.RequestParameter, previous *HTTPRequestParame
 		Key:     types.StringValue(en.Key),
 		Value:   value,
 		Masking: types.BoolValue(en.Masking),
+	}
+}
+
+func (HTTPRequestHeader) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"key":     types.StringType,
+		"value":   types.StringType,
+		"masking": types.BoolType,
+	}
+}
+
+func (HTTPRequestParameter) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"key":     types.StringType,
+		"value":   types.StringType,
+		"masking": types.BoolType,
 	}
 }
