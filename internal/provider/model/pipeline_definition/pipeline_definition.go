@@ -69,7 +69,10 @@ func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInp
 	tasks := []pdp.Task{}
 	if !m.Tasks.IsNull() && !m.Tasks.IsUnknown() {
 		var tfTasks []*Task
-		_ = m.Tasks.ElementsAs(context.Background(), &tfTasks, false)
+		if diags := m.Tasks.ElementsAs(context.Background(), &tfTasks, false); diags.HasError() {
+			return nil
+		}
+
 		for _, t := range tfTasks {
 			tasks = append(tasks, *t.ToInput(map[string]int64{}))
 		}
@@ -120,7 +123,10 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *c
 	stateTaskIdentifiers := map[string]int64{}
 	if !state.Tasks.IsNull() && !state.Tasks.IsUnknown() {
 		var stateTasks []*Task
-		_ = state.Tasks.ElementsAs(context.Background(), &stateTasks, false)
+		if diags := state.Tasks.ElementsAs(context.Background(), &stateTasks, false); diags.HasError() {
+			return nil
+		}
+
 		for _, s := range stateTasks {
 			stateTaskIdentifiers[s.Key.ValueString()] = s.TaskIdentifier.ValueInt64()
 		}
@@ -129,7 +135,10 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *c
 	tasks := []pdp.Task{}
 	if !m.Tasks.IsNull() && !m.Tasks.IsUnknown() {
 		var tfTasks []*Task
-		_ = m.Tasks.ElementsAs(context.Background(), &tfTasks, false)
+		if diags := m.Tasks.ElementsAs(context.Background(), &tfTasks, false); diags.HasError() {
+			return nil
+		}
+
 		for _, t := range tfTasks {
 			tasks = append(tasks, *t.ToInput(stateTaskIdentifiers))
 		}

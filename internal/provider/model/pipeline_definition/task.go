@@ -42,7 +42,9 @@ func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDef
 
 	var previousTasks []*Task
 	if previous != nil && !previous.Tasks.IsNull() && !previous.Tasks.IsUnknown() {
-		_ = previous.Tasks.ElementsAs(context.Background(), &previousTasks, false)
+		if diags := previous.Tasks.ElementsAs(context.Background(), &previousTasks, false); diags.HasError() {
+			return types.SetNull(TaskObjectType)
+		}
 	}
 
 	if len(ens) == 0 && previousTasks == nil {
