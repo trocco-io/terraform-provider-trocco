@@ -1,6 +1,7 @@
 package job_definitions
 
 import (
+	"context"
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
 	input_options "terraform-provider-trocco/internal/provider/model/job_definition/input_option"
@@ -20,7 +21,7 @@ type InputOption struct {
 	YahooAdsApiYssInputOption     *input_options.YahooAdsApiYssInputOption     `tfsdk:"yahoo_ads_api_yss_input_option"`
 }
 
-func NewInputOption(inputOption client.InputOption) *InputOption {
+func NewInputOption(ctx context.Context, inputOption client.InputOption) *InputOption {
 	return &InputOption{
 		GcsInputOption:                input_options.NewGcsInputOption(inputOption.GcsInputOption),
 		MySQLInputOption:              input_options.NewMysqlInputOption(inputOption.MySQLInputOption),
@@ -30,13 +31,13 @@ func NewInputOption(inputOption client.InputOption) *InputOption {
 		S3InputOption:                 input_options.NewS3InputOption(inputOption.S3InputOption),
 		BigqueryInputOption:           input_options.NewBigqueryInputOption(inputOption.BigqueryInputOption),
 		PostgreSQLInputOption:         input_options.NewPostgreSQLInputOption(inputOption.PostgreSQLInputOption),
-		GoogleAnalytics4InputOption:   input_options.NewGoogleAnalytics4InputOption(inputOption.GoogleAnalytics4InputOption),
+		GoogleAnalytics4InputOption:   input_options.NewGoogleAnalytics4InputOption(ctx, inputOption.GoogleAnalytics4InputOption),
 		KintoneInputOption:            input_options.NewKintoneInputOption(inputOption.KintoneInputOption),
 		YahooAdsApiYssInputOption:     input_options.NewYahooAdsApiYssInputOption(inputOption.YahooAdsApiYssInputOption),
 	}
 }
 
-func (o InputOption) ToInput() client.InputOptionInput {
+func (o InputOption) ToInput(ctx context.Context) client.InputOptionInput {
 	return client.InputOptionInput{
 		GcsInputOption:                model.WrapObject(o.GcsInputOption.ToInput()),
 		MySQLInputOption:              model.WrapObject(o.MySQLInputOption.ToInput()),
@@ -46,13 +47,13 @@ func (o InputOption) ToInput() client.InputOptionInput {
 		S3InputOption:                 model.WrapObject(o.S3InputOption.ToInput()),
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToInput()),
 		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToInput()),
-		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToInput()),
+		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToInput(ctx)),
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToInput()),
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToInput()),
 	}
 }
 
-func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
+func (o InputOption) ToUpdateInput(ctx context.Context) *client.UpdateInputOptionInput {
 	return &client.UpdateInputOptionInput{
 		GcsInputOption:                model.WrapObject(o.GcsInputOption.ToUpdateInput()),
 		MySQLInputOption:              model.WrapObject(o.MySQLInputOption.ToUpdateInput()),
@@ -62,7 +63,7 @@ func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
 		S3InputOption:                 model.WrapObject(o.S3InputOption.ToUpdateInput()),
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToUpdateInput()),
 		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToUpdateInput()),
-		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToUpdateInput()),
+		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToUpdateInput(ctx)),
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToUpdateInput()),
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToUpdateInput()),
 	}
