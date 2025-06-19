@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
@@ -24,5 +25,11 @@ func NewTroccoDBTTaskConfig(c *we.TroccoDBTTaskConfig) *TroccoDBTTaskConfig {
 func (c *TroccoDBTTaskConfig) ToInput() *wp.TroccoDBTTaskConfig {
 	return &wp.TroccoDBTTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
+	}
+}
+
+func TroccoDBTTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"definition_id": types.Int64Type,
 	}
 }

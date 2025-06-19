@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
@@ -40,5 +41,13 @@ func (c *BigqueryCustomVariableLoopConfig) ToInput() wp.BigqueryCustomVariableLo
 		ConnectionID: c.ConnectionID.ValueInt64(),
 		Query:        c.Query.ValueString(),
 		Variables:    vs,
+	}
+}
+
+func BigqueryCustomVariableLoopConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"connection_id": types.Int64Type,
+		"query":         types.StringType,
+		"variables":     types.ListType{ElemType: types.StringType},
 	}
 }

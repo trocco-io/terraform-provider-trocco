@@ -6,6 +6,7 @@ import (
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -52,5 +53,18 @@ func (c *SnowflakeDataCheckTaskConfig) ToInput() *wp.SnowflakeDataCheckTaskConfi
 		AcceptsNull:     &p.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
 		Warehouse:       c.Warehouse.ValueString(),
 		CustomVariables: customVariables,
+	}
+}
+
+func SnowflakeDataCheckTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":             types.StringType,
+		"connection_id":    types.Int64Type,
+		"query":            custom_type.TrimmedStringType{},
+		"operator":         types.StringType,
+		"query_result":     types.Int64Type,
+		"accepts_null":     types.BoolType,
+		"warehouse":        types.StringType,
+		"custom_variables": types.SetType{ElemType: types.ObjectType{AttrTypes: CustomVariableAttrTypes()}},
 	}
 }

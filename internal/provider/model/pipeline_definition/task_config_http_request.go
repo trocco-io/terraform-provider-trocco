@@ -6,6 +6,7 @@ import (
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	model "terraform-provider-trocco/internal/provider/model"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -151,5 +152,42 @@ func NewHTTPRequestParameter(en we.RequestParameter, previous *HTTPRequestParame
 		Key:     types.StringValue(en.Key),
 		Value:   value,
 		Masking: types.BoolValue(en.Masking),
+	}
+}
+
+func NewHTTPRequestParameterValue(en we.RequestParameter, previous *HTTPRequestParameter) types.String {
+	value := types.StringValue(en.Value)
+	if en.Masking && previous != nil {
+		value = previous.Value
+	}
+	return value
+}
+
+func HTTPRequestHeadersAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"key":     types.StringType,
+		"value":   types.StringType,
+		"masking": types.BoolType,
+	}
+}
+
+func HTTPRequestParametersAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"key":     types.StringType,
+		"value":   types.StringType,
+		"masking": types.BoolType,
+	}
+}
+
+func HTTPRequestTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":               types.StringType,
+		"connection_id":      types.Int64Type,
+		"http_method":        types.StringType,
+		"url":                types.StringType,
+		"request_body":       types.StringType,
+		"request_headers":    types.ListType{ElemType: types.ObjectType{AttrTypes: HTTPRequestHeadersAttrTypes()}},
+		"request_parameters": types.ListType{ElemType: types.ObjectType{AttrTypes: HTTPRequestParametersAttrTypes()}},
+		"custom_variables":   types.SetType{ElemType: types.ObjectType{AttrTypes: CustomVariableAttrTypes()}},
 	}
 }

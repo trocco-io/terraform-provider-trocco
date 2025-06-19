@@ -6,6 +6,7 @@ import (
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -49,5 +50,17 @@ func (c *BigqueryDataCheckTaskConfig) ToInput() *wp.BigqueryDataCheckTaskConfigI
 		QueryResult:     &p.NullableInt64{Valid: !c.QueryResult.IsNull(), Value: c.QueryResult.ValueInt64()},
 		AcceptsNull:     &p.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
 		CustomVariables: customVariables,
+	}
+}
+
+func BigqueryDataCheckTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":             types.StringType,
+		"connection_id":    types.Int64Type,
+		"query":            custom_type.TrimmedStringType{},
+		"operator":         types.StringType,
+		"query_result":     types.Int64Type,
+		"accepts_null":     types.BoolType,
+		"custom_variables": types.SetType{ElemType: types.ObjectType{AttrTypes: CustomVariableAttrTypes()}},
 	}
 }
