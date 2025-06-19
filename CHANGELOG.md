@@ -1,3 +1,16 @@
+## 0.16.0
+FEATURES:
+- `trocco_job_definition` resource:
+  - Changed `bigquery_output_option_clustering_fields` and `bigquery_output_option_merge_keys` from `List` to `Set` type
+  - Made `bigquery_output_option_clustering_fields` and `bigquery_output_option_merge_keys` optional instead of required
+  - Added validation for `bigquery_output_option_merge_keys` to be required only when `mode` is `merge`
+- Added new plan modifiers:
+  - `EmptyListForNull` and `EmptySetForNull` to avoid unnecessary diffs
+
+CHORE:
+- Added review workflow documentation
+- Added `.gitignore` for logs directory
+
 ## 0.15.2
 CHORE:
 - Add validation for `before_load` in `trocco_bigquery_datamart_definition` resource
