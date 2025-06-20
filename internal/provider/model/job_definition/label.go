@@ -3,6 +3,7 @@ package job_definitions
 import (
 	"terraform-provider-trocco/internal/client/entity"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -25,4 +26,11 @@ func NewLabels(labels []entity.Label) []Label {
 		outputs = append(outputs, label)
 	}
 	return outputs
+}
+
+func (l Label) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"id":   types.Int64Type,
+		"name": types.StringType,
+	}
 }
