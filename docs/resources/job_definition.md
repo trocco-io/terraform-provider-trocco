@@ -2296,7 +2296,7 @@ Optional:
 - `fetch_rows` (Number) Number of records processed by the cursor at one time
 - `incremental_columns` (String) Columns to determine incremental data
 - `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
-- `input_option_column_options` (Attributes List) List of unsupported data types and their convertible types (see [below for nested schema](#nestedatt--input_option--postgresql_input_option--input_option_column_options))
+- `input_option_column_options` (Attributes Set) List of unsupported data types and their convertible types (see [below for nested schema](#nestedatt--input_option--postgresql_input_option--input_option_column_options))
 - `last_record` (String) Last record transferred. The value of the column specified here is stored in “Last Transferred Record” for each transfer, and for the second and subsequent transfers, only records for which the value of the “Column for Determining Incremental Data” is greater than the value of the previous transfer (= “Last Transferred Record”) are transferred. If you wish to specify multiple columns, specify them separated by commas. If not specified, the primary key is used.
 - `query` (String) If you want to use all record loading, specify it.
 - `schema` (String) schema name
