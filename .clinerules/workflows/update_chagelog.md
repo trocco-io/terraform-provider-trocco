@@ -6,6 +6,8 @@
 - How to check changed files: Create a diff file and check the contents.
 
 ```bash
+git checkout main
+git pull
 git diff v`{current-version}`..main > diff.txt
 ```
 
