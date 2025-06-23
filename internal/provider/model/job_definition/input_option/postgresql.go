@@ -27,7 +27,7 @@ type PostgreSQLInputOption struct {
 	DefaultTimeZone           types.String `tfsdk:"default_time_zone"`
 	InputOptionColumns        types.List   `tfsdk:"input_option_columns"`
 	CustomVariableSettings    types.List   `tfsdk:"custom_variable_settings"`
-	InputOptionColumnOptions  types.Set    `tfsdk:"input_option_column_options"`
+	InputOptionColumnOptions  types.List   `tfsdk:"input_option_column_options"`
 }
 
 type InputOptionColumnOptions struct {
@@ -128,13 +128,13 @@ func newPostgresqlInputOptionColumns(
 func newInputOptionColumnOptions(
 	ctx context.Context,
 	InputOptions []input_option.InputOptionColumnOptions,
-) (types.Set, error) {
+) (types.List, error) {
 	objectType := types.ObjectType{
 		AttrTypes: InputOptionColumnOptions{}.attrTypes(),
 	}
 
 	if InputOptions == nil {
-		return types.SetNull(objectType), nil
+		return types.ListNull(objectType), nil
 	}
 
 	options := make([]InputOptionColumnOptions, 0, len(InputOptions))
@@ -146,9 +146,9 @@ func newInputOptionColumnOptions(
 		options = append(options, option)
 	}
 
-	setValue, diags := types.SetValueFrom(ctx, objectType, options)
+	setValue, diags := types.ListValueFrom(ctx, objectType, options)
 	if diags.HasError() {
-		return types.SetNull(objectType), fmt.Errorf("failed to convert input option column options to SetValue: %v", diags)
+		return types.ListNull(objectType), fmt.Errorf("failed to convert input option column options to ListValue: %v", diags)
 	}
 	return setValue, nil
 }

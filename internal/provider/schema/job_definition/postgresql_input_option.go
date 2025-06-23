@@ -137,7 +137,7 @@ func PostgresqlInputOptionSchema() schema.Attribute {
 					listvalidator.SizeAtLeast(1),
 				},
 			},
-			"input_option_column_options": schema.SetNestedAttribute{
+			"input_option_column_options": schema.ListNestedAttribute{
 				Optional:            true,
 				MarkdownDescription: "List of unsupported data types and their convertible types",
 				NestedObject: schema.NestedAttributeObject{
