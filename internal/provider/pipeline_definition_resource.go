@@ -94,6 +94,7 @@ func (r *pipelineDefinitionResource) Schema(
 				MarkdownDescription: "The name of the pipeline definition",
 				Required:            true,
 				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
 					stringvalidator.UTF8LengthAtMost(255),
 				},
 			},
