@@ -24,13 +24,20 @@ type PipelineDefinition struct {
 	IsConcurrentExecutionSkipped types.Bool                     `tfsdk:"is_concurrent_execution_skipped"`
 	IsStoppedOnErrors            types.Bool                     `tfsdk:"is_stopped_on_errors"`
 	Labels                       []types.String                 `tfsdk:"labels"`
-	Notifications                []*Notification                `tfsdk:"notifications"`
+	Notifications                types.Set                      `tfsdk:"notifications"`
 	Schedules                    []*Schedule                    `tfsdk:"schedules"`
 	Tasks                        types.Set                      `tfsdk:"tasks"`
 	TaskDependencies             []*TaskDependency              `tfsdk:"task_dependencies"`
 }
 
 func NewPipelineDefinition(en *entity.PipelineDefinition, keys map[int64]types.String, previous *PipelineDefinition) *PipelineDefinition {
+	var notifications types.Set
+	if previous == nil {
+		notifications = NewNotifications(en.Notifications, true)
+	} else {
+		notifications = NewNotifications(en.Notifications, previous.Notifications.IsNull())
+	}
+
 	return &PipelineDefinition{
 		ID:                           types.Int64Value(en.ID),
 		ResourceGroupID:              types.Int64PointerValue(en.ResourceGroupID),
@@ -43,7 +50,7 @@ func NewPipelineDefinition(en *entity.PipelineDefinition, keys map[int64]types.S
 		IsConcurrentExecutionSkipped: types.BoolPointerValue(en.IsConcurrentExecutionSkipped),
 		IsStoppedOnErrors:            types.BoolPointerValue(en.IsStoppedOnErrors),
 		Labels:                       NewLabels(en.Labels, previous.Labels == nil),
-		Notifications:                NewNotifications(en.Notifications, previous),
+		Notifications:                notifications,
 		Schedules:                    NewSchedules(en.Schedules, previous),
 		Tasks:                        NewTasks(en.Tasks, keys, previous),
 		TaskDependencies:             NewTaskDependencies(en.TaskDependencies, keys, previous),
@@ -57,8 +64,14 @@ func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInp
 	}
 
 	notifications := []*pdp.Notification{}
-	for _, n := range m.Notifications {
-		notifications = append(notifications, n.ToInput())
+	if !m.Notifications.IsNull() && !m.Notifications.IsUnknown() {
+		var notificationValues []*Notification
+		diags := m.Notifications.ElementsAs(context.Background(), &notificationValues, false)
+		if !diags.HasError() {
+			for _, n := range notificationValues {
+				notifications = append(notifications, n.ToInput())
+			}
+		}
 	}
 
 	schedules := []*pdp.Schedule{}
@@ -111,8 +124,14 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *c
 	}
 
 	notifications := []*pdp.Notification{}
-	for _, n := range m.Notifications {
-		notifications = append(notifications, n.ToInput())
+	if !m.Notifications.IsNull() && !m.Notifications.IsUnknown() {
+		var notificationValues []*Notification
+		diags := m.Notifications.ElementsAs(context.Background(), &notificationValues, false)
+		if !diags.HasError() {
+			for _, n := range notificationValues {
+				notifications = append(notifications, n.ToInput())
+			}
+		}
 	}
 
 	schedules := []*pdp.Schedule{}

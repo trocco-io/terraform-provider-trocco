@@ -114,13 +114,20 @@ func TestAccPipelineDefinitionResourceForNotifications(t *testing.T) {
 				ExpectError: nil,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "notifications_test"),
-					resource.TestCheckResourceAttr(resourceName, "notifications.0.type", "job_execution"),
-					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
-					resource.TestCheckResourceAttr(resourceName, "notifications.0.slack_config.message", "This is a multi-line message\nwith several lines\n  and some indentation\n    to test TrimmedStringType\n"),
 
-					resource.TestCheckResourceAttr(resourceName, "notifications.1.type", "job_time_alert"),
-					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "email"),
-					resource.TestCheckResourceAttr(resourceName, "notifications.1.email_config.message", "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  \n"),
+					// Check slack notification
+					resource.TestCheckTypeSetElemNestedAttrs(resourceName, "notifications.*", map[string]string{
+						"type":                 "job_execution",
+						"destination_type":     "slack",
+						"slack_config.message": "This is a multi-line message\nwith several lines\n  and some indentation\n    to test TrimmedStringType\n",
+					}),
+
+					// Check email notification
+					resource.TestCheckTypeSetElemNestedAttrs(resourceName, "notifications.*", map[string]string{
+						"type":                 "job_time_alert",
+						"destination_type":     "email",
+						"email_config.message": "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  \n",
+					}),
 				),
 			},
 			// Import testing
@@ -133,7 +140,10 @@ func TestAccPipelineDefinitionResourceForNotifications(t *testing.T) {
 					// therefore there is no value for it during import.
 					"tasks.0.key",
 					// INFO: The message attributes are trimmed and set in state, so different from the resource config.
+					// Explicitly specify all possible indices for both message types
 					"notifications.0.slack_config.message",
+					"notifications.1.slack_config.message",
+					"notifications.0.email_config.message",
 					"notifications.1.email_config.message",
 					// INFO: The `query` attribute is trimmed and set in state, so different from the resource config.
 					"tasks.0.bigquery_data_check_config.query",
