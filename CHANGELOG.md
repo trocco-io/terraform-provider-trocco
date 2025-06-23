@@ -2,8 +2,8 @@
 FEATURES:
 - `trocco_job_definition` resource:
   - Added support for `http` input option with comprehensive HTTP data fetching capabilities
-  - Supports various HTTP methods (GET, POST), pagination (offset, cursor), and multiple parsers (CSV, JSONL, JSONPath, LTSV, Excel, XML)
-  - Includes request/response configuration options like headers, parameters, timeouts, and retry settings
+    - Supports various HTTP methods (GET, POST), pagination (offset, cursor), and multiple parsers (CSV, JSONL, JSONPath, LTSV, Excel, XML)
+    - Includes request/response configuration options like headers, parameters, timeouts, and retry settings
 - `trocco_pipeline_definition` resource:
   - Changed `notifications` from `List` to `Set` type to improve consistency and avoid ordering issues
 
