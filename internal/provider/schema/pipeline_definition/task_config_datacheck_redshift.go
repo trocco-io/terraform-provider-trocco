@@ -26,15 +26,15 @@ func RedshiftDatacheckTaskConfig() schema.Attribute {
 			},
 			"operator": schema.StringAttribute{
 				MarkdownDescription: "The operator to use for the datacheck task",
-				Optional:            true,
+				Required:            true,
 			},
 			"query_result": schema.Int64Attribute{
 				MarkdownDescription: "The query result to use for the datacheck task",
-				Optional:            true,
+				Required:            true,
 			},
 			"accepts_null": schema.BoolAttribute{
 				MarkdownDescription: "Whether the datacheck task accepts null values",
-				Optional:            true,
+				Required:            true,
 			},
 			"database": schema.StringAttribute{
 				MarkdownDescription: "The database to use for the datacheck task",

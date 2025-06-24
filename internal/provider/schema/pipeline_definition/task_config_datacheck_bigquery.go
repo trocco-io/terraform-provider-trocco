@@ -26,15 +26,15 @@ func BigqueryDatacheckTaskConfig() schema.Attribute {
 			},
 			"operator": schema.StringAttribute{
 				MarkdownDescription: "The operator of the datacheck task",
-				Optional:            true,
+				Required:            true,
 			},
 			"query_result": schema.Int64Attribute{
 				MarkdownDescription: "The query result of the datacheck task",
-				Optional:            true,
+				Required:            true,
 			},
 			"accepts_null": schema.BoolAttribute{
 				MarkdownDescription: "Whether the datacheck task accepts null",
-				Optional:            true,
+				Required:            true,
 			},
 			"custom_variables": CustomVariables(),
 		},
