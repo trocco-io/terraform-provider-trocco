@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
@@ -34,5 +35,14 @@ func (c *TroccoTransferBulkTaskConfig) ToInput() *wp.TroccoTransferBulkTaskConfi
 		IsParallelExecutionAllowed: &p.NullableBool{Valid: !c.IsParallelExecutionAllowed.IsNull(), Value: c.IsParallelExecutionAllowed.ValueBool()},
 		IsStoppedOnErrors:          &p.NullableBool{Valid: !c.IsStoppedOnErrors.IsNull(), Value: c.IsStoppedOnErrors.ValueBool()},
 		MaxErrors:                  &p.NullableInt64{Valid: !c.MaxErrors.IsNull(), Value: c.MaxErrors.ValueInt64()},
+	}
+}
+
+func TroccoTransferBulkTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"definition_id":                 types.Int64Type,
+		"is_parallel_execution_allowed": types.BoolType,
+		"is_stopped_on_errors":          types.BoolType,
+		"max_errors":                    types.Int64Type,
 	}
 }
