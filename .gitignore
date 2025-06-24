@@ -1,32 +1,52 @@
-tmp
-*.dll
-*.exe
-.DS_Store
-example.tf
-terraform.tfplan
-terraform.tfstate
+# Build artifacts
 bin/
 dist/
-modules-dev/
+*.dll
+*.exe
+*.test
+
+# Terraform files
+.terraform/
+terraform.tfplan
+terraform.tfstate
+*.tfstate
+*.backup
+example.tf
+
+# IDE and editor files
+.idea
+*.iml
+*.swp
+*~
+*.bak
+
+# OS specific files
+.DS_Store
+
+# Logs
+*.log
+
+# Temporary files
+tmp
+
+# Package files
 /pkg/
+
+# Development modules
+modules-dev/
+
+# Vagrant
+.vagrant/
+
+# Website specific
 website/.vagrant
 website/.bundle
 website/build
 website/node_modules
-.vagrant/
-*.backup
-./*.tfstate
-.terraform/
-*.log
-*.bak
-*~
-.*.swp
-.idea
-*.iml
-*.test
-*.iml
-
 website/vendor
+
+# Examples
+examples/provider-install-verification/
 
 # Test exclusions
 !command/test-fixtures/**/*.tfstate
@@ -34,5 +54,3 @@ website/vendor
 
 # Keep windows files with windows line endings
 *.winfile eol=crlf
-
-examples/provider-install-verification/
