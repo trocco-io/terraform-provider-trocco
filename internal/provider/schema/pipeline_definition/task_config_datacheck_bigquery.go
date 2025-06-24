@@ -3,7 +3,9 @@ package pipeline_definition
 import (
 	"terraform-provider-trocco/internal/provider/custom_type"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
 func BigqueryDatacheckTaskConfig() schema.Attribute {
@@ -14,6 +16,9 @@ func BigqueryDatacheckTaskConfig() schema.Attribute {
 			"name": schema.StringAttribute{
 				MarkdownDescription: "The name of the datacheck task",
 				Required:            true,
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"connection_id": schema.Int64Attribute{
 				MarkdownDescription: "The connection id of the datacheck task",
