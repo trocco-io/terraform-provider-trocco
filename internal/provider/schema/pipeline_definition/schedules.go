@@ -18,19 +18,19 @@ func Schedules() schema.Attribute {
 					MarkdownDescription: "The time zone of the schedule",
 					Required:            true,
 				},
-				"minute": schema.Int64Attribute{
+				"minute": schema.Int32Attribute{
 					MarkdownDescription: "The minute of the schedule",
 					Required:            true,
 				},
-				"day": schema.Int64Attribute{
+				"day": schema.Int32Attribute{
 					MarkdownDescription: "The day of the schedule",
 					Optional:            true,
 				},
-				"day_of_week": schema.Int64Attribute{
+				"day_of_week": schema.Int32Attribute{
 					MarkdownDescription: "The day of the week of the schedule",
 					Optional:            true,
 				},
-				"hour": schema.Int64Attribute{
+				"hour": schema.Int32Attribute{
 					MarkdownDescription: "The hour of the schedule",
 					Optional:            true,
 				},
