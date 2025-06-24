@@ -12,7 +12,7 @@ func CustomVariableLoop() schema.Attribute {
 		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"type": schema.StringAttribute{
-				MarkdownDescription: "The type of the custom variable loop",
+				MarkdownDescription: "The type of the custom variable loop. Allowed values: \"string\", \"period\", \"bigquery\", \"snowflake\", \"redshift\".",
 				Required:            true,
 			},
 			"is_parallel_execution_allowed": schema.BoolAttribute{

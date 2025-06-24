@@ -119,11 +119,138 @@ resource "trocco_pipeline_definition" "trocco_transfer" {
 }
 ```
 
-##### Custom Variable Loop
+##### Custom Variable Loop Examples
 
 ```terraform
-resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop" {
-  name = "trocco_transfer_with_custom_variable_loop"
+resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop_with_bigquery_config" {
+  name = "trocco_transfer_with_custom_variable_loop_with_bigquery_config"
+
+  tasks = [
+    {
+      key  = "trocco_transfer"
+      type = "trocco_transfer"
+
+      trocco_transfer_config = {
+        definition_id = 1
+        custom_variable_loop = {
+          type = "bigquery"
+          bigquery_config = {
+            connection_id = 1
+            query         = "select foo, bar from sample"
+            variables = [
+              "$foo$",
+              "$bar$"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+```terraform
+resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop_with_period_config" {
+  name = "trocco_transfer_with_custom_variable_loop_with_period_config"
+
+  tasks = [
+    {
+      key  = "trocco_transfer"
+      type = "trocco_transfer"
+
+      trocco_transfer_config = {
+        definition_id = 1
+        custom_variable_loop = {
+          type = "period"
+          period_config = {
+            interval  = "day"
+            time_zone = "Asia/Tokyo"
+            from = {
+              value = 7
+              unit  = "day"
+            }
+            to = {
+              value = 1
+              unit  = "day"
+            }
+            variables = [
+              {
+                name = "$date$"
+                offset = {
+                  value = 0
+                  unit  = "day"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+```terraform
+resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop_with_redshift_config" {
+  name = "trocco_transfer_with_custom_variable_loop_with_redshift_config"
+
+  tasks = [
+    {
+      key  = "trocco_transfer"
+      type = "trocco_transfer"
+
+      trocco_transfer_config = {
+        definition_id = 1
+        custom_variable_loop = {
+          type = "redshift"
+          redshift_config = {
+            connection_id = 1
+            query         = "select foo, bar from sample"
+            variables = [
+              "$foo$",
+              "$bar$"
+            ]
+            database = "dev"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+```terraform
+resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop_with_snowflake_config" {
+  name = "trocco_transfer_with_custom_variable_loop_with_snowflake_config"
+
+  tasks = [
+    {
+      key  = "trocco_transfer"
+      type = "trocco_transfer"
+
+      trocco_transfer_config = {
+        definition_id = 1
+        custom_variable_loop = {
+          type = "snowflake"
+          snowflake_config = {
+            connection_id = 1
+            query         = "select foo, bar from sample"
+            variables = [
+              "$foo$",
+              "$bar$"
+            ]
+            warehouse = "COMPUTE_WH"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+```terraform
+resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop_with_string_config" {
+  name = "trocco_transfer_with_custom_variable_loop_with_string_config"
 
   tasks = [
     {
@@ -153,6 +280,7 @@ resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop
   ]
 }
 ```
+
 
 #### TROCCO Transfer Bulk
 
@@ -875,7 +1003,7 @@ Optional:
 
 Required:
 
-- `type` (String) The type of the custom variable loop
+- `type` (String) The type of the custom variable loop. Allowed values: "string", "period", "bigquery", "snowflake", "redshift".
 
 Optional:
 
@@ -1003,7 +1131,7 @@ Optional:
 
 Required:
 
-- `type` (String) The type of the custom variable loop
+- `type` (String) The type of the custom variable loop. Allowed values: "string", "period", "bigquery", "snowflake", "redshift".
 
 Optional:
 
@@ -1139,7 +1267,7 @@ Optional:
 
 Required:
 
-- `type` (String) The type of the custom variable loop
+- `type` (String) The type of the custom variable loop. Allowed values: "string", "period", "bigquery", "snowflake", "redshift".
 
 Optional:
 
@@ -1267,7 +1395,7 @@ Optional:
 
 Required:
 
-- `type` (String) The type of the custom variable loop
+- `type` (String) The type of the custom variable loop. Allowed values: "string", "period", "bigquery", "snowflake", "redshift".
 
 Optional:
 
@@ -1395,7 +1523,7 @@ Optional:
 
 Required:
 
-- `type` (String) The type of the custom variable loop
+- `type` (String) The type of the custom variable loop. Allowed values: "string", "period", "bigquery", "snowflake", "redshift".
 
 Optional:
 
@@ -1537,7 +1665,7 @@ Optional:
 
 Required:
 
-- `type` (String) The type of the custom variable loop
+- `type` (String) The type of the custom variable loop. Allowed values: "string", "period", "bigquery", "snowflake", "redshift".
 
 Optional:
 
