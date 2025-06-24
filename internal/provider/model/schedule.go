@@ -24,10 +24,10 @@ func NewSchedules(schedules []entity.Schedule) []Schedule {
 	for _, input := range schedules {
 		schedule := Schedule{
 			Frequency: types.StringValue(input.Frequency),
-			Minute:    types.Int64Value(int64(input.Minute)),
-			Hour:      types.Int64PointerValue(int64PtrFromInt32Ptr(input.Hour)),
-			Day:       types.Int64PointerValue(int64PtrFromInt32Ptr(input.Day)),
-			DayOfWeek: types.Int64PointerValue(int64PtrFromInt32Ptr(input.DayOfWeek)),
+			Minute:    types.Int64Value(input.Minute),
+			Hour:      types.Int64PointerValue(input.Hour),
+			Day:       types.Int64PointerValue(input.Day),
+			DayOfWeek: types.Int64PointerValue(input.DayOfWeek),
 			TimeZone:  types.StringValue(input.TimeZone),
 		}
 		outputs = append(outputs, schedule)
@@ -38,10 +38,10 @@ func NewSchedules(schedules []entity.Schedule) []Schedule {
 func (schedule Schedule) ToInput() parameter.ScheduleInput {
 	return parameter.ScheduleInput{
 		Frequency: schedule.Frequency.ValueString(),
-		Minute:    int32(schedule.Minute.ValueInt64()),
-		Hour:      int32PtrFromInt64Ptr(schedule.Hour.ValueInt64Pointer()),
-		Day:       int32PtrFromInt64Ptr(schedule.Day.ValueInt64Pointer()),
-		DayOfWeek: int32PtrFromInt64Ptr(schedule.DayOfWeek.ValueInt64Pointer()),
+		Minute:    schedule.Minute.ValueInt64(),
+		Hour:      schedule.Hour.ValueInt64Pointer(),
+		Day:       schedule.Day.ValueInt64Pointer(),
+		DayOfWeek: schedule.DayOfWeek.ValueInt64Pointer(),
 		TimeZone:  schedule.TimeZone.ValueString(),
 	}
 }
