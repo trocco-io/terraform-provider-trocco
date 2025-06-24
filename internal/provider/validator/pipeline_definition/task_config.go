@@ -9,7 +9,7 @@ import (
 	"github.com/samber/lo"
 )
 
-var _ validator.List = TaskConfig{}
+var _ validator.Set = TaskConfig{}
 
 var taskConfigKeys = map[string]string{
 	"trocco_transfer":                         "trocco_transfer_config",
@@ -39,10 +39,10 @@ func (v TaskConfig) MarkdownDescription(ctx context.Context) string {
 	return v.Description(ctx)
 }
 
-func (v TaskConfig) ValidateList(
+func (v TaskConfig) ValidateSet(
 	ctx context.Context,
-	req validator.ListRequest,
-	resp *validator.ListResponse,
+	req validator.SetRequest,
+	resp *validator.SetResponse,
 ) {
 	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
 		return

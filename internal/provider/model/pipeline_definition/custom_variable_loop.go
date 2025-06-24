@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
 
@@ -78,4 +79,28 @@ func (c *CustomVariableLoop) ToInput() wp.CustomVariableLoop {
 	}
 
 	return i
+}
+
+func CustomVariableLoopAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"type":                          types.StringType,
+		"is_parallel_execution_allowed": types.BoolType,
+		"is_stopped_on_errors":          types.BoolType,
+		"max_errors":                    types.Int64Type,
+		"string_config": types.ObjectType{
+			AttrTypes: StringCustomVariableLoopConfigAttrTypes(),
+		},
+		"period_config": types.ObjectType{
+			AttrTypes: PeriodCustomVariableLoopConfigAttrTypes(),
+		},
+		"bigquery_config": types.ObjectType{
+			AttrTypes: BigqueryCustomVariableLoopConfigAttrTypes(),
+		},
+		"snowflake_config": types.ObjectType{
+			AttrTypes: SnowflakeCustomVariableLoopConfigAttrTypes(),
+		},
+		"redshift_config": types.ObjectType{
+			AttrTypes: RedshiftCustomVariableLoopConfigAttrTypes(),
+		},
+	}
 }
