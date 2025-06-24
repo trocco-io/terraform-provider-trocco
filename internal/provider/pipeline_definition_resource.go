@@ -94,6 +94,7 @@ func (r *pipelineDefinitionResource) Schema(
 				MarkdownDescription: "The name of the pipeline definition",
 				Required:            true,
 				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
 					stringvalidator.UTF8LengthAtMost(255),
 				},
 			},
@@ -256,8 +257,17 @@ func (r *pipelineDefinitionResource) Read(
 		return
 	}
 
+	var tasks []*pdm.Task
+	if !state.Tasks.IsNull() && !state.Tasks.IsUnknown() {
+		diags := state.Tasks.ElementsAs(ctx, &tasks, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+
 	keys := map[int64]types.String{}
-	for _, t := range state.Tasks {
+	for _, t := range tasks {
 		keys[t.TaskIdentifier.ValueInt64()] = t.Key
 	}
 

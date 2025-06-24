@@ -1,3 +1,22 @@
+## 0.17.0
+FEATURES:
+- `trocco_job_definition` resource:
+  - Added support for `http` input option with comprehensive HTTP data fetching capabilities
+    - Supports various HTTP methods (GET, POST), pagination (offset, cursor), and multiple parsers (CSV, JSONL, JSONPath, LTSV, Excel, XML)
+    - Includes request/response configuration options like headers, parameters, timeouts, and retry settings
+- `trocco_pipeline_definition` resource:
+  - Changed `notifications` from `List` to `Set` type to improve consistency and avoid ordering issues
+
+CHORE:
+- Updated Go version from 1.21 to 1.23.0
+- Updated multiple dependencies including:
+  - terraform-plugin-docs: 0.19.4 → 0.21.0
+  - terraform-plugin-framework: 1.11.0 → 1.15.0
+  - terraform-plugin-go: 0.23.0 → 0.27.0
+  - Various other dependency updates for improved security and performance
+- Added comprehensive validation for HTTP input options
+- Enhanced documentation with HTTP input option examples
+
 ## 0.16.0
 FEATURES:
 - `trocco_job_definition` resource:
