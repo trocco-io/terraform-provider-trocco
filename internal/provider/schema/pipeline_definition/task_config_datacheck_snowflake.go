@@ -3,7 +3,9 @@ package pipeline_definition
 import (
 	"terraform-provider-trocco/internal/provider/custom_type"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
 func SnowflakeDatacheckTaskConfig() schema.Attribute {
@@ -14,6 +16,9 @@ func SnowflakeDatacheckTaskConfig() schema.Attribute {
 			"name": schema.StringAttribute{
 				MarkdownDescription: "The name of the datacheck task",
 				Required:            true,
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+				},
 			},
 			"connection_id": schema.Int64Attribute{
 				MarkdownDescription: "The connection id to use for the datacheck task",
@@ -26,15 +31,15 @@ func SnowflakeDatacheckTaskConfig() schema.Attribute {
 			},
 			"operator": schema.StringAttribute{
 				MarkdownDescription: "The operator to use for the datacheck task",
-				Optional:            true,
+				Required:            true,
 			},
 			"query_result": schema.Int64Attribute{
 				MarkdownDescription: "The query result to use for the datacheck task",
-				Optional:            true,
+				Required:            true,
 			},
 			"accepts_null": schema.BoolAttribute{
 				MarkdownDescription: "Whether the datacheck task accepts null values",
-				Optional:            true,
+				Required:            true,
 			},
 			"warehouse": schema.StringAttribute{
 				MarkdownDescription: "The warehouse to use for the datacheck task",

@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
@@ -30,5 +31,13 @@ func (c *TableauDataExtractionTaskConfig) ToInput() *wp.TableauDataExtractionTas
 		Name:         c.Name.ValueString(),
 		ConnectionID: c.ConnectionID.ValueInt64(),
 		TaskID:       c.TaskID.ValueString(),
+	}
+}
+
+func TableauDataExtractionTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":          types.StringType,
+		"connection_id": types.Int64Type,
+		"task_id":       types.StringType,
 	}
 }
