@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -152,6 +153,32 @@ func TestAccPipelineDefinitionResourceForNotifications(t *testing.T) {
 					pipelineDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
 					return pipelineDefinitionID, nil
 				},
+			},
+		},
+	})
+}
+
+func TestAccPipelineDefinitionResourceForCustomVariableLoopInvalidType(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Test invalid type
+			{
+				Config:      providerConfig + LoadTextFile("testdata/pipeline_definition/custom_variable_loop/invalid_type.tf"),
+				ExpectError: regexp.MustCompile(`must be one of: \["string" "period" "bigquery" "snowflake" "redshift"\]`),
+			},
+		},
+	})
+}
+
+func TestAccPipelineDefinitionResourceForCustomVariableLoopMissingConfig(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Test missing config
+			{
+				Config:      providerConfig + LoadTextFile("testdata/pipeline_definition/custom_variable_loop/missing_config.tf"),
+				ExpectError: regexp.MustCompile(`Missing Required Configuration`),
 			},
 		},
 	})
