@@ -1,4 +1,4 @@
-package list
+package pipeline_definition
 
 import (
 	"context"
