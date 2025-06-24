@@ -22,3 +22,9 @@ make testacc TESTARGS="-run TestAccSome"
 # Run unit tests.
 go test -v -cover ./...
 ```
+
+## Rules
+
+### Formatting
+
+Format Go code using `go fmt`.

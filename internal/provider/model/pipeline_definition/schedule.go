@@ -50,7 +50,6 @@ func NewSchedule(en *we.Schedule) *Schedule {
 	}
 }
 
-
 func (m *Schedule) ToInput() *wp.Schedule {
 	return &wp.Schedule{
 		Frequency: m.Frequency.ValueString(),
