@@ -1,10 +1,15 @@
 package input_options
 
 import (
+	"context"
+	"fmt"
 	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	parmas "terraform-provider-trocco/internal/client/parameter/job_definition"
 	param "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
+	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -21,9 +26,9 @@ type BigqueryInputOption struct {
 	Cache                 types.Bool   `tfsdk:"cache"`
 	BigqueryJobWaitSecond types.Int64  `tfsdk:"bigquery_job_wait_second"`
 
-	Columns                []BigqueryColumn               `tfsdk:"columns"`
-	CustomVariableSettings *[]model.CustomVariableSetting `tfsdk:"custom_variable_settings"`
-	Decoder                *Decoder                       `tfsdk:"decoder"`
+	Columns                types.List `tfsdk:"columns"`
+	CustomVariableSettings types.List `tfsdk:"custom_variable_settings"`
+	Decoder                *Decoder   `tfsdk:"decoder"`
 }
 
 type BigqueryColumn struct {
@@ -32,11 +37,21 @@ type BigqueryColumn struct {
 	Format types.String `tfsdk:"format"`
 }
 
+func (BigqueryColumn) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":   types.StringType,
+		"type":   types.StringType,
+		"format": types.StringType,
+	}
+}
+
 func NewBigqueryInputOption(bigqueryInputOption *input_option.BigqueryInputOption) *BigqueryInputOption {
 	if bigqueryInputOption == nil {
 		return nil
 	}
-	return &BigqueryInputOption{
+
+	ctx := context.Background()
+	result := &BigqueryInputOption{
 		BigqueryConnectionID:  types.Int64Value(bigqueryInputOption.BigqueryConnectionID),
 		GcsUri:                types.StringValue(bigqueryInputOption.GcsUri),
 		GcsUriFormat:          types.StringPointerValue(bigqueryInputOption.GcsUriFormat),
@@ -48,15 +63,43 @@ func NewBigqueryInputOption(bigqueryInputOption *input_option.BigqueryInputOptio
 		Location:              types.StringPointerValue(bigqueryInputOption.Location),
 		Cache:                 types.BoolPointerValue(bigqueryInputOption.Cache),
 		BigqueryJobWaitSecond: types.Int64PointerValue(bigqueryInputOption.BigqueryJobWaitSecond),
-
-		Columns:                newBigqueryColumns(bigqueryInputOption.Columns),
-		CustomVariableSettings: model.NewCustomVariableSettings(bigqueryInputOption.CustomVariableSettings),
 	}
+
+	columns, err := newBigqueryColumns(ctx, bigqueryInputOption.Columns)
+	if err != nil {
+		return nil
+	}
+	result.Columns = columns
+
+	customVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, bigqueryInputOption.CustomVariableSettings)
+	if err != nil {
+		return nil
+	}
+	result.CustomVariableSettings = customVariableSettings
+
+	return result
 }
 
 func (bigqueryInputOption *BigqueryInputOption) ToInput() *param.BigqueryInputOptionInput {
 	if bigqueryInputOption == nil {
 		return nil
+	}
+
+	ctx := context.Background()
+
+	var columnValues []BigqueryColumn
+	if !bigqueryInputOption.Columns.IsNull() && !bigqueryInputOption.Columns.IsUnknown() {
+		diags := bigqueryInputOption.Columns.ElementsAs(ctx, &columnValues, false)
+		if diags.HasError() {
+			return nil
+		}
+	}
+
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, bigqueryInputOption.CustomVariableSettings)
+
+	var decoder *parmas.DecoderInput
+	if bigqueryInputOption.Decoder != nil {
+		decoder = bigqueryInputOption.Decoder.ToDecoderInput()
 	}
 
 	return &param.BigqueryInputOptionInput{
@@ -72,15 +115,38 @@ func (bigqueryInputOption *BigqueryInputOption) ToInput() *param.BigqueryInputOp
 		Cache:                 bigqueryInputOption.Cache.ValueBoolPointer(),
 		BigqueryJobWaitSecond: bigqueryInputOption.BigqueryJobWaitSecond.ValueInt64Pointer(),
 
-		Columns:                toBigqueryColumnsInput(bigqueryInputOption.Columns),
-		CustomVariableSettings: model.ToCustomVariableSettingInputs(bigqueryInputOption.CustomVariableSettings),
-		Decoder:                bigqueryInputOption.Decoder.ToDecoderInput(),
+		Columns:                toBigqueryColumnsInput(columnValues),
+		CustomVariableSettings: model.ToCustomVariableSettingInputs(customVarSettings),
+		Decoder:                decoder,
 	}
 }
 
 func (bigqueryInputOption *BigqueryInputOption) ToUpdateInput() *param.UpdateBigqueryInputOptionInput {
 	if bigqueryInputOption == nil {
 		return nil
+	}
+
+	ctx := context.Background()
+
+	var columnValues []BigqueryColumn
+	if !bigqueryInputOption.Columns.IsNull() {
+		if !bigqueryInputOption.Columns.IsUnknown() {
+			diags := bigqueryInputOption.Columns.ElementsAs(ctx, &columnValues, false)
+			if diags.HasError() {
+				return nil
+			}
+		} else {
+			columnValues = []BigqueryColumn{}
+		}
+	} else {
+		columnValues = []BigqueryColumn{}
+	}
+
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, bigqueryInputOption.CustomVariableSettings)
+
+	var decoder *parmas.DecoderInput
+	if bigqueryInputOption.Decoder != nil {
+		decoder = bigqueryInputOption.Decoder.ToDecoderInput()
 	}
 
 	return &param.UpdateBigqueryInputOptionInput{
@@ -96,16 +162,24 @@ func (bigqueryInputOption *BigqueryInputOption) ToUpdateInput() *param.UpdateBig
 		Cache:                 bigqueryInputOption.Cache.ValueBoolPointer(),
 		BigqueryJobWaitSecond: bigqueryInputOption.BigqueryJobWaitSecond.ValueInt64Pointer(),
 
-		Columns:                toBigqueryColumnsInput(bigqueryInputOption.Columns),
-		CustomVariableSettings: model.ToCustomVariableSettingInputs(bigqueryInputOption.CustomVariableSettings),
-		Decoder:                bigqueryInputOption.Decoder.ToDecoderInput(),
+		Columns:                toBigqueryColumnsInput(columnValues),
+		CustomVariableSettings: model.ToCustomVariableSettingInputs(customVarSettings),
+		Decoder:                decoder,
 	}
 }
 
-func newBigqueryColumns(bigqueryColumns []input_option.BigqueryColumn) []BigqueryColumn {
-	if bigqueryColumns == nil {
-		return nil
+func newBigqueryColumns(
+	ctx context.Context,
+	bigqueryColumns []input_option.BigqueryColumn,
+) (types.List, error) {
+	objectType := types.ObjectType{
+		AttrTypes: BigqueryColumn{}.attrTypes(),
 	}
+
+	if bigqueryColumns == nil {
+		return types.ListNull(objectType), nil
+	}
+
 	columns := make([]BigqueryColumn, 0, len(bigqueryColumns))
 	for _, input := range bigqueryColumns {
 		column := BigqueryColumn{
@@ -115,7 +189,12 @@ func newBigqueryColumns(bigqueryColumns []input_option.BigqueryColumn) []Bigquer
 		}
 		columns = append(columns, column)
 	}
-	return columns
+
+	listValue, diags := types.ListValueFrom(ctx, objectType, columns)
+	if diags.HasError() {
+		return types.ListNull(objectType), fmt.Errorf("failed to convert bigquery columns to ListValue: %v", diags)
+	}
+	return listValue, nil
 }
 
 func toBigqueryColumnsInput(columns []BigqueryColumn) []param.BigqueryColumn {
