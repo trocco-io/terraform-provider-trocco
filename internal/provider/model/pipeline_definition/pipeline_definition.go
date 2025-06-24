@@ -26,7 +26,7 @@ type PipelineDefinition struct {
 	Labels                       []types.String                 `tfsdk:"labels"`
 	Notifications                types.Set                      `tfsdk:"notifications"`
 	Schedules                    []*Schedule                    `tfsdk:"schedules"`
-	Tasks                        []*Task                        `tfsdk:"tasks"`
+	Tasks                        types.Set                      `tfsdk:"tasks"`
 	TaskDependencies             []*TaskDependency              `tfsdk:"task_dependencies"`
 }
 
@@ -80,8 +80,15 @@ func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInp
 	}
 
 	tasks := []pdp.Task{}
-	for _, t := range m.Tasks {
-		tasks = append(tasks, *t.ToInput(map[string]int64{}))
+	if !m.Tasks.IsNull() && !m.Tasks.IsUnknown() {
+		var tfTasks []*Task
+		if diags := m.Tasks.ElementsAs(context.Background(), &tfTasks, false); diags.HasError() {
+			return nil
+		}
+
+		for _, t := range tfTasks {
+			tasks = append(tasks, *t.ToInput(map[string]int64{}))
+		}
 	}
 
 	taskDependencies := []pdp.TaskDependency{}
@@ -133,13 +140,27 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *c
 	}
 
 	stateTaskIdentifiers := map[string]int64{}
-	for _, s := range state.Tasks {
-		stateTaskIdentifiers[s.Key.ValueString()] = s.TaskIdentifier.ValueInt64()
+	if !state.Tasks.IsNull() && !state.Tasks.IsUnknown() {
+		var stateTasks []*Task
+		if diags := state.Tasks.ElementsAs(context.Background(), &stateTasks, false); diags.HasError() {
+			return nil
+		}
+
+		for _, s := range stateTasks {
+			stateTaskIdentifiers[s.Key.ValueString()] = s.TaskIdentifier.ValueInt64()
+		}
 	}
 
 	tasks := []pdp.Task{}
-	for _, t := range m.Tasks {
-		tasks = append(tasks, *t.ToInput(stateTaskIdentifiers))
+	if !m.Tasks.IsNull() && !m.Tasks.IsUnknown() {
+		var tfTasks []*Task
+		if diags := m.Tasks.ElementsAs(context.Background(), &tfTasks, false); diags.HasError() {
+			return nil
+		}
+
+		for _, t := range tfTasks {
+			tasks = append(tasks, *t.ToInput(stateTaskIdentifiers))
+		}
 	}
 
 	taskDependencies := []pdp.TaskDependency{}

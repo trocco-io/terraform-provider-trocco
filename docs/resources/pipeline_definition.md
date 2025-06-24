@@ -703,7 +703,7 @@ resource "trocco_pipeline_definition" "trocco_pipeline" {
 - `resource_group_id` (Number) The resource group ID of the pipeline definition
 - `schedules` (Attributes Set) The schedules of the pipeline definition (see [below for nested schema](#nestedatt--schedules))
 - `task_dependencies` (Attributes Set) The task dependencies of the workflow. (see [below for nested schema](#nestedatt--task_dependencies))
-- `tasks` (Attributes List) The tasks of the workflow. (see [below for nested schema](#nestedatt--tasks))
+- `tasks` (Attributes Set) The tasks of the workflow. (see [below for nested schema](#nestedatt--tasks))
 
 ### Read-Only
 
@@ -802,16 +802,16 @@ Read-Only:
 
 Required:
 
+- `accepts_null` (Boolean) Whether the datacheck task accepts null
 - `connection_id` (Number) The connection id of the datacheck task
 - `name` (String) The name of the datacheck task
+- `operator` (String) The operator of the datacheck task
+- `query_result` (Number) The query result of the datacheck task
 
 Optional:
 
-- `accepts_null` (Boolean) Whether the datacheck task accepts null
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--bigquery_data_check_config--custom_variables))
-- `operator` (String) The operator of the datacheck task
 - `query` (String) The query of the datacheck task
-- `query_result` (Number) The query result of the datacheck task
 
 <a id="nestedatt--tasks--bigquery_data_check_config--custom_variables"></a>
 ### Nested Schema for `tasks.bigquery_data_check_config.custom_variables`
@@ -899,17 +899,17 @@ Optional:
 
 Required:
 
+- `accepts_null` (Boolean) Whether the datacheck task accepts null values
 - `connection_id` (Number) The connection id to use for the datacheck task
 - `name` (String) The name of the datacheck task
+- `operator` (String) The operator to use for the datacheck task
+- `query_result` (Number) The query result to use for the datacheck task
 
 Optional:
 
-- `accepts_null` (Boolean) Whether the datacheck task accepts null values
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--redshift_data_check_config--custom_variables))
 - `database` (String) The database to use for the datacheck task
-- `operator` (String) The operator to use for the datacheck task
 - `query` (String) The query to run for the datacheck task
-- `query_result` (Number) The query result to use for the datacheck task
 
 <a id="nestedatt--tasks--redshift_data_check_config--custom_variables"></a>
 ### Nested Schema for `tasks.redshift_data_check_config.custom_variables`
@@ -946,16 +946,16 @@ Required:
 
 Required:
 
+- `accepts_null` (Boolean) Whether the datacheck task accepts null values
 - `connection_id` (Number) The connection id to use for the datacheck task
 - `name` (String) The name of the datacheck task
+- `operator` (String) The operator to use for the datacheck task
+- `query_result` (Number) The query result to use for the datacheck task
 
 Optional:
 
-- `accepts_null` (Boolean) Whether the datacheck task accepts null values
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--snowflake_data_check_config--custom_variables))
-- `operator` (String) The operator to use for the datacheck task
 - `query` (String) The query to run for the datacheck task
-- `query_result` (Number) The query result to use for the datacheck task
 - `warehouse` (String) The warehouse to use for the datacheck task
 
 <a id="nestedatt--tasks--snowflake_data_check_config--custom_variables"></a>

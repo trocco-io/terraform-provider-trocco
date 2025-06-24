@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
@@ -43,5 +44,14 @@ func (c *SnowflakeCustomVariableLoopConfig) ToInput() wp.SnowflakeCustomVariable
 		Query:        c.Query.ValueString(),
 		Warehouse:    c.Warehouse.ValueString(),
 		Variables:    vs,
+	}
+}
+
+func SnowflakeCustomVariableLoopConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"connection_id": types.Int64Type,
+		"query":         types.StringType,
+		"warehouse":     types.StringType,
+		"variables":     types.ListType{ElemType: types.StringType},
 	}
 }
