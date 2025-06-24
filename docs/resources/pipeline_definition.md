@@ -119,7 +119,7 @@ resource "trocco_pipeline_definition" "trocco_transfer" {
 }
 ```
 
-##### Custom Variable Loop Examples
+##### Custom Variable Loop
 
 ```terraform
 resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop_with_bigquery_config" {
