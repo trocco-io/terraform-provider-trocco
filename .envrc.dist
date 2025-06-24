@@ -1,0 +1,2 @@
+export TROCCO_TEST_URL="https://trocco.io"
+export TROCCO_API_KEY="TEST_ACCOUNT_API_KEY"

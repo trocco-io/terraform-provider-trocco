@@ -1,3 +1,6 @@
+# direnv
+.envrc
+
 # Build artifacts
 bin/
 dist/
