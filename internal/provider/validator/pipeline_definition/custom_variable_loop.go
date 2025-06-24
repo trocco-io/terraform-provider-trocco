@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
-// CustomVariableLoop validates that the appropriate config is provided based on the type
+// CustomVariableLoop validates that the appropriate config is provided based on the type.
 type CustomVariableLoop struct{}
 
 // Description returns a plain text description of the validator's behavior.
