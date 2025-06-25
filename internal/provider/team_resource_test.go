@@ -82,7 +82,7 @@ func TestAccTeamNoMembers(t *testing.T) {
 					  members = []
 					}
 				`,
-				ExpectError: regexp.MustCompile(`Missing Team Admin`),
+				ExpectError: regexp.MustCompile(`Empty Team Members`),
 			},
 		},
 	})
