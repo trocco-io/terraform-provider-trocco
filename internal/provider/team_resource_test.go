@@ -153,3 +153,76 @@ func TestAccTeamWithUnknownValues(t *testing.T) {
 		},
 	})
 }
+
+func TestAccTeamValidationErrors(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Test validation error with multiple team_members but no team_admin
+			{
+				Config: providerConfig + `
+					resource "trocco_team" "test" {
+					  name = "test-no-admin"
+					  description = "team without admin"
+					  members = [
+						{
+						  user_id = 10626
+						  role = "team_member"
+						},
+						{
+						  user_id = 10652
+						  role = "team_member"
+						},
+						{
+						  user_id = 10653
+						  role = "team_member"
+						}
+					  ]
+					}
+				`,
+				ExpectError: regexp.MustCompile(`Missing Team Admin`),
+			},
+			// Test validation error with single team_member
+			{
+				Config: providerConfig + `
+					resource "trocco_team" "test" {
+					  name = "test-single-member"
+					  description = "team with single non-admin member"
+					  members = [
+						{
+						  user_id = 10652
+						  role = "team_member"
+						}
+					  ]
+					}
+				`,
+				ExpectError: regexp.MustCompile(`Missing Team Admin`),
+			},
+			// Test validation passes when team_admin is added
+			{
+				Config: providerConfig + `
+					resource "trocco_team" "test" {
+					  name = "test-with-admin"
+					  description = "team with admin and members"
+					  members = [
+						{
+						  user_id = 10626
+						  role = "team_admin"
+						},
+						{
+						  user_id = 10652
+						  role = "team_member"
+						}
+					  ]
+					}
+				`,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("trocco_team.test", "name", "test-with-admin"),
+					resource.TestCheckResourceAttr("trocco_team.test", "members.#", "2"),
+					resource.TestCheckResourceAttr("trocco_team.test", "members.0.role", "team_admin"),
+					resource.TestCheckResourceAttr("trocco_team.test", "members.1.role", "team_member"),
+				),
+			},
+		},
+	})
+}
