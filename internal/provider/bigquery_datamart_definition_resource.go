@@ -10,7 +10,6 @@ import (
 	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
 	troccoValidator "terraform-provider-trocco/internal/provider/validator"
 
-	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -62,7 +61,7 @@ type customVariableSettingModel struct {
 	Name      types.String `tfsdk:"name"`
 	Type      types.String `tfsdk:"type"`
 	Value     types.String `tfsdk:"value"`
-	Quantity  types.Int32  `tfsdk:"quantity"`
+	Quantity  types.Int64  `tfsdk:"quantity"`
 	Unit      types.String `tfsdk:"unit"`
 	Direction types.String `tfsdk:"direction"`
 	Format    types.String `tfsdk:"format"`
@@ -82,10 +81,10 @@ type datamartNotificationModel struct {
 
 type scheduleModel struct {
 	Frequency types.String `tfsdk:"frequency"`
-	Minute    types.Int32  `tfsdk:"minute"`
-	Hour      types.Int32  `tfsdk:"hour"`
-	Day       types.Int32  `tfsdk:"day"`
-	DayOfWeek types.Int32  `tfsdk:"day_of_week"`
+	Minute    types.Int64  `tfsdk:"minute"`
+	Hour      types.Int64  `tfsdk:"hour"`
+	Day       types.Int64  `tfsdk:"day"`
+	DayOfWeek types.Int64  `tfsdk:"day_of_week"`
 	TimeZone  types.String `tfsdk:"time_zone"`
 }
 
@@ -170,10 +169,10 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 							Optional:            true,
 							MarkdownDescription: "Fixed string which will replace variables at runtime. Required in `string` type",
 						},
-						"quantity": schema.Int32Attribute{
+						"quantity": schema.Int64Attribute{
 							Optional: true,
-							Validators: []validator.Int32{
-								int32validator.AtLeast(0),
+							Validators: []validator.Int64{
+								int64validator.AtLeast(0),
 							},
 							MarkdownDescription: "Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types",
 						},
@@ -285,31 +284,31 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 							},
 							MarkdownDescription: "Frequency of automatic execution. The following frequencies are supported: `hourly`, `daily`, `weekly`, `monthly`",
 						},
-						"minute": schema.Int32Attribute{
+						"minute": schema.Int64Attribute{
 							Required: true,
-							Validators: []validator.Int32{
-								int32validator.Between(0, 59),
+							Validators: []validator.Int64{
+								int64validator.Between(0, 59),
 							},
 							MarkdownDescription: "Value of minute. Required for all schedules",
 						},
-						"hour": schema.Int32Attribute{
+						"hour": schema.Int64Attribute{
 							Optional: true,
-							Validators: []validator.Int32{
-								int32validator.Between(0, 23),
+							Validators: []validator.Int64{
+								int64validator.Between(0, 23),
 							},
 							MarkdownDescription: "Value of hour. Required in `daily`, `weekly`, and `monthly` schedules",
 						},
-						"day_of_week": schema.Int32Attribute{
+						"day_of_week": schema.Int64Attribute{
 							Optional: true,
-							Validators: []validator.Int32{
-								int32validator.Between(0, 6),
+							Validators: []validator.Int64{
+								int64validator.Between(0, 6),
 							},
 							MarkdownDescription: "Value of day of week. Sunday - Saturday is represented as 0 - 6. Required in `weekly` schedule",
 						},
-						"day": schema.Int32Attribute{
+						"day": schema.Int64Attribute{
 							Optional: true,
-							Validators: []validator.Int32{
-								int32validator.Between(1, 31),
+							Validators: []validator.Int64{
+								int64validator.Between(1, 31),
 							},
 							MarkdownDescription: "Value of day. Required in `monthly` schedule",
 						},
@@ -443,7 +442,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 				customVariableSettingInputs[i] = client.NewTimestampTypeCustomVariableSettingInput(
 					v.Name.ValueString(),
 					v.Type.ValueString(),
-					int(v.Quantity.ValueInt32()),
+					int(v.Quantity.ValueInt64()),
 					v.Unit.ValueString(),
 					v.Direction.ValueString(),
 					v.Format.ValueString(),
@@ -498,33 +497,33 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 			case "hourly":
 				{
 					scheduleInputs[i] = client.NewHourlyScheduleInput(
-						int(v.Minute.ValueInt32()),
+						int(v.Minute.ValueInt64()),
 						v.TimeZone.ValueString(),
 					)
 				}
 			case "daily":
 				{
 					scheduleInputs[i] = client.NewDailyScheduleInput(
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
+						int(v.Hour.ValueInt64()),
+						int(v.Minute.ValueInt64()),
 						v.TimeZone.ValueString(),
 					)
 				}
 			case "weekly":
 				{
 					scheduleInputs[i] = client.NewWeeklyScheduleInput(
-						int(v.DayOfWeek.ValueInt32()),
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
+						int(v.DayOfWeek.ValueInt64()),
+						int(v.Hour.ValueInt64()),
+						int(v.Minute.ValueInt64()),
 						v.TimeZone.ValueString(),
 					)
 				}
 			case "monthly":
 				{
 					scheduleInputs[i] = client.NewMonthlyScheduleInput(
-						int(v.Day.ValueInt32()),
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
+						int(v.Day.ValueInt64()),
+						int(v.Hour.ValueInt64()),
+						int(v.Minute.ValueInt64()),
 						v.TimeZone.ValueString(),
 					)
 				}
@@ -657,7 +656,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 				customVariableSettingInputs[i] = client.NewTimestampTypeCustomVariableSettingInput(
 					v.Name.ValueString(),
 					v.Type.ValueString(),
-					int(v.Quantity.ValueInt32()),
+					int(v.Quantity.ValueInt64()),
 					v.Unit.ValueString(),
 					v.Direction.ValueString(),
 					v.Format.ValueString(),
@@ -720,33 +719,33 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 			case "hourly":
 				{
 					scheduleInputs[i] = client.NewHourlyScheduleInput(
-						int(v.Minute.ValueInt32()),
+						int(v.Minute.ValueInt64()),
 						v.TimeZone.ValueString(),
 					)
 				}
 			case "daily":
 				{
 					scheduleInputs[i] = client.NewDailyScheduleInput(
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
+						int(v.Hour.ValueInt64()),
+						int(v.Minute.ValueInt64()),
 						v.TimeZone.ValueString(),
 					)
 				}
 			case "weekly":
 				{
 					scheduleInputs[i] = client.NewWeeklyScheduleInput(
-						int(v.DayOfWeek.ValueInt32()),
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
+						int(v.DayOfWeek.ValueInt64()),
+						int(v.Hour.ValueInt64()),
+						int(v.Minute.ValueInt64()),
 						v.TimeZone.ValueString(),
 					)
 				}
 			case "monthly":
 				{
 					scheduleInputs[i] = client.NewMonthlyScheduleInput(
-						int(v.Day.ValueInt32()),
-						int(v.Hour.ValueInt32()),
-						int(v.Minute.ValueInt32()),
+						int(v.Day.ValueInt64()),
+						int(v.Hour.ValueInt64()),
+						int(v.Minute.ValueInt64()),
 						v.TimeZone.ValueString(),
 					)
 				}
@@ -939,7 +938,7 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 				customVariableSettings[i].Value = types.StringValue(*v.Value)
 			}
 			if v.Quantity != nil {
-				customVariableSettings[i].Quantity = types.Int32Value(int32(*v.Quantity))
+				customVariableSettings[i].Quantity = types.Int64Value(int64(*v.Quantity))
 			}
 			if v.Unit != nil {
 				customVariableSettings[i].Unit = types.StringValue(*v.Unit)
@@ -1038,17 +1037,17 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 		for i, v := range response.Schedules {
 			schedules[i] = scheduleModel{
 				Frequency: types.StringValue(v.Frequency),
-				Minute:    types.Int32Value(int32(v.Minute)),
+				Minute:    types.Int64Value(int64(v.Minute)),
 				TimeZone:  types.StringValue(v.TimeZone),
 			}
 			if v.Hour != nil {
-				schedules[i].Hour = types.Int32Value(int32(*v.Hour))
+				schedules[i].Hour = types.Int64Value(int64(*v.Hour))
 			}
 			if v.DayOfWeek != nil {
-				schedules[i].DayOfWeek = types.Int32Value(int32(*v.DayOfWeek))
+				schedules[i].DayOfWeek = types.Int64Value(int64(*v.DayOfWeek))
 			}
 			if v.Day != nil {
-				schedules[i].Day = types.Int32Value(int32(*v.Day))
+				schedules[i].Day = types.Int64Value(int64(*v.Day))
 			}
 		}
 		model.Schedules = schedules
@@ -1081,7 +1080,7 @@ func (c customVariableSettingModel) attrTypes() map[string]attr.Type {
 		"name":      types.StringType,
 		"type":      types.StringType,
 		"value":     types.StringType,
-		"quantity":  types.Int32Type,
+		"quantity":  types.Int64Type,
 		"unit":      types.StringType,
 		"direction": types.StringType,
 		"format":    types.StringType,

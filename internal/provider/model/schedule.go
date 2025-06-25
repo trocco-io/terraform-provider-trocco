@@ -9,10 +9,10 @@ import (
 
 type Schedule struct {
 	Frequency types.String `tfsdk:"frequency"`
-	Minute    types.Int32  `tfsdk:"minute"`
-	Hour      types.Int32  `tfsdk:"hour"`
-	Day       types.Int32  `tfsdk:"day"`
-	DayOfWeek types.Int32  `tfsdk:"day_of_week"`
+	Minute    types.Int64  `tfsdk:"minute"`
+	Hour      types.Int64  `tfsdk:"hour"`
+	Day       types.Int64  `tfsdk:"day"`
+	DayOfWeek types.Int64  `tfsdk:"day_of_week"`
 	TimeZone  types.String `tfsdk:"time_zone"`
 }
 
@@ -24,10 +24,10 @@ func NewSchedules(schedules []entity.Schedule) []Schedule {
 	for _, input := range schedules {
 		schedule := Schedule{
 			Frequency: types.StringValue(input.Frequency),
-			Minute:    types.Int32Value(input.Minute),
-			Hour:      types.Int32PointerValue(input.Hour),
-			Day:       types.Int32PointerValue(input.Day),
-			DayOfWeek: types.Int32PointerValue(input.DayOfWeek),
+			Minute:    types.Int64Value(input.Minute),
+			Hour:      types.Int64PointerValue(input.Hour),
+			Day:       types.Int64PointerValue(input.Day),
+			DayOfWeek: types.Int64PointerValue(input.DayOfWeek),
 			TimeZone:  types.StringValue(input.TimeZone),
 		}
 		outputs = append(outputs, schedule)
@@ -38,10 +38,10 @@ func NewSchedules(schedules []entity.Schedule) []Schedule {
 func (schedule Schedule) ToInput() parameter.ScheduleInput {
 	return parameter.ScheduleInput{
 		Frequency: schedule.Frequency.ValueString(),
-		Minute:    schedule.Minute.ValueInt32(),
-		Hour:      schedule.Hour.ValueInt32Pointer(),
-		Day:       schedule.Day.ValueInt32Pointer(),
-		DayOfWeek: schedule.DayOfWeek.ValueInt32Pointer(),
+		Minute:    schedule.Minute.ValueInt64(),
+		Hour:      schedule.Hour.ValueInt64Pointer(),
+		Day:       schedule.Day.ValueInt64Pointer(),
+		DayOfWeek: schedule.DayOfWeek.ValueInt64Pointer(),
 		TimeZone:  schedule.TimeZone.ValueString(),
 	}
 }

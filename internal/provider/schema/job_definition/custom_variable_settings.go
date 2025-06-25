@@ -1,7 +1,7 @@
 package job_definition
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -33,10 +33,10 @@ func CustomVariableSettingsSchema() schema.Attribute {
 					Optional:            true,
 					MarkdownDescription: "Fixed string which will replace variables at runtime. Required in `string` type",
 				},
-				"quantity": schema.Int32Attribute{
+				"quantity": schema.Int64Attribute{
 					Optional: true,
-					Validators: []validator.Int32{
-						int32validator.AtLeast(0),
+					Validators: []validator.Int64{
+						int64validator.AtLeast(0),
 					},
 					MarkdownDescription: "Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types",
 				},

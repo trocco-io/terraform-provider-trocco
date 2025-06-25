@@ -33,7 +33,7 @@ func (d *CustomVariableSettingPlanModifier) PlanModifyObject(ctx context.Context
 		return
 	}
 
-	var quantity types.Int32
+	var quantity types.Int64
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("quantity"), &quantity)...)
 	if resp.Diagnostics.HasError() {
 		return
