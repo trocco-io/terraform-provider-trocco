@@ -1,7 +1,7 @@
 package job_definition
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -21,31 +21,31 @@ func SchedulesSchema() schema.Attribute {
 					},
 					MarkdownDescription: "Frequency of automatic execution. The following frequencies are supported: `hourly`, `daily`, `weekly`, `monthly`",
 				},
-				"minute": schema.Int32Attribute{
+				"minute": schema.Int64Attribute{
 					Required: true,
-					Validators: []validator.Int32{
-						int32validator.Between(0, 59),
+					Validators: []validator.Int64{
+						int64validator.Between(0, 59),
 					},
 					MarkdownDescription: "Value of minute. Required for all schedules",
 				},
-				"hour": schema.Int32Attribute{
+				"hour": schema.Int64Attribute{
 					Optional: true,
-					Validators: []validator.Int32{
-						int32validator.Between(0, 23),
+					Validators: []validator.Int64{
+						int64validator.Between(0, 23),
 					},
 					MarkdownDescription: "Value of hour. Required in `daily`, `weekly`, and `monthly` schedules",
 				},
-				"day_of_week": schema.Int32Attribute{
+				"day_of_week": schema.Int64Attribute{
 					Optional: true,
-					Validators: []validator.Int32{
-						int32validator.Between(0, 6),
+					Validators: []validator.Int64{
+						int64validator.Between(0, 6),
 					},
 					MarkdownDescription: "Value of day of week. Sunday - Saturday is represented as 0 - 6. Required in `weekly` schedule",
 				},
-				"day": schema.Int32Attribute{
+				"day": schema.Int64Attribute{
 					Optional: true,
-					Validators: []validator.Int32{
-						int32validator.Between(1, 31),
+					Validators: []validator.Int64{
+						int64validator.Between(1, 31),
 					},
 					MarkdownDescription: "Value of day. Required in `monthly` schedule",
 				},

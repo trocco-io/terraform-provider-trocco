@@ -1,3 +1,65 @@
+## 0.17.0
+FEATURES:
+- `trocco_job_definition` resource:
+  - Added support for `http` input option with comprehensive HTTP data fetching capabilities
+    - Supports various HTTP methods (GET, POST), pagination (offset, cursor), and multiple parsers (CSV, JSONL, JSONPath, LTSV, Excel, XML)
+    - Includes request/response configuration options like headers, parameters, timeouts, and retry settings
+- `trocco_pipeline_definition` resource:
+  - Changed `notifications` from `List` to `Set` type to improve consistency and avoid ordering issues
+
+CHORE:
+- Updated Go version from 1.21 to 1.23.0
+- Updated multiple dependencies including:
+  - terraform-plugin-docs: 0.19.4 → 0.21.0
+  - terraform-plugin-framework: 1.11.0 → 1.15.0
+  - terraform-plugin-go: 0.23.0 → 0.27.0
+  - Various other dependency updates for improved security and performance
+- Added comprehensive validation for HTTP input options
+- Enhanced documentation with HTTP input option examples
+
+## 0.16.0
+FEATURES:
+- `trocco_job_definition` resource:
+  - Changed `bigquery_output_option_clustering_fields` and `bigquery_output_option_merge_keys` from `List` to `Set` type
+  - Made `bigquery_output_option_clustering_fields` and `bigquery_output_option_merge_keys` optional instead of required
+  - Added validation for `bigquery_output_option_merge_keys` to be required only when `mode` is `merge`
+- Added new plan modifiers:
+  - `EmptyListForNull` and `EmptySetForNull` to avoid unnecessary diffs
+
+CHORE:
+- Added review workflow documentation
+- Added `.gitignore` for logs directory
+
+## 0.15.2
+CHORE:
+- Add validation for `before_load` in `trocco_bigquery_datamart_definition` resource
+  - `before_load` is only available when `write_disposition` is "append"
+- Use custom type TrimmedStringValue in `pipeline_definition` resource
+  - `description` field
+
+## 0.15.1
+CHORE:
+- Add tests
+- Fix GitHub Actions timeout settings
+- Update fields to use TrimmedStringValue custom type
+    - `before_load` in `trocco_bigquery_datamart_definition` resource
+    - `message` in `trocco_bigquery_datamart_definition.notifications` resource
+    - `message` in `trocco_job_definition.notifications` resource
+    - `message` in `trocco_pipeline_definition.notifications` resource
+
+## 0.15.0
+FEATURES:
+- Added support for `yahoo_ads_api_yss` input option in `trocco_job_definition` resource.
+
+CHORE:
+- Use custom type TrimStringValue in `pipeline_definition` resource.
+    - `bigquery_data_check_config.query`
+    - `redshift_data_check_config.query`
+    - `snowflake_data_check_config.query`
+- Add tests & coverage report.
+- Fix connection types in documentation.
+- Fix import block example in documentation.
+
 ## 0.14.0
 FEATURES:
 - Added `kintone` input in `trocco_job_definition` resource.

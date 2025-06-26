@@ -122,8 +122,135 @@ resource "trocco_pipeline_definition" "trocco_transfer" {
 ##### Custom Variable Loop
 
 ```terraform
-resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop" {
-  name = "trocco_transfer_with_custom_variable_loop"
+resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop_with_bigquery_config" {
+  name = "trocco_transfer_with_custom_variable_loop_with_bigquery_config"
+
+  tasks = [
+    {
+      key  = "trocco_transfer"
+      type = "trocco_transfer"
+
+      trocco_transfer_config = {
+        definition_id = 1
+        custom_variable_loop = {
+          type = "bigquery"
+          bigquery_config = {
+            connection_id = 1
+            query         = "select foo, bar from sample"
+            variables = [
+              "$foo$",
+              "$bar$"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+```terraform
+resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop_with_period_config" {
+  name = "trocco_transfer_with_custom_variable_loop_with_period_config"
+
+  tasks = [
+    {
+      key  = "trocco_transfer"
+      type = "trocco_transfer"
+
+      trocco_transfer_config = {
+        definition_id = 1
+        custom_variable_loop = {
+          type = "period"
+          period_config = {
+            interval  = "day"
+            time_zone = "Asia/Tokyo"
+            from = {
+              value = 7
+              unit  = "day"
+            }
+            to = {
+              value = 1
+              unit  = "day"
+            }
+            variables = [
+              {
+                name = "$date$"
+                offset = {
+                  value = 0
+                  unit  = "day"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+```terraform
+resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop_with_redshift_config" {
+  name = "trocco_transfer_with_custom_variable_loop_with_redshift_config"
+
+  tasks = [
+    {
+      key  = "trocco_transfer"
+      type = "trocco_transfer"
+
+      trocco_transfer_config = {
+        definition_id = 1
+        custom_variable_loop = {
+          type = "redshift"
+          redshift_config = {
+            connection_id = 1
+            query         = "select foo, bar from sample"
+            variables = [
+              "$foo$",
+              "$bar$"
+            ]
+            database = "dev"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+```terraform
+resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop_with_snowflake_config" {
+  name = "trocco_transfer_with_custom_variable_loop_with_snowflake_config"
+
+  tasks = [
+    {
+      key  = "trocco_transfer"
+      type = "trocco_transfer"
+
+      trocco_transfer_config = {
+        definition_id = 1
+        custom_variable_loop = {
+          type = "snowflake"
+          snowflake_config = {
+            connection_id = 1
+            query         = "select foo, bar from sample"
+            variables = [
+              "$foo$",
+              "$bar$"
+            ]
+            warehouse = "COMPUTE_WH"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+```terraform
+resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop_with_string_config" {
+  name = "trocco_transfer_with_custom_variable_loop_with_string_config"
 
   tasks = [
     {
@@ -153,6 +280,7 @@ resource "trocco_pipeline_definition" "trocco_transfer_with_custom_variable_loop
   ]
 }
 ```
+
 
 #### TROCCO Transfer Bulk
 
@@ -571,11 +699,11 @@ resource "trocco_pipeline_definition" "trocco_pipeline" {
 - `max_retries` (Number) The maximum number of retries that the pipeline can have
 - `max_task_parallelism` (Number) The maximum number of tasks that the pipeline can run in parallel
 - `min_retry_interval` (Number) The minimum time in minutes between retries
-- `notifications` (Attributes List) The notifications of the pipeline definition (see [below for nested schema](#nestedatt--notifications))
+- `notifications` (Attributes Set) The notifications of the pipeline definition (see [below for nested schema](#nestedatt--notifications))
 - `resource_group_id` (Number) The resource group ID of the pipeline definition
 - `schedules` (Attributes Set) The schedules of the pipeline definition (see [below for nested schema](#nestedatt--schedules))
 - `task_dependencies` (Attributes Set) The task dependencies of the workflow. (see [below for nested schema](#nestedatt--task_dependencies))
-- `tasks` (Attributes List) The tasks of the workflow. (see [below for nested schema](#nestedatt--tasks))
+- `tasks` (Attributes Set) The tasks of the workflow. (see [below for nested schema](#nestedatt--tasks))
 
 ### Read-Only
 
@@ -674,16 +802,16 @@ Read-Only:
 
 Required:
 
+- `accepts_null` (Boolean) Whether the datacheck task accepts null
 - `connection_id` (Number) The connection id of the datacheck task
 - `name` (String) The name of the datacheck task
+- `operator` (String) The operator of the datacheck task
+- `query_result` (Number) The query result of the datacheck task
 
 Optional:
 
-- `accepts_null` (Boolean) Whether the datacheck task accepts null
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--bigquery_data_check_config--custom_variables))
-- `operator` (String) The operator of the datacheck task
 - `query` (String) The query of the datacheck task
-- `query_result` (Number) The query result of the datacheck task
 
 <a id="nestedatt--tasks--bigquery_data_check_config--custom_variables"></a>
 ### Nested Schema for `tasks.bigquery_data_check_config.custom_variables`
@@ -771,17 +899,17 @@ Optional:
 
 Required:
 
+- `accepts_null` (Boolean) Whether the datacheck task accepts null values
 - `connection_id` (Number) The connection id to use for the datacheck task
 - `name` (String) The name of the datacheck task
+- `operator` (String) The operator to use for the datacheck task
+- `query_result` (Number) The query result to use for the datacheck task
 
 Optional:
 
-- `accepts_null` (Boolean) Whether the datacheck task accepts null values
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--redshift_data_check_config--custom_variables))
 - `database` (String) The database to use for the datacheck task
-- `operator` (String) The operator to use for the datacheck task
 - `query` (String) The query to run for the datacheck task
-- `query_result` (Number) The query result to use for the datacheck task
 
 <a id="nestedatt--tasks--redshift_data_check_config--custom_variables"></a>
 ### Nested Schema for `tasks.redshift_data_check_config.custom_variables`
@@ -818,16 +946,16 @@ Required:
 
 Required:
 
+- `accepts_null` (Boolean) Whether the datacheck task accepts null values
 - `connection_id` (Number) The connection id to use for the datacheck task
 - `name` (String) The name of the datacheck task
+- `operator` (String) The operator to use for the datacheck task
+- `query_result` (Number) The query result to use for the datacheck task
 
 Optional:
 
-- `accepts_null` (Boolean) Whether the datacheck task accepts null values
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--snowflake_data_check_config--custom_variables))
-- `operator` (String) The operator to use for the datacheck task
 - `query` (String) The query to run for the datacheck task
-- `query_result` (Number) The query result to use for the datacheck task
 - `warehouse` (String) The warehouse to use for the datacheck task
 
 <a id="nestedatt--tasks--snowflake_data_check_config--custom_variables"></a>
@@ -875,7 +1003,7 @@ Optional:
 
 Required:
 
-- `type` (String) The type of the custom variable loop
+- `type` (String) The type of the custom variable loop. Allowed values: "string", "period", "bigquery", "snowflake", "redshift".
 
 Optional:
 
@@ -1003,7 +1131,7 @@ Optional:
 
 Required:
 
-- `type` (String) The type of the custom variable loop
+- `type` (String) The type of the custom variable loop. Allowed values: "string", "period", "bigquery", "snowflake", "redshift".
 
 Optional:
 
@@ -1139,7 +1267,7 @@ Optional:
 
 Required:
 
-- `type` (String) The type of the custom variable loop
+- `type` (String) The type of the custom variable loop. Allowed values: "string", "period", "bigquery", "snowflake", "redshift".
 
 Optional:
 
@@ -1267,7 +1395,7 @@ Optional:
 
 Required:
 
-- `type` (String) The type of the custom variable loop
+- `type` (String) The type of the custom variable loop. Allowed values: "string", "period", "bigquery", "snowflake", "redshift".
 
 Optional:
 
@@ -1395,7 +1523,7 @@ Optional:
 
 Required:
 
-- `type` (String) The type of the custom variable loop
+- `type` (String) The type of the custom variable loop. Allowed values: "string", "period", "bigquery", "snowflake", "redshift".
 
 Optional:
 
@@ -1537,7 +1665,7 @@ Optional:
 
 Required:
 
-- `type` (String) The type of the custom variable loop
+- `type` (String) The type of the custom variable loop. Allowed values: "string", "period", "bigquery", "snowflake", "redshift".
 
 Optional:
 

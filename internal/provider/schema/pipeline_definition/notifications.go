@@ -1,11 +1,13 @@
 package pipeline_definition
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
+	"terraform-provider-trocco/internal/provider/custom_type"
+
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
 func Notifications() schema.Attribute {
-	return schema.ListNestedAttribute{
+	return schema.SetNestedAttribute{
 		MarkdownDescription: "The notifications of the pipeline definition",
 		Optional:            true,
 		NestedObject: schema.NestedAttributeObject{
@@ -37,6 +39,7 @@ func Notifications() schema.Attribute {
 						"message": schema.StringAttribute{
 							MarkdownDescription: "The message of the notification",
 							Required:            true,
+							CustomType:          custom_type.TrimmedStringType{},
 						},
 					},
 				},
@@ -51,6 +54,7 @@ func Notifications() schema.Attribute {
 						"message": schema.StringAttribute{
 							MarkdownDescription: "The message of the notification",
 							Required:            true,
+							CustomType:          custom_type.TrimmedStringType{},
 						},
 					},
 				},

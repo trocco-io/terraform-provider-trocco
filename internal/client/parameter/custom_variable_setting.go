@@ -4,7 +4,7 @@ type CustomVariableSettingInput struct {
 	Name      string  `json:"name"`
 	Type      string  `json:"type"`
 	Value     *string `json:"value,omitempty"`
-	Quantity  *int32  `json:"quantity,omitempty"`
+	Quantity  *int64  `json:"quantity,omitempty"`
 	Unit      *string `json:"unit,omitempty"`
 	Direction *string `json:"direction,omitempty"`
 	Format    *string `json:"format,omitempty"`

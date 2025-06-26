@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
+	"terraform-provider-trocco/internal/provider/custom_type"
 	pdm "terraform-provider-trocco/internal/provider/model/pipeline_definition"
 	pds "terraform-provider-trocco/internal/provider/schema/pipeline_definition"
 
@@ -93,6 +94,7 @@ func (r *pipelineDefinitionResource) Schema(
 				MarkdownDescription: "The name of the pipeline definition",
 				Required:            true,
 				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
 					stringvalidator.UTF8LengthAtMost(255),
 				},
 			},
@@ -101,6 +103,7 @@ func (r *pipelineDefinitionResource) Schema(
 				Optional:            true,
 				Computed:            true,
 				Default:             stringdefault.StaticString(""),
+				CustomType:          custom_type.TrimmedStringType{},
 			},
 			"max_task_parallelism": schema.Int64Attribute{
 				MarkdownDescription: "The maximum number of tasks that the pipeline can run in parallel",
@@ -254,8 +257,17 @@ func (r *pipelineDefinitionResource) Read(
 		return
 	}
 
+	var tasks []*pdm.Task
+	if !state.Tasks.IsNull() && !state.Tasks.IsUnknown() {
+		diags := state.Tasks.ElementsAs(ctx, &tasks, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+
 	keys := map[int64]types.String{}
-	for _, t := range state.Tasks {
+	for _, t := range tasks {
 		keys[t.TaskIdentifier.ValueInt64()] = t.Key
 	}
 

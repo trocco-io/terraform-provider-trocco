@@ -27,19 +27,19 @@ func (d *SchedulePlanModifier) PlanModifyObject(ctx context.Context, req planmod
 		return
 	}
 
-	var hour types.Int32
+	var hour types.Int64
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("hour"), &hour)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	var dayOfWeek types.Int32
+	var dayOfWeek types.Int64
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("day_of_week"), &dayOfWeek)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	var day types.Int32
+	var day types.Int64
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("day"), &day)...)
 	if resp.Diagnostics.HasError() {
 		return

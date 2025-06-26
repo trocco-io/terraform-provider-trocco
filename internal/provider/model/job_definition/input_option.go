@@ -4,6 +4,8 @@ import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
 	input_options "terraform-provider-trocco/internal/provider/model/job_definition/input_option"
+
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 )
 
 type InputOption struct {
@@ -16,10 +18,17 @@ type InputOption struct {
 	BigqueryInputOption           *input_options.BigqueryInputOption           `tfsdk:"bigquery_input_option"`
 	PostgreSQLInputOption         *input_options.PostgreSQLInputOption         `tfsdk:"postgresql_input_option"`
 	GoogleAnalytics4InputOption   *input_options.GoogleAnalytics4InputOption   `tfsdk:"google_analytics4_input_option"`
+	HttpInputOption               *input_options.HttpInputOption               `tfsdk:"http_input_option"`
 	KintoneInputOption            *input_options.KintoneInputOption            `tfsdk:"kintone_input_option"`
+	YahooAdsApiYssInputOption     *input_options.YahooAdsApiYssInputOption     `tfsdk:"yahoo_ads_api_yss_input_option"`
 }
 
-func NewInputOption(inputOption client.InputOption) *InputOption {
+func NewInputOption(inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics) {
+	var previousHttpInputOption *input_options.HttpInputOption
+	if previous != nil {
+		previousHttpInputOption = previous.HttpInputOption
+	}
+	httpInputOption, diags := input_options.NewHttpInputOption(inputOption.HttpInputOption, previousHttpInputOption)
 	return &InputOption{
 		GcsInputOption:                input_options.NewGcsInputOption(inputOption.GcsInputOption),
 		MySQLInputOption:              input_options.NewMysqlInputOption(inputOption.MySQLInputOption),
@@ -30,11 +39,18 @@ func NewInputOption(inputOption client.InputOption) *InputOption {
 		BigqueryInputOption:           input_options.NewBigqueryInputOption(inputOption.BigqueryInputOption),
 		PostgreSQLInputOption:         input_options.NewPostgreSQLInputOption(inputOption.PostgreSQLInputOption),
 		GoogleAnalytics4InputOption:   input_options.NewGoogleAnalytics4InputOption(inputOption.GoogleAnalytics4InputOption),
+		HttpInputOption:               httpInputOption,
 		KintoneInputOption:            input_options.NewKintoneInputOption(inputOption.KintoneInputOption),
-	}
+		YahooAdsApiYssInputOption:     input_options.NewYahooAdsApiYssInputOption(inputOption.YahooAdsApiYssInputOption),
+	}, diags
 }
 
-func (o InputOption) ToInput() client.InputOptionInput {
+func (o InputOption) ToInput() (client.InputOptionInput, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	httpInput, d := o.HttpInputOption.ToInput()
+	diags.Append(d...)
+
 	return client.InputOptionInput{
 		GcsInputOption:                model.WrapObject(o.GcsInputOption.ToInput()),
 		MySQLInputOption:              model.WrapObject(o.MySQLInputOption.ToInput()),
@@ -45,11 +61,17 @@ func (o InputOption) ToInput() client.InputOptionInput {
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToInput()),
 		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToInput()),
 		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToInput()),
+		HttpInputOption:               model.WrapObject(httpInput),
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToInput()),
-	}
+		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToInput()),
+	}, diags
 }
 
-func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
+func (o InputOption) ToUpdateInput() (*client.UpdateInputOptionInput, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	httpInput, d := o.HttpInputOption.ToUpdateInput()
+	diags.Append(d...)
+
 	return &client.UpdateInputOptionInput{
 		GcsInputOption:                model.WrapObject(o.GcsInputOption.ToUpdateInput()),
 		MySQLInputOption:              model.WrapObject(o.MySQLInputOption.ToUpdateInput()),
@@ -60,6 +82,8 @@ func (o InputOption) ToUpdateInput() *client.UpdateInputOptionInput {
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToUpdateInput()),
 		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToUpdateInput()),
 		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToUpdateInput()),
+		HttpInputOption:               model.WrapObject(httpInput),
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToUpdateInput()),
-	}
+		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToUpdateInput()),
+	}, diags
 }

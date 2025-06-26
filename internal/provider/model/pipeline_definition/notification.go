@@ -1,10 +1,13 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	"terraform-provider-trocco/internal/provider/custom_type"
 	model "terraform-provider-trocco/internal/provider/model"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -21,14 +24,35 @@ type Notification struct {
 	SlackConfig     *SlackNotificationConfig `tfsdk:"slack_config"`
 }
 
-func NewNotifications(ens []*we.Notification, previous *PipelineDefinition) []*Notification {
-	if ens == nil {
-		return nil
+func NewNotifications(ens []*we.Notification, previousIsNull bool) types.Set {
+	ctx := context.Background()
+	objectType := types.ObjectType{
+		AttrTypes: map[string]attr.Type{
+			"type":             types.StringType,
+			"destination_type": types.StringType,
+			"notify_when":      types.StringType,
+			"time":             types.Int64Type,
+			"email_config": types.ObjectType{
+				AttrTypes: map[string]attr.Type{
+					"notification_id": types.Int64Type,
+					"message":         custom_type.TrimmedStringType{},
+				},
+			},
+			"slack_config": types.ObjectType{
+				AttrTypes: map[string]attr.Type{
+					"notification_id": types.Int64Type,
+					"message":         custom_type.TrimmedStringType{},
+				},
+			},
+		},
 	}
 
-	// If the attribute in the plan (or state) is nil, the provider should sets nil to the state.
-	if previous.Notifications == nil && len(ens) == 0 {
-		return nil
+	if ens == nil {
+		return types.SetNull(objectType)
+	}
+
+	if previousIsNull && len(ens) == 0 {
+		return types.SetNull(objectType)
 	}
 
 	mds := []*Notification{}
@@ -36,7 +60,12 @@ func NewNotifications(ens []*we.Notification, previous *PipelineDefinition) []*N
 		mds = append(mds, NewNotification(en))
 	}
 
-	return mds
+	setValue, diags := types.SetValueFrom(ctx, objectType, mds)
+	if diags.HasError() {
+		return types.SetNull(objectType)
+	}
+
+	return setValue
 }
 
 func NewNotification(en *we.Notification) *Notification {
@@ -73,8 +102,8 @@ func (n *Notification) ToInput() *wp.Notification {
 //
 
 type EmailNotificationConfig struct {
-	NotificationID types.Int64  `tfsdk:"notification_id"`
-	Message        types.String `tfsdk:"message"`
+	NotificationID types.Int64                    `tfsdk:"notification_id"`
+	Message        custom_type.TrimmedStringValue `tfsdk:"message"`
 }
 
 func NewEmailNotificationConfig(en *we.EmailNotificationConfig) *EmailNotificationConfig {
@@ -84,7 +113,7 @@ func NewEmailNotificationConfig(en *we.EmailNotificationConfig) *EmailNotificati
 
 	return &EmailNotificationConfig{
 		NotificationID: types.Int64Value(en.NotificationID),
-		Message:        types.StringValue(en.Message),
+		Message:        custom_type.TrimmedStringValue{StringValue: types.StringValue(en.Message)},
 	}
 }
 
@@ -100,8 +129,8 @@ func (c *EmailNotificationConfig) ToInput() *wp.EmailNotificationConfig {
 //
 
 type SlackNotificationConfig struct {
-	NotificationID types.Int64  `tfsdk:"notification_id"`
-	Message        types.String `tfsdk:"message"`
+	NotificationID types.Int64                    `tfsdk:"notification_id"`
+	Message        custom_type.TrimmedStringValue `tfsdk:"message"`
 }
 
 func NewSlackNotificationConfig(en *we.SlackNotificationConfig) *SlackNotificationConfig {
@@ -111,7 +140,7 @@ func NewSlackNotificationConfig(en *we.SlackNotificationConfig) *SlackNotificati
 
 	return &SlackNotificationConfig{
 		NotificationID: types.Int64Value(en.NotificationID),
-		Message:        types.StringValue(en.Message),
+		Message:        custom_type.TrimmedStringValue{StringValue: types.StringValue(en.Message)},
 	}
 }
 

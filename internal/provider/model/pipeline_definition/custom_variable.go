@@ -5,6 +5,7 @@ import (
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -56,5 +57,18 @@ func (v *CustomVariable) ToInput() wp.CustomVariable {
 		Direction: v.Direction.ValueStringPointer(),
 		Format:    v.Format.ValueStringPointer(),
 		TimeZone:  v.TimeZone.ValueStringPointer(),
+	}
+}
+
+func CustomVariableAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":      types.StringType,
+		"type":      types.StringType,
+		"value":     types.StringType,
+		"quantity":  types.Int64Type,
+		"unit":      types.StringType,
+		"direction": types.StringType,
+		"format":    types.StringType,
+		"time_zone": types.StringType,
 	}
 }

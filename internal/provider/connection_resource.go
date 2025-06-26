@@ -20,6 +20,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/samber/lo"
 )
 
 var (
@@ -287,6 +288,19 @@ func (r *connectionResource) Configure(
 	r.client = c
 }
 
+var supportedConnectionTypes = []string{
+	"bigquery",
+	"snowflake",
+	"gcs",
+	"google_spreadsheets",
+	"mysql",
+	"salesforce",
+	"s3",
+	"postgresql",
+	"google_analytics4",
+	"kintone",
+}
+
 func (r *connectionResource) Schema(
 	ctx context.Context,
 	req resource.SchemaRequest,
@@ -297,13 +311,21 @@ func (r *connectionResource) Schema(
 		Attributes: map[string]schema.Attribute{
 			// Common Fields
 			"connection_type": schema.StringAttribute{
-				MarkdownDescription: "The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `kintone`, or `s3`.",
-				Required:            true,
+				MarkdownDescription: fmt.Sprintf(
+					"The type of the connection. It must be one of %s.",
+					strings.Join(
+						lo.Map(supportedConnectionTypes, func(s string, _ int) string {
+							return fmt.Sprintf("`%s`", s)
+						}),
+						", ",
+					),
+				),
+				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("bigquery", "snowflake", "gcs", "google_spreadsheets", "mysql", "salesforce", "s3", "postgresql", "google_analytics4", "kintone"),
+					stringvalidator.OneOf(supportedConnectionTypes...),
 				},
 			},
 			"id": schema.Int64Attribute{

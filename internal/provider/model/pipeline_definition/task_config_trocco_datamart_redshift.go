@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
 
@@ -36,4 +37,13 @@ func (c *TroccoRedshiftDatamartTaskConfig) ToInput() *wp.TroccoRedshiftDatamartT
 	}
 
 	return in
+}
+
+func TroccoRedshiftDatamartTaskConfigAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"definition_id": types.Int64Type,
+		"custom_variable_loop": types.ObjectType{
+			AttrTypes: CustomVariableLoopAttrTypes(),
+		},
+	}
 }
