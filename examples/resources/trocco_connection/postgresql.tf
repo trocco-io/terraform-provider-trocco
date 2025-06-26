@@ -6,7 +6,7 @@ resource "trocco_connection" "postgresql" {
   port            = 5432
   user_name       = "root"
   password        = "password"
-  driver          = "postgresql_42_5_1"
+  driver          = "postgresql_42_5_1" # Required for PostgreSQL connections
   ssl = {
     ca       = <<-SSL_CA
       -----BEGIN PRIVATE KEY-----

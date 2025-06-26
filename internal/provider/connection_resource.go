@@ -596,7 +596,7 @@ func (r *connectionResource) Schema(
 				MarkdownDescription: `Snowflake, MySQL, PostgreSQL: The name of a Database driver.
   - MySQL: null, mysql_connector_java_5_1_49
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
-  - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
+  - PostgreSQL: (Required) postgresql_42_5_1, postgresql_9_4_1205_jdbc41
 `,
 				Optional: true,
 				Validators: []validator.String{
