@@ -21,7 +21,19 @@ func (v AtLeastOneTeamAdminValidator) MarkdownDescription(ctx context.Context) s
 }
 
 func (v AtLeastOneTeamAdminValidator) ValidateSet(ctx context.Context, req validator.SetRequest, resp *validator.SetResponse) {
-	if req.ConfigValue.IsUnknown() || req.ConfigValue.IsNull() {
+	// Skip validation only if the value is unknown
+	// This allows the validation to run during apply phase when the value becomes known
+	if req.ConfigValue.IsUnknown() {
+		return
+	}
+
+	// If the value is null, it's an error - we need at least one member
+	if req.ConfigValue.IsNull() {
+		resp.Diagnostics.AddAttributeError(
+			req.Path,
+			"Missing Team Members",
+			"The `members` list cannot be null. It must include at least one member with `role` set to `team_admin`.",
+		)
 		return
 	}
 
@@ -32,15 +44,44 @@ func (v AtLeastOneTeamAdminValidator) ValidateSet(ctx context.Context, req valid
 		return
 	}
 
+	// Check if the list is empty
+	if len(members) == 0 {
+		resp.Diagnostics.AddAttributeError(
+			req.Path,
+			"Empty Team Members",
+			"The `members` list cannot be empty. It must include at least one member with `role` set to `team_admin`.",
+		)
+		return
+	}
+
+	// Check for at least one team_admin
+	hasTeamAdmin := false
 	for _, member := range members {
+		// Skip members with unknown role during plan phase
+		if member.Role.IsUnknown() {
+			continue
+		}
 		if member.Role.ValueString() == "team_admin" {
-			return
+			hasTeamAdmin = true
+			break
 		}
 	}
 
-	resp.Diagnostics.AddAttributeError(
-		req.Path,
-		"Missing Team Admin",
-		"The `members` list must include at least one member with `role` set to `team_admin`.",
-	)
+	// Only report error if we've checked all members and found no team_admin
+	// and there are no unknown roles that might become team_admin
+	allRolesKnown := true
+	for _, member := range members {
+		if member.Role.IsUnknown() {
+			allRolesKnown = false
+			break
+		}
+	}
+
+	if !hasTeamAdmin && allRolesKnown {
+		resp.Diagnostics.AddAttributeError(
+			req.Path,
+			"Missing Team Admin",
+			"The `members` list must include at least one member with `role` set to `team_admin`.",
+		)
+	}
 }
