@@ -19,7 +19,7 @@ func GoogleSpreadsheetsInputOptionSchema() schema.Attribute {
 		Attributes: map[string]schema.Attribute{
 			"google_spreadsheets_connection_id": schema.Int64Attribute{
 				Required:            true,
-				MarkdownDescription: "Id of Snowflake connection",
+				MarkdownDescription: "Id of Google Spreadsheets connection",
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
