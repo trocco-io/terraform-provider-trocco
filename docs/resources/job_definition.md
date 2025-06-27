@@ -1854,7 +1854,7 @@ Optional:
 Required:
 
 - `default_time_zone` (String) Default time zone
-- `google_spreadsheets_connection_id` (Number) Id of Snowflake connection
+- `google_spreadsheets_connection_id` (Number) Id of Google Spreadsheets connection
 - `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option--input_option_columns))
 - `spreadsheets_url` (String) URL of the Google Sheets
 - `start_column` (String) Column to start reading data
@@ -2746,7 +2746,7 @@ Optional:
 Optional:
 
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
-- `google_spreadsheets_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
+- `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
 
@@ -2819,7 +2819,7 @@ Optional:
 
 Required:
 
-- `google_spreadsheets_connection_id` (Number) Snowflake connection ID
+- `google_spreadsheets_connection_id` (Number) Google Spreadsheets connection ID
 - `spreadsheets_id` (String) Spreadsheet ID
 - `worksheet_title` (String) Worksheet title
 
