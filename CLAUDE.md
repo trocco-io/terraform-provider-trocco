@@ -25,6 +25,9 @@ go test -v -cover ./...
 
 ## Rules
 
-### Formatting
+- **MUST** Format Go code using `go fmt`
 
-Format Go code using `go fmt`.
+- Commit Messages
+    - **MUST** Follows Conventional Commits
+- PR Titles
+    - **MUST** Follows Conventional Commits
