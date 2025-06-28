@@ -768,12 +768,12 @@ func (m *connectionResourceModel) NewGateway() *connection.Gateway {
 		return nil
 	}
 	return &connection.Gateway{
-		Host:          types.StringPointerValue(m.Gateway.Host.ValueStringPointer()),
-		Port:          types.Int64PointerValue(m.Gateway.Port.ValueInt64Pointer()),
-		UserName:      types.StringPointerValue(m.Gateway.UserName.ValueStringPointer()),
-		Password:      types.StringPointerValue(m.Gateway.Password.ValueStringPointer()),
-		Key:           types.StringPointerValue(m.Gateway.Key.ValueStringPointer()),
-		KeyPassphrase: types.StringPointerValue(m.Gateway.KeyPassphrase.ValueStringPointer()),
+		Host:          m.Gateway.Host,
+		Port:          m.Gateway.Port,
+		UserName:      m.Gateway.UserName,
+		Password:      m.Gateway.Password,
+		Key:           m.Gateway.Key,
+		KeyPassphrase: m.Gateway.KeyPassphrase,
 	}
 }
 
