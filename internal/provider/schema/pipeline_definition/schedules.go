@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 )
 
-func Schedules() schema.Attribute {
+func SchedulesSchema() schema.Attribute {
 	return schema.SetNestedAttribute{
 		MarkdownDescription: "The schedules of the pipeline definition",
 		Optional:            true,

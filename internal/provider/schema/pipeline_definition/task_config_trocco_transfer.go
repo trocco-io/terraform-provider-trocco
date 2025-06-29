@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func TroccoTransferTaskConfig() schema.Attribute {
+func TroccoTransferTaskConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "The task configuration for the trocco transfer task.",
 		Optional:            true,
@@ -13,7 +13,7 @@ func TroccoTransferTaskConfig() schema.Attribute {
 				MarkdownDescription: "The definition id to use for the trocco transfer task",
 				Required:            true,
 			},
-			"custom_variable_loop": CustomVariableLoop(),
+			"custom_variable_loop": CustomVariableLoopSchema(),
 		},
 	}
 }

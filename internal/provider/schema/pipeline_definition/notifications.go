@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func Notifications() schema.Attribute {
+func NotificationsSchema() schema.Attribute {
 	return schema.SetNestedAttribute{
 		MarkdownDescription: "The notifications of the pipeline definition",
 		Optional:            true,
