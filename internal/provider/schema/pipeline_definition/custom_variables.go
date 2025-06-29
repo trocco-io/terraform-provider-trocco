@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 )
 
-func CustomVariables() schema.Attribute {
+func CustomVariablesSchema() schema.Attribute {
 	return schema.SetNestedAttribute{
 		MarkdownDescription: "The custom variables of the pipeline definition",
 		Optional:            true,

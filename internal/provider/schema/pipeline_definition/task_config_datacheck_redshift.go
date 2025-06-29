@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
-func RedshiftDatacheckTaskConfig() schema.Attribute {
+func RedshiftDatacheckTaskConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "The task configuration for the datacheck task.",
 		Optional:            true,
@@ -45,7 +45,7 @@ func RedshiftDatacheckTaskConfig() schema.Attribute {
 				MarkdownDescription: "The database to use for the datacheck task",
 				Optional:            true,
 			},
-			"custom_variables": CustomVariables(),
+			"custom_variables": CustomVariablesSchema(),
 		},
 	}
 }

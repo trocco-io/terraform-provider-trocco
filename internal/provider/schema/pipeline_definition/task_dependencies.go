@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func TaskDependencies() schema.Attribute {
+func TaskDependenciesSchema() schema.Attribute {
 	return schema.SetNestedAttribute{
 		MarkdownDescription: "The task dependencies of the workflow.",
 		Optional:            true,

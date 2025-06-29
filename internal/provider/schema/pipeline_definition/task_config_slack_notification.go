@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func SlackNotificationTaskConfig() schema.Attribute {
+func SlackNotificationTaskConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "The task configuration for the slack notification task.",
 		Optional:            true,

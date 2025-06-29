@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
-func CustomVariableLoop() schema.Attribute {
+func CustomVariableLoopSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "The custom variable loop of the pipeline definition",
 		Optional:            true,
@@ -38,11 +38,11 @@ func CustomVariableLoop() schema.Attribute {
 				Optional:            true,
 				Computed:            true,
 			},
-			"string_config":    StringCustomVariableLoopConfig(),
-			"period_config":    PeriodCustomVariableLoopConfig(),
-			"bigquery_config":  BigqueryCustomVariableLoopConfig(),
-			"snowflake_config": SnowflakeCustomVariableLoopConfig(),
-			"redshift_config":  RedshiftCustomVariableLoopConfig(),
+			"string_config":    StringCustomVariableLoopConfigSchema(),
+			"period_config":    PeriodCustomVariableLoopConfigSchema(),
+			"bigquery_config":  BigqueryCustomVariableLoopConfigSchema(),
+			"snowflake_config": SnowflakeCustomVariableLoopConfigSchema(),
+			"redshift_config":  RedshiftCustomVariableLoopConfigSchema(),
 		},
 	}
 }

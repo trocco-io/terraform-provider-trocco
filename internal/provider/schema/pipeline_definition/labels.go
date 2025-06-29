@@ -5,7 +5,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func Labels() schema.Attribute {
+func LabelsSchema() schema.Attribute {
 	return schema.SetAttribute{
 		MarkdownDescription: "The labels of the pipeline definition",
 		Optional:            true,

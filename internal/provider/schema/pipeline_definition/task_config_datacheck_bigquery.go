@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
-func BigqueryDatacheckTaskConfig() schema.Attribute {
+func BigqueryDatacheckTaskConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "The datacheck task config of the pipeline definition",
 		Optional:            true,
@@ -41,7 +41,7 @@ func BigqueryDatacheckTaskConfig() schema.Attribute {
 				MarkdownDescription: "Whether the datacheck task accepts null",
 				Required:            true,
 			},
-			"custom_variables": CustomVariables(),
+			"custom_variables": CustomVariablesSchema(),
 		},
 	}
 }

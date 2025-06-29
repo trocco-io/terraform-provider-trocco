@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func TroccoPiplineTaskConfig() schema.Attribute {
+func TroccoPipelineTaskConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "The task configuration for the trocco pipeline task.",
 		Optional:            true,
@@ -13,7 +13,7 @@ func TroccoPiplineTaskConfig() schema.Attribute {
 				MarkdownDescription: "The definition id to use for the trocco pipeline task",
 				Required:            true,
 			},
-			"custom_variable_loop": CustomVariableLoop(),
+			"custom_variable_loop": CustomVariableLoopSchema(),
 		},
 	}
 }
