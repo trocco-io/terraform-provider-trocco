@@ -10,7 +10,17 @@ This repository provides a Terraform provider for [TROCCO](https://trocco.io), a
 
 ## Commands
 
-### Tests
+### Foramt
+
+```sh
+# Format all Go files.
+go fmt ./...
+
+# Format a specific Go file.
+go fmt [FILE]
+```
+
+### Test
 
 ```sh
 # Run all acceptance tests.
@@ -23,8 +33,6 @@ make testacc TESTARGS="-run TestAccSome"
 go test -v -cover ./...
 ```
 
-## Rules
+## Instructions
 
-### Formatting
-
-Format Go code using `go fmt`.
+- **MUST** Use English in files and pull requests
