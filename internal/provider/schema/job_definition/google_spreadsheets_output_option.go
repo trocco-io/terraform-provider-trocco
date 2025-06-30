@@ -10,11 +10,11 @@ import (
 func GoogleSpreadsheetsOutputOptionSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Optional:            true,
-		MarkdownDescription: "Attributes of destination Snowflake settings",
+		MarkdownDescription: "Attributes of destination Google Spreadsheets settings",
 		Attributes: map[string]schema.Attribute{
 			"google_spreadsheets_connection_id": schema.Int64Attribute{
 				Required:            true,
-				MarkdownDescription: "Snowflake connection ID",
+				MarkdownDescription: "Google Spreadsheets connection ID",
 			},
 			"spreadsheets_id": schema.StringAttribute{
 				Required:            true,

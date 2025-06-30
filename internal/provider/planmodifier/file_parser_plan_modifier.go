@@ -64,7 +64,7 @@ func (d *FileParserPlanModifier) PlanModifyObject(ctx context.Context, req planm
 	nonNilParserCount := countNonNil(csvParser, jsonlParser, ltsvParser, excelParser, xmlParser, jsonpathParser, parquetParser)
 
 	if nonNilParserCount > 1 {
-		addFileParserAttributeError(req, resp, strconv.Itoa(nonNilParserCount)+"number of parser is excessive. please specify only one parser")
+		addFileParserAttributeError(req, resp, strconv.Itoa(nonNilParserCount)+" number of parser is excessive. please specify only one parser")
 	}
 }
 
