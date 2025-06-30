@@ -1,3 +1,20 @@
+## 0.18.0
+FEATURES:
+- `trocco_pipeline_definition` resource:
+  - Changed `tasks` from `List` to `Set` type to improve consistency and avoid ordering issues
+  - Added comprehensive validation for custom variable loop configurations
+  - Added new examples for various custom variable loop configurations
+
+CHORE:
+- Renamed file paths and variables for consistency:
+  - `filter_unixtime_conversion.go` → `filter_unix_time_conversion.go`
+  - `trocco_tranfer.tf` → `trocco_transfer.tf`
+- Fixed documentation inconsistencies and typos in resource attributes
+- Switched from `int32` to `int64` types throughout the codebase
+- Added styleguide documentation with validation best practices
+- Enhanced validation for team resources
+- Added comprehensive unit tests for validators
+
 ## 0.17.0
 FEATURES:
 - `trocco_job_definition` resource:
