@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
-func PeriodCustomVariableLoopConfig() schema.Attribute {
+func PeriodCustomVariableLoopConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "Period custom variable loop configuration",
 		Optional:            true,

@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func StringCustomVariableLoopConfig() schema.Attribute {
+func StringCustomVariableLoopConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "String custom variable loop configuration",
 		Optional:            true,

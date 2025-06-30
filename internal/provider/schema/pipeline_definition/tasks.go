@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
-func Tasks() schema.Attribute {
+func TasksSchema() schema.Attribute {
 	return schema.SetNestedAttribute{
 		MarkdownDescription: "The tasks of the workflow.",
 		Optional:            true,
@@ -59,20 +59,20 @@ func Tasks() schema.Attribute {
 						),
 					},
 				},
-				"trocco_transfer_config":                         TroccoTransferTaskConfig(),
-				"trocco_transfer_bulk_config":                    TroccoTransferBulkTaskConfig(),
-				"trocco_dbt_config":                              TroccoDBTTaskConfig(),
-				"trocco_bigquery_datamart_config":                BigQueryDatamartTaskConfig(),
-				"trocco_redshift_datamart_config":                RedshiftDatamartTaskConfig(),
-				"trocco_snowflake_datamart_config":               SnowflakeDatamartTaskConfig(),
-				"trocco_azure_synapse_analytics_datamart_config": AzureSynapseAnalyticsDatamartTaskConfig(),
-				"trocco_pipeline_config":                         TroccoPiplineTaskConfig(),
-				"slack_notification_config":                      SlackNotificationTaskConfig(),
-				"tableau_data_extraction_config":                 TableauDataExtractionTaskConfig(),
-				"http_request_config":                            HTTPRequestTaskConfig(),
-				"bigquery_data_check_config":                     BigqueryDatacheckTaskConfig(),
-				"snowflake_data_check_config":                    SnowflakeDatacheckTaskConfig(),
-				"redshift_data_check_config":                     RedshiftDatacheckTaskConfig(),
+				"trocco_transfer_config":                         TroccoTransferTaskConfigSchema(),
+				"trocco_transfer_bulk_config":                    TroccoTransferBulkTaskConfigSchema(),
+				"trocco_dbt_config":                              TroccoDBTTaskConfigSchema(),
+				"trocco_bigquery_datamart_config":                BigQueryDatamartTaskConfigSchema(),
+				"trocco_redshift_datamart_config":                RedshiftDatamartTaskConfigSchema(),
+				"trocco_snowflake_datamart_config":               SnowflakeDatamartTaskConfigSchema(),
+				"trocco_azure_synapse_analytics_datamart_config": AzureSynapseAnalyticsDatamartTaskConfigSchema(),
+				"trocco_pipeline_config":                         TroccoPipelineTaskConfigSchema(),
+				"slack_notification_config":                      SlackNotificationTaskConfigSchema(),
+				"tableau_data_extraction_config":                 TableauDataExtractionTaskConfigSchema(),
+				"http_request_config":                            HTTPRequestTaskConfigSchema(),
+				"bigquery_data_check_config":                     BigqueryDatacheckTaskConfigSchema(),
+				"snowflake_data_check_config":                    SnowflakeDatacheckTaskConfigSchema(),
+				"redshift_data_check_config":                     RedshiftDatacheckTaskConfigSchema(),
 			},
 		},
 	}

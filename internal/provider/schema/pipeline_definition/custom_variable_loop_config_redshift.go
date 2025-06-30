@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func RedshiftCustomVariableLoopConfig() schema.Attribute {
+func RedshiftCustomVariableLoopConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "Redshift custom variable loop configuration",
 		Optional:            true,

@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func BigqueryCustomVariableLoopConfig() schema.Attribute {
+func BigqueryCustomVariableLoopConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "BigQuery custom variabe loop configuration",
 		Optional:            true,
