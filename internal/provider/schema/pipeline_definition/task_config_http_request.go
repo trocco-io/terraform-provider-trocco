@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func HTTPRequestTaskConfig() schema.Attribute {
+func HTTPRequestTaskConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "The task configuration for the HTTP request task.",
 		Optional:            true,
@@ -70,7 +70,7 @@ func HTTPRequestTaskConfig() schema.Attribute {
 					},
 				},
 			},
-			"custom_variables": CustomVariables(),
+			"custom_variables": CustomVariablesSchema(),
 		},
 	}
 }

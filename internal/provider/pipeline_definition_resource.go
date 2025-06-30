@@ -155,11 +155,11 @@ func (r *pipelineDefinitionResource) Schema(
 				Computed:            true,
 				Default:             booldefault.StaticBool(true),
 			},
-			"labels":            pds.Labels(),
-			"notifications":     pds.Notifications(),
-			"schedules":         pds.Schedules(),
-			"tasks":             pds.Tasks(),
-			"task_dependencies": pds.TaskDependencies(),
+			"labels":            pds.LabelsSchema(),
+			"notifications":     pds.NotificationsSchema(),
+			"schedules":         pds.SchedulesSchema(),
+			"tasks":             pds.TasksSchema(),
+			"task_dependencies": pds.TaskDependenciesSchema(),
 		},
 	}
 }
