@@ -285,7 +285,7 @@ resource "trocco_job_definition" "sheets_to_sheets_example" {
 
 ```terraform
 resource "trocco_job_definition" "general_example" {
-  name                     = "example tranfer"
+  name                     = "example transfer"
   description              = "example description"
   resource_group_id        = 1
   retry_limit              = 1
