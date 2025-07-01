@@ -38,12 +38,10 @@ func (SalesforceColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewSalesforceInputOption(salesforceInputOption *input_option.SalesforceInputOption) *SalesforceInputOption {
+func NewSalesforceInputOption(ctx context.Context, salesforceInputOption *input_option.SalesforceInputOption) *SalesforceInputOption {
 	if salesforceInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &SalesforceInputOption{
 		Object:                          types.StringValue(salesforceInputOption.Object),
@@ -99,12 +97,10 @@ func newColumns(
 	return listValue, nil
 }
 
-func (salesforceInputOption *SalesforceInputOption) ToInput() *param.SalesforceInputOptionInput {
+func (salesforceInputOption *SalesforceInputOption) ToInput(ctx context.Context) *param.SalesforceInputOptionInput {
 	if salesforceInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnValues []SalesforceColumn
 	if !salesforceInputOption.Columns.IsNull() && !salesforceInputOption.Columns.IsUnknown() {
@@ -129,12 +125,10 @@ func (salesforceInputOption *SalesforceInputOption) ToInput() *param.SalesforceI
 	}
 }
 
-func (salesforceInputOption *SalesforceInputOption) ToUpdateInput() *param.UpdateSalesforceInputOptionInput {
+func (salesforceInputOption *SalesforceInputOption) ToUpdateInput(ctx context.Context) *param.UpdateSalesforceInputOptionInput {
 	if salesforceInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnValues []SalesforceColumn
 	if !salesforceInputOption.Columns.IsNull() {

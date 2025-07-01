@@ -36,12 +36,10 @@ func (KintoneInputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewKintoneInputOption(inputOption *input_option.KintoneInputOption) *KintoneInputOption {
+func NewKintoneInputOption(ctx context.Context, inputOption *input_option.KintoneInputOption) *KintoneInputOption {
 	if inputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &KintoneInputOption{
 		AppID:               types.StringValue(inputOption.AppID),
@@ -95,12 +93,10 @@ func newKintoneInputOptionColumns(
 	return listValue, nil
 }
 
-func (inputOption *KintoneInputOption) ToInput() *param.KintoneInputOptionInput {
+func (inputOption *KintoneInputOption) ToInput(ctx context.Context) *param.KintoneInputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnValues []KintoneInputOptionColumn
 	if !inputOption.InputOptionColumns.IsNull() && !inputOption.InputOptionColumns.IsUnknown() {
@@ -123,12 +119,10 @@ func (inputOption *KintoneInputOption) ToInput() *param.KintoneInputOptionInput 
 	}
 }
 
-func (inputOption *KintoneInputOption) ToUpdateInput() *param.UpdateKintoneInputOptionInput {
+func (inputOption *KintoneInputOption) ToUpdateInput(ctx context.Context) *param.UpdateKintoneInputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnValues []KintoneInputOptionColumn
 	if !inputOption.InputOptionColumns.IsNull() {

@@ -30,12 +30,10 @@ type GcsInputOption struct {
 	Decoder                   *Decoder               `tfsdk:"decoder"`
 }
 
-func NewGcsInputOption(gcsInputOption *input_options.GcsInputOption) *GcsInputOption {
+func NewGcsInputOption(ctx context.Context, gcsInputOption *input_options.GcsInputOption) *GcsInputOption {
 	if gcsInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &GcsInputOption{
 		GcsConnectionID:           types.Int64Value(gcsInputOption.GcsConnectionID),
@@ -64,12 +62,10 @@ func NewGcsInputOption(gcsInputOption *input_options.GcsInputOption) *GcsInputOp
 	return result
 }
 
-func (gcsInputOption *GcsInputOption) ToInput() *input_options2.GcsInputOptionInput {
+func (gcsInputOption *GcsInputOption) ToInput(ctx context.Context) *input_options2.GcsInputOptionInput {
 	if gcsInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, gcsInputOption.CustomVariableSettings)
 
@@ -93,12 +89,10 @@ func (gcsInputOption *GcsInputOption) ToInput() *input_options2.GcsInputOptionIn
 	}
 }
 
-func (gcsInputOption *GcsInputOption) ToUpdateInput() *input_options2.UpdateGcsInputOptionInput {
+func (gcsInputOption *GcsInputOption) ToUpdateInput(ctx context.Context) *input_options2.UpdateGcsInputOptionInput {
 	if gcsInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, gcsInputOption.CustomVariableSettings)
 

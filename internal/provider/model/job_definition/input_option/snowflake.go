@@ -37,12 +37,10 @@ func (SnowflakeInputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewSnowflakeInputOption(snowflakeInputOption *input_option.SnowflakeInputOption) *SnowflakeInputOption {
+func NewSnowflakeInputOption(ctx context.Context, snowflakeInputOption *input_option.SnowflakeInputOption) *SnowflakeInputOption {
 	if snowflakeInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &SnowflakeInputOption{
 		Warehouse:             types.StringValue(snowflakeInputOption.Warehouse),
@@ -98,12 +96,10 @@ func newSnowflakeInputOptionColumns(
 	return listValue, nil
 }
 
-func (snowflakeInputOption *SnowflakeInputOption) ToInput() *param.SnowflakeInputOptionInput {
+func (snowflakeInputOption *SnowflakeInputOption) ToInput(ctx context.Context) *param.SnowflakeInputOptionInput {
 	if snowflakeInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnValues []SnowflakeInputOptionColumn
 	if !snowflakeInputOption.InputOptionColumns.IsNull() && !snowflakeInputOption.InputOptionColumns.IsUnknown() {
@@ -129,12 +125,10 @@ func (snowflakeInputOption *SnowflakeInputOption) ToInput() *param.SnowflakeInpu
 	}
 }
 
-func (snowflakeInputOption *SnowflakeInputOption) ToUpdateInput() *param.UpdateSnowflakeInputOptionInput {
+func (snowflakeInputOption *SnowflakeInputOption) ToUpdateInput(ctx context.Context) *param.UpdateSnowflakeInputOptionInput {
 	if snowflakeInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnValues []SnowflakeInputOptionColumn
 	if !snowflakeInputOption.InputOptionColumns.IsNull() {

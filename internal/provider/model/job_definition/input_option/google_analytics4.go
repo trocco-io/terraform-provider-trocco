@@ -65,12 +65,10 @@ func (GoogleAnalytics4Column) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewGoogleAnalytics4InputOption(inputOption *input_option.GoogleAnalytics4InputOption) *GoogleAnalytics4InputOption {
+func NewGoogleAnalytics4InputOption(ctx context.Context, inputOption *input_option.GoogleAnalytics4InputOption) *GoogleAnalytics4InputOption {
 	if inputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &GoogleAnalytics4InputOption{
 		GoogleAnalytics4ConnectionID: types.Int64Value(inputOption.GoogleAnalytics4ConnectionID),
@@ -196,12 +194,10 @@ func newGoogleAnalytics4InputOptionColumns(
 	return listValue, nil
 }
 
-func (inputOption *GoogleAnalytics4InputOption) ToInput() *param.GoogleAnalytics4InputOptionInput {
+func (inputOption *GoogleAnalytics4InputOption) ToInput(ctx context.Context) *param.GoogleAnalytics4InputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var dimensionValues []GoogleAnalytics4Dimension
 	if !inputOption.GoogleAnalytics4Dimensions.IsNull() && !inputOption.GoogleAnalytics4Dimensions.IsUnknown() {
@@ -247,12 +243,10 @@ func (inputOption *GoogleAnalytics4InputOption) ToInput() *param.GoogleAnalytics
 	}
 }
 
-func (inputOption *GoogleAnalytics4InputOption) ToUpdateInput() *param.UpdateGoogleAnalytics4InputOptionInput {
+func (inputOption *GoogleAnalytics4InputOption) ToUpdateInput(ctx context.Context) *param.UpdateGoogleAnalytics4InputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var dimensionValues []GoogleAnalytics4Dimension
 	if !inputOption.GoogleAnalytics4Dimensions.IsNull() {

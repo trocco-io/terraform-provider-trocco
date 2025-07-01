@@ -32,12 +32,10 @@ type S3InputOption struct {
 	Decoder                   *Decoder               `tfsdk:"decoder"`
 }
 
-func NewS3InputOption(s3InputOption *input_options.S3InputOption) *S3InputOption {
+func NewS3InputOption(ctx context.Context, s3InputOption *input_options.S3InputOption) *S3InputOption {
 	if s3InputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &S3InputOption{
 		S3ConnectionID:            types.Int64Value(s3InputOption.S3ConnectionID),
@@ -68,12 +66,10 @@ func NewS3InputOption(s3InputOption *input_options.S3InputOption) *S3InputOption
 	return result
 }
 
-func (s3InputOption *S3InputOption) ToInput() *input_options2.S3InputOptionInput {
+func (s3InputOption *S3InputOption) ToInput(ctx context.Context) *input_options2.S3InputOptionInput {
 	if s3InputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, s3InputOption.CustomVariableSettings)
 
 	return &input_options2.S3InputOptionInput{
@@ -98,12 +94,10 @@ func (s3InputOption *S3InputOption) ToInput() *input_options2.S3InputOptionInput
 	}
 }
 
-func (s3InputOption *S3InputOption) ToUpdateInput() *input_options2.UpdateS3InputOptionInput {
+func (s3InputOption *S3InputOption) ToUpdateInput(ctx context.Context) *input_options2.UpdateS3InputOptionInput {
 	if s3InputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, s3InputOption.CustomVariableSettings)
 
 	return &input_options2.UpdateS3InputOptionInput{
