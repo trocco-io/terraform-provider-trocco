@@ -10,49 +10,52 @@ import (
 )
 
 func TestAccNotificationDestinationResource(t *testing.T) {
+	t.Run("email", func(t *testing.T) {
+		testAccNotificationDestinationResourceEmail(t)
+	})
+	t.Run("slack_channel", func(t *testing.T) {
+		testAccNotificationDestinationResourceSlackChannel(t)
+	})
+}
+
+func testAccNotificationDestinationResourceEmail(t *testing.T) {
+	resourceName := "trocco_notification_destination.email_test"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: providerConfig + `
-					resource "trocco_notification_destination" "email_test" {
-						type = "email"
-						email_config = {
-							email = "test@example.com"
-						}
-					}
-				`,
+				Config: providerConfig + LoadTextFile("testdata/notification_destination/email_create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_notification_destination.email_test", "type", "email"),
-					resource.TestCheckResourceAttr("trocco_notification_destination.email_test", "email_config.email", "test@example.com"),
-					resource.TestCheckResourceAttrSet("trocco_notification_destination.email_test", "id"),
+					resource.TestCheckResourceAttr(resourceName, "type", "email"),
+					resource.TestCheckResourceAttr(resourceName, "email_config.email", "test@example.com"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
 			{
-				ResourceName:      "trocco_notification_destination.email_test",
+				ResourceName:      resourceName,
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					id := s.RootModule().Resources["trocco_notification_destination.email_test"].Primary.ID
+					id := s.RootModule().Resources[resourceName].Primary.ID
 					return fmt.Sprintf("email,%s", id), nil
 				},
 			},
-			// Slack_Channel
+		},
+	})
+}
+
+func testAccNotificationDestinationResourceSlackChannel(t *testing.T) {
+	resourceName := "trocco_notification_destination.slack_channel_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
 			{
-				Config: providerConfig + `
-					resource "trocco_notification_destination" "slack_channel_test" {
-						type = "slack_channel"
-						slack_channel_config = {
-							channel = "trocco-log2"
-							webhook_url = "https://hooks.slack.com/services/test"
-						}
-					}
-				`,
+				Config: providerConfig + LoadTextFile("testdata/notification_destination/slack_channel_create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_notification_destination.slack_channel_test", "type", "slack_channel"),
-					resource.TestCheckResourceAttr("trocco_notification_destination.slack_channel_test", "slack_channel_config.channel", "trocco-log2"),
-					resource.TestCheckResourceAttr("trocco_notification_destination.slack_channel_test", "slack_channel_config.webhook_url", "https://hooks.slack.com/services/test"),
-					resource.TestCheckResourceAttrSet("trocco_notification_destination.slack_channel_test", "id"),
+					resource.TestCheckResourceAttr(resourceName, "type", "slack_channel"),
+					resource.TestCheckResourceAttr(resourceName, "slack_channel_config.channel", "trocco-log2"),
+					resource.TestCheckResourceAttr(resourceName, "slack_channel_config.webhook_url", "https://hooks.slack.com/services/test"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
 		},

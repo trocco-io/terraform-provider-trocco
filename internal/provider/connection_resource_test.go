@@ -10,141 +10,144 @@ import (
 )
 
 func TestAccConnectionResource(t *testing.T) {
+	t.Run("bigquery", func(t *testing.T) {
+		testAccConnectionResourceBigQuery(t)
+	})
+	t.Run("snowflake", func(t *testing.T) {
+		testAccConnectionResourceSnowflake(t)
+	})
+	t.Run("mysql", func(t *testing.T) {
+		testAccConnectionResourceMySQL(t)
+	})
+	t.Run("postgresql", func(t *testing.T) {
+		testAccConnectionResourcePostgreSQL(t)
+	})
+	t.Run("google_analytics4", func(t *testing.T) {
+		testAccConnectionResourceGoogleAnalytics4(t)
+	})
+	t.Run("kintone", func(t *testing.T) {
+		testAccConnectionResourceKintone(t)
+	})
+}
+
+func testAccConnectionResourceBigQuery(t *testing.T) {
+	resourceName := "trocco_connection.test"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: providerConfig + `
-					resource "trocco_connection" "test" {
-					  connection_type = "bigquery"
-					  name = "test"
-					  description = "The quick brown fox jumps over the lazy dog."
-					  project_id = "test"
-
-					  service_account_json_key = "{\"type\":\"service_account\",\"project_id\":\"\",\"private_key_id\":\"\",\"private_key\":\"\"}"
-					}
-				`,
+				Config: providerConfig + LoadTextFile("testdata/connection/bigquery_create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_connection.test", "connection_type", "bigquery"),
-					resource.TestCheckResourceAttr("trocco_connection.test", "name", "test"),
-					resource.TestCheckResourceAttr("trocco_connection.test", "description", "The quick brown fox jumps over the lazy dog."),
-					resource.TestCheckResourceAttr("trocco_connection.test", "service_account_json_key", "{\"type\":\"service_account\",\"project_id\":\"\",\"private_key_id\":\"\",\"private_key\":\"\"}"),
-					resource.TestCheckResourceAttrSet("trocco_connection.test", "id"),
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "bigquery"),
+					resource.TestCheckResourceAttr(resourceName, "name", "test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "The quick brown fox jumps over the lazy dog."),
+					resource.TestCheckResourceAttr(resourceName, "service_account_json_key", "{\"type\":\"service_account\",\"project_id\":\"\",\"private_key_id\":\"\",\"private_key\":\"\"}"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
 			{
-				ResourceName:            "trocco_connection.test",
+				ResourceName:            resourceName,
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"service_account_json_key"},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					connectionID := s.RootModule().Resources["trocco_connection.test"].Primary.ID
-
+					connectionID := s.RootModule().Resources[resourceName].Primary.ID
 					return fmt.Sprintf("bigquery,%s", connectionID), nil
 				},
 			},
-			// Snowflake
-			{
-				Config: providerConfig + `
-					resource "trocco_connection" "snowflake_test" {
-					  connection_type = "snowflake"
-					  auth_method = "user_password"
+		},
+	})
+}
 
-					  name = "snowflake test"
-					  host = "example.snowflakecomputing.com"
-					  user_name = "root"
-					  password = "password"
-					}
-				`,
+func testAccConnectionResourceSnowflake(t *testing.T) {
+	resourceName := "trocco_connection.snowflake_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/snowflake_create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_connection.snowflake_test", "connection_type", "snowflake"),
-					resource.TestCheckResourceAttr("trocco_connection.snowflake_test", "name", "snowflake test"),
-					resource.TestCheckResourceAttrSet("trocco_connection.snowflake_test", "id"),
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "snowflake"),
+					resource.TestCheckResourceAttr(resourceName, "name", "snowflake test"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
-			// MySQL
-			{
-				Config: providerConfig + `
-					resource "trocco_connection" "mysql_test" {
-					  connection_type = "mysql"
+		},
+	})
+}
 
-					  name = "mysql test"
-					  host = "localhost"
-					  user_name = "root"
-					  password = "password"
-					  port = 3306
-					}
-				`,
+func testAccConnectionResourceMySQL(t *testing.T) {
+	resourceName := "trocco_connection.mysql_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/mysql_create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_connection.mysql_test", "connection_type", "mysql"),
-					resource.TestCheckResourceAttr("trocco_connection.mysql_test", "name", "mysql test"),
-					resource.TestCheckResourceAttrSet("trocco_connection.mysql_test", "id"),
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "mysql"),
+					resource.TestCheckResourceAttr(resourceName, "name", "mysql test"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
-			// PostgreSQL
+		},
+	})
+}
+
+func testAccConnectionResourcePostgreSQL(t *testing.T) {
+	resourceName := "trocco_connection.postgresql_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
 			{
-				Config: providerConfig + `
-					resource "trocco_connection" "postgresql_test" {
-					  connection_type = "postgresql"
-					  name = "postgresql test"
-					  host = "localhost"
-					  user_name = "root"
-					  password = "password"
-					  port = 5432
-					  driver = "postgresql_42_5_1"
-					}
-				`,
+				Config: providerConfig + LoadTextFile("testdata/connection/postgresql_create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_connection.postgresql_test", "connection_type", "postgresql"),
-					resource.TestCheckResourceAttrSet("trocco_connection.postgresql_test", "id"),
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "postgresql"),
+					resource.TestCheckResourceAttr(resourceName, "name", "postgresql test"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
-			// Google Analytics4
+		},
+	})
+}
+
+func testAccConnectionResourceGoogleAnalytics4(t *testing.T) {
+	resourceName := "trocco_connection.google_analytics4_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
 			{
-				Config: providerConfig + `
-					resource "trocco_connection" "google_analytics4_test" {
-						connection_type = "google_analytics4"
-						name            = "test"
-						description     = "test"
-						service_account_json_key = "{\"type\":\"service_account\",\"project_id\":\"create_project_id\",\"private_key_id\":\"create_private_key_id\",\"private_key\":\"create_private_key\",\"client_email\":\"create_client_email\",\"client_id\":\"create_client_id\"}"
-					}
-				`,
+				Config: providerConfig + LoadTextFile("testdata/connection/google_analytics4_create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "connection_type", "google_analytics4"),
-					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "name", "test"),
-					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "description", "test"),
-					resource.TestCheckResourceAttr("trocco_connection.google_analytics4_test", "service_account_json_key",
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "google_analytics4"),
+					resource.TestCheckResourceAttr(resourceName, "name", "test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "test"),
+					resource.TestCheckResourceAttr(resourceName, "service_account_json_key",
 						"{\"type\":\"service_account\",\"project_id\":\"create_project_id\",\"private_key_id\":\"create_private_key_id\",\"private_key\":\"create_private_key\",\"client_email\":\"create_client_email\",\"client_id\":\"create_client_id\"}"),
-					resource.TestCheckResourceAttrSet("trocco_connection.google_analytics4_test", "id"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
-			// Kintone
+		},
+	})
+}
+
+func testAccConnectionResourceKintone(t *testing.T) {
+	resourceName := "trocco_connection.kintone_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
 			{
-				Config: providerConfig + `
-							resource "trocco_connection" "kintone_test" {
-									connection_type               = "kintone"
-									name                          = "Kintone Test"
-									description                   = "This is a Kintone connection example"
-									domain                        = "test_domain"
-									login_method                  = "username_and_password"
-									password                      = "test_password"
-									username                      = "test_username"
-									token                         = null
-									basic_auth_username           = "test_basic_auth_username"
-									basic_auth_password           = "test_basic_auth_password"
-							}
-					`,
+				Config: providerConfig + LoadTextFile("testdata/connection/kintone_create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "connection_type", "kintone"),
-					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "name", "Kintone Test"),
-					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "domain", "test_domain"),
-					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "login_method", "username_and_password"),
-					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "password", "test_password"),
-					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "username", "test_username"),
-					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "basic_auth_username", "test_basic_auth_username"),
-					resource.TestCheckResourceAttr("trocco_connection.kintone_test", "basic_auth_password", "test_basic_auth_password"),
-					resource.TestCheckNoResourceAttr("trocco_connection.kintone_test", "token"),
-					resource.TestCheckResourceAttrSet("trocco_connection.kintone_test", "id"),
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "kintone"),
+					resource.TestCheckResourceAttr(resourceName, "name", "Kintone Test"),
+					resource.TestCheckResourceAttr(resourceName, "domain", "test_domain"),
+					resource.TestCheckResourceAttr(resourceName, "login_method", "username_and_password"),
+					resource.TestCheckResourceAttr(resourceName, "password", "test_password"),
+					resource.TestCheckResourceAttr(resourceName, "username", "test_username"),
+					resource.TestCheckResourceAttr(resourceName, "basic_auth_username", "test_basic_auth_username"),
+					resource.TestCheckResourceAttr(resourceName, "basic_auth_password", "test_basic_auth_password"),
+					resource.TestCheckNoResourceAttr(resourceName, "token"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
 		},
@@ -152,68 +155,46 @@ func TestAccConnectionResource(t *testing.T) {
 }
 
 func TestInvalidDriver(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			{
-				Config: providerConfig + `
-					resource "trocco_connection" "invalid_driver_test" {
-					  connection_type = "postgresql"
-					  name = "invalid driver test"
-					  host = "localhost"
-					  user_name = "root"
-					  password = "password"
-					  port = 5432
-					  driver = "invalid_driver"
-					}
-				`,
-				ExpectError: regexp.MustCompile("driver: `invalid_driver` is invalid for PostgreSQL connection. "),
-			},
-			{
-				Config: providerConfig + `
-					resource "trocco_connection" "mismatch_driver_test_postgresql" {
-					  connection_type = "postgresql"
-					  name = "invalid driver test"
-					  host = "localhost"
-					  user_name = "root"
-					  password = "password"
-					  port = 5432
-					  driver = "mysql_connector_java_5_1_49"
-					}
-				`,
-				ExpectError: regexp.MustCompile("are: postgresql_42_5_1, postgresql_9_4_1205_jdbc41"),
-			},
-			{
-				Config: providerConfig + `
-					resource "trocco_connection" "mismatch_driver_test_mysql" {
-					  connection_type = "mysql"
-					  name = "invalid driver test"
-					  host = "localhost"
-					  user_name = "root"
-					  password = "password"
-					  port = 3306
-					  driver = "snowflake_jdbc_3_14_2"
-					}
-				`,
-				ExpectError: regexp.MustCompile("are: mysql_connector_java_5_1_49"),
-			},
-			{
-				Config: providerConfig + `
-					resource "trocco_connection" "mismatch_driver_test_snowflake" {
-					  connection_type = "snowflake"
-					  name = "invalid driver test"
-
-					  auth_method = "user_password"
-					  host = "example.snowflakecomputing.com"
-					  user_name = "root"
-					  password = "password"
-					  driver = "mysql_connector_java_5_1_49"
-					}
-				`,
-				ExpectError: regexp.MustCompile("are: snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0"),
-			},
+	testCases := []struct {
+		name        string
+		configFile  string
+		expectError string
+	}{
+		{
+			name:        "invalid_driver",
+			configFile:  "testdata/connection/invalid_driver.tf",
+			expectError: "driver: `invalid_driver` is invalid for PostgreSQL connection. ",
 		},
-	})
+		{
+			name:        "mismatch_driver_postgresql",
+			configFile:  "testdata/connection/mismatch_driver_postgresql.tf",
+			expectError: "are: postgresql_42_5_1, postgresql_9_4_1205_jdbc41",
+		},
+		{
+			name:        "mismatch_driver_mysql",
+			configFile:  "testdata/connection/mismatch_driver_mysql.tf",
+			expectError: "are: mysql_connector_java_5_1_49",
+		},
+		{
+			name:        "mismatch_driver_snowflake",
+			configFile:  "testdata/connection/mismatch_driver_snowflake.tf",
+			expectError: "are: snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			resource.Test(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{
+						Config:      providerConfig + LoadTextFile(tc.configFile),
+						ExpectError: regexp.MustCompile(tc.expectError),
+					},
+				},
+			})
+		})
+	}
 }
 
 func TestInvalidLoginMethod(t *testing.T) {
@@ -221,20 +202,7 @@ func TestInvalidLoginMethod(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: providerConfig + `
-					resource "trocco_connection" "invalid_login_method_test" {
-						connection_type               = "kintone"
-						name                          = "Kintone Test"
-						description                   = "This is a Kintone connection example"
-						domain                        = "test_domain"
-						login_method                  = "invalid_login_method"
-						password                      = "test_password"
-						username                      = "test_username"
-						token                         = null
-						basic_auth_username           = "test_basic_auth_username"
-						basic_auth_password           = "test_basic_auth_password"
-					}
-				`,
+				Config:      providerConfig + LoadTextFile("testdata/connection/invalid_login_method.tf"),
 				ExpectError: regexp.MustCompile("login_method: `invalid_login_method` is invalid for Kintone connection."),
 			},
 		},

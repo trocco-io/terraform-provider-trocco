@@ -8,62 +8,37 @@ import (
 )
 
 func TestAccTeamResource(t *testing.T) {
+	resourceName := "trocco_team.test"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: providerConfig + `
-					resource "trocco_team" "test" {
-					  name = "test"
-					  description = "test"
-					  members = [
-						{
-						  user_id = 10626
-						  role = "team_admin"
-						}
-					  ]
-					}
-				`,
+				Config: providerConfig + LoadTextFile("testdata/team/basic_create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_team.test", "name", "test"),
-					resource.TestCheckResourceAttr("trocco_team.test", "description", "test"),
-					resource.TestCheckResourceAttr("trocco_team.test", "members.#", "1"),
-					resource.TestCheckResourceAttr("trocco_team.test", "members.0.role", "team_admin"),
+					resource.TestCheckResourceAttr(resourceName, "name", "test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "test"),
+					resource.TestCheckResourceAttr(resourceName, "members.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "members.0.role", "team_admin"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:            "trocco_team.test",
+				ResourceName:            resourceName,
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"id"},
 			},
 			// Update testing
 			{
-				Config: providerConfig + `
-					
-					resource "trocco_team" "test" {
-					  name = "updated"
-					  description = "updated"
-					  members = [
-						{
-						  user_id = 10626
-						  role = "team_admin"
-						},
-						{
-						  user_id = 10652
-						  role = "team_member"
-						}
-					  ]
-					}
-				`,
+				Config: providerConfig + LoadTextFile("testdata/team/basic_update.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_team.test", "name", "updated"),
-					resource.TestCheckResourceAttr("trocco_team.test", "description", "updated"),
-					resource.TestCheckResourceAttr("trocco_team.test", "members.#", "2"),
-					resource.TestCheckResourceAttr("trocco_team.test", "members.0.role", "team_admin"),
-					resource.TestCheckResourceAttr("trocco_team.test", "members.1.role", "team_member"),
+					resource.TestCheckResourceAttr(resourceName, "name", "updated"),
+					resource.TestCheckResourceAttr(resourceName, "description", "updated"),
+					resource.TestCheckResourceAttr(resourceName, "members.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "members.0.role", "team_admin"),
+					resource.TestCheckResourceAttr(resourceName, "members.1.role", "team_member"),
 				),
 			},
 		},
@@ -75,13 +50,7 @@ func TestAccTeamNoMembers(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: providerConfig + `
-					resource "trocco_team" "test" {
-					  name = "test"
-					  description = "test"
-					  members = []
-					}
-				`,
+				Config:      providerConfig + LoadTextFile("testdata/team/no_members.tf"),
 				ExpectError: regexp.MustCompile(`Empty Team Members`),
 			},
 		},
@@ -93,23 +62,11 @@ func TestAccTeamInvalidRole(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: providerConfig + `
-					resource "trocco_team" "test" {
-					  name = "test"
-					  description = "test"
-					  members = [
-						{
-						  user_id = 1
-						  role = "team_member"
-						}
-					  ]
-					}
-				`,
+				Config:      providerConfig + LoadTextFile("testdata/team/no_admin.tf"),
 				ExpectError: regexp.MustCompile(`Missing Team Admin`),
 			},
 		},
 	})
-
 }
 
 func TestAccTeamWithUnknownValues(t *testing.T) {
