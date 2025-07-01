@@ -34,12 +34,10 @@ type InputOptionColumn struct {
 	Type types.String `tfsdk:"type"`
 }
 
-func NewMysqlInputOption(mysqlInputOption *input_option.MySQLInputOption) *MySQLInputOption {
+func NewMysqlInputOption(ctx context.Context, mysqlInputOption *input_option.MySQLInputOption) *MySQLInputOption {
 	if mysqlInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &MySQLInputOption{
 		Database:                  types.StringValue(mysqlInputOption.Database),
@@ -106,12 +104,10 @@ func (InputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func (mysqlInputOption *MySQLInputOption) ToInput() *input_options2.MySQLInputOptionInput {
+func (mysqlInputOption *MySQLInputOption) ToInput(ctx context.Context) *input_options2.MySQLInputOptionInput {
 	if mysqlInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnOptionValues []InputOptionColumn
 	if !mysqlInputOption.InputOptionColumns.IsNull() && !mysqlInputOption.InputOptionColumns.IsUnknown() {
@@ -141,12 +137,10 @@ func (mysqlInputOption *MySQLInputOption) ToInput() *input_options2.MySQLInputOp
 	}
 }
 
-func (mysqlInputOption *MySQLInputOption) ToUpdateInput() *input_options2.UpdateMySQLInputOptionInput {
+func (mysqlInputOption *MySQLInputOption) ToUpdateInput(ctx context.Context) *input_options2.UpdateMySQLInputOptionInput {
 	if mysqlInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnOptionValues []InputOptionColumn
 	if !mysqlInputOption.InputOptionColumns.IsNull() {

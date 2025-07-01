@@ -45,12 +45,10 @@ func (BigqueryColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewBigqueryInputOption(bigqueryInputOption *input_option.BigqueryInputOption) *BigqueryInputOption {
+func NewBigqueryInputOption(ctx context.Context, bigqueryInputOption *input_option.BigqueryInputOption) *BigqueryInputOption {
 	if bigqueryInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 	result := &BigqueryInputOption{
 		BigqueryConnectionID:  types.Int64Value(bigqueryInputOption.BigqueryConnectionID),
 		GcsUri:                types.StringValue(bigqueryInputOption.GcsUri),
@@ -80,12 +78,10 @@ func NewBigqueryInputOption(bigqueryInputOption *input_option.BigqueryInputOptio
 	return result
 }
 
-func (bigqueryInputOption *BigqueryInputOption) ToInput() *param.BigqueryInputOptionInput {
+func (bigqueryInputOption *BigqueryInputOption) ToInput(ctx context.Context) *param.BigqueryInputOptionInput {
 	if bigqueryInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnValues []BigqueryColumn
 	if !bigqueryInputOption.Columns.IsNull() && !bigqueryInputOption.Columns.IsUnknown() {
@@ -121,12 +117,10 @@ func (bigqueryInputOption *BigqueryInputOption) ToInput() *param.BigqueryInputOp
 	}
 }
 
-func (bigqueryInputOption *BigqueryInputOption) ToUpdateInput() *param.UpdateBigqueryInputOptionInput {
+func (bigqueryInputOption *BigqueryInputOption) ToUpdateInput(ctx context.Context) *param.UpdateBigqueryInputOptionInput {
 	if bigqueryInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnValues []BigqueryColumn
 	if !bigqueryInputOption.Columns.IsNull() {

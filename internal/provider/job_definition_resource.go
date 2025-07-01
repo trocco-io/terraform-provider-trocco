@@ -323,7 +323,7 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 	}
 
 	var diags diag.Diagnostics
-	inputOption, d := m.InputOption.ToInput()
+	inputOption, d := m.InputOption.ToInput(ctx)
 	diags.Append(d...)
 	return &client.CreateJobDefinitionInput{
 		Name:                      m.Name.ValueString(),
@@ -381,7 +381,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	inputOption, diags := job_definitions.NewInputOption(jobDefinition.InputOption, plan.InputOption)
+	inputOption, diags := job_definitions.NewInputOption(ctx, jobDefinition.InputOption, plan.InputOption)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -647,7 +647,7 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 	}
 
 	var diags diag.Diagnostics
-	inputOption, d := m.InputOption.ToUpdateInput()
+	inputOption, d := m.InputOption.ToUpdateInput(ctx)
 	diags.Append(d...)
 	return &client.UpdateJobDefinitionInput{
 		Name:                      m.Name.ValueStringPointer(),
@@ -697,7 +697,7 @@ func (r *jobDefinitionResource) Create(
 		return
 	}
 
-	inputOption, diags := job_definitions.NewInputOption(jobDefinition.InputOption, plan.InputOption)
+	inputOption, diags := job_definitions.NewInputOption(ctx, jobDefinition.InputOption, plan.InputOption)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -854,7 +854,7 @@ func (r *jobDefinitionResource) Read(
 		)
 		return
 	}
-	inputOption, diags := job_definitions.NewInputOption(jobDefinition.InputOption, state.InputOption)
+	inputOption, diags := job_definitions.NewInputOption(ctx, jobDefinition.InputOption, state.InputOption)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
