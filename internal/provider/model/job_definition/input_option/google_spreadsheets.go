@@ -38,12 +38,10 @@ func (GoogleSpreadsheetsInputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewGoogleSpreadsheetsInputOption(inputOption *input_option.GoogleSpreadsheetsInputOption) *GoogleSpreadsheetsInputOption {
+func NewGoogleSpreadsheetsInputOption(ctx context.Context, inputOption *input_option.GoogleSpreadsheetsInputOption) *GoogleSpreadsheetsInputOption {
 	if inputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &GoogleSpreadsheetsInputOption{
 		SpreadsheetsURL:                types.StringValue(inputOption.SpreadsheetsURL),
@@ -99,12 +97,10 @@ func newGoogleSpreadsheetsInputOptionColumns(
 	return listValue, nil
 }
 
-func (inputOption *GoogleSpreadsheetsInputOption) ToInput() *param.GoogleSpreadsheetsInputOptionInput {
+func (inputOption *GoogleSpreadsheetsInputOption) ToInput(ctx context.Context) *param.GoogleSpreadsheetsInputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnValues []GoogleSpreadsheetsInputOptionColumn
 	if !inputOption.InputOptionColumns.IsNull() && !inputOption.InputOptionColumns.IsUnknown() {
@@ -129,12 +125,10 @@ func (inputOption *GoogleSpreadsheetsInputOption) ToInput() *param.GoogleSpreads
 	}
 }
 
-func (inputOption *GoogleSpreadsheetsInputOption) ToUpdateInput() *param.UpdateGoogleSpreadsheetsInputOptionInput {
+func (inputOption *GoogleSpreadsheetsInputOption) ToUpdateInput(ctx context.Context) *param.UpdateGoogleSpreadsheetsInputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnValues []GoogleSpreadsheetsInputOptionColumn
 	if !inputOption.InputOptionColumns.IsNull() {

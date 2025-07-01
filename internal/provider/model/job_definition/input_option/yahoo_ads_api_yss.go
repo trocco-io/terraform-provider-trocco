@@ -31,12 +31,10 @@ type YahooAdsApiYssInputOptionColumn struct {
 	Format types.String `tfsdk:"format"`
 }
 
-func NewYahooAdsApiYssInputOption(inputOption *input_option.YahooAdsApiYssInputOption) *YahooAdsApiYssInputOption {
+func NewYahooAdsApiYssInputOption(ctx context.Context, inputOption *input_option.YahooAdsApiYssInputOption) *YahooAdsApiYssInputOption {
 	if inputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &YahooAdsApiYssInputOption{
 		AccountID:               types.StringValue(inputOption.AccountID),
@@ -101,12 +99,10 @@ func (YahooAdsApiYssInputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func (inputOption *YahooAdsApiYssInputOption) ToInput() *param.YahooAdsApiYssInputOptionInput {
+func (inputOption *YahooAdsApiYssInputOption) ToInput(ctx context.Context) *param.YahooAdsApiYssInputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnOptionValues []YahooAdsApiYssInputOptionColumn
 	if !inputOption.InputOptionColumns.IsNull() && !inputOption.InputOptionColumns.IsUnknown() {
@@ -132,12 +128,10 @@ func (inputOption *YahooAdsApiYssInputOption) ToInput() *param.YahooAdsApiYssInp
 	}
 }
 
-func (inputOption *YahooAdsApiYssInputOption) ToUpdateInput() *param.UpdateYahooAdsApiYssInputOptionInput {
+func (inputOption *YahooAdsApiYssInputOption) ToUpdateInput(ctx context.Context) *param.UpdateYahooAdsApiYssInputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnOptionValues []YahooAdsApiYssInputOptionColumn
 	if !inputOption.InputOptionColumns.IsNull() {

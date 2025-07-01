@@ -5,6 +5,7 @@ import (
 	entity "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
 	parameter "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
+	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 	"terraform-provider-trocco/internal/provider/model/job_definition/input_option/parser"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -25,40 +26,40 @@ type RequestHeader struct {
 }
 
 type HttpInputOption struct {
-	URL                                   types.String                   `tfsdk:"url"`
-	Method                                types.String                   `tfsdk:"method"`
-	UserAgent                             types.String                   `tfsdk:"user_agent"`
-	Charset                               types.String                   `tfsdk:"charset"`
-	PagerType                             types.String                   `tfsdk:"pager_type"`
-	PagerFromParam                        types.String                   `tfsdk:"pager_from_param"`
-	PagerToParam                          types.String                   `tfsdk:"pager_to_param"`
-	PagerPages                            types.Int64                    `tfsdk:"pager_pages"`
-	PagerStart                            types.Int64                    `tfsdk:"pager_start"`
-	PagerStep                             types.Int64                    `tfsdk:"pager_step"`
-	CursorRequestParameterCursorName      types.String                   `tfsdk:"cursor_request_parameter_cursor_name"`
-	CursorResponseParameterCursorJsonPath types.String                   `tfsdk:"cursor_response_parameter_cursor_json_path"`
-	CursorRequestParameterLimitName       types.String                   `tfsdk:"cursor_request_parameter_limit_name"`
-	CursorRequestParameterLimitValue      types.String                   `tfsdk:"cursor_request_parameter_limit_value"`
-	RequestParams                         types.Set                      `tfsdk:"request_params"`
-	RequestBody                           types.String                   `tfsdk:"request_body"`
-	RequestHeaders                        types.Set                      `tfsdk:"request_headers"`
-	SuccessCode                           types.String                   `tfsdk:"success_code"`
-	OpenTimeout                           types.Int64                    `tfsdk:"open_timeout"`
-	ReadTimeout                           types.Int64                    `tfsdk:"read_timeout"`
-	MaxRetries                            types.Int64                    `tfsdk:"max_retries"`
-	RetryInterval                         types.Int64                    `tfsdk:"retry_interval"`
-	RequestInterval                       types.Int64                    `tfsdk:"request_interval"`
-	CsvParser                             *parser.CsvParser              `tfsdk:"csv_parser"`
-	JsonlParser                           *parser.JsonlParser            `tfsdk:"jsonl_parser"`
-	JsonpathParser                        *parser.JsonpathParser         `tfsdk:"jsonpath_parser"`
-	LtsvParser                            *parser.LtsvParser             `tfsdk:"ltsv_parser"`
-	ExcelParser                           *parser.ExcelParser            `tfsdk:"excel_parser"`
-	XmlParser                             *parser.XmlParser              `tfsdk:"xml_parser"`
-	ParquetParser                         *parser.ParquetParser          `tfsdk:"parquet_parser"`
-	CustomVariableSettings                *[]model.CustomVariableSetting `tfsdk:"custom_variable_settings"`
+	URL                                   types.String           `tfsdk:"url"`
+	Method                                types.String           `tfsdk:"method"`
+	UserAgent                             types.String           `tfsdk:"user_agent"`
+	Charset                               types.String           `tfsdk:"charset"`
+	PagerType                             types.String           `tfsdk:"pager_type"`
+	PagerFromParam                        types.String           `tfsdk:"pager_from_param"`
+	PagerToParam                          types.String           `tfsdk:"pager_to_param"`
+	PagerPages                            types.Int64            `tfsdk:"pager_pages"`
+	PagerStart                            types.Int64            `tfsdk:"pager_start"`
+	PagerStep                             types.Int64            `tfsdk:"pager_step"`
+	CursorRequestParameterCursorName      types.String           `tfsdk:"cursor_request_parameter_cursor_name"`
+	CursorResponseParameterCursorJsonPath types.String           `tfsdk:"cursor_response_parameter_cursor_json_path"`
+	CursorRequestParameterLimitName       types.String           `tfsdk:"cursor_request_parameter_limit_name"`
+	CursorRequestParameterLimitValue      types.String           `tfsdk:"cursor_request_parameter_limit_value"`
+	RequestParams                         types.Set              `tfsdk:"request_params"`
+	RequestBody                           types.String           `tfsdk:"request_body"`
+	RequestHeaders                        types.Set              `tfsdk:"request_headers"`
+	SuccessCode                           types.String           `tfsdk:"success_code"`
+	OpenTimeout                           types.Int64            `tfsdk:"open_timeout"`
+	ReadTimeout                           types.Int64            `tfsdk:"read_timeout"`
+	MaxRetries                            types.Int64            `tfsdk:"max_retries"`
+	RetryInterval                         types.Int64            `tfsdk:"retry_interval"`
+	RequestInterval                       types.Int64            `tfsdk:"request_interval"`
+	CsvParser                             *parser.CsvParser      `tfsdk:"csv_parser"`
+	JsonlParser                           *parser.JsonlParser    `tfsdk:"jsonl_parser"`
+	JsonpathParser                        *parser.JsonpathParser `tfsdk:"jsonpath_parser"`
+	LtsvParser                            *parser.LtsvParser     `tfsdk:"ltsv_parser"`
+	ExcelParser                           *parser.ExcelParser    `tfsdk:"excel_parser"`
+	XmlParser                             *parser.XmlParser      `tfsdk:"xml_parser"`
+	ParquetParser                         *parser.ParquetParser  `tfsdk:"parquet_parser"`
+	CustomVariableSettings                types.List             `tfsdk:"custom_variable_settings"`
 }
 
-func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpInputOption) (*HttpInputOption, diag.Diagnostics) {
+func NewHttpInputOption(ctx context.Context, httpInputOption *entity.HttpInputOption, previous *HttpInputOption) (*HttpInputOption, diag.Diagnostics) {
 	if httpInputOption == nil {
 		return nil, nil
 	}
@@ -67,17 +68,23 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 	var previousRequestHeaders []RequestHeader
 	var previousRequestParameters []RequestParam
 	if previous != nil {
-		diags.Append(previous.RequestHeaders.ElementsAs(context.Background(), &previousRequestHeaders, false)...)
-		diags.Append(previous.RequestParams.ElementsAs(context.Background(), &previousRequestParameters, false)...)
+		diags.Append(previous.RequestHeaders.ElementsAs(ctx, &previousRequestHeaders, false)...)
+		diags.Append(previous.RequestParams.ElementsAs(ctx, &previousRequestParameters, false)...)
 		if diags.HasError() {
 			return nil, diags
 		}
 	}
 
-	requestParams, d := NewRequestParams(httpInputOption.RequestParams, previousRequestParameters)
+	requestParams, d := NewRequestParams(ctx, httpInputOption.RequestParams, previousRequestParameters)
 	diags.Append(d...)
-	requestHeaders, d := NewRequestHeaders(httpInputOption.RequestHeaders, previousRequestHeaders)
+	requestHeaders, d := NewRequestHeaders(ctx, httpInputOption.RequestHeaders, previousRequestHeaders)
 	diags.Append(d...)
+
+	customVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, httpInputOption.CustomVariableSettings)
+	if err != nil {
+		diags.AddError("Error converting custom variable settings", err.Error())
+		return nil, diags
+	}
 
 	return &HttpInputOption{
 		URL:                                   types.StringValue(httpInputOption.URL),
@@ -110,11 +117,11 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 		ExcelParser:                           parser.NewExcelParser(httpInputOption.ExcelParser),
 		XmlParser:                             parser.NewXmlParser(httpInputOption.XmlParser),
 		ParquetParser:                         nil, // ParquetParser is not supported in Http input
-		CustomVariableSettings:                model.NewCustomVariableSettings(httpInputOption.CustomVariableSettings),
+		CustomVariableSettings:                customVariableSettings,
 	}, diags
 }
 
-func NewRequestParams(params *[]entity.RequestParam, previous []RequestParam) (types.Set, diag.Diagnostics) {
+func NewRequestParams(ctx context.Context, params *[]entity.RequestParam, previous []RequestParam) (types.Set, diag.Diagnostics) {
 	if params == nil || len(*params) == 0 {
 		return types.SetNull(headerParamType()), nil
 	}
@@ -128,7 +135,7 @@ func NewRequestParams(params *[]entity.RequestParam, previous []RequestParam) (t
 		ret = append(ret, NewRequestParam(param, previousRequestParameters))
 	}
 
-	setValue, diags := types.SetValueFrom(context.Background(), headerParamType(), ret)
+	setValue, diags := types.SetValueFrom(ctx, headerParamType(), ret)
 
 	if diags.HasError() {
 		return types.SetNull(headerParamType()), diags
@@ -149,7 +156,7 @@ func NewRequestParam(param entity.RequestParam, previous RequestParam) RequestPa
 	}
 }
 
-func NewRequestHeaders(headers *[]entity.RequestHeader, previous []RequestHeader) (types.Set, diag.Diagnostics) {
+func NewRequestHeaders(ctx context.Context, headers *[]entity.RequestHeader, previous []RequestHeader) (types.Set, diag.Diagnostics) {
 	if headers == nil || len(*headers) == 0 {
 		return types.SetNull(headerParamType()), nil
 	}
@@ -163,7 +170,7 @@ func NewRequestHeaders(headers *[]entity.RequestHeader, previous []RequestHeader
 		ret = append(ret, NewRequestHeader(header, previousRequestHeader))
 	}
 
-	setValue, diags := types.SetValueFrom(context.Background(), headerParamType(), ret)
+	setValue, diags := types.SetValueFrom(ctx, headerParamType(), ret)
 
 	if diags.HasError() {
 		return types.SetNull(headerParamType()), diags
@@ -194,14 +201,14 @@ func headerParamType() types.ObjectType {
 	}
 }
 
-func (httpInputOption *HttpInputOption) ToInput() (*parameter.HttpInputOptionInput, diag.Diagnostics) {
+func (httpInputOption *HttpInputOption) ToInput(ctx context.Context) (*parameter.HttpInputOptionInput, diag.Diagnostics) {
 	if httpInputOption == nil {
 		return nil, nil
 	}
 
 	var diags diag.Diagnostics
 	var httpInputParams []RequestParam
-	diags.Append(httpInputOption.RequestParams.ElementsAs(context.Background(), &httpInputParams, false)...)
+	diags.Append(httpInputOption.RequestParams.ElementsAs(ctx, &httpInputParams, false)...)
 	if diags.HasError() {
 		return nil, diags
 	}
@@ -215,7 +222,7 @@ func (httpInputOption *HttpInputOption) ToInput() (*parameter.HttpInputOptionInp
 	}
 
 	var httpInputHeaders []RequestHeader
-	diags.Append(httpInputOption.RequestHeaders.ElementsAs(context.Background(), &httpInputHeaders, false)...)
+	diags.Append(httpInputOption.RequestHeaders.ElementsAs(ctx, &httpInputHeaders, false)...)
 	if diags.HasError() {
 		return nil, diags
 	}
@@ -227,6 +234,8 @@ func (httpInputOption *HttpInputOption) ToInput() (*parameter.HttpInputOptionInp
 			Masking: header.Masking.ValueBoolPointer(),
 		})
 	}
+
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, httpInputOption.CustomVariableSettings)
 
 	return &parameter.HttpInputOptionInput{
 		URL:                                   httpInputOption.URL.ValueString(),
@@ -258,18 +267,18 @@ func (httpInputOption *HttpInputOption) ToInput() (*parameter.HttpInputOptionInp
 		LtsvParser:                            httpInputOption.LtsvParser.ToLtsvParserInput(),
 		ExcelParser:                           httpInputOption.ExcelParser.ToExcelParserInput(),
 		XmlParser:                             httpInputOption.XmlParser.ToXmlParserInput(),
-		CustomVariableSettings:                model.ToCustomVariableSettingInputs(httpInputOption.CustomVariableSettings),
+		CustomVariableSettings:                model.ToCustomVariableSettingInputs(customVarSettings),
 	}, diags
 }
 
-func (httpInputOption *HttpInputOption) ToUpdateInput() (*parameter.UpdateHttpInputOptionInput, diag.Diagnostics) {
+func (httpInputOption *HttpInputOption) ToUpdateInput(ctx context.Context) (*parameter.UpdateHttpInputOptionInput, diag.Diagnostics) {
 	if httpInputOption == nil {
 		return nil, nil
 	}
 
 	var diags diag.Diagnostics
 	var httpInputParams []RequestParam
-	diags.Append(httpInputOption.RequestParams.ElementsAs(context.Background(), &httpInputParams, false)...)
+	diags.Append(httpInputOption.RequestParams.ElementsAs(ctx, &httpInputParams, false)...)
 	if diags.HasError() {
 		return nil, diags
 	}
@@ -283,7 +292,7 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() (*parameter.UpdateHttpIn
 	}
 
 	var httpInputHeaders []RequestHeader
-	diags.Append(httpInputOption.RequestHeaders.ElementsAs(context.Background(), &httpInputHeaders, false)...)
+	diags.Append(httpInputOption.RequestHeaders.ElementsAs(ctx, &httpInputHeaders, false)...)
 	if diags.HasError() {
 		return nil, diags
 	}
@@ -295,6 +304,8 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() (*parameter.UpdateHttpIn
 			Masking: header.Masking.ValueBoolPointer(),
 		})
 	}
+
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, httpInputOption.CustomVariableSettings)
 
 	return &parameter.UpdateHttpInputOptionInput{
 		URL:                                   httpInputOption.URL.ValueStringPointer(),
@@ -326,6 +337,6 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() (*parameter.UpdateHttpIn
 		LtsvParser:                            httpInputOption.LtsvParser.ToLtsvParserInput(),
 		ExcelParser:                           httpInputOption.ExcelParser.ToExcelParserInput(),
 		XmlParser:                             httpInputOption.XmlParser.ToXmlParserInput(),
-		CustomVariableSettings:                model.ToCustomVariableSettingInputs(httpInputOption.CustomVariableSettings),
+		CustomVariableSettings:                model.ToCustomVariableSettingInputs(customVarSettings),
 	}, diags
 }
