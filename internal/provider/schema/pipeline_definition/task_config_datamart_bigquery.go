@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func BigQueryDatamartTaskConfig() schema.Attribute {
+func BigQueryDatamartTaskConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "The task configuration for the datamart task.",
 		Optional:            true,
@@ -13,7 +13,7 @@ func BigQueryDatamartTaskConfig() schema.Attribute {
 				MarkdownDescription: "The definition id to use for the datamart task",
 				Required:            true,
 			},
-			"custom_variable_loop": CustomVariableLoop(),
+			"custom_variable_loop": CustomVariableLoopSchema(),
 		},
 	}
 }
