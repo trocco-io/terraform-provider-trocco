@@ -22,7 +22,7 @@ type XmlParserColumn struct {
 	Format   types.String `tfsdk:"format"`
 }
 
-func NewXmlParser(xmlParser *job_definitions.XmlParser) *XmlParser {
+func NewXmlParser(ctx context.Context, xmlParser *job_definitions.XmlParser) *XmlParser {
 	if xmlParser == nil {
 		return nil
 	}
@@ -39,8 +39,8 @@ func NewXmlParser(xmlParser *job_definitions.XmlParser) *XmlParser {
 		columnElements = append(columnElements, column)
 	}
 
-	columns, _ := types.ListValueFrom(
-		context.Background(),
+	columns, diags := types.ListValueFrom(
+		ctx,
 		types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"name":     types.StringType,
@@ -52,6 +52,9 @@ func NewXmlParser(xmlParser *job_definitions.XmlParser) *XmlParser {
 		},
 		columnElements,
 	)
+	if diags.HasError() {
+		return nil
+	}
 
 	return &XmlParser{
 		Root:    types.StringValue(xmlParser.Root),
@@ -59,13 +62,16 @@ func NewXmlParser(xmlParser *job_definitions.XmlParser) *XmlParser {
 	}
 }
 
-func (xmlParser *XmlParser) ToXmlParserInput() *params.XmlParserInput {
+func (xmlParser *XmlParser) ToXmlParserInput(ctx context.Context) *params.XmlParserInput {
 	if xmlParser == nil {
 		return nil
 	}
 
 	var columnElements []XmlParserColumn
-	xmlParser.Columns.ElementsAs(context.Background(), &columnElements, false)
+	diags := xmlParser.Columns.ElementsAs(ctx, &columnElements, false)
+	if diags.HasError() {
+		return nil
+	}
 
 	columns := make([]params.XmlParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {

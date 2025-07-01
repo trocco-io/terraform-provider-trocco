@@ -25,7 +25,7 @@ type JsonlParserColumn struct {
 	Format   types.String `tfsdk:"format"`
 }
 
-func NewJsonlParser(jsonlParser *job_definitions.JsonlParser) *JsonlParser {
+func NewJsonlParser(ctx context.Context, jsonlParser *job_definitions.JsonlParser) *JsonlParser {
 	if jsonlParser == nil {
 		return nil
 	}
@@ -41,8 +41,8 @@ func NewJsonlParser(jsonlParser *job_definitions.JsonlParser) *JsonlParser {
 		columnElements = append(columnElements, column)
 	}
 
-	columns, _ := types.ListValueFrom(
-		context.Background(),
+	columns, diags := types.ListValueFrom(
+		ctx,
 		types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"name":      types.StringType,
@@ -53,6 +53,10 @@ func NewJsonlParser(jsonlParser *job_definitions.JsonlParser) *JsonlParser {
 		},
 		columnElements,
 	)
+	if diags.HasError() {
+		return nil
+	}
+
 	return &JsonlParser{
 		StopOnInvalidRecord: types.BoolPointerValue(jsonlParser.StopOnInvalidRecord),
 		DefaultTimeZone:     types.StringValue(jsonlParser.DefaultTimeZone),
@@ -62,13 +66,16 @@ func NewJsonlParser(jsonlParser *job_definitions.JsonlParser) *JsonlParser {
 	}
 }
 
-func (jsonlParser *JsonlParser) ToJsonlParserInput() *param.JsonlParserInput {
+func (jsonlParser *JsonlParser) ToJsonlParserInput(ctx context.Context) *param.JsonlParserInput {
 	if jsonlParser == nil {
 		return nil
 	}
 
 	var columnElements []JsonlParserColumn
-	jsonlParser.Columns.ElementsAs(context.Background(), &columnElements, false)
+	diags := jsonlParser.Columns.ElementsAs(ctx, &columnElements, false)
+	if diags.HasError() {
+		return nil
+	}
 
 	columns := make([]param.JsonlParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {

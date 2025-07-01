@@ -19,7 +19,7 @@ type ParquetParserColumn struct {
 	Format types.String `tfsdk:"format"`
 }
 
-func NewParquetParser(parquetParser *job_definitions.ParquetParser) *ParquetParser {
+func NewParquetParser(ctx context.Context, parquetParser *job_definitions.ParquetParser) *ParquetParser {
 	if parquetParser == nil {
 		return nil
 	}
@@ -34,8 +34,8 @@ func NewParquetParser(parquetParser *job_definitions.ParquetParser) *ParquetPars
 		columnElements = append(columnElements, column)
 	}
 
-	columns, _ := types.ListValueFrom(
-		context.Background(),
+	columns, diags := types.ListValueFrom(
+		ctx,
 		types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"name":   types.StringType,
@@ -45,18 +45,24 @@ func NewParquetParser(parquetParser *job_definitions.ParquetParser) *ParquetPars
 		},
 		columnElements,
 	)
+	if diags.HasError() {
+		return nil
+	}
 	return &ParquetParser{
 		Columns: columns,
 	}
 }
 
-func (parquetParser *ParquetParser) ToParquetParserInput() *params.ParquetParserInput {
+func (parquetParser *ParquetParser) ToParquetParserInput(ctx context.Context) *params.ParquetParserInput {
 	if parquetParser == nil {
 		return nil
 	}
 
 	var columnElements []ParquetParserColumn
-	parquetParser.Columns.ElementsAs(context.Background(), &columnElements, false)
+	diags := parquetParser.Columns.ElementsAs(ctx, &columnElements, false)
+	if diags.HasError() {
+		return nil
+	}
 
 	columns := make([]params.ParquetParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {

@@ -38,7 +38,7 @@ type CsvParserColumn struct {
 	Date   types.String `tfsdk:"date"`
 }
 
-func NewCsvParser(csvParser *job_definitions.CsvParser) *CsvParser {
+func NewCsvParser(ctx context.Context, csvParser *job_definitions.CsvParser) *CsvParser {
 	if csvParser == nil {
 		return nil
 	}
@@ -54,8 +54,8 @@ func NewCsvParser(csvParser *job_definitions.CsvParser) *CsvParser {
 		columnElements = append(columnElements, column)
 	}
 
-	columns, _ := types.ListValueFrom(
-		context.Background(),
+	columns, diags := types.ListValueFrom(
+		ctx,
 		types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"name":   types.StringType,
@@ -66,6 +66,10 @@ func NewCsvParser(csvParser *job_definitions.CsvParser) *CsvParser {
 		},
 		columnElements,
 	)
+	if diags.HasError() {
+		return nil
+	}
+
 	return &CsvParser{
 		Delimiter:            types.StringValue(csvParser.Delimiter),
 		Quote:                types.StringPointerValue(csvParser.Quote),
@@ -88,13 +92,16 @@ func NewCsvParser(csvParser *job_definitions.CsvParser) *CsvParser {
 	}
 }
 
-func (csvParser *CsvParser) ToCsvParserInput() *params.CsvParserInput {
+func (csvParser *CsvParser) ToCsvParserInput(ctx context.Context) *params.CsvParserInput {
 	if csvParser == nil {
 		return nil
 	}
 
 	var columnElements []CsvParserColumn
-	csvParser.Columns.ElementsAs(context.Background(), &columnElements, false)
+	diags := csvParser.Columns.ElementsAs(ctx, &columnElements, false)
+	if diags.HasError() {
+		return nil
+	}
 
 	columns := make([]params.CsvParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {

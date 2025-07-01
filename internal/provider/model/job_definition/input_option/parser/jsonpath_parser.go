@@ -22,7 +22,7 @@ type JsonpathParserColumn struct {
 	Format   types.String `tfsdk:"format"`
 }
 
-func NewJsonPathParser(jsonpathParser *job_definitions.JsonpathParser) *JsonpathParser {
+func NewJsonPathParser(ctx context.Context, jsonpathParser *job_definitions.JsonpathParser) *JsonpathParser {
 	if jsonpathParser == nil {
 		return nil
 	}
@@ -38,8 +38,8 @@ func NewJsonPathParser(jsonpathParser *job_definitions.JsonpathParser) *Jsonpath
 		columnElements = append(columnElements, column)
 	}
 
-	columns, _ := types.ListValueFrom(
-		context.Background(),
+	columns, diags := types.ListValueFrom(
+		ctx,
 		types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"name":      types.StringType,
@@ -50,6 +50,10 @@ func NewJsonPathParser(jsonpathParser *job_definitions.JsonpathParser) *Jsonpath
 		},
 		columnElements,
 	)
+	if diags.HasError() {
+		return nil
+	}
+
 	return &JsonpathParser{
 		Root:            types.StringValue(jsonpathParser.Root),
 		DefaultTimeZone: types.StringValue(jsonpathParser.DefaultTimeZone),
@@ -57,13 +61,16 @@ func NewJsonPathParser(jsonpathParser *job_definitions.JsonpathParser) *Jsonpath
 	}
 }
 
-func (jsonpathParser *JsonpathParser) ToJsonpathParserInput() *params.JsonpathParserInput {
+func (jsonpathParser *JsonpathParser) ToJsonpathParserInput(ctx context.Context) *params.JsonpathParserInput {
 	if jsonpathParser == nil {
 		return nil
 	}
 
 	var columnElements []JsonpathParserColumn
-	jsonpathParser.Columns.ElementsAs(context.Background(), &columnElements, false)
+	diags := jsonpathParser.Columns.ElementsAs(ctx, &columnElements, false)
+	if diags.HasError() {
+		return nil
+	}
 
 	columns := make([]params.JsonpathParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {

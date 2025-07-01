@@ -23,7 +23,7 @@ type ExcelParserColumn struct {
 	FormulaHandling types.String `tfsdk:"formula_handling"`
 }
 
-func NewExcelParser(excelParser *job_definitions.ExcelParser) *ExcelParser {
+func NewExcelParser(ctx context.Context, excelParser *job_definitions.ExcelParser) *ExcelParser {
 	if excelParser == nil {
 		return nil
 	}
@@ -39,8 +39,8 @@ func NewExcelParser(excelParser *job_definitions.ExcelParser) *ExcelParser {
 		columnElements = append(columnElements, column)
 	}
 
-	columns, _ := types.ListValueFrom(
-		context.Background(),
+	columns, diags := types.ListValueFrom(
+		ctx,
 		types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"name":             types.StringType,
@@ -51,6 +51,9 @@ func NewExcelParser(excelParser *job_definitions.ExcelParser) *ExcelParser {
 		},
 		columnElements,
 	)
+	if diags.HasError() {
+		return nil
+	}
 	return &ExcelParser{
 		DefaultTimeZone: types.StringValue(excelParser.DefaultTimeZone),
 		SheetName:       types.StringValue(excelParser.SheetName),
@@ -59,13 +62,16 @@ func NewExcelParser(excelParser *job_definitions.ExcelParser) *ExcelParser {
 	}
 }
 
-func (excelParser *ExcelParser) ToExcelParserInput() *params.ExcelParserInput {
+func (excelParser *ExcelParser) ToExcelParserInput(ctx context.Context) *params.ExcelParserInput {
 	if excelParser == nil {
 		return nil
 	}
 
 	var columnElements []ExcelParserColumn
-	excelParser.Columns.ElementsAs(context.Background(), &columnElements, false)
+	diags := excelParser.Columns.ElementsAs(ctx, &columnElements, false)
+	if diags.HasError() {
+		return nil
+	}
 
 	columns := make([]params.ExcelParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {

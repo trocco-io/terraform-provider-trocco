@@ -22,7 +22,7 @@ type LtsvParserColumn struct {
 	Format types.String `tfsdk:"format"`
 }
 
-func NewLtsvParser(ltsvParser *job_definitions.LtsvParser) *LtsvParser {
+func NewLtsvParser(ctx context.Context, ltsvParser *job_definitions.LtsvParser) *LtsvParser {
 	if ltsvParser == nil {
 		return nil
 	}
@@ -37,8 +37,8 @@ func NewLtsvParser(ltsvParser *job_definitions.LtsvParser) *LtsvParser {
 		columnElements = append(columnElements, column)
 	}
 
-	columns, _ := types.ListValueFrom(
-		context.Background(),
+	columns, diags := types.ListValueFrom(
+		ctx,
 		types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"name":   types.StringType,
@@ -48,6 +48,10 @@ func NewLtsvParser(ltsvParser *job_definitions.LtsvParser) *LtsvParser {
 		},
 		columnElements,
 	)
+	if diags.HasError() {
+		return nil
+	}
+
 	return &LtsvParser{
 		Newline: types.StringPointerValue(ltsvParser.Newline),
 		Charset: types.StringPointerValue(ltsvParser.Charset),
@@ -55,13 +59,16 @@ func NewLtsvParser(ltsvParser *job_definitions.LtsvParser) *LtsvParser {
 	}
 }
 
-func (ltsvParser *LtsvParser) ToLtsvParserInput() *params.LtsvParserInput {
+func (ltsvParser *LtsvParser) ToLtsvParserInput(ctx context.Context) *params.LtsvParserInput {
 	if ltsvParser == nil {
 		return nil
 	}
 
 	var columnElements []LtsvParserColumn
-	ltsvParser.Columns.ElementsAs(context.Background(), &columnElements, false)
+	diags := ltsvParser.Columns.ElementsAs(ctx, &columnElements, false)
+	if diags.HasError() {
+		return nil
+	}
 
 	columns := make([]params.LtsvParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {
