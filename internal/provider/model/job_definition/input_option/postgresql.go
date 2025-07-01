@@ -54,12 +54,10 @@ func (PostgreSQLInputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewPostgreSQLInputOption(postgresqlInputOption *input_option.PostgreSQLInputOption) *PostgreSQLInputOption {
+func NewPostgreSQLInputOption(ctx context.Context, postgresqlInputOption *input_option.PostgreSQLInputOption) *PostgreSQLInputOption {
 	if postgresqlInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &PostgreSQLInputOption{
 		Database:                  types.StringValue(postgresqlInputOption.Database),
@@ -153,12 +151,10 @@ func newInputOptionColumnOptions(
 	return setValue, nil
 }
 
-func (postgresqlInputOption *PostgreSQLInputOption) ToInput() *param.PostgreSQLInputOptionInput {
+func (postgresqlInputOption *PostgreSQLInputOption) ToInput(ctx context.Context) *param.PostgreSQLInputOptionInput {
 	if postgresqlInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnOptionValues []PostgreSQLInputOptionColumn
 	if !postgresqlInputOption.InputOptionColumns.IsNull() && !postgresqlInputOption.InputOptionColumns.IsUnknown() {
@@ -197,12 +193,10 @@ func (postgresqlInputOption *PostgreSQLInputOption) ToInput() *param.PostgreSQLI
 	}
 }
 
-func (postgresqlInputOption *PostgreSQLInputOption) ToUpdateInput() *param.UpdatePostgreSQLInputOptionInput {
+func (postgresqlInputOption *PostgreSQLInputOption) ToUpdateInput(ctx context.Context) *param.UpdatePostgreSQLInputOptionInput {
 	if postgresqlInputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var columnOptionValues []PostgreSQLInputOptionColumn
 	if !postgresqlInputOption.InputOptionColumns.IsNull() {
