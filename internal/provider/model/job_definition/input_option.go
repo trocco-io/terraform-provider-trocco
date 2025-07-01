@@ -29,7 +29,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 	if previous != nil {
 		previousHttpInputOption = previous.HttpInputOption
 	}
-	httpInputOption, diags := input_options.NewHttpInputOption(inputOption.HttpInputOption, previousHttpInputOption)
+	httpInputOption, diags := input_options.NewHttpInputOption(ctx, inputOption.HttpInputOption, previousHttpInputOption)
 	return &InputOption{
 		GcsInputOption:                input_options.NewGcsInputOption(ctx, inputOption.GcsInputOption),
 		MySQLInputOption:              input_options.NewMysqlInputOption(ctx, inputOption.MySQLInputOption),
@@ -49,7 +49,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	httpInput, d := o.HttpInputOption.ToInput()
+	httpInput, d := o.HttpInputOption.ToInput(ctx)
 	diags.Append(d...)
 
 	return client.InputOptionInput{
@@ -70,7 +70,7 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 
 func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOptionInput, diag.Diagnostics) {
 	var diags diag.Diagnostics
-	httpInput, d := o.HttpInputOption.ToUpdateInput()
+	httpInput, d := o.HttpInputOption.ToUpdateInput(ctx)
 	diags.Append(d...)
 
 	return &client.UpdateInputOptionInput{
