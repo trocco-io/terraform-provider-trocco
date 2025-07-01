@@ -1,15 +1,17 @@
 package parser
 
 import (
+	"context"
 	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	params "terraform-provider-trocco/internal/client/parameter/job_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type XmlParser struct {
-	Root    types.String      `tfsdk:"root"`
-	Columns []XmlParserColumn `tfsdk:"columns"`
+	Root    types.String `tfsdk:"root"`
+	Columns types.List   `tfsdk:"columns"`
 }
 
 type XmlParserColumn struct {
@@ -24,7 +26,8 @@ func NewXmlParser(xmlParser *job_definitions.XmlParser) *XmlParser {
 	if xmlParser == nil {
 		return nil
 	}
-	columns := make([]XmlParserColumn, 0, len(xmlParser.Columns))
+
+	columnElements := make([]XmlParserColumn, 0, len(xmlParser.Columns))
 	for _, input := range xmlParser.Columns {
 		column := XmlParserColumn{
 			Name:     types.StringValue(input.Name),
@@ -33,8 +36,22 @@ func NewXmlParser(xmlParser *job_definitions.XmlParser) *XmlParser {
 			Timezone: types.StringPointerValue(input.Timezone),
 			Format:   types.StringPointerValue(input.Format),
 		}
-		columns = append(columns, column)
+		columnElements = append(columnElements, column)
 	}
+
+	columns, _ := types.ListValueFrom(
+		context.Background(),
+		types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"name":     types.StringType,
+				"type":     types.StringType,
+				"path":     types.StringType,
+				"timezone": types.StringType,
+				"format":   types.StringType,
+			},
+		},
+		columnElements,
+	)
 
 	return &XmlParser{
 		Root:    types.StringValue(xmlParser.Root),
@@ -46,8 +63,12 @@ func (xmlParser *XmlParser) ToXmlParserInput() *params.XmlParserInput {
 	if xmlParser == nil {
 		return nil
 	}
-	columns := make([]params.XmlParserColumnInput, 0, len(xmlParser.Columns))
-	for _, input := range xmlParser.Columns {
+
+	var columnElements []XmlParserColumn
+	xmlParser.Columns.ElementsAs(context.Background(), &columnElements, false)
+
+	columns := make([]params.XmlParserColumnInput, 0, len(columnElements))
+	for _, input := range columnElements {
 		column := params.XmlParserColumnInput{
 			Name:     input.Name.ValueString(),
 			Type:     input.Type.ValueString(),

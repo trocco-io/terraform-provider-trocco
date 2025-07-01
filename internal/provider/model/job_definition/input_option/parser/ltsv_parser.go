@@ -1,17 +1,19 @@
 package parser
 
 import (
+	"context"
 	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	params "terraform-provider-trocco/internal/client/parameter/job_definition"
 	"terraform-provider-trocco/internal/provider/model"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type LtsvParser struct {
-	Newline types.String       `tfsdk:"newline"`
-	Charset types.String       `tfsdk:"charset"`
-	Columns []LtsvParserColumn `tfsdk:"columns"`
+	Newline types.String `tfsdk:"newline"`
+	Charset types.String `tfsdk:"charset"`
+	Columns types.List   `tfsdk:"columns"`
 }
 
 type LtsvParserColumn struct {
@@ -24,15 +26,28 @@ func NewLtsvParser(ltsvParser *job_definitions.LtsvParser) *LtsvParser {
 	if ltsvParser == nil {
 		return nil
 	}
-	columns := make([]LtsvParserColumn, 0, len(ltsvParser.Columns))
+
+	columnElements := make([]LtsvParserColumn, 0, len(ltsvParser.Columns))
 	for _, input := range ltsvParser.Columns {
 		column := LtsvParserColumn{
 			Name:   types.StringValue(input.Name),
 			Type:   types.StringValue(input.Type),
 			Format: types.StringPointerValue(input.Format),
 		}
-		columns = append(columns, column)
+		columnElements = append(columnElements, column)
 	}
+
+	columns, _ := types.ListValueFrom(
+		context.Background(),
+		types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"name":   types.StringType,
+				"type":   types.StringType,
+				"format": types.StringType,
+			},
+		},
+		columnElements,
+	)
 	return &LtsvParser{
 		Newline: types.StringPointerValue(ltsvParser.Newline),
 		Charset: types.StringPointerValue(ltsvParser.Charset),
@@ -44,8 +59,12 @@ func (ltsvParser *LtsvParser) ToLtsvParserInput() *params.LtsvParserInput {
 	if ltsvParser == nil {
 		return nil
 	}
-	columns := make([]params.LtsvParserColumnInput, 0, len(ltsvParser.Columns))
-	for _, input := range ltsvParser.Columns {
+
+	var columnElements []LtsvParserColumn
+	ltsvParser.Columns.ElementsAs(context.Background(), &columnElements, false)
+
+	columns := make([]params.LtsvParserColumnInput, 0, len(columnElements))
+	for _, input := range columnElements {
 		column := params.LtsvParserColumnInput{
 			Name:   input.Name.ValueString(),
 			Type:   input.Type.ValueString(),

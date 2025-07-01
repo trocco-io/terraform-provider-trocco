@@ -1,32 +1,34 @@
 package parser
 
 import (
+	"context"
 	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	params "terraform-provider-trocco/internal/client/parameter/job_definition"
 	"terraform-provider-trocco/internal/provider/model"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type CsvParser struct {
-	Delimiter            types.String      `tfsdk:"delimiter"`
-	Quote                types.String      `tfsdk:"quote"`
-	Escape               types.String      `tfsdk:"escape"`
-	SkipHeaderLines      types.Int64       `tfsdk:"skip_header_lines"`
-	NullStringEnabled    types.Bool        `tfsdk:"null_string_enabled"`
-	NullString           types.String      `tfsdk:"null_string"`
-	TrimIfNotQuoted      types.Bool        `tfsdk:"trim_if_not_quoted"`
-	QuotesInQuotedFields types.String      `tfsdk:"quotes_in_quoted_fields"`
-	CommentLineMarker    types.String      `tfsdk:"comment_line_marker"`
-	AllowOptionalColumns types.Bool        `tfsdk:"allow_optional_columns"`
-	AllowExtraColumns    types.Bool        `tfsdk:"allow_extra_columns"`
-	MaxQuotedSizeLimit   types.Int64       `tfsdk:"max_quoted_size_limit"`
-	StopOnInvalidRecord  types.Bool        `tfsdk:"stop_on_invalid_record"`
-	DefaultTimeZone      types.String      `tfsdk:"default_time_zone"`
-	DefaultDate          types.String      `tfsdk:"default_date"`
-	Newline              types.String      `tfsdk:"newline"`
-	Charset              types.String      `tfsdk:"charset"`
-	Columns              []CsvParserColumn `tfsdk:"columns"`
+	Delimiter            types.String `tfsdk:"delimiter"`
+	Quote                types.String `tfsdk:"quote"`
+	Escape               types.String `tfsdk:"escape"`
+	SkipHeaderLines      types.Int64  `tfsdk:"skip_header_lines"`
+	NullStringEnabled    types.Bool   `tfsdk:"null_string_enabled"`
+	NullString           types.String `tfsdk:"null_string"`
+	TrimIfNotQuoted      types.Bool   `tfsdk:"trim_if_not_quoted"`
+	QuotesInQuotedFields types.String `tfsdk:"quotes_in_quoted_fields"`
+	CommentLineMarker    types.String `tfsdk:"comment_line_marker"`
+	AllowOptionalColumns types.Bool   `tfsdk:"allow_optional_columns"`
+	AllowExtraColumns    types.Bool   `tfsdk:"allow_extra_columns"`
+	MaxQuotedSizeLimit   types.Int64  `tfsdk:"max_quoted_size_limit"`
+	StopOnInvalidRecord  types.Bool   `tfsdk:"stop_on_invalid_record"`
+	DefaultTimeZone      types.String `tfsdk:"default_time_zone"`
+	DefaultDate          types.String `tfsdk:"default_date"`
+	Newline              types.String `tfsdk:"newline"`
+	Charset              types.String `tfsdk:"charset"`
+	Columns              types.List   `tfsdk:"columns"`
 }
 
 type CsvParserColumn struct {
@@ -40,7 +42,8 @@ func NewCsvParser(csvParser *job_definitions.CsvParser) *CsvParser {
 	if csvParser == nil {
 		return nil
 	}
-	columns := make([]CsvParserColumn, 0, len(csvParser.Columns))
+
+	columnElements := make([]CsvParserColumn, 0, len(csvParser.Columns))
 	for _, input := range csvParser.Columns {
 		column := CsvParserColumn{
 			Name:   types.StringValue(input.Name),
@@ -48,8 +51,21 @@ func NewCsvParser(csvParser *job_definitions.CsvParser) *CsvParser {
 			Format: types.StringPointerValue(input.Format),
 			Date:   types.StringPointerValue(input.Date),
 		}
-		columns = append(columns, column)
+		columnElements = append(columnElements, column)
 	}
+
+	columns, _ := types.ListValueFrom(
+		context.Background(),
+		types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"name":   types.StringType,
+				"type":   types.StringType,
+				"format": types.StringType,
+				"date":   types.StringType,
+			},
+		},
+		columnElements,
+	)
 	return &CsvParser{
 		Delimiter:            types.StringValue(csvParser.Delimiter),
 		Quote:                types.StringPointerValue(csvParser.Quote),
@@ -76,8 +92,12 @@ func (csvParser *CsvParser) ToCsvParserInput() *params.CsvParserInput {
 	if csvParser == nil {
 		return nil
 	}
-	columns := make([]params.CsvParserColumnInput, 0, len(csvParser.Columns))
-	for _, input := range csvParser.Columns {
+
+	var columnElements []CsvParserColumn
+	csvParser.Columns.ElementsAs(context.Background(), &columnElements, false)
+
+	columns := make([]params.CsvParserColumnInput, 0, len(columnElements))
+	for _, input := range columnElements {
 		column := params.CsvParserColumnInput{
 			Name:   input.Name.ValueString(),
 			Type:   input.Type.ValueString(),

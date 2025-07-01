@@ -1,19 +1,21 @@
 package parser
 
 import (
+	"context"
 	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	param "terraform-provider-trocco/internal/client/parameter/job_definition"
 	"terraform-provider-trocco/internal/provider/model"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type JsonlParser struct {
-	StopOnInvalidRecord types.Bool          `tfsdk:"stop_on_invalid_record"`
-	DefaultTimeZone     types.String        `tfsdk:"default_time_zone"`
-	Newline             types.String        `tfsdk:"newline"`
-	Charset             types.String        `tfsdk:"charset"`
-	Columns             []JsonlParserColumn `tfsdk:"columns"`
+	StopOnInvalidRecord types.Bool   `tfsdk:"stop_on_invalid_record"`
+	DefaultTimeZone     types.String `tfsdk:"default_time_zone"`
+	Newline             types.String `tfsdk:"newline"`
+	Charset             types.String `tfsdk:"charset"`
+	Columns             types.List   `tfsdk:"columns"`
 }
 
 type JsonlParserColumn struct {
@@ -27,7 +29,8 @@ func NewJsonlParser(jsonlParser *job_definitions.JsonlParser) *JsonlParser {
 	if jsonlParser == nil {
 		return nil
 	}
-	columns := make([]JsonlParserColumn, 0, len(jsonlParser.Columns))
+
+	columnElements := make([]JsonlParserColumn, 0, len(jsonlParser.Columns))
 	for _, input := range jsonlParser.Columns {
 		column := JsonlParserColumn{
 			Name:     types.StringValue(input.Name),
@@ -35,8 +38,21 @@ func NewJsonlParser(jsonlParser *job_definitions.JsonlParser) *JsonlParser {
 			TimeZone: types.StringPointerValue(input.TimeZone),
 			Format:   types.StringPointerValue(input.Format),
 		}
-		columns = append(columns, column)
+		columnElements = append(columnElements, column)
 	}
+
+	columns, _ := types.ListValueFrom(
+		context.Background(),
+		types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"name":      types.StringType,
+				"type":      types.StringType,
+				"time_zone": types.StringType,
+				"format":    types.StringType,
+			},
+		},
+		columnElements,
+	)
 	return &JsonlParser{
 		StopOnInvalidRecord: types.BoolPointerValue(jsonlParser.StopOnInvalidRecord),
 		DefaultTimeZone:     types.StringValue(jsonlParser.DefaultTimeZone),
@@ -50,8 +66,12 @@ func (jsonlParser *JsonlParser) ToJsonlParserInput() *param.JsonlParserInput {
 	if jsonlParser == nil {
 		return nil
 	}
-	columns := make([]param.JsonlParserColumnInput, 0, len(jsonlParser.Columns))
-	for _, input := range jsonlParser.Columns {
+
+	var columnElements []JsonlParserColumn
+	jsonlParser.Columns.ElementsAs(context.Background(), &columnElements, false)
+
+	columns := make([]param.JsonlParserColumnInput, 0, len(columnElements))
+	for _, input := range columnElements {
 		column := param.JsonlParserColumnInput{
 			Name:     input.Name.ValueString(),
 			Type:     input.Type.ValueString(),

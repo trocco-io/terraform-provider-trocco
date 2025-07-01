@@ -1,16 +1,18 @@
 package parser
 
 import (
+	"context"
 	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	params "terraform-provider-trocco/internal/client/parameter/job_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type JsonpathParser struct {
-	Root            types.String           `tfsdk:"root"`
-	DefaultTimeZone types.String           `tfsdk:"default_time_zone"`
-	Columns         []JsonpathParserColumn `tfsdk:"columns"`
+	Root            types.String `tfsdk:"root"`
+	DefaultTimeZone types.String `tfsdk:"default_time_zone"`
+	Columns         types.List   `tfsdk:"columns"`
 }
 
 type JsonpathParserColumn struct {
@@ -24,7 +26,8 @@ func NewJsonPathParser(jsonpathParser *job_definitions.JsonpathParser) *Jsonpath
 	if jsonpathParser == nil {
 		return nil
 	}
-	columns := make([]JsonpathParserColumn, 0, len(jsonpathParser.Columns))
+
+	columnElements := make([]JsonpathParserColumn, 0, len(jsonpathParser.Columns))
 	for _, input := range jsonpathParser.Columns {
 		column := JsonpathParserColumn{
 			Name:     types.StringValue(input.Name),
@@ -32,8 +35,21 @@ func NewJsonPathParser(jsonpathParser *job_definitions.JsonpathParser) *Jsonpath
 			TimeZone: types.StringPointerValue(input.TimeZone),
 			Format:   types.StringPointerValue(input.Format),
 		}
-		columns = append(columns, column)
+		columnElements = append(columnElements, column)
 	}
+
+	columns, _ := types.ListValueFrom(
+		context.Background(),
+		types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"name":      types.StringType,
+				"type":      types.StringType,
+				"time_zone": types.StringType,
+				"format":    types.StringType,
+			},
+		},
+		columnElements,
+	)
 	return &JsonpathParser{
 		Root:            types.StringValue(jsonpathParser.Root),
 		DefaultTimeZone: types.StringValue(jsonpathParser.DefaultTimeZone),
@@ -45,8 +61,12 @@ func (jsonpathParser *JsonpathParser) ToJsonpathParserInput() *params.JsonpathPa
 	if jsonpathParser == nil {
 		return nil
 	}
-	columns := make([]params.JsonpathParserColumnInput, 0, len(jsonpathParser.Columns))
-	for _, input := range jsonpathParser.Columns {
+
+	var columnElements []JsonpathParserColumn
+	jsonpathParser.Columns.ElementsAs(context.Background(), &columnElements, false)
+
+	columns := make([]params.JsonpathParserColumnInput, 0, len(columnElements))
+	for _, input := range columnElements {
 		column := params.JsonpathParserColumnInput{
 			Name:     input.Name.ValueString(),
 			Type:     input.Type.ValueString(),
