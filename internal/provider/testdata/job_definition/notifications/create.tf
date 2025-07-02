@@ -42,7 +42,7 @@ resource "trocco_job_definition" "notifications_test" {
   resource_enhancement     = "medium"
   retry_limit              = 0
   is_runnable_concurrently = false
-  
+
   filter_columns = [
     {
       name                         = "id"
@@ -62,7 +62,7 @@ resource "trocco_job_definition" "notifications_test" {
       json_expand_keep_base_column = false
     }
   ]
-  
+
   input_option_type = "mysql"
   input_option = {
     mysql_input_option = {
@@ -84,7 +84,7 @@ resource "trocco_job_definition" "notifications_test" {
       ]
     }
   }
-  
+
   output_option_type = "bigquery"
   output_option = {
     bigquery_output_option = {
@@ -101,11 +101,11 @@ resource "trocco_job_definition" "notifications_test" {
 
   notifications = [
     {
-      destination_type   = "slack"
-      slack_channel_id   = trocco_notification_destination.slack.id
-      notification_type  = "job"
-      notify_when        = "finished"
-      message            = <<MESSAGE
+      destination_type  = "slack"
+      slack_channel_id  = trocco_notification_destination.slack.id
+      notification_type = "job"
+      notify_when       = "finished"
+      message           = <<MESSAGE
 This is a multi-line message
 with several lines
   and some indentation
@@ -113,11 +113,11 @@ with several lines
 MESSAGE
     },
     {
-      destination_type   = "email"
-      email_id           = trocco_notification_destination.email.id
-      notification_type  = "job"
-      notify_when        = "finished"
-      message            = <<MESSAGE
+      destination_type  = "email"
+      email_id          = trocco_notification_destination.email.id
+      notification_type = "job"
+      notify_when       = "finished"
+      message           = <<MESSAGE
   This is another multi-line message
 with leading and trailing whitespace
   

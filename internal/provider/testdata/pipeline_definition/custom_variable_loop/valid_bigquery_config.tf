@@ -52,7 +52,7 @@ resource "trocco_pipeline_definition" "trocco_bigquery_datamart" {
         custom_variable_loop = {
           type = "bigquery"
           bigquery_config = {
-            connection_id = trocco_connection.my_conn.id  # ← 動的に参照
+            connection_id = trocco_connection.my_conn.id # ← 動的に参照
             query         = "SELECT foo, bar FROM sample"
             variables     = ["$foo$", "$bar$"]
           }
