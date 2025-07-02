@@ -31,7 +31,7 @@ type Task struct {
 	TroccoTransferConfig                      *TroccoTransferTaskConfig                      `tfsdk:"trocco_transfer_config"`
 }
 
-func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDefinition) types.Set {
+func NewTasks(ctx context.Context, ens []*we.Task, keys map[int64]types.String, previous *PipelineDefinition) types.Set {
 	var TaskObjectType = types.ObjectType{
 		AttrTypes: TaskObjectAttrTypes(),
 	}
@@ -42,7 +42,7 @@ func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDef
 
 	var previousTasks []*Task
 	if previous != nil && !previous.Tasks.IsNull() && !previous.Tasks.IsUnknown() {
-		if diags := previous.Tasks.ElementsAs(context.Background(), &previousTasks, false); diags.HasError() {
+		if diags := previous.Tasks.ElementsAs(ctx, &previousTasks, false); diags.HasError() {
 			return types.SetNull(TaskObjectType)
 		}
 	}
@@ -60,7 +60,7 @@ func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDef
 		tasks = append(tasks, NewTask(en, keys, previousTask))
 	}
 
-	set, diags := types.SetValueFrom(context.Background(), TaskObjectType, tasks)
+	set, diags := types.SetValueFrom(ctx, TaskObjectType, tasks)
 	if diags.HasError() {
 		return types.SetNull(TaskObjectType)
 	}

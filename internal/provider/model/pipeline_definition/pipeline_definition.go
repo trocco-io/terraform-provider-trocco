@@ -30,12 +30,12 @@ type PipelineDefinition struct {
 	TaskDependencies             []*TaskDependency              `tfsdk:"task_dependencies"`
 }
 
-func NewPipelineDefinition(en *entity.PipelineDefinition, keys map[int64]types.String, previous *PipelineDefinition) *PipelineDefinition {
+func NewPipelineDefinition(ctx context.Context, en *entity.PipelineDefinition, keys map[int64]types.String, previous *PipelineDefinition) *PipelineDefinition {
 	var notifications types.Set
 	if previous == nil {
-		notifications = NewNotifications(en.Notifications, true)
+		notifications = NewNotifications(ctx, en.Notifications, true)
 	} else {
-		notifications = NewNotifications(en.Notifications, previous.Notifications.IsNull())
+		notifications = NewNotifications(ctx, en.Notifications, previous.Notifications.IsNull())
 	}
 
 	return &PipelineDefinition{
@@ -52,12 +52,12 @@ func NewPipelineDefinition(en *entity.PipelineDefinition, keys map[int64]types.S
 		Labels:                       NewLabels(en.Labels, previous.Labels == nil),
 		Notifications:                notifications,
 		Schedules:                    NewSchedules(en.Schedules, previous),
-		Tasks:                        NewTasks(en.Tasks, keys, previous),
+		Tasks:                        NewTasks(ctx, en.Tasks, keys, previous),
 		TaskDependencies:             NewTaskDependencies(en.TaskDependencies, keys, previous),
 	}
 }
 
-func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInput {
+func (m *PipelineDefinition) ToCreateInput(ctx context.Context) *client.CreatePipelineDefinitionInput {
 	labels := []string{}
 	for _, l := range m.Labels {
 		labels = append(labels, l.ValueString())
@@ -66,7 +66,7 @@ func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInp
 	notifications := []*pdp.Notification{}
 	if !m.Notifications.IsNull() && !m.Notifications.IsUnknown() {
 		var notificationValues []*Notification
-		diags := m.Notifications.ElementsAs(context.Background(), &notificationValues, false)
+		diags := m.Notifications.ElementsAs(ctx, &notificationValues, false)
 		if !diags.HasError() {
 			for _, n := range notificationValues {
 				notifications = append(notifications, n.ToInput())
@@ -82,7 +82,7 @@ func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInp
 	tasks := []pdp.Task{}
 	if !m.Tasks.IsNull() && !m.Tasks.IsUnknown() {
 		var tfTasks []*Task
-		if diags := m.Tasks.ElementsAs(context.Background(), &tfTasks, false); diags.HasError() {
+		if diags := m.Tasks.ElementsAs(ctx, &tfTasks, false); diags.HasError() {
 			return nil
 		}
 
@@ -117,7 +117,7 @@ func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInp
 	}
 }
 
-func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *client.UpdatePipelineDefinitionInput {
+func (m *PipelineDefinition) ToUpdateWorkflowInput(ctx context.Context, state *PipelineDefinition) *client.UpdatePipelineDefinitionInput {
 	labels := []string{}
 	for _, l := range m.Labels {
 		labels = append(labels, l.ValueString())
@@ -126,7 +126,7 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *c
 	notifications := []*pdp.Notification{}
 	if !m.Notifications.IsNull() && !m.Notifications.IsUnknown() {
 		var notificationValues []*Notification
-		diags := m.Notifications.ElementsAs(context.Background(), &notificationValues, false)
+		diags := m.Notifications.ElementsAs(ctx, &notificationValues, false)
 		if !diags.HasError() {
 			for _, n := range notificationValues {
 				notifications = append(notifications, n.ToInput())
@@ -142,7 +142,7 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *c
 	stateTaskIdentifiers := map[string]int64{}
 	if !state.Tasks.IsNull() && !state.Tasks.IsUnknown() {
 		var stateTasks []*Task
-		if diags := state.Tasks.ElementsAs(context.Background(), &stateTasks, false); diags.HasError() {
+		if diags := state.Tasks.ElementsAs(ctx, &stateTasks, false); diags.HasError() {
 			return nil
 		}
 
@@ -154,7 +154,7 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *c
 	tasks := []pdp.Task{}
 	if !m.Tasks.IsNull() && !m.Tasks.IsUnknown() {
 		var tfTasks []*Task
-		if diags := m.Tasks.ElementsAs(context.Background(), &tfTasks, false); diags.HasError() {
+		if diags := m.Tasks.ElementsAs(ctx, &tfTasks, false); diags.HasError() {
 			return nil
 		}
 
