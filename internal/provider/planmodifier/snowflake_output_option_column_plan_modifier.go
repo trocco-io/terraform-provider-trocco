@@ -49,7 +49,7 @@ func (d *SnowflakeOutputOptionColumnPlanModifier) PlanModifyObject(ctx context.C
 		addSnowflakeOutputOptionColumnAttributeError(req, resp, "timezone can only be set when type is 'TIMESTAMP'")
 	}
 
-	if !timestampFormat.IsNull() && !(typ.ValueString() == "TIMESTAMP" && (valueType.ValueString() == "string" || valueType.ValueString() == "nstring")) {
+	if !timestampFormat.IsNull() && (typ.ValueString() != "TIMESTAMP" || (valueType.ValueString() != "string" && valueType.ValueString() != "nstring")) {
 		addSnowflakeOutputOptionColumnAttributeError(req, resp, "timestamp_format can only be set when type is 'TIMESTAMP' and value_type is string or nstring")
 	}
 }
