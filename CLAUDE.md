@@ -20,6 +20,9 @@ go fmt ./...
 
 # Format a specific Go file.
 go fmt [FILE]
+
+# Format a Terraform configuration files.
+terraform fmt [FILE]
 ```
 
 ### Testing
@@ -41,7 +44,9 @@ You MUST use English in files and pull requests.
 
 ---
 
-You MUST format Go code using `go fmt`
+You MUST format Go files using `go fmt`.
+
+You MUST format Terraform configuration files using `terraform fmt`.
 
 ---
 
