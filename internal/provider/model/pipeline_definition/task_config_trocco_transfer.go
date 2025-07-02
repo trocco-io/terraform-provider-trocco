@@ -1,6 +1,8 @@
 package pipeline_definition
 
 import (
+	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
@@ -15,7 +17,7 @@ type TroccoTransferTaskConfig struct {
 	CustomVariableLoop *CustomVariableLoop `tfsdk:"custom_variable_loop"`
 }
 
-func NewTroccoTransferTaskConfig(c *we.TroccoTransferTaskConfig) *TroccoTransferTaskConfig {
+func NewTroccoTransferTaskConfig(c *we.TroccoTransferTaskConfig, ctx context.Context) *TroccoTransferTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -23,17 +25,17 @@ func NewTroccoTransferTaskConfig(c *we.TroccoTransferTaskConfig) *TroccoTransfer
 	return &TroccoTransferTaskConfig{
 		DefinitionID: types.Int64Value(c.DefinitionID),
 
-		CustomVariableLoop: NewCustomVariableLoop(c.CustomVariableLoop),
+		CustomVariableLoop: NewCustomVariableLoop(c.CustomVariableLoop, ctx),
 	}
 }
 
-func (c *TroccoTransferTaskConfig) ToInput() *wp.TroccoTransferTaskConfig {
+func (c *TroccoTransferTaskConfig) ToInput(ctx context.Context) *wp.TroccoTransferTaskConfig {
 	in := &wp.TroccoTransferTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
 	}
 
 	if c.CustomVariableLoop != nil {
-		in.CustomVariableLoop = lo.ToPtr(c.CustomVariableLoop.ToInput())
+		in.CustomVariableLoop = lo.ToPtr(c.CustomVariableLoop.ToInput(ctx))
 	}
 
 	return in

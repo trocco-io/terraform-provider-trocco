@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
@@ -18,10 +19,10 @@ type RedshiftDataCheckTaskConfig struct {
 	QueryResult     types.Int64                    `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
 	Database        types.String                   `tfsdk:"database"`
-	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
+	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
-func NewRedshiftDataCheckTaskConfig(c *we.RedshiftDataCheckTaskConfig) *RedshiftDataCheckTaskConfig {
+func NewRedshiftDataCheckTaskConfig(c *we.RedshiftDataCheckTaskConfig, ctx context.Context) *RedshiftDataCheckTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -34,14 +35,21 @@ func NewRedshiftDataCheckTaskConfig(c *we.RedshiftDataCheckTaskConfig) *Redshift
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
 		Database:        types.StringValue(c.Database),
-		CustomVariables: NewCustomVariables(c.CustomVariables),
+		CustomVariables: NewCustomVariables(c.CustomVariables, ctx),
 	}
 }
 
 func (c *RedshiftDataCheckTaskConfig) ToInput() *wp.RedshiftDataCheckTaskConfigInput {
 	customVariables := []wp.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, v.ToInput())
+	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
+		var customVariableValues []CustomVariable
+		ctx := context.Background()
+		diags := c.CustomVariables.ElementsAs(ctx, &customVariableValues, false)
+		if !diags.HasError() {
+			for _, v := range customVariableValues {
+				customVariables = append(customVariables, v.ToInput())
+			}
+		}
 	}
 
 	return &wp.RedshiftDataCheckTaskConfigInput{

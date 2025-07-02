@@ -1,22 +1,19 @@
 package pipeline_definition
 
 import (
+	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func NewLabels(ens []string, returnsNilIfEmpty bool) []types.String {
-	if ens == nil {
-		return nil
+func NewLabels(ens []string, returnsNilIfEmpty bool, ctx context.Context) types.Set {
+	if ens == nil || (returnsNilIfEmpty && len(ens) == 0) {
+		return types.SetNull(types.StringType)
 	}
 
-	if returnsNilIfEmpty && len(ens) == 0 {
-		return nil
+	set, diags := types.SetValueFrom(ctx, types.StringType, ens)
+	if diags.HasError() {
+		return types.SetNull(types.StringType)
 	}
-
-	mds := []types.String{}
-	for _, en := range ens {
-		mds = append(mds, types.StringValue(en))
-	}
-
-	return mds
+	return set
 }

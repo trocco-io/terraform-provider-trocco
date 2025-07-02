@@ -1,10 +1,12 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -21,14 +23,33 @@ type Schedule struct {
 	Minute    types.Int64  `tfsdk:"minute"`
 }
 
-func NewSchedules(ens []*we.Schedule, previous *PipelineDefinition) []*Schedule {
-	if ens == nil {
-		return nil
+func NewSchedules(ens []*we.Schedule, previous *PipelineDefinition) types.Set {
+	ctx := context.Background()
+	objectType := types.ObjectType{
+		AttrTypes: map[string]attr.Type{
+			"frequency":   types.StringType,
+			"time_zone":   types.StringType,
+			"minute":      types.Int64Type,
+			"day":         types.Int64Type,
+			"day_of_week": types.Int64Type,
+			"hour":        types.Int64Type,
+		},
 	}
 
-	// If the attribute in the plan (or state) is nil, the provider should sets nil to the state.
-	if previous.Schedules == nil && len(ens) == 0 {
-		return nil
+	if ens == nil {
+		return types.SetNull(objectType)
+	}
+
+	// If the attribute in the plan (or state) is null, the provider should set null to the state.
+	var isSchedulesNull bool
+	if previous == nil {
+		isSchedulesNull = true
+	} else {
+		isSchedulesNull = previous.Schedules.IsNull()
+	}
+
+	if isSchedulesNull && len(ens) == 0 {
+		return types.SetNull(objectType)
 	}
 
 	mds := []*Schedule{}
@@ -36,7 +57,12 @@ func NewSchedules(ens []*we.Schedule, previous *PipelineDefinition) []*Schedule 
 		mds = append(mds, NewSchedule(en))
 	}
 
-	return mds
+	setValue, diags := types.SetValueFrom(ctx, objectType, mds)
+	if diags.HasError() {
+		return types.SetNull(objectType)
+	}
+
+	return setValue
 }
 
 func NewSchedule(en *we.Schedule) *Schedule {

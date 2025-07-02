@@ -1,6 +1,8 @@
 package pipeline_definition
 
 import (
+	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
@@ -23,7 +25,7 @@ type CustomVariableLoop struct {
 	RedshiftConfig  *RedshiftCustomVariableLoopConfig  `tfsdk:"redshift_config"`
 }
 
-func NewCustomVariableLoop(en *we.CustomVariableLoop) *CustomVariableLoop {
+func NewCustomVariableLoop(en *we.CustomVariableLoop, ctx context.Context) *CustomVariableLoop {
 	if en == nil {
 		return nil
 	}
@@ -42,19 +44,20 @@ func NewCustomVariableLoop(en *we.CustomVariableLoop) *CustomVariableLoop {
 		md.PeriodConfig = NewPeriodCustomVariableLoopConfig(en.PeriodConfig)
 	}
 	if en.BigqueryConfig != nil {
-		md.BigqueryConfig = NewBigqueryCustomVariableLoopConfig(en.BigqueryConfig)
+		md.BigqueryConfig = NewBigqueryCustomVariableLoopConfig(en.BigqueryConfig, ctx)
 	}
 	if en.SnowflakeConfig != nil {
-		md.SnowflakeConfig = NewSnowflakeCustomVariableLoopConfig(en.SnowflakeConfig)
+		md.SnowflakeConfig = NewSnowflakeCustomVariableLoopConfig(en.SnowflakeConfig, ctx)
 	}
 	if en.RedshiftConfig != nil {
-		md.RedshiftConfig = NewRedshiftCustomVariableLoopConfig(en.RedshiftConfig)
+		md.RedshiftConfig = NewRedshiftCustomVariableLoopConfig(en.RedshiftConfig, ctx)
 	}
 
 	return md
 }
 
-func (c *CustomVariableLoop) ToInput() wp.CustomVariableLoop {
+func (c *CustomVariableLoop) ToInput(ctx context.Context) wp.CustomVariableLoop {
+
 	i := wp.CustomVariableLoop{
 		Type:                       c.Type.ValueString(),
 		IsParallelExecutionAllowed: &p.NullableBool{Valid: !c.IsParallelExecutionAllowed.IsNull(), Value: c.IsParallelExecutionAllowed.ValueBool()},
@@ -69,13 +72,13 @@ func (c *CustomVariableLoop) ToInput() wp.CustomVariableLoop {
 		i.PeriodConfig = lo.ToPtr(c.PeriodConfig.ToInput())
 	}
 	if c.BigqueryConfig != nil {
-		i.BigqueryConfig = lo.ToPtr(c.BigqueryConfig.ToInput())
+		i.BigqueryConfig = lo.ToPtr(c.BigqueryConfig.ToInput(ctx))
 	}
 	if c.SnowflakeConfig != nil {
-		i.SnowflakeConfig = lo.ToPtr(c.SnowflakeConfig.ToInput())
+		i.SnowflakeConfig = lo.ToPtr(c.SnowflakeConfig.ToInput(ctx))
 	}
 	if c.RedshiftConfig != nil {
-		i.RedshiftConfig = lo.ToPtr(c.RedshiftConfig.ToInput())
+		i.RedshiftConfig = lo.ToPtr(c.RedshiftConfig.ToInput(ctx))
 	}
 
 	return i
