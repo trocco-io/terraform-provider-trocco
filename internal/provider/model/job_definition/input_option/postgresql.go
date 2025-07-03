@@ -75,9 +75,9 @@ func newPostgresqlInputOptionColumns(inputOptionColumns []input_option.PostgreSQ
 	return columns
 }
 
-func newInputOptionColumnOptions(InputOptions []input_option.InputOptionColumnOptions) []InputOptionColumnOptions {
-	columns := make([]InputOptionColumnOptions, 0, len(InputOptions))
-	for _, input := range InputOptions {
+func newInputOptionColumnOptions(inputOptions []input_option.InputOptionColumnOptions) []InputOptionColumnOptions {
+	columns := make([]InputOptionColumnOptions, 0, len(inputOptions))
+	for _, input := range inputOptions {
 		column := InputOptionColumnOptions{
 			ColumnName:      types.StringValue(input.ColumnName),
 			ColumnValueType: types.StringValue(input.ColumnValueType),

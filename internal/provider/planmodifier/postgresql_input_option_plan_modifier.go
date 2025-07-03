@@ -64,10 +64,8 @@ func (d *PostgresqlInputOptionPlanModifier) PlanModifyObject(ctx context.Context
 		if !lastRecord.IsNull() {
 			addPostgresqlInputOptionAttributeError(req, resp, "last_record is only valid when incremental_loading_enabled is true")
 		}
-	} else {
-		if table.IsNull() {
-			addPostgresqlInputOptionAttributeError(req, resp, "table is required when incremental_loading_enabled is true")
-		}
+	} else if table.IsNull() {
+		addPostgresqlInputOptionAttributeError(req, resp, "table is required when incremental_loading_enabled is true")
 	}
 }
 
