@@ -402,22 +402,6 @@ resource "trocco_pipeline_definition" "bigquery_data_check" {
         operator      = "equal"
         query_result  = 1
         accepts_null  = false
-        custom_variables = [
-          {
-            name  = "$string$"
-            type  = "string"
-            value = "foo"
-          },
-          {
-            name      = "$timestamp$"
-            type      = "timestamp"
-            quantity  = 1,
-            unit      = "hour"
-            direction = "ago"
-            format    = "%Y-%m-%d %H:%M:%S"
-            time_zone = "Asia/Tokyo"
-          },
-        ]
       }
     }
   ]
