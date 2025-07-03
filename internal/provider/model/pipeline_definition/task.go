@@ -31,7 +31,7 @@ type Task struct {
 	TroccoTransferConfig                      *TroccoTransferTaskConfig                      `tfsdk:"trocco_transfer_config"`
 }
 
-func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDefinition) types.Set {
+func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDefinition, ctx context.Context) types.Set {
 	var TaskObjectType = types.ObjectType{
 		AttrTypes: TaskObjectAttrTypes(),
 	}
@@ -118,7 +118,7 @@ func NewTask(en *we.Task, keys map[int64]types.String, previous *Task) *Task {
 	}
 }
 
-func (t *Task) ToInput(identifiers map[string]int64) *wp.Task {
+func (t *Task) ToInput(identifiers map[string]int64, ctx context.Context) *wp.Task {
 	in := &wp.Task{
 		Key:            t.Key.ValueString(),
 		TaskIdentifier: lo.ValueOr(identifiers, t.Key.ValueString(), t.TaskIdentifier.ValueInt64()),
