@@ -2,5 +2,16 @@ version: "2"
 
 linters:
   enable:
-    - contextcheck
-    - gosec
+    - "contextcheck"
+    - "durationcheck"
+    - "forcetypeassert"
+    - "godot"
+    - "gosec"
+    - "ineffassign"
+    - "makezero"
+    - "misspell"
+    - "nilerr"
+    - "predeclared"
+    - "staticcheck"
+    - "unconvert"
+    - "unparam"
