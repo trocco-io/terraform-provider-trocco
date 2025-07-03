@@ -3,3 +3,4 @@ version: "2"
 linters:
   enable:
     - contextcheck
+    - gosec
