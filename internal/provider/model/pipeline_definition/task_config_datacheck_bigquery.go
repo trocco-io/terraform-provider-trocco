@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
@@ -20,7 +21,7 @@ type BigqueryDataCheckTaskConfig struct {
 	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
 }
 
-func NewBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig) *BigqueryDataCheckTaskConfig {
+func NewBigqueryDataCheckTaskConfig(ctx context.Context, c *we.BigqueryDataCheckTaskConfig) *BigqueryDataCheckTaskConfig {
 	if c == nil {
 		return nil
 	}

@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
@@ -21,7 +22,7 @@ type HTTPRequestTaskConfig struct {
 	CustomVariables   []CustomVariable        `tfsdk:"custom_variables"`
 }
 
-func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
+func NewHTTPRequestTaskConfig(ctx context.Context, en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
 	if en == nil {
 		return nil
 	}
