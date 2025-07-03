@@ -31,7 +31,7 @@ type Task struct {
 	TroccoTransferConfig                      *TroccoTransferTaskConfig                      `tfsdk:"trocco_transfer_config"`
 }
 
-func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDefinition, ctx context.Context) types.Set {
+func NewTasks(ctx context.Context, ens []*we.Task, keys map[int64]types.String, previous *PipelineDefinition) types.Set {
 	var TaskObjectType = types.ObjectType{
 		AttrTypes: TaskObjectAttrTypes(),
 	}

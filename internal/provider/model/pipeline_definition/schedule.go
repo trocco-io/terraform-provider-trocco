@@ -23,8 +23,7 @@ type Schedule struct {
 	Minute    types.Int64  `tfsdk:"minute"`
 }
 
-func NewSchedules(ens []*we.Schedule, previous *PipelineDefinition) types.Set {
-	ctx := context.Background()
+func NewSchedules(ctx context.Context, ens []*we.Schedule, previous *PipelineDefinition) types.Set {
 	objectType := types.ObjectType{
 		AttrTypes: map[string]attr.Type{
 			"frequency":   types.StringType,

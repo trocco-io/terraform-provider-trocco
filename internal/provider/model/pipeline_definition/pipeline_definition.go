@@ -58,8 +58,8 @@ func NewPipelineDefinition(ctx context.Context, en *entity.PipelineDefinition, k
 		IsStoppedOnErrors:            types.BoolPointerValue(en.IsStoppedOnErrors),
 		Labels:                       labels,
 		Notifications:                notifications,
-		Schedules:                    NewSchedules(en.Schedules, previous),
-		Tasks:                        NewTasks(en.Tasks, keys, previous, ctx),
+		Schedules:                    NewSchedules(ctx, en.Schedules, previous),
+		Tasks:                        NewTasks(ctx, en.Tasks, keys, previous),
 		TaskDependencies:             NewTaskDependencies(en.TaskDependencies, keys, previous),
 	}
 }
