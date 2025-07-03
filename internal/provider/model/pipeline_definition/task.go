@@ -57,7 +57,7 @@ func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDef
 		if len(previousTasks) > i {
 			previousTask = previousTasks[i]
 		}
-		tasks = append(tasks, NewTask(en, keys, previousTask))
+		tasks = append(tasks, NewTask(en, keys, previousTask, ctx))
 	}
 
 	set, diags := types.SetValueFrom(context.Background(), TaskObjectType, tasks)
@@ -67,7 +67,7 @@ func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDef
 	return set
 }
 
-func NewTask(en *we.Task, keys map[int64]types.String, previous *Task) *Task {
+func NewTask(en *we.Task, keys map[int64]types.String, previous *Task, ctx context.Context) *Task {
 	if en == nil {
 		return nil
 	}
@@ -111,10 +111,10 @@ func NewTask(en *we.Task, keys map[int64]types.String, previous *Task) *Task {
 		TroccoPipelineConfig:                      NewTroccoPipelineTaskConfig(en.TroccoPipelineTaskConfig),
 		SlackNotificationConfig:                   NewSlackNotificationTaskConfig(en.SlackNotificationConfig),
 		TableauDataExtractionConfig:               NewTableauDataExtractionTaskConfig(en.TableauDataExtractionConfig),
-		BigqueryDataCheckConfig:                   NewBigqueryDataCheckTaskConfig(en.BigqueryDataCheckConfig),
-		SnowflakeDataCheckConfig:                  NewSnowflakeDataCheckTaskConfig(en.SnowflakeDataCheckConfig),
-		RedshiftDataCheckConfig:                   NewRedshiftDataCheckTaskConfig(en.RedshiftDataCheckConfig),
-		HTTPRequestConfig:                         NewHTTPRequestTaskConfig(en.HTTPRequestConfig, previousHTTPRequestConfig),
+		BigqueryDataCheckConfig:                   NewBigqueryDataCheckTaskConfig(en.BigqueryDataCheckConfig, ctx),
+		SnowflakeDataCheckConfig:                  NewSnowflakeDataCheckTaskConfig(en.SnowflakeDataCheckConfig, ctx),
+		RedshiftDataCheckConfig:                   NewRedshiftDataCheckTaskConfig(en.RedshiftDataCheckConfig, ctx),
+		HTTPRequestConfig:                         NewHTTPRequestTaskConfig(en.HTTPRequestConfig, previousHTTPRequestConfig, ctx),
 	}
 }
 

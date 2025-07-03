@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
@@ -20,10 +21,14 @@ type CustomVariable struct {
 	TimeZone  types.String `tfsdk:"time_zone"`
 }
 
-func NewCustomVariables(ens []we.CustomVariable) []CustomVariable {
+func NewCustomVariables(ens []we.CustomVariable, ctx context.Context) types.Set {
+	objectType := types.ObjectType{
+		AttrTypes: CustomVariableAttrTypes(),
+	}
+
 	if len(ens) == 0 {
 		// If no custom variables are present, the API returns an empty array but the provider should set `null`.
-		return nil
+		return types.SetNull(objectType)
 	}
 
 	var mds []CustomVariable
@@ -31,7 +36,12 @@ func NewCustomVariables(ens []we.CustomVariable) []CustomVariable {
 		mds = append(mds, NewCustomVariable(en))
 	}
 
-	return mds
+	setValue, diags := types.SetValueFrom(ctx, objectType, mds)
+	if diags.HasError() {
+		return types.SetNull(objectType)
+	}
+
+	return setValue
 }
 
 func NewCustomVariable(en we.CustomVariable) CustomVariable {
