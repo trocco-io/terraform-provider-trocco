@@ -5,6 +5,7 @@ linters:
     - "bodyclose"
     - "contextcheck"
     - "durationcheck"
+    - "errorlint"
     - "forcetypeassert"
     - "godot"
     - "gosec"
