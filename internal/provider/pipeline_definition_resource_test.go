@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -151,6 +152,90 @@ func TestAccPipelineDefinitionResourceForNotifications(t *testing.T) {
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					pipelineDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
 					return pipelineDefinitionID, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccPipelineDefinitionResourceForCustomVariableLoopInvalidType(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Test invalid type
+			{
+				Config:      providerConfig + LoadTextFile("testdata/pipeline_definition/custom_variable_loop/invalid_type.tf"),
+				ExpectError: regexp.MustCompile(`must be one of: \["string" "period" "bigquery" "snowflake" "redshift"\]`),
+			},
+		},
+	})
+}
+
+func TestAccPipelineDefinitionResourceForCustomVariableLoopMissingConfig(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Test missing config
+			{
+				Config:      providerConfig + LoadTextFile("testdata/pipeline_definition/custom_variable_loop/missing_config.tf"),
+				ExpectError: regexp.MustCompile(`Missing Required Configuration`),
+			},
+		},
+	})
+}
+
+func TestAccPipelineDefinitionResourceForBigQueryDatamartWithStringLoop(t *testing.T) {
+	resourceName := "trocco_pipeline_definition.trocco_bigquery_datamart"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:      providerConfig + LoadTextFile("testdata/pipeline_definition/custom_variable_loop/valid_string_config.tf"),
+				ExpectError: nil,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "trocco_bigquery_datamart"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.key", "trocco_bigquery_datamart"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.string_config.variables.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.string_config.variables.0.name", "$foo$"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.string_config.variables.0.values.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.string_config.variables.1.name", "$bar$"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.string_config.variables.1.values.#", "2"),
+				),
+				ImportStateVerifyIgnore: []string{
+					"tasks.0.key",
+					"tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.string_config.variables.1.values",
+				},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					return s.RootModule().Resources[resourceName].Primary.ID, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccPipelineDefinitionResourceForBigQueryDatamartWithBigQueryLoop(t *testing.T) {
+	resourceName := "trocco_pipeline_definition.trocco_bigquery_datamart"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/pipeline_definition/custom_variable_loop/valid_bigquery_config.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "trocco_bigquery_datamart"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.key", "trocco_bigquery_datamart"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.type", "bigquery"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.query", "SELECT foo, bar FROM sample"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.0", "$foo$"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.1", "$bar$"),
+				),
+				ImportStateVerifyIgnore: []string{
+					"tasks.0.key",
+					"tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.query",
+					"tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables",
+				},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					return s.RootModule().Resources[resourceName].Primary.ID, nil
 				},
 			},
 		},

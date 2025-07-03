@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func TableauDataExtractionTaskConfig() schema.Attribute {
+func TableauDataExtractionTaskConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "The task configuration for the tableau data extraction task.",
 		Optional:            true,

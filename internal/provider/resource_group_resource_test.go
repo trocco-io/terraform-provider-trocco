@@ -8,42 +8,24 @@ import (
 )
 
 func TestAccResourceGroupResource(t *testing.T) {
+	resourceName := "trocco_resource_group.test"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: providerConfig + `
-				  resource "trocco_team" "team1" {
-					  name = "test"
-					  members = [
-					    {
-					      user_id = 10626
-					      role = "team_admin"
-					    }
-					  ]
-					}
-					resource "trocco_resource_group" "test" {
-					  name = "test"
-					  description = "test"
-					  teams = [
-						{
-						  team_id = trocco_team.team1.id
-						  role = "operator"
-						}
-					  ]
-					}
-				`,
+				Config: providerConfig + LoadTextFile("testdata/resource_group/basic_create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("trocco_resource_group.test", "name", "test"),
-					resource.TestCheckResourceAttr("trocco_resource_group.test", "description", "test"),
-					resource.TestCheckResourceAttr("trocco_resource_group.test", "teams.#", "1"),
-					resource.TestCheckResourceAttr("trocco_resource_group.test", "teams.0.role", "operator"),
+					resource.TestCheckResourceAttr(resourceName, "name", "test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "test"),
+					resource.TestCheckResourceAttr(resourceName, "teams.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "teams.0.role", "operator"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:            "trocco_resource_group.test",
+				ResourceName:            resourceName,
 				ImportState:             true,
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"id"},

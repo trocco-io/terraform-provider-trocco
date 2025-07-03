@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 )
 
-func TroccoDBTTaskConfig() schema.Attribute {
+func TroccoDBTTaskConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "The task configuration for the trocco dbt task.",
 		Optional:            true,

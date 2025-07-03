@@ -119,17 +119,17 @@ resource "trocco_job_definition" "snowflake_to_bigquery" {
   output_option_type = "bigquery"
   output_option = {
     bigquery_output_option = {
-      dataset                                  = "test_dataset"
-      table                                    = "snowflake_to_bigquery_test_table"
-      mode                                     = "append"
-      auto_create_dataset                      = true
-      timeout_sec                              = 300
-      open_timeout_sec                         = 300
-      read_timeout_sec                         = 300
-      send_timeout_sec                         = 300
-      retries                                  = 3
-      bigquery_connection_id                   = trocco_connection.test_bq.id
-      location                                 = "US"
+      dataset                = "test_dataset"
+      table                  = "snowflake_to_bigquery_test_table"
+      mode                   = "append"
+      auto_create_dataset    = true
+      timeout_sec            = 300
+      open_timeout_sec       = 300
+      read_timeout_sec       = 300
+      send_timeout_sec       = 300
+      retries                = 3
+      bigquery_connection_id = trocco_connection.test_bq.id
+      location               = "US"
     }
   }
 

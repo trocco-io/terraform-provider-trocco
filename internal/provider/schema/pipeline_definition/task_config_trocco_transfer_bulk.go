@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 )
 
-func TroccoTransferBulkTaskConfig() schema.Attribute {
+func TroccoTransferBulkTaskConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		MarkdownDescription: "The task configuration for the trocco transfer bulk task.",
 		Optional:            true,

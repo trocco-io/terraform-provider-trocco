@@ -44,11 +44,11 @@ resource "trocco_bigquery_datamart_definition" "test_bigquery_datamart_notificat
 
   notifications = [
     {
-      destination_type   = "slack"
-      slack_channel_id   = trocco_notification_destination.slack.id
-      notification_type  = "job"
-      notify_when        = "finished"
-      message            = <<MESSAGE
+      destination_type  = "slack"
+      slack_channel_id  = trocco_notification_destination.slack.id
+      notification_type = "job"
+      notify_when       = "finished"
+      message           = <<MESSAGE
 This is a multi-line message
 with several lines
   and some indentation
@@ -56,12 +56,12 @@ with several lines
 MESSAGE
     },
     {
-      destination_type   = "email"
-      email_id           = trocco_notification_destination.email.id
-      notification_type  = "record"
-      record_count       = 100
-      record_operator    = "above"
-      message            = <<MESSAGE
+      destination_type  = "email"
+      email_id          = trocco_notification_destination.email.id
+      notification_type = "record"
+      record_count      = 100
+      record_operator   = "above"
+      message           = <<MESSAGE
   This is another multi-line message
 with leading and trailing whitespace
   
