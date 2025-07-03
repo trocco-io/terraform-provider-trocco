@@ -19,6 +19,7 @@ func TestAccNotificationDestinationResource(t *testing.T) {
 }
 
 func testAccNotificationDestinationResourceEmail(t *testing.T) {
+	t.Helper()
 	resourceName := "trocco_notification_destination.email_test"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -45,6 +46,7 @@ func testAccNotificationDestinationResourceEmail(t *testing.T) {
 }
 
 func testAccNotificationDestinationResourceSlackChannel(t *testing.T) {
+	t.Helper()
 	resourceName := "trocco_notification_destination.slack_channel_test"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,

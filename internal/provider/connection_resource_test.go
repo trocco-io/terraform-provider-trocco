@@ -31,6 +31,7 @@ func TestAccConnectionResource(t *testing.T) {
 }
 
 func testAccConnectionResourceBigQuery(t *testing.T) {
+	t.Helper()
 	resourceName := "trocco_connection.test"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -60,6 +61,7 @@ func testAccConnectionResourceBigQuery(t *testing.T) {
 }
 
 func testAccConnectionResourceSnowflake(t *testing.T) {
+	t.Helper()
 	resourceName := "trocco_connection.snowflake_test"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -77,6 +79,7 @@ func testAccConnectionResourceSnowflake(t *testing.T) {
 }
 
 func testAccConnectionResourceMySQL(t *testing.T) {
+	t.Helper()
 	resourceName := "trocco_connection.mysql_test"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -94,6 +97,7 @@ func testAccConnectionResourceMySQL(t *testing.T) {
 }
 
 func testAccConnectionResourcePostgreSQL(t *testing.T) {
+	t.Helper()
 	resourceName := "trocco_connection.postgresql_test"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -111,6 +115,7 @@ func testAccConnectionResourcePostgreSQL(t *testing.T) {
 }
 
 func testAccConnectionResourceGoogleAnalytics4(t *testing.T) {
+	t.Helper()
 	resourceName := "trocco_connection.google_analytics4_test"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -131,6 +136,7 @@ func testAccConnectionResourceGoogleAnalytics4(t *testing.T) {
 }
 
 func testAccConnectionResourceKintone(t *testing.T) {
+	t.Helper()
 	resourceName := "trocco_connection.kintone_test"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
