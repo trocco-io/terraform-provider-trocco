@@ -21,7 +21,7 @@ type CustomVariable struct {
 	TimeZone  types.String `tfsdk:"time_zone"`
 }
 
-func NewCustomVariables(ens []we.CustomVariable, ctx context.Context) types.Set {
+func NewCustomVariables(ctx context.Context, ens []we.CustomVariable) types.Set {
 	objectType := types.ObjectType{
 		AttrTypes: CustomVariableAttrTypes(),
 	}

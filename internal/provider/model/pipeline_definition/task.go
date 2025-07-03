@@ -57,7 +57,7 @@ func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDef
 		if len(previousTasks) > i {
 			previousTask = previousTasks[i]
 		}
-		tasks = append(tasks, NewTask(en, keys, previousTask, ctx))
+		tasks = append(tasks, NewTask(ctx, en, keys, previousTask))
 	}
 
 	set, diags := types.SetValueFrom(context.Background(), TaskObjectType, tasks)
@@ -67,7 +67,7 @@ func NewTasks(ens []*we.Task, keys map[int64]types.String, previous *PipelineDef
 	return set
 }
 
-func NewTask(en *we.Task, keys map[int64]types.String, previous *Task, ctx context.Context) *Task {
+func NewTask(ctx context.Context, en *we.Task, keys map[int64]types.String, previous *Task) *Task {
 	if en == nil {
 		return nil
 	}
@@ -111,14 +111,14 @@ func NewTask(en *we.Task, keys map[int64]types.String, previous *Task, ctx conte
 		TroccoPipelineConfig:                      NewTroccoPipelineTaskConfig(en.TroccoPipelineTaskConfig),
 		SlackNotificationConfig:                   NewSlackNotificationTaskConfig(en.SlackNotificationConfig),
 		TableauDataExtractionConfig:               NewTableauDataExtractionTaskConfig(en.TableauDataExtractionConfig),
-		BigqueryDataCheckConfig:                   NewBigqueryDataCheckTaskConfig(en.BigqueryDataCheckConfig, ctx),
-		SnowflakeDataCheckConfig:                  NewSnowflakeDataCheckTaskConfig(en.SnowflakeDataCheckConfig, ctx),
-		RedshiftDataCheckConfig:                   NewRedshiftDataCheckTaskConfig(en.RedshiftDataCheckConfig, ctx),
-		HTTPRequestConfig:                         NewHTTPRequestTaskConfig(en.HTTPRequestConfig, previousHTTPRequestConfig, ctx),
+		BigqueryDataCheckConfig:                   NewBigqueryDataCheckTaskConfig(ctx, en.BigqueryDataCheckConfig),
+		SnowflakeDataCheckConfig:                  NewSnowflakeDataCheckTaskConfig(ctx, en.SnowflakeDataCheckConfig),
+		RedshiftDataCheckConfig:                   NewRedshiftDataCheckTaskConfig(ctx, en.RedshiftDataCheckConfig),
+		HTTPRequestConfig:                         NewHTTPRequestTaskConfig(ctx, en.HTTPRequestConfig, previousHTTPRequestConfig),
 	}
 }
 
-func (t *Task) ToInput(identifiers map[string]int64, ctx context.Context) *wp.Task {
+func (t *Task) ToInput(ctx context.Context, identifiers map[string]int64) *wp.Task {
 	in := &wp.Task{
 		Key:            t.Key.ValueString(),
 		TaskIdentifier: lo.ValueOr(identifiers, t.Key.ValueString(), t.TaskIdentifier.ValueInt64()),
@@ -156,16 +156,16 @@ func (t *Task) ToInput(identifiers map[string]int64, ctx context.Context) *wp.Ta
 		in.TableauDataExtractionConfig = t.TableauDataExtractionConfig.ToInput()
 	}
 	if t.BigqueryDataCheckConfig != nil {
-		in.BigqueryDataCheckConfig = t.BigqueryDataCheckConfig.ToInput()
+		in.BigqueryDataCheckConfig = t.BigqueryDataCheckConfig.ToInput(ctx)
 	}
 	if t.SnowflakeDataCheckConfig != nil {
-		in.SnowflakeDataCheckConfig = t.SnowflakeDataCheckConfig.ToInput()
+		in.SnowflakeDataCheckConfig = t.SnowflakeDataCheckConfig.ToInput(ctx)
 	}
 	if t.RedshiftDataCheckConfig != nil {
-		in.RedshiftDataCheckConfig = t.RedshiftDataCheckConfig.ToInput()
+		in.RedshiftDataCheckConfig = t.RedshiftDataCheckConfig.ToInput(ctx)
 	}
 	if t.HTTPRequestConfig != nil {
-		in.HTTPRequestConfig = t.HTTPRequestConfig.ToInput()
+		in.HTTPRequestConfig = t.HTTPRequestConfig.ToInput(ctx)
 	}
 
 	return in

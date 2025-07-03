@@ -21,7 +21,7 @@ type BigqueryDataCheckTaskConfig struct {
 	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
-func NewBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig, ctx context.Context) *BigqueryDataCheckTaskConfig {
+func NewBigqueryDataCheckTaskConfig(ctx context.Context, c *we.BigqueryDataCheckTaskConfig) *BigqueryDataCheckTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -33,15 +33,14 @@ func NewBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig, ctx conte
 		Operator:        types.StringValue(c.Operator),
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
-		CustomVariables: NewCustomVariables(c.CustomVariables, ctx),
+		CustomVariables: NewCustomVariables(ctx, c.CustomVariables),
 	}
 }
 
-func (c *BigqueryDataCheckTaskConfig) ToInput() *wp.BigqueryDataCheckTaskConfigInput {
+func (c *BigqueryDataCheckTaskConfig) ToInput(ctx context.Context) *wp.BigqueryDataCheckTaskConfigInput {
 	customVariables := []wp.CustomVariable{}
 	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
 		var customVariableValues []CustomVariable
-		ctx := context.Background()
 		diags := c.CustomVariables.ElementsAs(ctx, &customVariableValues, false)
 		if !diags.HasError() {
 			for _, v := range customVariableValues {

@@ -191,7 +191,7 @@ func (r *pipelineDefinitionResource) Create(
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	newState := pdm.NewPipelineDefinition(en, keys, plan, ctx)
+	newState := pdm.NewPipelineDefinition(ctx, en, keys, plan)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -215,7 +215,7 @@ func (r *pipelineDefinitionResource) Update(
 
 	en, err := r.client.UpdatePipelineDefinition(
 		state.ID.ValueInt64(),
-		plan.ToUpdateWorkflowInput(state, ctx),
+		plan.ToUpdateWorkflowInput(ctx, state),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -230,7 +230,7 @@ func (r *pipelineDefinitionResource) Update(
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	newState := pdm.NewPipelineDefinition(en, keys, plan, ctx)
+	newState := pdm.NewPipelineDefinition(ctx, en, keys, plan)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -271,7 +271,7 @@ func (r *pipelineDefinitionResource) Read(
 		keys[t.TaskIdentifier.ValueInt64()] = t.Key
 	}
 
-	newState := pdm.NewPipelineDefinition(en, keys, state, ctx)
+	newState := pdm.NewPipelineDefinition(ctx, en, keys, state)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -326,7 +326,7 @@ func (r *pipelineDefinitionResource) ImportState(
 		keys[t.TaskIdentifier] = types.StringValue(strconv.FormatInt(t.TaskIdentifier, 10))
 	}
 
-	newState := pdm.NewPipelineDefinition(en, keys, &pdm.PipelineDefinition{}, ctx)
+	newState := pdm.NewPipelineDefinition(ctx, en, keys, &pdm.PipelineDefinition{})
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }

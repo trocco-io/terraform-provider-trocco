@@ -22,7 +22,7 @@ type RedshiftDataCheckTaskConfig struct {
 	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
-func NewRedshiftDataCheckTaskConfig(c *we.RedshiftDataCheckTaskConfig, ctx context.Context) *RedshiftDataCheckTaskConfig {
+func NewRedshiftDataCheckTaskConfig(ctx context.Context, c *we.RedshiftDataCheckTaskConfig) *RedshiftDataCheckTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -35,15 +35,14 @@ func NewRedshiftDataCheckTaskConfig(c *we.RedshiftDataCheckTaskConfig, ctx conte
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
 		Database:        types.StringValue(c.Database),
-		CustomVariables: NewCustomVariables(c.CustomVariables, ctx),
+		CustomVariables: NewCustomVariables(ctx, c.CustomVariables),
 	}
 }
 
-func (c *RedshiftDataCheckTaskConfig) ToInput() *wp.RedshiftDataCheckTaskConfigInput {
+func (c *RedshiftDataCheckTaskConfig) ToInput(ctx context.Context) *wp.RedshiftDataCheckTaskConfigInput {
 	customVariables := []wp.CustomVariable{}
 	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
 		var customVariableValues []CustomVariable
-		ctx := context.Background()
 		diags := c.CustomVariables.ElementsAs(ctx, &customVariableValues, false)
 		if !diags.HasError() {
 			for _, v := range customVariableValues {

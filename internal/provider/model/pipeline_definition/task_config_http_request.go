@@ -22,7 +22,7 @@ type HTTPRequestTaskConfig struct {
 	CustomVariables   types.Set               `tfsdk:"custom_variables"`
 }
 
-func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig, ctx context.Context) *HTTPRequestTaskConfig {
+func NewHTTPRequestTaskConfig(ctx context.Context, en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
 	if en == nil {
 		return nil
 	}
@@ -42,11 +42,11 @@ func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPReques
 		RequestBody:       types.StringPointerValue(en.RequestBody),
 		RequestHeaders:    NewHTTPRequestHeaders(en.RequestHeaders, previousRequestHeaders),
 		RequestParameters: NewHTTPRequestParameters(en.RequestParameters, previousRequestParameters),
-		CustomVariables:   NewCustomVariables(en.CustomVariables, ctx),
+		CustomVariables:   NewCustomVariables(ctx, en.CustomVariables),
 	}
 }
 
-func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
+func (c *HTTPRequestTaskConfig) ToInput(ctx context.Context) *wp.HTTPRequestTaskConfig {
 	requestHeaders := []wp.RequestHeader{}
 	for _, e := range c.RequestHeaders {
 		requestHeaders = append(requestHeaders, wp.RequestHeader{
@@ -68,7 +68,6 @@ func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 	customVariables := []wp.CustomVariable{}
 	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
 		var customVariableValues []CustomVariable
-		ctx := context.Background()
 		diags := c.CustomVariables.ElementsAs(ctx, &customVariableValues, false)
 		if !diags.HasError() {
 			for _, v := range customVariableValues {

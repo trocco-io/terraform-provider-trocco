@@ -22,7 +22,7 @@ type SnowflakeDataCheckTaskConfig struct {
 	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
-func NewSnowflakeDataCheckTaskConfig(c *we.SnowflakeDataCheckTaskConfig, ctx context.Context) *SnowflakeDataCheckTaskConfig {
+func NewSnowflakeDataCheckTaskConfig(ctx context.Context, c *we.SnowflakeDataCheckTaskConfig) *SnowflakeDataCheckTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -35,15 +35,14 @@ func NewSnowflakeDataCheckTaskConfig(c *we.SnowflakeDataCheckTaskConfig, ctx con
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
 		Warehouse:       types.StringValue(c.Warehouse),
-		CustomVariables: NewCustomVariables(c.CustomVariables, ctx),
+		CustomVariables: NewCustomVariables(ctx, c.CustomVariables),
 	}
 }
 
-func (c *SnowflakeDataCheckTaskConfig) ToInput() *wp.SnowflakeDataCheckTaskConfigInput {
+func (c *SnowflakeDataCheckTaskConfig) ToInput(ctx context.Context) *wp.SnowflakeDataCheckTaskConfigInput {
 	customVariables := []wp.CustomVariable{}
 	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
 		var customVariableValues []CustomVariable
-		ctx := context.Background()
 		diags := c.CustomVariables.ElementsAs(ctx, &customVariableValues, false)
 		if !diags.HasError() {
 			for _, v := range customVariableValues {
