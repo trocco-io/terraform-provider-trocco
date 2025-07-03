@@ -15,5 +15,6 @@ linters:
     - "nilerr"
     - "predeclared"
     - "staticcheck"
+    - "testifylint"
     - "unconvert"
     - "unparam"
