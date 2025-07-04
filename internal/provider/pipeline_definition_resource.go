@@ -53,7 +53,7 @@ func (r *pipelineDefinitionResource) Configure(
 		return
 	}
 
-	c, ok := req.ProviderData.(*client.TroccoClient)
+	troccoClient, ok := req.ProviderData.(*client.TroccoClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
@@ -62,7 +62,7 @@ func (r *pipelineDefinitionResource) Configure(
 		return
 	}
 
-	r.client = c
+	r.client = troccoClient
 }
 
 func (r *pipelineDefinitionResource) Schema(
@@ -281,14 +281,14 @@ func (r *pipelineDefinitionResource) Delete(
 	req resource.DeleteRequest,
 	resp *resource.DeleteResponse,
 ) {
-	s := &pdm.PipelineDefinition{}
-	resp.Diagnostics.Append(req.State.Get(ctx, s)...)
+	state := &pdm.PipelineDefinition{}
+	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	if err := r.client.DeletePipelineDefinition(
-		s.ID.ValueInt64(),
+		state.ID.ValueInt64(),
 	); err != nil {
 		resp.Diagnostics.AddError(
 			"Deleting pipeline definition",

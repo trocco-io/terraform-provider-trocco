@@ -112,7 +112,7 @@ func (p *TroccoProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		region = DefaultRegion
 	}
 
-	c, err := client.NewTroccoClientWithRegion(apiKey, region)
+	troccoClient, err := client.NewTroccoClientWithRegion(apiKey, region)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating Trocco client",
@@ -121,10 +121,10 @@ func (p *TroccoProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 	if !config.DevBaseURL.IsNull() {
-		c = client.NewDevTroccoClient(apiKey, config.DevBaseURL.ValueString())
+		troccoClient = client.NewDevTroccoClient(apiKey, config.DevBaseURL.ValueString())
 	}
-	resp.DataSourceData = c
-	resp.ResourceData = c
+	resp.DataSourceData = troccoClient
+	resp.ResourceData = troccoClient
 }
 
 func (p *TroccoProvider) Resources(ctx context.Context) []func() resource.Resource {
