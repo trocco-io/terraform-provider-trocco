@@ -89,17 +89,17 @@ func (p *TroccoProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
-	api_key := os.Getenv("TROCCO_API_KEY")
+	apiKey := os.Getenv("TROCCO_API_KEY")
 	region := os.Getenv("TROCCO_REGION")
 
 	if !config.APIKey.IsNull() {
-		api_key = config.APIKey.ValueString()
+		apiKey = config.APIKey.ValueString()
 	}
 	if !config.Region.IsNull() {
 		region = config.Region.ValueString()
 	}
 
-	if api_key == "" {
+	if apiKey == "" {
 		resp.Diagnostics.AddAttributeError(
 			path.Root("api_key"),
 			"Missing api key",
@@ -112,7 +112,7 @@ func (p *TroccoProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		region = DefaultRegion
 	}
 
-	c, err := client.NewTroccoClientWithRegion(api_key, region)
+	c, err := client.NewTroccoClientWithRegion(apiKey, region)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating Trocco client",
@@ -121,7 +121,7 @@ func (p *TroccoProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 	if !config.DevBaseURL.IsNull() {
-		c = client.NewDevTroccoClient(api_key, config.DevBaseURL.ValueString())
+		c = client.NewDevTroccoClient(apiKey, config.DevBaseURL.ValueString())
 	}
 	resp.DataSourceData = c
 	resp.ResourceData = c
