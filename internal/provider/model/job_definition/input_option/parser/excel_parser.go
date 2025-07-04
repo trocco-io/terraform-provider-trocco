@@ -1,17 +1,19 @@
 package parser
 
 import (
+	"context"
 	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	params "terraform-provider-trocco/internal/client/parameter/job_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type ExcelParser struct {
-	DefaultTimeZone types.String        `tfsdk:"default_time_zone"`
-	SheetName       types.String        `tfsdk:"sheet_name"`
-	SkipHeaderLines types.Int64         `tfsdk:"skip_header_lines"`
-	Columns         []ExcelParserColumn `tfsdk:"columns"`
+	DefaultTimeZone types.String `tfsdk:"default_time_zone"`
+	SheetName       types.String `tfsdk:"sheet_name"`
+	SkipHeaderLines types.Int64  `tfsdk:"skip_header_lines"`
+	Columns         types.List   `tfsdk:"columns"`
 }
 
 type ExcelParserColumn struct {
@@ -21,11 +23,12 @@ type ExcelParserColumn struct {
 	FormulaHandling types.String `tfsdk:"formula_handling"`
 }
 
-func NewExcelParser(excelParser *job_definitions.ExcelParser) *ExcelParser {
+func NewExcelParser(ctx context.Context, excelParser *job_definitions.ExcelParser) *ExcelParser {
 	if excelParser == nil {
 		return nil
 	}
-	columns := make([]ExcelParserColumn, 0, len(excelParser.Columns))
+
+	columnElements := make([]ExcelParserColumn, 0, len(excelParser.Columns))
 	for _, input := range excelParser.Columns {
 		column := ExcelParserColumn{
 			Name:            types.StringValue(input.Name),
@@ -33,7 +36,23 @@ func NewExcelParser(excelParser *job_definitions.ExcelParser) *ExcelParser {
 			Format:          types.StringPointerValue(input.Format),
 			FormulaHandling: types.StringValue(input.FormulaHandling),
 		}
-		columns = append(columns, column)
+		columnElements = append(columnElements, column)
+	}
+
+	columns, diags := types.ListValueFrom(
+		ctx,
+		types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"name":             types.StringType,
+				"type":             types.StringType,
+				"format":           types.StringType,
+				"formula_handling": types.StringType,
+			},
+		},
+		columnElements,
+	)
+	if diags.HasError() {
+		return nil
 	}
 	return &ExcelParser{
 		DefaultTimeZone: types.StringValue(excelParser.DefaultTimeZone),
@@ -43,12 +62,19 @@ func NewExcelParser(excelParser *job_definitions.ExcelParser) *ExcelParser {
 	}
 }
 
-func (excelParser *ExcelParser) ToExcelParserInput() *params.ExcelParserInput {
+func (excelParser *ExcelParser) ToExcelParserInput(ctx context.Context) *params.ExcelParserInput {
 	if excelParser == nil {
 		return nil
 	}
-	columns := make([]params.ExcelParserColumnInput, 0, len(excelParser.Columns))
-	for _, input := range excelParser.Columns {
+
+	var columnElements []ExcelParserColumn
+	diags := excelParser.Columns.ElementsAs(ctx, &columnElements, false)
+	if diags.HasError() {
+		return nil
+	}
+
+	columns := make([]params.ExcelParserColumnInput, 0, len(columnElements))
+	for _, input := range columnElements {
 		column := params.ExcelParserColumnInput{
 			Name:            input.Name.ValueString(),
 			Type:            input.Type.ValueString(),

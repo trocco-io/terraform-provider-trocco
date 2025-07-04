@@ -6,32 +6,33 @@ import (
 	"terraform-provider-trocco/internal/client/entity/job_definition/output_option"
 	output_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
 	"terraform-provider-trocco/internal/provider/model"
+	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type BigQueryOutputOption struct {
-	Dataset                              types.String                   `tfsdk:"dataset"`
-	Table                                types.String                   `tfsdk:"table"`
-	AutoCreateDataset                    types.Bool                     `tfsdk:"auto_create_dataset"`
-	OpenTimeoutSec                       types.Int64                    `tfsdk:"open_timeout_sec"`
-	TimeoutSec                           types.Int64                    `tfsdk:"timeout_sec"`
-	SendTimeoutSec                       types.Int64                    `tfsdk:"send_timeout_sec"`
-	ReadTimeoutSec                       types.Int64                    `tfsdk:"read_timeout_sec"`
-	Retries                              types.Int64                    `tfsdk:"retries"`
-	Mode                                 types.String                   `tfsdk:"mode"`
-	PartitioningType                     types.String                   `tfsdk:"partitioning_type"`
-	TimePartitioningType                 types.String                   `tfsdk:"time_partitioning_type"`
-	TimePartitioningField                types.String                   `tfsdk:"time_partitioning_field"`
-	TimePartitioningExpirationMs         types.Int64                    `tfsdk:"time_partitioning_expiration_ms"`
-	Location                             types.String                   `tfsdk:"location"`
-	TemplateTable                        types.String                   `tfsdk:"template_table"`
-	BigQueryConnectionID                 types.Int64                    `tfsdk:"bigquery_connection_id"`
-	CustomVariableSettings               *[]model.CustomVariableSetting `tfsdk:"custom_variable_settings"`
-	BigQueryOutputOptionColumnOptions    types.List                     `tfsdk:"bigquery_output_option_column_options"`
-	BigQueryOutputOptionClusteringFields types.Set                      `tfsdk:"bigquery_output_option_clustering_fields"`
-	BigQueryOutputOptionMergeKeys        types.Set                      `tfsdk:"bigquery_output_option_merge_keys"`
+	Dataset                              types.String `tfsdk:"dataset"`
+	Table                                types.String `tfsdk:"table"`
+	AutoCreateDataset                    types.Bool   `tfsdk:"auto_create_dataset"`
+	OpenTimeoutSec                       types.Int64  `tfsdk:"open_timeout_sec"`
+	TimeoutSec                           types.Int64  `tfsdk:"timeout_sec"`
+	SendTimeoutSec                       types.Int64  `tfsdk:"send_timeout_sec"`
+	ReadTimeoutSec                       types.Int64  `tfsdk:"read_timeout_sec"`
+	Retries                              types.Int64  `tfsdk:"retries"`
+	Mode                                 types.String `tfsdk:"mode"`
+	PartitioningType                     types.String `tfsdk:"partitioning_type"`
+	TimePartitioningType                 types.String `tfsdk:"time_partitioning_type"`
+	TimePartitioningField                types.String `tfsdk:"time_partitioning_field"`
+	TimePartitioningExpirationMs         types.Int64  `tfsdk:"time_partitioning_expiration_ms"`
+	Location                             types.String `tfsdk:"location"`
+	TemplateTable                        types.String `tfsdk:"template_table"`
+	BigQueryConnectionID                 types.Int64  `tfsdk:"bigquery_connection_id"`
+	CustomVariableSettings               types.List   `tfsdk:"custom_variable_settings"`
+	BigQueryOutputOptionColumnOptions    types.List   `tfsdk:"bigquery_output_option_column_options"`
+	BigQueryOutputOptionClusteringFields types.Set    `tfsdk:"bigquery_output_option_clustering_fields"`
+	BigQueryOutputOptionMergeKeys        types.Set    `tfsdk:"bigquery_output_option_merge_keys"`
 }
 
 type bigQueryOutputOptionColumnOption struct {
@@ -43,15 +44,12 @@ type bigQueryOutputOptionColumnOption struct {
 	Description     types.String `tfsdk:"description"`
 }
 
-func NewBigQueryOutputOption(bigQueryOutputOption *output_option.BigQueryOutputOption) *BigQueryOutputOption {
+func NewBigQueryOutputOption(ctx context.Context, bigQueryOutputOption *output_option.BigQueryOutputOption) *BigQueryOutputOption {
 	if bigQueryOutputOption == nil {
 		return nil
 	}
 
-	ctx := context.Background()
-
 	result := &BigQueryOutputOption{
-		CustomVariableSettings:       model.NewCustomVariableSettings(bigQueryOutputOption.CustomVariableSettings),
 		Dataset:                      types.StringValue(bigQueryOutputOption.Dataset),
 		Table:                        types.StringValue(bigQueryOutputOption.Table),
 		AutoCreateDataset:            types.BoolValue(bigQueryOutputOption.AutoCreateDataset),
@@ -69,6 +67,12 @@ func NewBigQueryOutputOption(bigQueryOutputOption *output_option.BigQueryOutputO
 		TemplateTable:                types.StringPointerValue(bigQueryOutputOption.TemplateTable),
 		BigQueryConnectionID:         types.Int64Value(bigQueryOutputOption.BigQueryConnectionID),
 	}
+
+	CustomVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, bigQueryOutputOption.CustomVariableSettings)
+	if err != nil {
+		return nil
+	}
+	result.CustomVariableSettings = CustomVariableSettings
 
 	var columnOptions []output_option.BigQueryOutputOptionColumnOption
 	if bigQueryOutputOption.BigQueryOutputOptionColumnOptions != nil {
@@ -181,12 +185,10 @@ func (bigQueryOutputOptionColumnOption) attrTypes() map[string]attr.Type {
 	}
 }
 
-func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.BigQueryOutputOptionInput {
+func (bigqueryOutputOption *BigQueryOutputOption) ToInput(ctx context.Context) *output_options2.BigQueryOutputOptionInput {
 	if bigqueryOutputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var clusteringFields []string
 	if !bigqueryOutputOption.BigQueryOutputOptionClusteringFields.IsNull() &&
@@ -218,6 +220,8 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.Big
 		}
 	}
 
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, bigqueryOutputOption.CustomVariableSettings)
+
 	var columnOptionValues []bigQueryOutputOptionColumnOption
 	if !bigqueryOutputOption.BigQueryOutputOptionColumnOptions.IsNull() && !bigqueryOutputOption.BigQueryOutputOptionColumnOptions.IsUnknown() {
 		diags := bigqueryOutputOption.BigQueryOutputOptionColumnOptions.ElementsAs(ctx, &columnOptionValues, false)
@@ -244,19 +248,17 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.Big
 		Location:                             bigqueryOutputOption.Location.ValueString(),
 		TemplateTable:                        model.NewNullableString(bigqueryOutputOption.TemplateTable),
 		BigQueryConnectionID:                 bigqueryOutputOption.BigQueryConnectionID.ValueInt64(),
-		CustomVariableSettings:               model.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
+		CustomVariableSettings:               model.ToCustomVariableSettingInputs(customVarSettings),
 		BigQueryOutputOptionColumnOptions:    columnOptions,
 		BigQueryOutputOptionClusteringFields: clusteringFields,
 		BigQueryOutputOptionMergeKeys:        mergeKeys,
 	}
 }
 
-func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_options2.UpdateBigQueryOutputOptionInput {
+func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput(ctx context.Context) *output_options2.UpdateBigQueryOutputOptionInput {
 	if bigqueryOutputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var clusteringFields []string
 	if !bigqueryOutputOption.BigQueryOutputOptionClusteringFields.IsNull() {
@@ -303,6 +305,8 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_option
 	}
 	columnOptions := toInputBigqueryOutputOptionColumnOptions(&columnOptionValues)
 
+	customVarSettings := common.ExtractCustomVariableSettings(ctx, bigqueryOutputOption.CustomVariableSettings)
+
 	return &output_options2.UpdateBigQueryOutputOptionInput{
 		Dataset:                              bigqueryOutputOption.Dataset.ValueStringPointer(),
 		Table:                                bigqueryOutputOption.Table.ValueStringPointer(),
@@ -320,7 +324,7 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_option
 		Location:                             bigqueryOutputOption.Location.ValueStringPointer(),
 		TemplateTable:                        model.NewNullableString(bigqueryOutputOption.TemplateTable),
 		BigQueryConnectionID:                 bigqueryOutputOption.BigQueryConnectionID.ValueInt64Pointer(),
-		CustomVariableSettings:               model.ToCustomVariableSettingInputs(bigqueryOutputOption.CustomVariableSettings),
+		CustomVariableSettings:               model.ToCustomVariableSettingInputs(customVarSettings),
 		BigQueryOutputOptionColumnOptions:    columnOptions,
 		BigQueryOutputOptionClusteringFields: &clusteringFields,
 		BigQueryOutputOptionMergeKeys:        &mergeKeys,

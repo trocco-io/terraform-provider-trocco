@@ -50,11 +50,11 @@ type bigqueryDatamartDefinitionModel struct {
 	Partitioning           types.String                   `tfsdk:"partitioning"`
 	PartitioningTime       types.String                   `tfsdk:"partitioning_time"`
 	PartitioningField      types.String                   `tfsdk:"partitioning_field"`
-	ClusteringFields       []types.String                 `tfsdk:"clustering_fields"`
+	ClusteringFields       types.List                     `tfsdk:"clustering_fields"`
 	Location               types.String                   `tfsdk:"location"`
-	Notifications          []datamartNotificationModel    `tfsdk:"notifications"`
-	Schedules              []scheduleModel                `tfsdk:"schedules"`
-	Labels                 []labelModel                   `tfsdk:"labels"`
+	Notifications          types.Set                      `tfsdk:"notifications"`
+	Schedules              types.Set                      `tfsdk:"schedules"`
+	Labels                 types.Set                      `tfsdk:"labels"`
 }
 
 type customVariableSettingModel struct {
@@ -472,9 +472,16 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		if !plan.PartitioningField.IsNull() {
 			optionInput.SetPartitioningField(plan.PartitioningField.ValueString())
 		}
-		if plan.ClusteringFields != nil {
-			clusteringFields := make([]string, len(plan.ClusteringFields))
-			for i, v := range plan.ClusteringFields {
+		if !plan.ClusteringFields.IsNull() {
+			var clusteringFieldsValues []types.String
+			diags := plan.ClusteringFields.ElementsAs(ctx, &clusteringFieldsValues, false)
+			resp.Diagnostics.Append(diags...)
+			if resp.Diagnostics.HasError() {
+				return
+			}
+
+			clusteringFields := make([]string, len(clusteringFieldsValues))
+			for i, v := range clusteringFieldsValues {
 				clusteringFields[i] = v.ValueString()
 			}
 			optionInput.SetClusteringFields(clusteringFields)
@@ -490,9 +497,16 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		input.SetDatamartBigqueryOption(optionInput)
 	}
-	if plan.Schedules != nil {
-		scheduleInputs := make([]client.ScheduleInput, len(plan.Schedules))
-		for i, v := range plan.Schedules {
+	if !plan.Schedules.IsNull() && !plan.Schedules.IsUnknown() {
+		var scheduleValues []scheduleModel
+		diags := plan.Schedules.ElementsAs(ctx, &scheduleValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		scheduleInputs := make([]client.ScheduleInput, len(scheduleValues))
+		for i, v := range scheduleValues {
 			switch v.Frequency.ValueString() {
 			case "hourly":
 				{
@@ -531,9 +545,16 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		input.SetSchedules(scheduleInputs)
 	}
-	if plan.Notifications != nil {
-		notificationInputs := make([]client.DatamartNotificationInput, len(plan.Notifications))
-		for i, v := range plan.Notifications {
+	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
+		var notificationValues []datamartNotificationModel
+		diags := plan.Notifications.ElementsAs(ctx, &notificationValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		notificationInputs := make([]client.DatamartNotificationInput, len(notificationValues))
+		for i, v := range notificationValues {
 			if v.DestinationType.ValueString() == "slack" {
 				if v.NotificationType.ValueString() == "job" {
 					notificationInputs[i] = client.NewSlackJobDatamartNotificationInput(
@@ -568,9 +589,16 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		input.SetNotifications(notificationInputs)
 	}
-	if plan.Labels != nil {
-		labelInputs := make([]string, len(plan.Labels))
-		for i, v := range plan.Labels {
+	if !plan.Labels.IsNull() {
+		var labelValues []labelModel
+		diags := plan.Labels.ElementsAs(ctx, &labelValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		labelInputs := make([]string, len(labelValues))
+		for i, v := range labelValues {
 			labelInputs[i] = v.Name.ValueString()
 		}
 		input.SetLabels(labelInputs)
@@ -697,9 +725,16 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 	if !plan.PartitioningField.IsNull() {
 		optionInput.SetPartitioningField(plan.PartitioningField.ValueString())
 	}
-	if plan.ClusteringFields != nil {
-		clusteringFields := make([]string, len(plan.ClusteringFields))
-		for i, v := range plan.ClusteringFields {
+	if !plan.ClusteringFields.IsNull() {
+		var clusteringFieldsValues []types.String
+		diags := plan.ClusteringFields.ElementsAs(ctx, &clusteringFieldsValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		clusteringFields := make([]string, len(clusteringFieldsValues))
+		for i, v := range clusteringFieldsValues {
 			clusteringFields[i] = v.ValueString()
 		}
 		optionInput.SetClusteringFields(clusteringFields)
@@ -712,9 +747,16 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 		optionInput.SetLocationEmpty()
 	}
 	input.SetDatamartBigqueryOption(optionInput)
-	if plan.Schedules != nil {
-		scheduleInputs := make([]client.ScheduleInput, len(plan.Schedules))
-		for i, v := range plan.Schedules {
+	if !plan.Schedules.IsNull() && !plan.Schedules.IsUnknown() {
+		var scheduleValues []scheduleModel
+		diags := plan.Schedules.ElementsAs(ctx, &scheduleValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		scheduleInputs := make([]client.ScheduleInput, len(scheduleValues))
+		for i, v := range scheduleValues {
 			switch v.Frequency.ValueString() {
 			case "hourly":
 				{
@@ -755,9 +797,16 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 	} else {
 		input.SetSchedules([]client.ScheduleInput{})
 	}
-	if plan.Notifications != nil {
-		notificationInputs := make([]client.DatamartNotificationInput, len(plan.Notifications))
-		for i, v := range plan.Notifications {
+	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
+		var notificationValues []datamartNotificationModel
+		diags := plan.Notifications.ElementsAs(ctx, &notificationValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		notificationInputs := make([]client.DatamartNotificationInput, len(notificationValues))
+		for i, v := range notificationValues {
 			if v.DestinationType.ValueString() == "slack" {
 				if v.NotificationType.ValueString() == "job" {
 					notificationInputs[i] = client.NewSlackJobDatamartNotificationInput(
@@ -794,9 +843,16 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 	} else {
 		input.SetNotifications([]client.DatamartNotificationInput{})
 	}
-	if plan.Labels != nil {
-		labelInputs := make([]string, len(plan.Labels))
-		for i, v := range plan.Labels {
+	if !plan.Labels.IsNull() {
+		var labelValues []labelModel
+		diags := plan.Labels.ElementsAs(ctx, &labelValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
+		labelInputs := make([]string, len(labelValues))
+		for i, v := range labelValues {
 			labelInputs[i] = v.Name.ValueString()
 		}
 		input.SetLabels(labelInputs)
@@ -998,7 +1054,14 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			for i, v := range response.DatamartBigqueryOption.ClusteringFields {
 				clusteringFields[i] = types.StringValue(v)
 			}
-			model.ClusteringFields = clusteringFields
+
+			listValue, diags := types.ListValueFrom(ctx, types.StringType, clusteringFields)
+			if diags.HasError() {
+				return nil, fmt.Errorf("failed to convert clustering fields to ListValue")
+			}
+			model.ClusteringFields = listValue
+		} else {
+			model.ClusteringFields = types.ListNull(types.StringType)
 		}
 		if response.DatamartBigqueryOption.Location != nil {
 			model.Location = types.StringValue(*response.DatamartBigqueryOption.Location)
@@ -1030,7 +1093,20 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 				notifications[i].RecordOperator = types.StringValue(*v.RecordOperator)
 			}
 		}
-		model.Notifications = notifications
+
+		objectType := types.ObjectType{
+			AttrTypes: datamartNotificationModel{}.attrTypes(),
+		}
+
+		setValue, diags := types.SetValueFrom(ctx, objectType, notifications)
+		if diags.HasError() {
+			return nil, fmt.Errorf("failed to convert notifications to SetValue")
+		}
+		model.Notifications = setValue
+	} else {
+		model.Notifications = types.SetNull(types.ObjectType{
+			AttrTypes: datamartNotificationModel{}.attrTypes(),
+		})
 	}
 	if response.Schedules != nil {
 		schedules := make([]scheduleModel, len(response.Schedules))
@@ -1050,7 +1126,20 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 				schedules[i].Day = types.Int64Value(int64(*v.Day))
 			}
 		}
-		model.Schedules = schedules
+
+		objectType := types.ObjectType{
+			AttrTypes: scheduleModel{}.attrTypes(),
+		}
+
+		setValue, diags := types.SetValueFrom(ctx, objectType, schedules)
+		if diags.HasError() {
+			return nil, fmt.Errorf("failed to convert schedules to SetValue")
+		}
+		model.Schedules = setValue
+	} else {
+		model.Schedules = types.SetNull(types.ObjectType{
+			AttrTypes: scheduleModel{}.attrTypes(),
+		})
 	}
 	if response.Labels != nil {
 		labels := make([]labelModel, len(response.Labels))
@@ -1060,7 +1149,20 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 				Name: types.StringValue(v.Name),
 			}
 		}
-		model.Labels = labels
+
+		objectType := types.ObjectType{
+			AttrTypes: labelModel{}.attrTypes(),
+		}
+
+		setValue, diags := types.SetValueFrom(ctx, objectType, labels)
+		if diags.HasError() {
+			return nil, fmt.Errorf("failed to convert labels to SetValue")
+		}
+		model.Labels = setValue
+	} else {
+		model.Labels = types.SetNull(types.ObjectType{
+			AttrTypes: labelModel{}.attrTypes(),
+		})
 	}
 
 	return &model, nil
@@ -1085,5 +1187,36 @@ func (c customVariableSettingModel) attrTypes() map[string]attr.Type {
 		"direction": types.StringType,
 		"format":    types.StringType,
 		"time_zone": types.StringType,
+	}
+}
+
+func (n datamartNotificationModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"destination_type":  types.StringType,
+		"slack_channel_id":  types.Int64Type,
+		"email_id":          types.Int64Type,
+		"notification_type": types.StringType,
+		"notify_when":       types.StringType,
+		"record_count":      types.Int64Type,
+		"record_operator":   types.StringType,
+		"message":           types.StringType,
+	}
+}
+
+func (s scheduleModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"frequency":   types.StringType,
+		"minute":      types.Int32Type,
+		"hour":        types.Int32Type,
+		"day":         types.Int32Type,
+		"day_of_week": types.Int32Type,
+		"time_zone":   types.StringType,
+	}
+}
+
+func (l labelModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"id":   types.Int64Type,
+		"name": types.StringType,
 	}
 }

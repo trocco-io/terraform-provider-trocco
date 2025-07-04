@@ -5,30 +5,61 @@ import (
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+var taskDependencyAttrTypes = map[string]attr.Type{
+	"source":      types.StringType,
+	"destination": types.StringType,
+}
+
+var taskDependencyObjectType = types.ObjectType{
+	AttrTypes: taskDependencyAttrTypes,
+}
 
 type TaskDependency struct {
 	Source      types.String `tfsdk:"source"`
 	Destination types.String `tfsdk:"destination"`
 }
 
-func NewTaskDependencies(ens []*we.TaskDependency, keys map[int64]types.String, previous *PipelineDefinition) []*TaskDependency {
+func NewTaskDependencies(ens []*we.TaskDependency, keys map[int64]types.String, previous *PipelineDefinition) types.Set {
 	if ens == nil {
-		return nil
+		return types.SetNull(taskDependencyObjectType)
 	}
 
 	// If the attribute in the plan (or state) is nil, the provider should sets nil to the state.
-	if previous.TaskDependencies == nil && len(ens) == 0 {
-		return nil
+	var isTaskDependenciesNull bool
+	if previous == nil {
+		isTaskDependenciesNull = true
+	} else {
+		isTaskDependenciesNull = previous.TaskDependencies.IsNull()
 	}
 
-	mds := []*TaskDependency{}
+	if isTaskDependenciesNull && len(ens) == 0 {
+		return types.SetNull(taskDependencyObjectType)
+	}
+
+	elements := []attr.Value{}
 	for _, en := range ens {
-		mds = append(mds, NewTaskDependency(en, keys))
+		td := NewTaskDependency(en, keys)
+		if td != nil {
+			obj, _ := types.ObjectValue(
+				taskDependencyAttrTypes,
+				map[string]attr.Value{
+					"source":      td.Source,
+					"destination": td.Destination,
+				},
+			)
+			elements = append(elements, obj)
+		}
 	}
 
-	return mds
+	set, diags := types.SetValue(taskDependencyObjectType, elements)
+	if diags.HasError() {
+		return types.SetNull(taskDependencyObjectType)
+	}
+	return set
 }
 
 func NewTaskDependency(en *we.TaskDependency, keys map[int64]types.String) *TaskDependency {

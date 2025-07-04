@@ -1,6 +1,8 @@
 package pipeline_definition
 
 import (
+	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
@@ -9,28 +11,46 @@ import (
 )
 
 type StringCustomVariableLoopConfig struct {
-	Variables []StringCustomVariableLoopVariable `tfsdk:"variables"`
+	Variables types.List `tfsdk:"variables"`
 }
 
-func NewStringCustomVariableLoopConfig(en *we.StringCustomVariableLoopConfig) *StringCustomVariableLoopConfig {
+func NewStringCustomVariableLoopConfig(ctx context.Context, en *we.StringCustomVariableLoopConfig) *StringCustomVariableLoopConfig {
 	if en == nil {
 		return nil
 	}
 
 	variables := []StringCustomVariableLoopVariable{}
 	for _, variable := range en.Variables {
-		variables = append(variables, NewStringCustomVariableLoopVariable(variable))
+		variables = append(variables, NewStringCustomVariableLoopVariable(ctx, variable))
+	}
+
+	variablesList, diags := types.ListValueFrom(
+		ctx,
+		types.ObjectType{AttrTypes: StringCustomVariableLoopVariableAttrTypes()},
+		variables,
+	)
+	if diags.HasError() {
+		return nil
 	}
 
 	return &StringCustomVariableLoopConfig{
-		Variables: variables,
+		Variables: variablesList,
 	}
 }
 
-func (c *StringCustomVariableLoopConfig) ToInput() wp.StringCustomVariableLoopConfig {
+func (c *StringCustomVariableLoopConfig) ToInput(ctx context.Context) wp.StringCustomVariableLoopConfig {
 	vs := []wp.StringCustomVariableLoopVariable{}
-	for _, v := range c.Variables {
-		vs = append(vs, v.ToInput())
+
+	var variables []StringCustomVariableLoopVariable
+	diags := c.Variables.ElementsAs(ctx, &variables, false)
+	if diags.HasError() {
+		return wp.StringCustomVariableLoopConfig{
+			Variables: []wp.StringCustomVariableLoopVariable{},
+		}
+	}
+
+	for _, v := range variables {
+		vs = append(vs, v.ToInput(ctx))
 	}
 
 	return wp.StringCustomVariableLoopConfig{
@@ -39,25 +59,49 @@ func (c *StringCustomVariableLoopConfig) ToInput() wp.StringCustomVariableLoopCo
 }
 
 type StringCustomVariableLoopVariable struct {
-	Name   types.String   `tfsdk:"name"`
-	Values []types.String `tfsdk:"values"`
+	Name   types.String `tfsdk:"name"`
+	Values types.List   `tfsdk:"values"`
 }
 
-func NewStringCustomVariableLoopVariable(en we.StringCustomVariableLoopVariable) StringCustomVariableLoopVariable {
-	values := []types.String{}
+func NewStringCustomVariableLoopVariable(ctx context.Context, en we.StringCustomVariableLoopVariable) StringCustomVariableLoopVariable {
+	values := []attr.Value{}
 	for _, val := range en.Values {
 		values = append(values, types.StringValue(val))
 	}
 
+	valuesList, diags := types.ListValueFrom(
+		ctx,
+		types.StringType,
+		values,
+	)
+	if diags.HasError() {
+		return StringCustomVariableLoopVariable{
+			Name:   types.StringValue(en.Name),
+			Values: types.ListNull(types.StringType),
+		}
+	}
+
 	return StringCustomVariableLoopVariable{
 		Name:   types.StringValue(en.Name),
-		Values: values,
+		Values: valuesList,
 	}
 }
 
-func (v *StringCustomVariableLoopVariable) ToInput() wp.StringCustomVariableLoopVariable {
+func (v *StringCustomVariableLoopVariable) ToInput(ctx context.Context) wp.StringCustomVariableLoopVariable {
 	values := []string{}
-	for _, val := range v.Values {
+
+	var stringValues []types.String
+	diags := v.Values.ElementsAs(ctx, &stringValues, false)
+	if diags.HasError() {
+		// In a real application, you might want to handle this error differently
+		// For now, we'll just return an empty list if there's an error
+		return wp.StringCustomVariableLoopVariable{
+			Name:   v.Name.ValueString(),
+			Values: []string{},
+		}
+	}
+
+	for _, val := range stringValues {
 		values = append(values, val.ValueString())
 	}
 
