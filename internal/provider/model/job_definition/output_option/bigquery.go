@@ -44,12 +44,10 @@ type bigQueryOutputOptionColumnOption struct {
 	Description     types.String `tfsdk:"description"`
 }
 
-func NewBigQueryOutputOption(bigQueryOutputOption *output_option.BigQueryOutputOption) *BigQueryOutputOption {
+func NewBigQueryOutputOption(ctx context.Context, bigQueryOutputOption *output_option.BigQueryOutputOption) *BigQueryOutputOption {
 	if bigQueryOutputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &BigQueryOutputOption{
 		Dataset:                      types.StringValue(bigQueryOutputOption.Dataset),
@@ -187,12 +185,10 @@ func (bigQueryOutputOptionColumnOption) attrTypes() map[string]attr.Type {
 	}
 }
 
-func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.BigQueryOutputOptionInput {
+func (bigqueryOutputOption *BigQueryOutputOption) ToInput(ctx context.Context) *output_options2.BigQueryOutputOptionInput {
 	if bigqueryOutputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var clusteringFields []string
 	if !bigqueryOutputOption.BigQueryOutputOptionClusteringFields.IsNull() &&
@@ -259,12 +255,10 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput() *output_options2.Big
 	}
 }
 
-func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput() *output_options2.UpdateBigQueryOutputOptionInput {
+func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput(ctx context.Context) *output_options2.UpdateBigQueryOutputOptionInput {
 	if bigqueryOutputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var clusteringFields []string
 	if !bigqueryOutputOption.BigQueryOutputOptionClusteringFields.IsNull() {

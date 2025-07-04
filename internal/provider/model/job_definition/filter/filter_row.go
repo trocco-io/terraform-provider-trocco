@@ -29,12 +29,10 @@ func (filterRowCondition) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewFilterRows(filterRows *filter.FilterRows) *FilterRows {
+func NewFilterRows(ctx context.Context, filterRows *filter.FilterRows) *FilterRows {
 	if filterRows == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &FilterRows{
 		Condition: types.StringValue(filterRows.Condition),
@@ -78,12 +76,10 @@ func newFilterRowConditions(
 	return listValue, nil
 }
 
-func (filterRows *FilterRows) ToInput() *filter2.FilterRowsInput {
+func (filterRows *FilterRows) ToInput(ctx context.Context) *filter2.FilterRowsInput {
 	if filterRows == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var conditionValues []filterRowCondition
 	if !filterRows.FilterRowConditions.IsNull() && !filterRows.FilterRowConditions.IsUnknown() {

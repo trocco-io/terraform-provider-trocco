@@ -39,12 +39,10 @@ type snowflakeOutputOptionColumnOption struct {
 	Timezone        types.String `tfsdk:"timezone"`
 }
 
-func NewSnowflakeOutputOption(snowflakeOutputOption *output_option.SnowflakeOutputOption) *SnowflakeOutputOption {
+func NewSnowflakeOutputOption(ctx context.Context, snowflakeOutputOption *output_option.SnowflakeOutputOption) *SnowflakeOutputOption {
 	if snowflakeOutputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	result := &SnowflakeOutputOption{
 		Warehouse:             types.StringValue(snowflakeOutputOption.Warehouse),
@@ -136,12 +134,10 @@ func (s snowflakeOutputOptionColumnOption) attrTypes() map[string]attr.Type {
 	}
 }
 
-func (snowflakeOutputOption *SnowflakeOutputOption) ToInput() *output_options2.SnowflakeOutputOptionInput {
+func (snowflakeOutputOption *SnowflakeOutputOption) ToInput(ctx context.Context) *output_options2.SnowflakeOutputOptionInput {
 	if snowflakeOutputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var mergeKeys *[]string
 	if !snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.IsNull() {
@@ -200,12 +196,10 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToInput() *output_options2.S
 	}
 }
 
-func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput() *output_options2.UpdateSnowflakeOutputOptionInput {
+func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput(ctx context.Context) *output_options2.UpdateSnowflakeOutputOptionInput {
 	if snowflakeOutputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var mergeKeys *[]string
 	if !snowflakeOutputOption.SnowflakeOutputOptionMergeKeys.IsNull() {

@@ -29,7 +29,7 @@ type jsonExpandColumn struct {
 	Timezone types.String `tfsdk:"timezone"`
 }
 
-func NewFilterColumns(filterColumns []filter.FilterColumn) ([]FilterColumn, diag.Diagnostics) {
+func NewFilterColumns(ctx context.Context, filterColumns []filter.FilterColumn) ([]FilterColumn, diag.Diagnostics) {
 	outputs := make([]FilterColumn, 0, len(filterColumns))
 	var diags diag.Diagnostics
 
@@ -49,7 +49,7 @@ func NewFilterColumns(filterColumns []filter.FilterColumn) ([]FilterColumn, diag
 		var expandColumnsValue types.List
 		if len(expandColumns) > 0 {
 			v, d := types.ListValueFrom(
-				context.Background(),
+				ctx,
 				types.ObjectType{AttrTypes: jsonExpandColumn{}.AttrTypes()},
 				expandColumns,
 			)
@@ -77,10 +77,10 @@ func NewFilterColumns(filterColumns []filter.FilterColumn) ([]FilterColumn, diag
 	return outputs, diags
 }
 
-func (filterColumn FilterColumn) ToInput() filter2.FilterColumnInput {
+func (filterColumn FilterColumn) ToInput(ctx context.Context) filter2.FilterColumnInput {
 	var expandColumns []jsonExpandColumn
 	if !filterColumn.JSONExpandColumns.IsNull() && !filterColumn.JSONExpandColumns.IsUnknown() {
-		_ = filterColumn.JSONExpandColumns.ElementsAs(context.Background(), &expandColumns, false)
+		_ = filterColumn.JSONExpandColumns.ElementsAs(ctx, &expandColumns, false)
 	}
 
 	return filter2.FilterColumnInput{
