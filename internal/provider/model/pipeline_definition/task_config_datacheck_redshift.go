@@ -19,7 +19,7 @@ type RedshiftDataCheckTaskConfig struct {
 	QueryResult     types.Int64                    `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
 	Database        types.String                   `tfsdk:"database"`
-	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
+	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
 func NewRedshiftDataCheckTaskConfig(ctx context.Context, c *we.RedshiftDataCheckTaskConfig) *RedshiftDataCheckTaskConfig {
@@ -35,14 +35,20 @@ func NewRedshiftDataCheckTaskConfig(ctx context.Context, c *we.RedshiftDataCheck
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
 		Database:        types.StringValue(c.Database),
-		CustomVariables: NewCustomVariables(c.CustomVariables),
+		CustomVariables: NewCustomVariables(ctx, c.CustomVariables),
 	}
 }
 
-func (c *RedshiftDataCheckTaskConfig) ToInput() *wp.RedshiftDataCheckTaskConfigInput {
+func (c *RedshiftDataCheckTaskConfig) ToInput(ctx context.Context) *wp.RedshiftDataCheckTaskConfigInput {
 	customVariables := []wp.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, v.ToInput())
+	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
+		var customVariableValues []CustomVariable
+		diags := c.CustomVariables.ElementsAs(ctx, &customVariableValues, false)
+		if !diags.HasError() {
+			for _, v := range customVariableValues {
+				customVariables = append(customVariables, v.ToInput())
+			}
+		}
 	}
 
 	return &wp.RedshiftDataCheckTaskConfigInput{
