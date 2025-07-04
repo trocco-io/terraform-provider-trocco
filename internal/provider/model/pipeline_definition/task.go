@@ -101,14 +101,14 @@ func NewTask(ctx context.Context, en *we.Task, keys map[int64]types.String, prev
 		TaskIdentifier: types.Int64Value(en.TaskIdentifier),
 		Type:           types.StringValue(en.Type),
 
-		TroccoTransferConfig:                      NewTroccoTransferTaskConfig(en.TroccoTransferConfig),
+		TroccoTransferConfig:                      NewTroccoTransferTaskConfig(ctx, en.TroccoTransferConfig),
 		TroccoTransferBulkConfig:                  NewTroccoTransferBulkTaskConfig(en.TroccoTransferBulkConfig),
 		TroccoDBTConfig:                           NewTroccoDBTTaskConfig(en.TroccoDBTConfig),
-		TroccoBigQueryDatamartConfig:              NewTroccoBigqueryDatamartTaskConfig(en.TroccoBigQueryDatamartConfig),
-		TroccoRedshiftDatamartConfig:              NewTroccoRedshiftDatamartTaskConfig(en.TroccoRedshiftDatamartConfig),
-		TroccoSnowflakeDatamartConfig:             NewTroccoSnowflakeDatamartTaskConfig(en.TroccoSnowflakeDatamartConfig),
-		TroccoAzureSynapseAnalyticsDatamartConfig: NewTroccoAzureSynapseAnalyticsDatamartTaskConfig(en.TroccoAzureSynapseAnalyticsDatamartConfig),
-		TroccoPipelineConfig:                      NewTroccoPipelineTaskConfig(en.TroccoPipelineTaskConfig),
+		TroccoBigQueryDatamartConfig:              NewTroccoBigqueryDatamartTaskConfig(ctx, en.TroccoBigQueryDatamartConfig),
+		TroccoRedshiftDatamartConfig:              NewTroccoRedshiftDatamartTaskConfig(ctx, en.TroccoRedshiftDatamartConfig),
+		TroccoSnowflakeDatamartConfig:             NewTroccoSnowflakeDatamartTaskConfig(ctx, en.TroccoSnowflakeDatamartConfig),
+		TroccoAzureSynapseAnalyticsDatamartConfig: NewTroccoAzureSynapseAnalyticsDatamartTaskConfig(ctx, en.TroccoAzureSynapseAnalyticsDatamartConfig),
+		TroccoPipelineConfig:                      NewTroccoPipelineTaskConfig(ctx, en.TroccoPipelineTaskConfig),
 		SlackNotificationConfig:                   NewSlackNotificationTaskConfig(en.SlackNotificationConfig),
 		TableauDataExtractionConfig:               NewTableauDataExtractionTaskConfig(en.TableauDataExtractionConfig),
 		BigqueryDataCheckConfig:                   NewBigqueryDataCheckTaskConfig(ctx, en.BigqueryDataCheckConfig),
@@ -126,7 +126,7 @@ func (t *Task) ToInput(ctx context.Context, identifiers map[string]int64) *wp.Ta
 	}
 
 	if t.TroccoTransferConfig != nil {
-		in.TroccoTransferConfig = t.TroccoTransferConfig.ToInput()
+		in.TroccoTransferConfig = t.TroccoTransferConfig.ToInput(ctx)
 	}
 	if t.TroccoTransferBulkConfig != nil {
 		in.TroccoTransferBulkConfig = t.TroccoTransferBulkConfig.ToInput()
@@ -135,19 +135,19 @@ func (t *Task) ToInput(ctx context.Context, identifiers map[string]int64) *wp.Ta
 		in.TroccoDBTConfig = t.TroccoDBTConfig.ToInput()
 	}
 	if t.TroccoBigQueryDatamartConfig != nil {
-		in.TroccoBigQueryDatamartConfig = t.TroccoBigQueryDatamartConfig.ToInput()
+		in.TroccoBigQueryDatamartConfig = t.TroccoBigQueryDatamartConfig.ToInput(ctx)
 	}
 	if t.TroccoRedshiftDatamartConfig != nil {
-		in.TroccoRedshiftDatamartConfig = t.TroccoRedshiftDatamartConfig.ToInput()
+		in.TroccoRedshiftDatamartConfig = t.TroccoRedshiftDatamartConfig.ToInput(ctx)
 	}
 	if t.TroccoSnowflakeDatamartConfig != nil {
-		in.TroccoSnowflakeDatamartConfig = t.TroccoSnowflakeDatamartConfig.ToInput()
+		in.TroccoSnowflakeDatamartConfig = t.TroccoSnowflakeDatamartConfig.ToInput(ctx)
 	}
 	if t.TroccoAzureSynapseAnalyticsDatamartConfig != nil {
-		in.TroccoAzureSynapseAnalyticsDatamartConfig = t.TroccoAzureSynapseAnalyticsDatamartConfig.ToInput()
+		in.TroccoAzureSynapseAnalyticsDatamartConfig = t.TroccoAzureSynapseAnalyticsDatamartConfig.ToInput(ctx)
 	}
 	if t.TroccoPipelineConfig != nil {
-		in.TroccoPipelineConfig = t.TroccoPipelineConfig.ToInput()
+		in.TroccoPipelineConfig = t.TroccoPipelineConfig.ToInput(ctx)
 	}
 	if t.SlackNotificationConfig != nil {
 		in.SlackNotificationConfig = t.SlackNotificationConfig.ToInput()
