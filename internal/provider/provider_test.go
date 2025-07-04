@@ -3,6 +3,8 @@ package provider
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
@@ -22,7 +24,13 @@ var (
 
 // LoadTextFile reads a file from the filesystem and returns its content as a string.
 func LoadTextFile(filePath string) string {
-	content, err := os.ReadFile(filePath)
+	// Validate that the file path is within the testdata directory
+	cleanPath := filepath.Clean(filePath)
+	if !strings.HasPrefix(cleanPath, "testdata/") {
+		panic("Invalid file path: only testdata/ files are allowed")
+	}
+	
+	content, err := os.ReadFile(filePath) // #nosec G304 - Path validated above
 	if err != nil {
 		panic("Error loading file: " + err.Error())
 	}

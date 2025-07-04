@@ -7,6 +7,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // ListUsers
@@ -52,7 +53,7 @@ func TestListUsers(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).ListUsers(nil)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, output.Items, 2)
 	assert.Equal(t, int64(1), output.Items[0].ID)
 	assert.Equal(t, "test1@example.com", output.Items[0].Email)
@@ -95,7 +96,7 @@ func TestListUsersLimitAndCursor(t *testing.T) {
 	input.SetCursor("test_prev_cursor")
 	output, err := NewDevTroccoClient("1234567890", server.URL).ListUsers(&input)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, "test_next_cursor", *output.NextCursor)
 }
 
@@ -127,7 +128,7 @@ func TestGetUser(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).GetUser(1)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, int64(1), output.ID)
 	assert.Equal(t, "test1@example.com", output.Email)
@@ -172,7 +173,7 @@ func TestCreateUser(t *testing.T) {
 		IsRestrictedConnectionModify: lo.ToPtr(false),
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), output.ID)
 	assert.Equal(t, "test@example.com", output.Email)
 	assert.Equal(t, "admin", output.Role)
@@ -218,7 +219,7 @@ func TestUpdateUser(t *testing.T) {
 		IsRestrictedConnectionModify: lo.ToPtr(false),
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), output.ID)
 	assert.Equal(t, "test@example.com", output.Email)
 	assert.Equal(t, "admin", output.Role)

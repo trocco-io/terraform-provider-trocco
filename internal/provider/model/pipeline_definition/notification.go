@@ -24,8 +24,7 @@ type Notification struct {
 	SlackConfig     *SlackNotificationConfig `tfsdk:"slack_config"`
 }
 
-func NewNotifications(ens []*we.Notification, previousIsNull bool) types.Set {
-	ctx := context.Background()
+func NewNotifications(ctx context.Context, ens []*we.Notification, previousIsNull bool) types.Set {
 	objectType := types.ObjectType{
 		AttrTypes: map[string]attr.Type{
 			"type":             types.StringType,

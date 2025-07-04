@@ -7,6 +7,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // ListLabels
@@ -48,7 +49,7 @@ func TestListLabels(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).ListLabels(nil)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, output.Items, 2)
 	assert.Equal(t, int64(1), output.Items[0].ID)
 	assert.Equal(t, "Label 1", output.Items[0].Name)
@@ -87,7 +88,7 @@ func TestListLabelsLimitAndCursor(t *testing.T) {
 	input.SetCursor("test_prev_cursor")
 	output, err := NewDevTroccoClient("1234567890", server.URL).ListLabels(&input)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, "test_next_cursor", *output.NextCursor)
 }
 
@@ -117,7 +118,7 @@ func TestGetLabel(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).GetLabel(1)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, int64(1), output.ID)
 	assert.Equal(t, "Label 1", output.Name)
@@ -157,7 +158,7 @@ func TestCreateLabel(t *testing.T) {
 		Color:       "#FFFFFF",
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), output.ID)
 	assert.Equal(t, "Label 1", output.Name)
 	assert.Equal(t, "Description 1", *output.Description)
@@ -199,7 +200,7 @@ func TestUpdateLabel(t *testing.T) {
 		Color:       lo.ToPtr("#000000"),
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), output.ID)
 	assert.Equal(t, "Updated Label", output.Name)
 	assert.Equal(t, "Updated Description", *output.Description)

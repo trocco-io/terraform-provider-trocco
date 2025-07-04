@@ -56,7 +56,7 @@ func NewDevTroccoClient(apiKey, baseURL string) *TroccoClient {
 	httpClient := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
+				InsecureSkipVerify: true, // #nosec G402 - Dev environment only
 			},
 		},
 	}

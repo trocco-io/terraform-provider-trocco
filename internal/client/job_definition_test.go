@@ -14,6 +14,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteJobDefinition(t *testing.T) {
@@ -107,12 +108,12 @@ func TestCreateJobDefinition(t *testing.T) {
 		Notifications:             nil,
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(8), out.ID)
 	assert.Equal(t, "name", out.Name)
 	assert.Equal(t, "description", *out.Description)
 	assert.Equal(t, int64(9), *out.ResourceGroupID)
-	assert.Equal(t, true, *out.IsRunnableConcurrently)
+	assert.True(t, *out.IsRunnableConcurrently)
 	assert.Equal(t, int64(10), out.RetryLimit)
 	assert.Equal(t, "medium", *out.ResourceEnhancement)
 	assert.Equal(t, []filter.FilterColumn{}, out.FilterColumns)
@@ -180,12 +181,12 @@ func TestUpdateJobDefinition(t *testing.T) {
 		ResourceEnhancement:    lo.ToPtr("medium"),
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(8), out.ID)
 	assert.Equal(t, "edit", out.Name)
 	assert.Equal(t, "description edit", *out.Description)
 	assert.Equal(t, int64(10), *out.ResourceGroupID)
-	assert.Equal(t, true, *out.IsRunnableConcurrently)
+	assert.True(t, *out.IsRunnableConcurrently)
 	assert.Equal(t, int64(11), out.RetryLimit)
 	assert.Equal(t, "medium", *out.ResourceEnhancement)
 	assert.Equal(t, []filter.FilterColumn{}, out.FilterColumns)
@@ -252,7 +253,7 @@ func TestGetJobDefinition(t *testing.T) {
 	assert.Equal(t, "new", out.Name)
 	assert.Equal(t, "description new", *out.Description)
 	assert.Equal(t, int64(10), *out.ResourceGroupID)
-	assert.Equal(t, true, *out.IsRunnableConcurrently)
+	assert.True(t, *out.IsRunnableConcurrently)
 	assert.Equal(t, int64(11), out.RetryLimit)
 	assert.Equal(t, "medium", *out.ResourceEnhancement)
 	assert.Equal(t, []filter.FilterColumn{}, out.FilterColumns)

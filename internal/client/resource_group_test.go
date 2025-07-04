@@ -7,6 +7,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // List Teams
@@ -46,7 +47,7 @@ func TestListResourceGroup(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).ListResourceGroups(nil)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, output.Items, 2)
 	assert.Equal(t, int64(1), output.Items[0].ID)
 	assert.Equal(t, "ResourceGroup 1", output.Items[0].Name)
@@ -93,7 +94,7 @@ func TestListResourceGroupsLimitAndCursor(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).ListResourceGroups(input)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, output.Items, 1)
 	assert.Equal(t, int64(1), output.Items[0].ID)
 	assert.Equal(t, "ResourceGroup 1", output.Items[0].Name)
@@ -139,7 +140,7 @@ func TestGetResourceGroup(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).GetResourceGroup(1)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), output.ID)
 	assert.Equal(t, "ResourceGroup 1", output.Name)
 	assert.Equal(t, "ResourceGroup 1 description", *output.Description)
@@ -192,7 +193,7 @@ func TestCreateResourceGroup(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).CreateResourceGroup(input)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), output.ID)
 	assert.Equal(t, "ResourceGroup", output.Name)
 	assert.Equal(t, "description", *output.Description)
@@ -248,7 +249,7 @@ func TestUpdateResourceGroup(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).UpdateResourceGroup(1, input)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), output.ID)
 	assert.Equal(t, "ResourceGroup", output.Name)
 	assert.Equal(t, "description", *output.Description)

@@ -7,6 +7,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // List Teams
@@ -46,7 +47,7 @@ func TestListTeams(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).ListTeams(nil)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, output.Items, 2)
 	assert.Equal(t, int64(1), output.Items[0].ID)
 	assert.Equal(t, "Team 1", output.Items[0].Name)
@@ -93,7 +94,7 @@ func TestListTeamsLimitAndCursor(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).ListTeams(input)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, output.Items, 1)
 	assert.Equal(t, int64(1), output.Items[0].ID)
 	assert.Equal(t, "Team 1", output.Items[0].Name)
@@ -141,7 +142,7 @@ func TestGetTeam(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).GetTeam(1)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), output.ID)
 	assert.Equal(t, "Team 1", output.Name)
 	assert.Equal(t, "team 1 description", *output.Description)
@@ -197,7 +198,7 @@ func TestCreateTeam(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).CreateTeam(input)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), output.ID)
 	assert.Equal(t, "Team", output.Name)
 	assert.Equal(t, "description", *output.Description)
@@ -256,7 +257,7 @@ func TestUpdateTeam(t *testing.T) {
 
 	output, err := NewDevTroccoClient("1234567890", server.URL).UpdateTeam(1, input)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), output.ID)
 	assert.Equal(t, "Team", output.Name)
 	assert.Equal(t, "description", *output.Description)

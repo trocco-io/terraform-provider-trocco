@@ -9,6 +9,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetNotificationDestinationEmail(t *testing.T) {
@@ -32,7 +33,7 @@ func TestGetNotificationDestinationEmail(t *testing.T) {
 
 	result, err := c.GetNotificationDestination("email", 1)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), result.ID)
 	assert.Equal(t, "test@example.com", *result.Email)
 }
@@ -61,7 +62,7 @@ func TestCreateNotificationDestinationEmail(t *testing.T) {
 		},
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, int64(8), out.ID)
 	assert.Equal(t, "test@example.com", *out.Email)
@@ -92,7 +93,7 @@ func TestUpdateNotificationDestinationEmail(t *testing.T) {
 		},
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), result.ID)
 	assert.Equal(t, "updated@example.com", *result.Email)
 }
@@ -130,7 +131,7 @@ func TestGetNotificationDestinationSlackChannel(t *testing.T) {
 
 	result, err := c.GetNotificationDestination("slack_channel", 1)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), result.ID)
 	assert.Equal(t, "general", *result.Channel)
 }
@@ -160,7 +161,7 @@ func TestCreateNotificationDestinationSlackChannel(t *testing.T) {
 		},
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(8), out.ID)
 	assert.Equal(t, "general", *out.Channel)
 }
@@ -191,7 +192,7 @@ func TestUpdateNotificationDestinationSlackChannel(t *testing.T) {
 		},
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, int64(1), result.ID)
 	assert.Equal(t, "updated-channel", *result.Channel)
 }

@@ -12,6 +12,7 @@ type Case struct {
 }
 
 func testCases(t *testing.T, cases []Case) {
+	t.Helper()
 	for _, c := range cases {
 		value := c.value
 		if c.expected == nil {

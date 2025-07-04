@@ -44,10 +44,14 @@ You MUST use English in files and pull requests.
 
 ---
 
-You MUST format Go files using `go fmt`.
+You MUST format Go files using `golangci-lint run --fix`.
 
 You MUST format Terraform configuration files using `terraform fmt`.
 
 ---
 
 You MUST follow Conventional Commits in commit messages and PR titles.
+
+---
+
+You MUST use lowercase letters for log messages.

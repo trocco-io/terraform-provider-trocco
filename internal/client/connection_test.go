@@ -9,6 +9,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetConnections(t *testing.T) {
@@ -44,7 +45,7 @@ func TestGetConnections(t *testing.T) {
 		Cursor: "Fk/RmZrNji8DOg6SefOy7A==",
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Len(t, out.Connections, 1)
 	assert.Equal(t, int64(8), out.Connections[0].ID)
@@ -77,7 +78,7 @@ func TestGetConnection(t *testing.T) {
 
 	out, err := c.GetConnection("bigquery", 8)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, int64(8), out.ID)
 	assert.Equal(t, "Foo", *out.Name)
@@ -115,7 +116,7 @@ func TestCreateConnection(t *testing.T) {
 		}),
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, int64(8), out.ID)
 	assert.Equal(t, "Foo", *out.Name)
@@ -153,7 +154,7 @@ func TestUpdateConnection(t *testing.T) {
 		}),
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, int64(8), out.ID)
 	assert.Equal(t, "Foo", *out.Name)
