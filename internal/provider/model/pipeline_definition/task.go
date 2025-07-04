@@ -156,16 +156,16 @@ func (t *Task) ToInput(ctx context.Context, identifiers map[string]int64) *wp.Ta
 		in.TableauDataExtractionConfig = t.TableauDataExtractionConfig.ToInput()
 	}
 	if t.BigqueryDataCheckConfig != nil {
-		in.BigqueryDataCheckConfig = t.BigqueryDataCheckConfig.ToInput()
+		in.BigqueryDataCheckConfig = t.BigqueryDataCheckConfig.ToInput(ctx)
 	}
 	if t.SnowflakeDataCheckConfig != nil {
-		in.SnowflakeDataCheckConfig = t.SnowflakeDataCheckConfig.ToInput()
+		in.SnowflakeDataCheckConfig = t.SnowflakeDataCheckConfig.ToInput(ctx)
 	}
 	if t.RedshiftDataCheckConfig != nil {
-		in.RedshiftDataCheckConfig = t.RedshiftDataCheckConfig.ToInput()
+		in.RedshiftDataCheckConfig = t.RedshiftDataCheckConfig.ToInput(ctx)
 	}
 	if t.HTTPRequestConfig != nil {
-		in.HTTPRequestConfig = t.HTTPRequestConfig.ToInput()
+		in.HTTPRequestConfig = t.HTTPRequestConfig.ToInput(ctx)
 	}
 
 	return in
