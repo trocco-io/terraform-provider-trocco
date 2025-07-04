@@ -1,8 +1,8 @@
 package input_options
 
 import (
-	input_options "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntity "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParams "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/input_option/parser"
 
@@ -28,7 +28,7 @@ type GcsInputOption struct {
 	Decoder                   *Decoder                       `tfsdk:"decoder"`
 }
 
-func NewGcsInputOption(gcsInputOption *input_options.GcsInputOption) *GcsInputOption {
+func NewGcsInputOption(gcsInputOption *inputOptionEntity.GcsInputOption) *GcsInputOption {
 	if gcsInputOption == nil {
 		return nil
 	}
@@ -52,12 +52,12 @@ func NewGcsInputOption(gcsInputOption *input_options.GcsInputOption) *GcsInputOp
 	}
 }
 
-func (gcsInputOption *GcsInputOption) ToInput() *input_options2.GcsInputOptionInput {
+func (gcsInputOption *GcsInputOption) ToInput() *inputOptionParams.GcsInputOptionInput {
 	if gcsInputOption == nil {
 		return nil
 	}
 
-	return &input_options2.GcsInputOptionInput{
+	return &inputOptionParams.GcsInputOptionInput{
 		GcsConnectionID:           gcsInputOption.GcsConnectionID.ValueInt64(),
 		Bucket:                    gcsInputOption.Bucket.ValueString(),
 		PathPrefix:                gcsInputOption.PathPrefix.ValueString(),
@@ -77,12 +77,12 @@ func (gcsInputOption *GcsInputOption) ToInput() *input_options2.GcsInputOptionIn
 	}
 }
 
-func (gcsInputOption *GcsInputOption) ToUpdateInput() *input_options2.UpdateGcsInputOptionInput {
+func (gcsInputOption *GcsInputOption) ToUpdateInput() *inputOptionParams.UpdateGcsInputOptionInput {
 	if gcsInputOption == nil {
 		return nil
 	}
 
-	return &input_options2.UpdateGcsInputOptionInput{
+	return &inputOptionParams.UpdateGcsInputOptionInput{
 		GcsConnectionID:           gcsInputOption.GcsConnectionID.ValueInt64Pointer(),
 		Bucket:                    gcsInputOption.Bucket.ValueStringPointer(),
 		PathPrefix:                gcsInputOption.PathPrefix.ValueStringPointer(),

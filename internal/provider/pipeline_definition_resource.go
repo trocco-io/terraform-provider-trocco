@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/custom_type"
-	pdm "terraform-provider-trocco/internal/provider/model/pipeline_definition"
-	pds "terraform-provider-trocco/internal/provider/schema/pipeline_definition"
+	pipelineDefModel "terraform-provider-trocco/internal/provider/model/pipeline_definition"
+	pipelineDefSchema "terraform-provider-trocco/internal/provider/schema/pipeline_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -155,11 +155,11 @@ func (r *pipelineDefinitionResource) Schema(
 				Computed:            true,
 				Default:             booldefault.StaticBool(true),
 			},
-			"labels":            pds.LabelsSchema(),
-			"notifications":     pds.NotificationsSchema(),
-			"schedules":         pds.SchedulesSchema(),
-			"tasks":             pds.TasksSchema(),
-			"task_dependencies": pds.TaskDependenciesSchema(),
+			"labels":            pipelineDefSchema.LabelsSchema(),
+			"notifications":     pipelineDefSchema.NotificationsSchema(),
+			"schedules":         pipelineDefSchema.SchedulesSchema(),
+			"tasks":             pipelineDefSchema.TasksSchema(),
+			"task_dependencies": pipelineDefSchema.TaskDependenciesSchema(),
 		},
 	}
 }
@@ -169,7 +169,7 @@ func (r *pipelineDefinitionResource) Create(
 	req resource.CreateRequest,
 	resp *resource.CreateResponse,
 ) {
-	plan := &pdm.PipelineDefinition{}
+	plan := &pipelineDefModel.PipelineDefinition{}
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -191,7 +191,7 @@ func (r *pipelineDefinitionResource) Create(
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	newState := pdm.NewPipelineDefinition(ctx, en, keys, plan)
+	newState := pipelineDefModel.NewPipelineDefinition(ctx, en, keys, plan)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -201,13 +201,13 @@ func (r *pipelineDefinitionResource) Update(
 	req resource.UpdateRequest,
 	resp *resource.UpdateResponse,
 ) {
-	state := &pdm.PipelineDefinition{}
+	state := &pipelineDefModel.PipelineDefinition{}
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	plan := &pdm.PipelineDefinition{}
+	plan := &pipelineDefModel.PipelineDefinition{}
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -230,7 +230,7 @@ func (r *pipelineDefinitionResource) Update(
 		keys[t.TaskIdentifier] = types.StringValue(t.Key)
 	}
 
-	newState := pdm.NewPipelineDefinition(ctx, en, keys, plan)
+	newState := pipelineDefModel.NewPipelineDefinition(ctx, en, keys, plan)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -240,7 +240,7 @@ func (r *pipelineDefinitionResource) Read(
 	req resource.ReadRequest,
 	resp *resource.ReadResponse,
 ) {
-	state := &pdm.PipelineDefinition{}
+	state := &pipelineDefModel.PipelineDefinition{}
 	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -257,7 +257,7 @@ func (r *pipelineDefinitionResource) Read(
 		return
 	}
 
-	var tasks []*pdm.Task
+	var tasks []*pipelineDefModel.Task
 	if !state.Tasks.IsNull() && !state.Tasks.IsUnknown() {
 		diags := state.Tasks.ElementsAs(ctx, &tasks, false)
 		resp.Diagnostics.Append(diags...)
@@ -271,7 +271,7 @@ func (r *pipelineDefinitionResource) Read(
 		keys[t.TaskIdentifier.ValueInt64()] = t.Key
 	}
 
-	newState := pdm.NewPipelineDefinition(ctx, en, keys, state)
+	newState := pipelineDefModel.NewPipelineDefinition(ctx, en, keys, state)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -281,7 +281,7 @@ func (r *pipelineDefinitionResource) Delete(
 	req resource.DeleteRequest,
 	resp *resource.DeleteResponse,
 ) {
-	state := &pdm.PipelineDefinition{}
+	state := &pipelineDefModel.PipelineDefinition{}
 	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -326,7 +326,7 @@ func (r *pipelineDefinitionResource) ImportState(
 		keys[t.TaskIdentifier] = types.StringValue(strconv.FormatInt(t.TaskIdentifier, 10))
 	}
 
-	newState := pdm.NewPipelineDefinition(ctx, en, keys, &pdm.PipelineDefinition{})
+	newState := pipelineDefModel.NewPipelineDefinition(ctx, en, keys, &pipelineDefModel.PipelineDefinition{})
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }

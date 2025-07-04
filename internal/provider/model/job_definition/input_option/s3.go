@@ -1,8 +1,8 @@
 package input_options
 
 import (
-	input_options "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntity "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParams "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/input_option/parser"
 
@@ -30,7 +30,7 @@ type S3InputOption struct {
 	Decoder                   *Decoder                       `tfsdk:"decoder"`
 }
 
-func NewS3InputOption(s3InputOption *input_options.S3InputOption) *S3InputOption {
+func NewS3InputOption(s3InputOption *inputOptionEntity.S3InputOption) *S3InputOption {
 	if s3InputOption == nil {
 		return nil
 	}
@@ -56,12 +56,12 @@ func NewS3InputOption(s3InputOption *input_options.S3InputOption) *S3InputOption
 	}
 }
 
-func (s3InputOption *S3InputOption) ToInput() *input_options2.S3InputOptionInput {
+func (s3InputOption *S3InputOption) ToInput() *inputOptionParams.S3InputOptionInput {
 	if s3InputOption == nil {
 		return nil
 	}
 
-	return &input_options2.S3InputOptionInput{
+	return &inputOptionParams.S3InputOptionInput{
 		S3ConnectionID:            s3InputOption.S3ConnectionID.ValueInt64(),
 		Bucket:                    s3InputOption.Bucket.ValueString(),
 		PathPrefix:                model.NewNullableString(s3InputOption.PathPrefix),
@@ -83,12 +83,12 @@ func (s3InputOption *S3InputOption) ToInput() *input_options2.S3InputOptionInput
 	}
 }
 
-func (s3InputOption *S3InputOption) ToUpdateInput() *input_options2.UpdateS3InputOptionInput {
+func (s3InputOption *S3InputOption) ToUpdateInput() *inputOptionParams.UpdateS3InputOptionInput {
 	if s3InputOption == nil {
 		return nil
 	}
 
-	return &input_options2.UpdateS3InputOptionInput{
+	return &inputOptionParams.UpdateS3InputOptionInput{
 		S3ConnectionID:            s3InputOption.S3ConnectionID.ValueInt64Pointer(),
 		Bucket:                    s3InputOption.Bucket.ValueStringPointer(),
 		PathPrefix:                model.NewNullableString(s3InputOption.PathPrefix),

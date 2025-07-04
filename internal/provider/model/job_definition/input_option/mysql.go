@@ -1,8 +1,8 @@
 package input_options
 
 import (
-	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntity "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParams "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -30,7 +30,7 @@ type InputOptionColumn struct {
 	Type types.String `tfsdk:"type"`
 }
 
-func NewMysqlInputOption(mysqlInputOption *input_option.MySQLInputOption) *MySQLInputOption {
+func NewMysqlInputOption(mysqlInputOption *inputOptionEntity.MySQLInputOption) *MySQLInputOption {
 	if mysqlInputOption == nil {
 		return nil
 	}
@@ -53,7 +53,7 @@ func NewMysqlInputOption(mysqlInputOption *input_option.MySQLInputOption) *MySQL
 	}
 }
 
-func newInputOptionColumns(inputOptionColumns []input_option.InputOptionColumn) []InputOptionColumn {
+func newInputOptionColumns(inputOptionColumns []inputOptionEntity.InputOptionColumn) []InputOptionColumn {
 	if inputOptionColumns == nil {
 		return nil
 	}
@@ -68,12 +68,12 @@ func newInputOptionColumns(inputOptionColumns []input_option.InputOptionColumn) 
 	return columns
 }
 
-func (mysqlInputOption *MySQLInputOption) ToInput() *input_options2.MySQLInputOptionInput {
+func (mysqlInputOption *MySQLInputOption) ToInput() *inputOptionParams.MySQLInputOptionInput {
 	if mysqlInputOption == nil {
 		return nil
 	}
 
-	return &input_options2.MySQLInputOptionInput{
+	return &inputOptionParams.MySQLInputOptionInput{
 		Database:                  mysqlInputOption.Database.ValueString(),
 		Table:                     model.NewNullableString(mysqlInputOption.Table),
 		Query:                     model.NewNullableString(mysqlInputOption.Query),
@@ -91,14 +91,14 @@ func (mysqlInputOption *MySQLInputOption) ToInput() *input_options2.MySQLInputOp
 	}
 }
 
-func (mysqlInputOption *MySQLInputOption) ToUpdateInput() *input_options2.UpdateMySQLInputOptionInput {
+func (mysqlInputOption *MySQLInputOption) ToUpdateInput() *inputOptionParams.UpdateMySQLInputOptionInput {
 	if mysqlInputOption == nil {
 		return nil
 	}
 
 	inputOptionColumns := toMysqlInputOptionColumnsInput(mysqlInputOption.InputOptionColumns)
 
-	return &input_options2.UpdateMySQLInputOptionInput{
+	return &inputOptionParams.UpdateMySQLInputOptionInput{
 		Database:                  mysqlInputOption.Database.ValueStringPointer(),
 		Table:                     model.NewNullableString(mysqlInputOption.Table),
 		Query:                     model.NewNullableString(mysqlInputOption.Query),
@@ -116,14 +116,14 @@ func (mysqlInputOption *MySQLInputOption) ToUpdateInput() *input_options2.Update
 	}
 }
 
-func toMysqlInputOptionColumnsInput(columns []InputOptionColumn) []input_options2.InputOptionColumn {
+func toMysqlInputOptionColumnsInput(columns []InputOptionColumn) []inputOptionParams.InputOptionColumn {
 	if columns == nil {
 		return nil
 	}
 
-	inputs := make([]input_options2.InputOptionColumn, 0, len(columns))
+	inputs := make([]inputOptionParams.InputOptionColumn, 0, len(columns))
 	for _, column := range columns {
-		inputs = append(inputs, input_options2.InputOptionColumn{
+		inputs = append(inputs, inputOptionParams.InputOptionColumn{
 			Name: column.Name.ValueString(),
 			Type: column.Type.ValueString(),
 		})

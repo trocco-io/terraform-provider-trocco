@@ -1,8 +1,8 @@
 package input_options
 
 import (
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
-	parmas "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefEntity "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefParams "terraform-provider-trocco/internal/client/parameter/job_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -11,7 +11,7 @@ type Decoder struct {
 	MatchName types.String `tfsdk:"match_name"`
 }
 
-func NewDecoder(decoder *job_definitions.Decoder) *Decoder {
+func NewDecoder(decoder *jobDefEntity.Decoder) *Decoder {
 	if decoder == nil {
 		return nil
 	}
@@ -20,11 +20,11 @@ func NewDecoder(decoder *job_definitions.Decoder) *Decoder {
 	}
 }
 
-func (decoder *Decoder) ToDecoderInput() *parmas.DecoderInput {
+func (decoder *Decoder) ToDecoderInput() *jobDefParams.DecoderInput {
 	if decoder == nil {
 		return nil
 	}
-	return &parmas.DecoderInput{
+	return &jobDefParams.DecoderInput{
 		MatchName: decoder.MatchName.ValueString(),
 	}
 }
