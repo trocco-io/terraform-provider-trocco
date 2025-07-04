@@ -21,8 +21,8 @@ func (d *DatamartNotificationPlanModifier) MarkdownDescription(ctx context.Conte
 }
 
 func (d *DatamartNotificationPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
-	var destination_type types.String
-	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("destination_type"), &destination_type)...)
+	var destinationType types.String
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("destination_type"), &destinationType)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -63,11 +63,11 @@ func (d *DatamartNotificationPlanModifier) PlanModifyObject(ctx context.Context,
 		return
 	}
 
-	if destination_type.ValueString() == "slack" && slackChannelID.IsNull() {
+	if destinationType.ValueString() == "slack" && slackChannelID.IsNull() {
 		addNotificationAttributeError(req, resp, "slack_channel_id is required for slack destination type")
 	}
 
-	if destination_type.ValueString() == "email" && emailID.IsNull() {
+	if destinationType.ValueString() == "email" && emailID.IsNull() {
 		addNotificationAttributeError(req, resp, "email_id is required for email destination type")
 	}
 

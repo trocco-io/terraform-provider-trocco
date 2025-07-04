@@ -29,7 +29,7 @@ func LoadTextFile(filePath string) string {
 	if !strings.HasPrefix(cleanPath, "testdata/") {
 		panic("Invalid file path: only testdata/ files are allowed")
 	}
-	
+
 	content, err := os.ReadFile(filePath) // #nosec G304 - Path validated above
 	if err != nil {
 		panic("Error loading file: " + err.Error())

@@ -17,7 +17,7 @@ type SnowflakeOutputOptionInput struct {
 	RetryWait                          *parameter.NullableInt64                                              `json:"retry_wait,omitempty"`
 	MaxRetryWait                       *parameter.NullableInt64                                              `json:"max_retry_wait,omitempty"`
 	DefaultTimeZone                    *parameter.NullableString                                             `json:"default_time_zone,omitempty"`
-	SnowflakeConnectionId              int64                                                                 `json:"snowflake_connection_id"`
+	SnowflakeConnectionID              int64                                                                 `json:"snowflake_connection_id"`
 	SnowflakeOutputOptionColumnOptions *parameter.NullableObjectList[SnowflakeOutputOptionColumnOptionInput] `json:"snowflake_output_option_column_options,omitempty"`
 	SnowflakeOutputOptionMergeKeys     *parameter.NullableObjectList[string]                                 `json:"snowflake_output_option_merge_keys,omitempty"`
 	CustomVariableSettings             *[]parameter.CustomVariableSettingInput                               `json:"custom_variable_settings,omitempty"`
@@ -36,7 +36,7 @@ type UpdateSnowflakeOutputOptionInput struct {
 	RetryWait                          *parameter.NullableInt64                                              `json:"retry_wait,omitempty"`
 	MaxRetryWait                       *parameter.NullableInt64                                              `json:"max_retry_wait,omitempty"`
 	DefaultTimeZone                    *parameter.NullableString                                             `json:"default_time_zone,omitempty"`
-	SnowflakeConnectionId              *int64                                                                `json:"snowflake_connection_id,omitempty"`
+	SnowflakeConnectionID              *int64                                                                `json:"snowflake_connection_id,omitempty"`
 	SnowflakeOutputOptionColumnOptions *parameter.NullableObjectList[SnowflakeOutputOptionColumnOptionInput] `json:"snowflake_output_option_column_options,omitempty"`
 	SnowflakeOutputOptionMergeKeys     *parameter.NullableObjectList[string]                                 `json:"snowflake_output_option_merge_keys,omitempty"`
 	CustomVariableSettings             *[]parameter.CustomVariableSettingInput                               `json:"custom_variable_settings,omitempty"`

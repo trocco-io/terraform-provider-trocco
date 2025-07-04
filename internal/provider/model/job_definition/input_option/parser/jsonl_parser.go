@@ -1,7 +1,7 @@
 package parser
 
 import (
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	param "terraform-provider-trocco/internal/client/parameter/job_definition"
 	"terraform-provider-trocco/internal/provider/model"
 
@@ -23,7 +23,7 @@ type JsonlParserColumn struct {
 	Format   types.String `tfsdk:"format"`
 }
 
-func NewJsonlParser(jsonlParser *job_definitions.JsonlParser) *JsonlParser {
+func NewJsonlParser(jsonlParser *jobDefinitions.JsonlParser) *JsonlParser {
 	if jsonlParser == nil {
 		return nil
 	}

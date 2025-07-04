@@ -20,7 +20,7 @@ func InputOptionSchema() schema.Attribute {
 			"bigquery_input_option":            BigqueryInputOptionSchema(),
 			"postgresql_input_option":          PostgresqlInputOptionSchema(),
 			"google_analytics4_input_option":   GoogleAnalytics4InputOptionSchema(),
-			"http_input_option":                HttpInputOptionSchema(),
+			"http_input_option":                HTTPInputOptionSchema(),
 			"kintone_input_option":             KintoneInputOptionSchema(),
 			"yahoo_ads_api_yss_input_option":   YahooAdsApiYssInputOptionSchema(),
 		},

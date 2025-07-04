@@ -17,7 +17,7 @@ type SnowflakeOutputOption struct {
 	RetryWait                          *int64                              `json:"retry_wait"`
 	MaxRetryWait                       *int64                              `json:"max_retry_wait"`
 	DefaultTimeZone                    *string                             `json:"default_time_zone"`
-	SnowflakeConnectionId              int64                               `json:"snowflake_connection_id"`
+	SnowflakeConnectionID              int64                               `json:"snowflake_connection_id"`
 	SnowflakeOutputOptionColumnOptions []SnowflakeOutputOptionColumnOption `json:"snowflake_output_option_column_options"`
 	SnowflakeOutputOptionMergeKeys     []string                            `json:"snowflake_output_option_merge_keys"`
 	CustomVariableSettings             *[]entity.CustomVariableSetting     `json:"custom_variable_settings"`

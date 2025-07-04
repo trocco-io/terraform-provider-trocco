@@ -276,7 +276,7 @@ func (r *connectionResource) Configure(
 		return
 	}
 
-	c, ok := req.ProviderData.(*client.TroccoClient)
+	troccoClient, ok := req.ProviderData.(*client.TroccoClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
@@ -285,7 +285,7 @@ func (r *connectionResource) Configure(
 		return
 	}
 
-	r.client = c
+	r.client = troccoClient
 }
 
 var supportedConnectionTypes = []string{
@@ -939,15 +939,15 @@ func (r *connectionResource) Delete(
 	req resource.DeleteRequest,
 	resp *resource.DeleteResponse,
 ) {
-	s := &connectionResourceModel{}
-	resp.Diagnostics.Append(req.State.Get(ctx, s)...)
+	state := &connectionResourceModel{}
+	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	if err := r.client.DeleteConnection(
-		s.ConnectionType.ValueString(),
-		s.ID.ValueInt64(),
+		state.ConnectionType.ValueString(),
+		state.ID.ValueInt64(),
 	); err != nil {
 		resp.Diagnostics.AddError(
 			"Deleting connection",

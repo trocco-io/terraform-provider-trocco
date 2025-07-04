@@ -11,7 +11,7 @@ type SalesforceOutputOptionInput struct {
 	UpsertKey              *parameter.NullableString `json:"upsert_key,omitempty"`
 	IgnoreNulls            *parameter.NullableBool   `json:"ignore_nulls,omitempty"`
 	ThrowIfFailed          *parameter.NullableBool   `json:"throw_if_failed,omitempty"`
-	SalesforceConnectionId int64                     `json:"salesforce_connection_id"`
+	SalesforceConnectionID int64                     `json:"salesforce_connection_id"`
 }
 
 type UpdateSalesforceOutputOptionInput struct {
@@ -21,5 +21,5 @@ type UpdateSalesforceOutputOptionInput struct {
 	UpsertKey              *parameter.NullableString `json:"upsert_key,omitempty"`
 	IgnoreNulls            *parameter.NullableBool   `json:"ignore_nulls,omitempty"`
 	ThrowIfFailed          *parameter.NullableBool   `json:"throw_if_failed,omitempty"`
-	SalesforceConnectionId *int64                    `json:"salesforce_connection_id"`
+	SalesforceConnectionID *int64                    `json:"salesforce_connection_id"`
 }

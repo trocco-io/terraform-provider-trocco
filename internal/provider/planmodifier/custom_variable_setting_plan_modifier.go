@@ -57,8 +57,8 @@ func (d *CustomVariableSettingPlanModifier) PlanModifyObject(ctx context.Context
 		return
 	}
 
-	var time_zone types.String
-	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("time_zone"), &time_zone)...)
+	var timeZone types.String
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("time_zone"), &timeZone)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -84,7 +84,7 @@ func (d *CustomVariableSettingPlanModifier) PlanModifyObject(ctx context.Context
 			if format.IsNull() {
 				addCustomVariableSettingAttributeError(req, resp, "format is required for timestamp/timestamp_runtime type")
 			}
-			if time_zone.IsNull() {
+			if timeZone.IsNull() {
 				addCustomVariableSettingAttributeError(req, resp, "time_zone is required for timestamp/timestamp_runtime type")
 			}
 		}

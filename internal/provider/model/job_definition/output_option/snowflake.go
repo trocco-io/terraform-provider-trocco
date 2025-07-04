@@ -21,7 +21,7 @@ type SnowflakeOutputOption struct {
 	RetryWait                          types.Int64                         `tfsdk:"retry_wait"`
 	MaxRetryWait                       types.Int64                         `tfsdk:"max_retry_wait"`
 	DefaultTimeZone                    types.String                        `tfsdk:"default_time_zone"`
-	SnowflakeConnectionId              types.Int64                         `tfsdk:"snowflake_connection_id"`
+	SnowflakeConnectionID              types.Int64                         `tfsdk:"snowflake_connection_id"`
 	SnowflakeOutputOptionColumnOptions []snowflakeOutputOptionColumnOption `tfsdk:"snowflake_output_option_column_options"`
 	SnowflakeOutputOptionMergeKeys     []types.String                      `tfsdk:"snowflake_output_option_merge_keys"`
 	CustomVariableSettings             *[]model.CustomVariableSetting      `tfsdk:"custom_variable_settings"`
@@ -53,7 +53,7 @@ func NewSnowflakeOutputOption(snowflakeOutputOption *output_option.SnowflakeOutp
 		RetryWait:                          types.Int64PointerValue(snowflakeOutputOption.RetryWait),
 		MaxRetryWait:                       types.Int64PointerValue(snowflakeOutputOption.MaxRetryWait),
 		DefaultTimeZone:                    types.StringPointerValue(snowflakeOutputOption.DefaultTimeZone),
-		SnowflakeConnectionId:              types.Int64Value(snowflakeOutputOption.SnowflakeConnectionId),
+		SnowflakeConnectionID:              types.Int64Value(snowflakeOutputOption.SnowflakeConnectionID),
 		SnowflakeOutputOptionColumnOptions: newSnowflakeOutputOptionColumnOptions(snowflakeOutputOption.SnowflakeOutputOptionColumnOptions),
 		SnowflakeOutputOptionMergeKeys:     newSnowflakeOutputOptionMergeKeys(snowflakeOutputOption.SnowflakeOutputOptionMergeKeys),
 		CustomVariableSettings:             model.NewCustomVariableSettings(snowflakeOutputOption.CustomVariableSettings),
@@ -118,7 +118,7 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToInput() *output_options2.S
 		RetryWait:                          model.NewNullableInt64(snowflakeOutputOption.RetryWait),
 		MaxRetryWait:                       model.NewNullableInt64(snowflakeOutputOption.MaxRetryWait),
 		DefaultTimeZone:                    model.NewNullableString(snowflakeOutputOption.DefaultTimeZone),
-		SnowflakeConnectionId:              snowflakeOutputOption.SnowflakeConnectionId.ValueInt64(),
+		SnowflakeConnectionID:              snowflakeOutputOption.SnowflakeConnectionID.ValueInt64(),
 		SnowflakeOutputOptionColumnOptions: model.WrapObjectList(toInputSnowflakeOutputOptionColumnOptions(snowflakeOutputOption.SnowflakeOutputOptionColumnOptions)),
 		SnowflakeOutputOptionMergeKeys:     model.WrapObjectList(mergeKeys),
 		CustomVariableSettings:             model.ToCustomVariableSettingInputs(snowflakeOutputOption.CustomVariableSettings),
@@ -152,7 +152,7 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput() *output_opti
 		RetryWait:                          model.NewNullableInt64(snowflakeOutputOption.RetryWait),
 		MaxRetryWait:                       model.NewNullableInt64(snowflakeOutputOption.MaxRetryWait),
 		DefaultTimeZone:                    model.NewNullableString(snowflakeOutputOption.DefaultTimeZone),
-		SnowflakeConnectionId:              snowflakeOutputOption.SnowflakeConnectionId.ValueInt64Pointer(),
+		SnowflakeConnectionID:              snowflakeOutputOption.SnowflakeConnectionID.ValueInt64Pointer(),
 		SnowflakeOutputOptionColumnOptions: model.WrapObjectList(toInputSnowflakeOutputOptionColumnOptions(snowflakeOutputOption.SnowflakeOutputOptionColumnOptions)),
 		SnowflakeOutputOptionMergeKeys:     model.WrapObjectList(mergeKeys),
 		CustomVariableSettings:             model.ToCustomVariableSettingInputs(snowflakeOutputOption.CustomVariableSettings),

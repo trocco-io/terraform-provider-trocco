@@ -1,7 +1,7 @@
 package parser
 
 import (
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	params "terraform-provider-trocco/internal/client/parameter/job_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -17,7 +17,7 @@ type ParquetParserColumn struct {
 	Format types.String `tfsdk:"format"`
 }
 
-func NewParquetParser(parquetParser *job_definitions.ParquetParser) *ParquetParser {
+func NewParquetParser(parquetParser *jobDefinitions.ParquetParser) *ParquetParser {
 	if parquetParser == nil {
 		return nil
 	}

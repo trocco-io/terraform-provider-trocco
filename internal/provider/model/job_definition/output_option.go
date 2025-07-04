@@ -3,22 +3,22 @@ package job_definitions
 import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
-	output_options "terraform-provider-trocco/internal/provider/model/job_definition/output_option"
+	outputOptions "terraform-provider-trocco/internal/provider/model/job_definition/output_option"
 )
 
 type OutputOption struct {
-	BigQueryOutputOption           *output_options.BigQueryOutputOption           `tfsdk:"bigquery_output_option"`
-	SnowflakeOutputOption          *output_options.SnowflakeOutputOption          `tfsdk:"snowflake_output_option"`
-	SalesforceOutputOption         *output_options.SalesforceOutputOption         `tfsdk:"salesforce_output_option"`
-	GoogleSpreadsheetsOutputOption *output_options.GoogleSpreadsheetsOutputOption `tfsdk:"google_spreadsheets_output_option"`
+	BigQueryOutputOption           *outputOptions.BigQueryOutputOption           `tfsdk:"bigquery_output_option"`
+	SnowflakeOutputOption          *outputOptions.SnowflakeOutputOption          `tfsdk:"snowflake_output_option"`
+	SalesforceOutputOption         *outputOptions.SalesforceOutputOption         `tfsdk:"salesforce_output_option"`
+	GoogleSpreadsheetsOutputOption *outputOptions.GoogleSpreadsheetsOutputOption `tfsdk:"google_spreadsheets_output_option"`
 }
 
 func NewOutputOption(outputOption client.OutputOption) *OutputOption {
 	return &OutputOption{
-		BigQueryOutputOption:           output_options.NewBigQueryOutputOption(outputOption.BigQueryOutputOption),
-		SnowflakeOutputOption:          output_options.NewSnowflakeOutputOption(outputOption.SnowflakeOutputOption),
-		SalesforceOutputOption:         output_options.NewSalesforceOutputOption(outputOption.SalesforceOutputOption),
-		GoogleSpreadsheetsOutputOption: output_options.NewGoogleSpreadsheetsOutputOption(outputOption.GoogleSpreadsheetsOutputOption),
+		BigQueryOutputOption:           outputOptions.NewBigQueryOutputOption(outputOption.BigQueryOutputOption),
+		SnowflakeOutputOption:          outputOptions.NewSnowflakeOutputOption(outputOption.SnowflakeOutputOption),
+		SalesforceOutputOption:         outputOptions.NewSalesforceOutputOption(outputOption.SalesforceOutputOption),
+		GoogleSpreadsheetsOutputOption: outputOptions.NewGoogleSpreadsheetsOutputOption(outputOption.GoogleSpreadsheetsOutputOption),
 	}
 }
 

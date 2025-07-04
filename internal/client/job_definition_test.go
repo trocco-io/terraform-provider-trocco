@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"terraform-provider-trocco/internal/client/entity"
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	"terraform-provider-trocco/internal/client/entity/job_definition/filter"
 	"terraform-provider-trocco/internal/client/parameter"
 	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
@@ -130,7 +130,7 @@ func TestCreateJobDefinition(t *testing.T) {
 	assert.Equal(t, OutputOption{}, out.OutputOption)
 	assert.Equal(t, []entity.Label(nil), out.Labels)
 	assert.Equal(t, []entity.Schedule(nil), out.Schedules)
-	assert.Equal(t, []job_definitions.JobDefinitionNotification(nil), out.Notifications)
+	assert.Equal(t, []jobDefinitions.JobDefinitionNotification(nil), out.Notifications)
 }
 
 func TestUpdateJobDefinition(t *testing.T) {
@@ -203,7 +203,7 @@ func TestUpdateJobDefinition(t *testing.T) {
 	assert.Equal(t, OutputOption{}, out.OutputOption)
 	assert.Equal(t, []entity.Label(nil), out.Labels)
 	assert.Equal(t, []entity.Schedule(nil), out.Schedules)
-	assert.Equal(t, []job_definitions.JobDefinitionNotification(nil), out.Notifications)
+	assert.Equal(t, []jobDefinitions.JobDefinitionNotification(nil), out.Notifications)
 }
 
 func TestGetJobDefinition(t *testing.T) {
@@ -270,5 +270,5 @@ func TestGetJobDefinition(t *testing.T) {
 	assert.Equal(t, OutputOption{}, out.OutputOption)
 	assert.Equal(t, []entity.Label(nil), out.Labels)
 	assert.Equal(t, []entity.Schedule(nil), out.Schedules)
-	assert.Equal(t, []job_definitions.JobDefinitionNotification(nil), out.Notifications)
+	assert.Equal(t, []jobDefinitions.JobDefinitionNotification(nil), out.Notifications)
 }

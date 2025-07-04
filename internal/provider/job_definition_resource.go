@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/client/parameter"
-	params "terraform-provider-trocco/internal/client/parameter/job_definition"
-	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
+	jobDefParams "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefFilterParams "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 	"terraform-provider-trocco/internal/provider/model"
-	job_definitions "terraform-provider-trocco/internal/provider/model/job_definition"
+	jobDefModel "terraform-provider-trocco/internal/provider/model/job_definition"
 	"terraform-provider-trocco/internal/provider/model/job_definition/filter"
-	input_options "terraform-provider-trocco/internal/provider/model/job_definition/input_option"
+	jobDefInputOptions "terraform-provider-trocco/internal/provider/model/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/schema/job_definition"
 	"terraform-provider-trocco/internal/provider/schema/job_definition/filters"
 
@@ -74,7 +74,7 @@ func (r *jobDefinitionResource) Configure(
 		return
 	}
 
-	c, ok := req.ProviderData.(*client.TroccoClient)
+	troccoClient, ok := req.ProviderData.(*client.TroccoClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
@@ -83,7 +83,7 @@ func (r *jobDefinitionResource) Configure(
 		return
 	}
 
-	r.client = c
+	r.client = troccoClient
 }
 
 func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
@@ -179,41 +179,41 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 }
 
 type jobDefinitionResourceModel struct {
-	ID                        types.Int64                                 `tfsdk:"id"`
-	Name                      types.String                                `tfsdk:"name"`
-	Description               types.String                                `tfsdk:"description"`
-	ResourceGroupID           types.Int64                                 `tfsdk:"resource_group_id"`
-	IsRunnableConcurrently    types.Bool                                  `tfsdk:"is_runnable_concurrently"`
-	RetryLimit                types.Int64                                 `tfsdk:"retry_limit"`
-	ResourceEnhancement       types.String                                `tfsdk:"resource_enhancement"`
-	InputOptionType           types.String                                `tfsdk:"input_option_type"`
-	InputOption               *job_definitions.InputOption                `tfsdk:"input_option"`
-	OutputOptionType          types.String                                `tfsdk:"output_option_type"`
-	OutputOption              *job_definitions.OutputOption               `tfsdk:"output_option"`
-	FilterColumns             []filter.FilterColumn                       `tfsdk:"filter_columns"`
-	FilterRows                *filter.FilterRows                          `tfsdk:"filter_rows"`
-	FilterMasks               []filter.FilterMask                         `tfsdk:"filter_masks"`
-	FilterAddTime             *filter.FilterAddTime                       `tfsdk:"filter_add_time"`
-	FilterGsub                []filter.FilterGsub                         `tfsdk:"filter_gsub"`
-	FilterStringTransforms    []filter.FilterStringTransform              `tfsdk:"filter_string_transforms"`
-	FilterHashes              []filter.FilterHash                         `tfsdk:"filter_hashes"`
-	FilterUnixTimeConversions []filter.FilterUnixTimeConversion           `tfsdk:"filter_unixtime_conversions"`
-	Notifications             []job_definitions.JobDefinitionNotification `tfsdk:"notifications"`
-	Schedules                 []model.Schedule                            `tfsdk:"schedules"`
-	Labels                    []job_definitions.Label                     `tfsdk:"labels"`
+	ID                        types.Int64                             `tfsdk:"id"`
+	Name                      types.String                            `tfsdk:"name"`
+	Description               types.String                            `tfsdk:"description"`
+	ResourceGroupID           types.Int64                             `tfsdk:"resource_group_id"`
+	IsRunnableConcurrently    types.Bool                              `tfsdk:"is_runnable_concurrently"`
+	RetryLimit                types.Int64                             `tfsdk:"retry_limit"`
+	ResourceEnhancement       types.String                            `tfsdk:"resource_enhancement"`
+	InputOptionType           types.String                            `tfsdk:"input_option_type"`
+	InputOption               *jobDefModel.InputOption                `tfsdk:"input_option"`
+	OutputOptionType          types.String                            `tfsdk:"output_option_type"`
+	OutputOption              *jobDefModel.OutputOption               `tfsdk:"output_option"`
+	FilterColumns             []filter.FilterColumn                   `tfsdk:"filter_columns"`
+	FilterRows                *filter.FilterRows                      `tfsdk:"filter_rows"`
+	FilterMasks               []filter.FilterMask                     `tfsdk:"filter_masks"`
+	FilterAddTime             *filter.FilterAddTime                   `tfsdk:"filter_add_time"`
+	FilterGsub                []filter.FilterGsub                     `tfsdk:"filter_gsub"`
+	FilterStringTransforms    []filter.FilterStringTransform          `tfsdk:"filter_string_transforms"`
+	FilterHashes              []filter.FilterHash                     `tfsdk:"filter_hashes"`
+	FilterUnixTimeConversions []filter.FilterUnixTimeConversion       `tfsdk:"filter_unixtime_conversions"`
+	Notifications             []jobDefModel.JobDefinitionNotification `tfsdk:"notifications"`
+	Schedules                 []model.Schedule                        `tfsdk:"schedules"`
+	Labels                    []jobDefModel.Label                     `tfsdk:"labels"`
 }
 
 func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() (*client.CreateJobDefinitionInput, diag.Diagnostics) {
 	var labels []string
 	if m.Labels != nil {
-		for _, l := range m.Labels {
-			labels = append(labels, l.Name.ValueString())
+		for _, label := range m.Labels {
+			labels = append(labels, label.Name.ValueString())
 		}
 	}
-	var notifications []params.JobDefinitionNotificationInput
+	var notifications []jobDefParams.JobDefinitionNotificationInput
 	if m.Notifications != nil {
-		for _, n := range m.Notifications {
-			notifications = append(notifications, n.ToInput())
+		for _, notification := range m.Notifications {
+			notifications = append(notifications, notification.ToInput())
 		}
 	}
 	var schedules []parameter.ScheduleInput
@@ -223,41 +223,41 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput() (*client.Creat
 		}
 	}
 
-	var filterColumns []filterParameters.FilterColumnInput
+	var filterColumns []jobDefFilterParams.FilterColumnInput
 	if m.FilterColumns != nil {
-		for _, f := range m.FilterColumns {
-			filterColumns = append(filterColumns, f.ToInput())
+		for _, filter := range m.FilterColumns {
+			filterColumns = append(filterColumns, filter.ToInput())
 		}
 	}
 
-	var filterMasks []filterParameters.FilterMaskInput
-	for _, f := range m.FilterMasks {
-		filterMasks = append(filterMasks, f.ToInput())
+	var filterMasks []jobDefFilterParams.FilterMaskInput
+	for _, filter := range m.FilterMasks {
+		filterMasks = append(filterMasks, filter.ToInput())
 	}
 
-	var filterGsub []filterParameters.FilterGsubInput
-	for _, f := range m.FilterGsub {
-		filterGsub = append(filterGsub, f.ToInput())
+	var filterGsub []jobDefFilterParams.FilterGsubInput
+	for _, filter := range m.FilterGsub {
+		filterGsub = append(filterGsub, filter.ToInput())
 	}
 
-	var filterStringTransforms []filterParameters.FilterStringTransformInput
-	for _, f := range m.FilterStringTransforms {
-		filterStringTransforms = append(filterStringTransforms, f.ToInput())
+	var filterStringTransforms []jobDefFilterParams.FilterStringTransformInput
+	for _, filter := range m.FilterStringTransforms {
+		filterStringTransforms = append(filterStringTransforms, filter.ToInput())
 	}
 
-	var filterHashes []filterParameters.FilterHashInput
-	for _, f := range m.FilterHashes {
-		filterHashes = append(filterHashes, f.ToInput())
+	var filterHashes []jobDefFilterParams.FilterHashInput
+	for _, filter := range m.FilterHashes {
+		filterHashes = append(filterHashes, filter.ToInput())
 	}
 
-	var filterUnixTimeconversions []filterParameters.FilterUnixTimeConversionInput
-	for _, f := range m.FilterUnixTimeConversions {
-		filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
+	var filterUnixTimeconversions []jobDefFilterParams.FilterUnixTimeConversionInput
+	for _, filter := range m.FilterUnixTimeConversions {
+		filterUnixTimeconversions = append(filterUnixTimeconversions, filter.ToInput())
 	}
 
 	var diags diag.Diagnostics
-	inputOption, d := m.InputOption.ToInput()
-	diags.Append(d...)
+	inputOption, diags := m.InputOption.ToInput()
+	// diags.Append(diags...)
 	return &client.CreateJobDefinitionInput{
 		Name:                      m.Name.ValueString(),
 		Description:               model.NewNullableString(m.Description),
@@ -313,7 +313,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		return
 	}
 
-	inputOption, diags := job_definitions.NewInputOption(jobDefinition.InputOption, plan.InputOption)
+	inputOption, diags := jobDefModel.NewInputOption(jobDefinition.InputOption, plan.InputOption)
 	if diags.HasError() {
 		response.Diagnostics.Append(diags...)
 		return
@@ -330,7 +330,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
 		InputOption:               inputOption,
 		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:              job_definitions.NewOutputOption(jobDefinition.OutputOption),
+		OutputOption:              jobDefModel.NewOutputOption(jobDefinition.OutputOption),
 		FilterColumns:             filter.NewFilterColumns(jobDefinition.FilterColumns),
 		FilterRows:                filter.NewFilterRows(jobDefinition.FilterRows),
 		FilterMasks:               filter.NewFilterMasks(jobDefinition.FilterMasks),
@@ -339,9 +339,9 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 		FilterStringTransforms:    filter.NewFilterStringTransforms(jobDefinition.FilterStringTransforms),
 		FilterHashes:              filter.NewFilterHashes(jobDefinition.FilterHashes),
 		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
-		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
+		Notifications:             jobDefModel.NewJobDefinitionNotifications(jobDefinition.Notifications),
 		Schedules:                 model.NewSchedules(jobDefinition.Schedules),
-		Labels:                    job_definitions.NewLabels(jobDefinition.Labels),
+		Labels:                    jobDefModel.NewLabels(jobDefinition.Labels),
 	}
 	response.Diagnostics.Append(response.State.Set(ctx, newState)...)
 }
@@ -349,14 +349,14 @@ func (r *jobDefinitionResource) Update(ctx context.Context, request resource.Upd
 func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() (*client.UpdateJobDefinitionInput, diag.Diagnostics) {
 	labels := []string{}
 	if m.Labels != nil {
-		for _, l := range m.Labels {
-			labels = append(labels, l.Name.ValueString())
+		for _, label := range m.Labels {
+			labels = append(labels, label.Name.ValueString())
 		}
 	}
-	notifications := []params.JobDefinitionNotificationInput{}
+	notifications := []jobDefParams.JobDefinitionNotificationInput{}
 	if m.Notifications != nil {
-		for _, n := range m.Notifications {
-			notifications = append(notifications, n.ToInput())
+		for _, notification := range m.Notifications {
+			notifications = append(notifications, notification.ToInput())
 		}
 	}
 
@@ -367,41 +367,41 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput() (*client.Updat
 		}
 	}
 
-	filterColumns := []filterParameters.FilterColumnInput{}
+	filterColumns := []jobDefFilterParams.FilterColumnInput{}
 	if m.FilterColumns != nil {
-		for _, f := range m.FilterColumns {
-			filterColumns = append(filterColumns, f.ToInput())
+		for _, filter := range m.FilterColumns {
+			filterColumns = append(filterColumns, filter.ToInput())
 		}
 	}
 
-	filterMasks := []filterParameters.FilterMaskInput{}
-	for _, f := range m.FilterMasks {
-		filterMasks = append(filterMasks, f.ToInput())
+	filterMasks := []jobDefFilterParams.FilterMaskInput{}
+	for _, filter := range m.FilterMasks {
+		filterMasks = append(filterMasks, filter.ToInput())
 	}
 
-	filterGsub := []filterParameters.FilterGsubInput{}
-	for _, f := range m.FilterGsub {
-		filterGsub = append(filterGsub, f.ToInput())
+	filterGsub := []jobDefFilterParams.FilterGsubInput{}
+	for _, filter := range m.FilterGsub {
+		filterGsub = append(filterGsub, filter.ToInput())
 	}
 
-	filterStringTransforms := []filterParameters.FilterStringTransformInput{}
-	for _, f := range m.FilterStringTransforms {
-		filterStringTransforms = append(filterStringTransforms, f.ToInput())
+	filterStringTransforms := []jobDefFilterParams.FilterStringTransformInput{}
+	for _, filter := range m.FilterStringTransforms {
+		filterStringTransforms = append(filterStringTransforms, filter.ToInput())
 	}
 
-	filterHashes := []filterParameters.FilterHashInput{}
-	for _, f := range m.FilterHashes {
-		filterHashes = append(filterHashes, f.ToInput())
+	filterHashes := []jobDefFilterParams.FilterHashInput{}
+	for _, filter := range m.FilterHashes {
+		filterHashes = append(filterHashes, filter.ToInput())
 	}
 
-	filterUnixTimeconversions := []filterParameters.FilterUnixTimeConversionInput{}
-	for _, f := range m.FilterUnixTimeConversions {
-		filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
+	filterUnixTimeconversions := []jobDefFilterParams.FilterUnixTimeConversionInput{}
+	for _, filter := range m.FilterUnixTimeConversions {
+		filterUnixTimeconversions = append(filterUnixTimeconversions, filter.ToInput())
 	}
 
 	var diags diag.Diagnostics
-	inputOption, d := m.InputOption.ToUpdateInput()
-	diags.Append(d...)
+	inputOption, diags := m.InputOption.ToUpdateInput()
+	// diags.Append(diags...)
 	return &client.UpdateJobDefinitionInput{
 		Name:                      m.Name.ValueStringPointer(),
 		Description:               model.NewNullableString(m.Description),
@@ -450,7 +450,7 @@ func (r *jobDefinitionResource) Create(
 		return
 	}
 
-	inputOption, diags := job_definitions.NewInputOption(jobDefinition.InputOption, plan.InputOption)
+	inputOption, diags := jobDefModel.NewInputOption(jobDefinition.InputOption, plan.InputOption)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -467,7 +467,7 @@ func (r *jobDefinitionResource) Create(
 		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
 		InputOption:               inputOption,
 		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:              job_definitions.NewOutputOption(jobDefinition.OutputOption),
+		OutputOption:              jobDefModel.NewOutputOption(jobDefinition.OutputOption),
 		FilterColumns:             filter.NewFilterColumns(jobDefinition.FilterColumns),
 		FilterRows:                filter.NewFilterRows(jobDefinition.FilterRows),
 		FilterMasks:               filter.NewFilterMasks(jobDefinition.FilterMasks),
@@ -476,9 +476,9 @@ func (r *jobDefinitionResource) Create(
 		FilterStringTransforms:    filter.NewFilterStringTransforms(jobDefinition.FilterStringTransforms),
 		FilterHashes:              filter.NewFilterHashes(jobDefinition.FilterHashes),
 		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
-		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
+		Notifications:             jobDefModel.NewJobDefinitionNotifications(jobDefinition.Notifications),
 		Schedules:                 model.NewSchedules(jobDefinition.Schedules),
-		Labels:                    job_definitions.NewLabels(jobDefinition.Labels),
+		Labels:                    jobDefModel.NewLabels(jobDefinition.Labels),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -502,7 +502,7 @@ func (r *jobDefinitionResource) Read(
 		)
 		return
 	}
-	inputOption, diags := job_definitions.NewInputOption(jobDefinition.InputOption, state.InputOption)
+	inputOption, diags := jobDefModel.NewInputOption(jobDefinition.InputOption, state.InputOption)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -519,7 +519,7 @@ func (r *jobDefinitionResource) Read(
 		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
 		InputOption:               inputOption,
 		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:              job_definitions.NewOutputOption(jobDefinition.OutputOption),
+		OutputOption:              jobDefModel.NewOutputOption(jobDefinition.OutputOption),
 		FilterColumns:             filter.NewFilterColumns(jobDefinition.FilterColumns),
 		FilterRows:                filter.NewFilterRows(jobDefinition.FilterRows),
 		FilterMasks:               filter.NewFilterMasks(jobDefinition.FilterMasks),
@@ -528,9 +528,9 @@ func (r *jobDefinitionResource) Read(
 		FilterStringTransforms:    filter.NewFilterStringTransforms(jobDefinition.FilterStringTransforms),
 		FilterHashes:              filter.NewFilterHashes(jobDefinition.FilterHashes),
 		FilterUnixTimeConversions: filter.NewFilterUnixTimeConversions(jobDefinition.FilterUnixTimeConversions),
-		Notifications:             job_definitions.NewJobDefinitionNotifications(jobDefinition.Notifications),
+		Notifications:             jobDefModel.NewJobDefinitionNotifications(jobDefinition.Notifications),
 		Schedules:                 model.NewSchedules(jobDefinition.Schedules),
-		Labels:                    job_definitions.NewLabels(jobDefinition.Labels),
+		Labels:                    jobDefModel.NewLabels(jobDefinition.Labels),
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
@@ -541,13 +541,13 @@ func (r *jobDefinitionResource) Delete(
 	req resource.DeleteRequest,
 	resp *resource.DeleteResponse,
 ) {
-	s := &jobDefinitionResourceModel{}
-	resp.Diagnostics.Append(req.State.Get(ctx, s)...)
+	state := &jobDefinitionResourceModel{}
+	resp.Diagnostics.Append(req.State.Get(ctx, state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if err := r.client.DeleteJobDefinition(s.ID.ValueInt64()); err != nil {
+	if err := r.client.DeleteJobDefinition(state.ID.ValueInt64()); err != nil {
 		resp.Diagnostics.AddError(
 			"Deleting job definition",
 			fmt.Sprintf("Unable to delete job definition, got error: %s", err),
@@ -568,15 +568,15 @@ func (r *jobDefinitionResource) ValidateConfig(
 	}
 
 	if data.InputOptionType.ValueString() == "http" {
-		if data.InputOption.HttpInputOption == nil {
+		if data.InputOption.HTTPInputOption == nil {
 			return
 		}
-		httpInputOption := data.InputOption.HttpInputOption
-		validateHttpInputOption(httpInputOption, resp)
+		httpInputOption := data.InputOption.HTTPInputOption
+		validateHTTPInputOption(httpInputOption, resp)
 	}
 }
 
-func validateHttpInputOption(httpInputOption *input_options.HttpInputOption, resp *resource.ValidateConfigResponse) {
+func validateHTTPInputOption(httpInputOption *jobDefInputOptions.HTTPInputOption, resp *resource.ValidateConfigResponse) {
 	// validate that request_body and request_params are not set at the same time
 	bodySet := !httpInputOption.RequestBody.IsNull() && !httpInputOption.RequestBody.IsUnknown()
 	paramsSet := !httpInputOption.RequestParams.IsNull() && len(httpInputOption.RequestParams.Elements()) > 0

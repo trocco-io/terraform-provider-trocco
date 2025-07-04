@@ -15,7 +15,7 @@ type SalesforceOutputOption struct {
 	UpsertKey              types.String `tfsdk:"upsert_key"`
 	IgnoreNulls            types.Bool   `tfsdk:"ignore_nulls"`
 	ThrowIfFailed          types.Bool   `tfsdk:"throw_if_failed"`
-	SalesforceConnectionId types.Int64  `tfsdk:"salesforce_connection_id"`
+	SalesforceConnectionID types.Int64  `tfsdk:"salesforce_connection_id"`
 }
 
 func NewSalesforceOutputOption(salesforceOutputOption *output_option.SalesforceOutputOption) *SalesforceOutputOption {
@@ -30,7 +30,7 @@ func NewSalesforceOutputOption(salesforceOutputOption *output_option.SalesforceO
 		UpsertKey:              types.StringPointerValue(salesforceOutputOption.UpsertKey),
 		IgnoreNulls:            types.BoolValue(salesforceOutputOption.IgnoreNulls),
 		ThrowIfFailed:          types.BoolValue(salesforceOutputOption.ThrowIfFailed),
-		SalesforceConnectionId: types.Int64Value(salesforceOutputOption.SalesforceConnectionId),
+		SalesforceConnectionID: types.Int64Value(salesforceOutputOption.SalesforceConnectionID),
 	}
 }
 
@@ -46,7 +46,7 @@ func (salesforceOutputOption *SalesforceOutputOption) ToInput() *output_options2
 		UpsertKey:              model.NewNullableString(salesforceOutputOption.UpsertKey),
 		IgnoreNulls:            model.NewNullableBool(salesforceOutputOption.IgnoreNulls),
 		ThrowIfFailed:          model.NewNullableBool(salesforceOutputOption.ThrowIfFailed),
-		SalesforceConnectionId: salesforceOutputOption.SalesforceConnectionId.ValueInt64(),
+		SalesforceConnectionID: salesforceOutputOption.SalesforceConnectionID.ValueInt64(),
 	}
 }
 
@@ -62,6 +62,6 @@ func (salesforceOutputOption *SalesforceOutputOption) ToUpdateInput() *output_op
 		UpsertKey:              model.NewNullableString(salesforceOutputOption.UpsertKey),
 		IgnoreNulls:            model.NewNullableBool(salesforceOutputOption.IgnoreNulls),
 		ThrowIfFailed:          model.NewNullableBool(salesforceOutputOption.ThrowIfFailed),
-		SalesforceConnectionId: salesforceOutputOption.SalesforceConnectionId.ValueInt64Pointer(),
+		SalesforceConnectionID: salesforceOutputOption.SalesforceConnectionID.ValueInt64Pointer(),
 	}
 }

@@ -9,10 +9,10 @@ import (
 	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
 	outputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/output_option"
 	"terraform-provider-trocco/internal/client/parameter"
-	job_definitions "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefinitions "terraform-provider-trocco/internal/client/parameter/job_definition"
 	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
-	input_options "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
-	output_options "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
+	inputOptions "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	outputOptions "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
 )
 
 type JobDefinition struct {
@@ -61,7 +61,7 @@ type CreateJobDefinitionInput struct {
 	OutputOption              OutputOptionInput                                              `json:"output_option"`
 	Labels                    []string                                                       `json:"labels"`
 	Schedules                 []parameter.ScheduleInput                                      `json:"schedules"`
-	Notifications             []job_definitions.JobDefinitionNotificationInput               `json:"notifications"`
+	Notifications             []jobDefinitions.JobDefinitionNotificationInput                `json:"notifications"`
 }
 
 type UpdateJobDefinitionInput struct {
@@ -83,7 +83,7 @@ type UpdateJobDefinitionInput struct {
 	OutputOption              *UpdateOutputOptionInput                                       `json:"output_option,omitempty"`
 	Labels                    *[]string                                                      `json:"labels,omitempty"`
 	Schedules                 *[]parameter.ScheduleInput                                     `json:"schedules,omitempty"`
-	Notifications             *[]job_definitions.JobDefinitionNotificationInput              `json:"notifications,omitempty"`
+	Notifications             *[]jobDefinitions.JobDefinitionNotificationInput               `json:"notifications,omitempty"`
 }
 
 type InputOption struct {
@@ -96,39 +96,39 @@ type InputOption struct {
 	BigqueryInputOption           *inputOptionEntities.BigqueryInputOption           `json:"bigquery_input_option"`
 	PostgreSQLInputOption         *inputOptionEntities.PostgreSQLInputOption         `json:"postgresql_input_option"`
 	GoogleAnalytics4InputOption   *inputOptionEntities.GoogleAnalytics4InputOption   `json:"google_analytics4_input_option"`
-	HttpInputOption               *inputOptionEntities.HttpInputOption               `json:"http_input_option"`
+	HTTPInputOption               *inputOptionEntities.HTTPInputOption               `json:"http_input_option"`
 	KintoneInputOption            *inputOptionEntities.KintoneInputOption            `json:"kintone_input_option"`
 	YahooAdsApiYssInputOption     *inputOptionEntities.YahooAdsApiYssInputOption     `json:"yahoo_ads_api_yss_input_option"`
 }
 
 type InputOptionInput struct {
-	MySQLInputOption              *parameter.NullableObject[input_options.MySQLInputOptionInput]              `json:"mysql_input_option,omitempty"`
-	GcsInputOption                *parameter.NullableObject[input_options.GcsInputOptionInput]                `json:"gcs_input_option,omitempty"`
-	SnowflakeInputOption          *parameter.NullableObject[input_options.SnowflakeInputOptionInput]          `json:"snowflake_input_option,omitempty"`
-	SalesforceInputOption         *parameter.NullableObject[input_options.SalesforceInputOptionInput]         `json:"salesforce_input_option,omitempty"`
-	GoogleSpreadsheetsInputOption *parameter.NullableObject[input_options.GoogleSpreadsheetsInputOptionInput] `json:"google_spreadsheets_input_option,omitempty"`
-	S3InputOption                 *parameter.NullableObject[input_options.S3InputOptionInput]                 `json:"s3_input_option,omitempty"`
-	BigqueryInputOption           *parameter.NullableObject[input_options.BigqueryInputOptionInput]           `json:"bigquery_input_option,omitempty"`
-	PostgreSQLInputOption         *parameter.NullableObject[input_options.PostgreSQLInputOptionInput]         `json:"postgresql_input_option,omitempty"`
-	GoogleAnalytics4InputOption   *parameter.NullableObject[input_options.GoogleAnalytics4InputOptionInput]   `json:"google_analytics4_input_option,omitempty"`
-	HttpInputOption               *parameter.NullableObject[input_options.HttpInputOptionInput]               `json:"http_input_option,omitempty"`
-	KintoneInputOption            *parameter.NullableObject[input_options.KintoneInputOptionInput]            `json:"kintone_input_option,omitempty"`
-	YahooAdsApiYssInputOption     *parameter.NullableObject[input_options.YahooAdsApiYssInputOptionInput]     `json:"yahoo_ads_api_yss_input_option,omitempty"`
+	MySQLInputOption              *parameter.NullableObject[inputOptions.MySQLInputOptionInput]              `json:"mysql_input_option,omitempty"`
+	GcsInputOption                *parameter.NullableObject[inputOptions.GcsInputOptionInput]                `json:"gcs_input_option,omitempty"`
+	SnowflakeInputOption          *parameter.NullableObject[inputOptions.SnowflakeInputOptionInput]          `json:"snowflake_input_option,omitempty"`
+	SalesforceInputOption         *parameter.NullableObject[inputOptions.SalesforceInputOptionInput]         `json:"salesforce_input_option,omitempty"`
+	GoogleSpreadsheetsInputOption *parameter.NullableObject[inputOptions.GoogleSpreadsheetsInputOptionInput] `json:"google_spreadsheets_input_option,omitempty"`
+	S3InputOption                 *parameter.NullableObject[inputOptions.S3InputOptionInput]                 `json:"s3_input_option,omitempty"`
+	BigqueryInputOption           *parameter.NullableObject[inputOptions.BigqueryInputOptionInput]           `json:"bigquery_input_option,omitempty"`
+	PostgreSQLInputOption         *parameter.NullableObject[inputOptions.PostgreSQLInputOptionInput]         `json:"postgresql_input_option,omitempty"`
+	GoogleAnalytics4InputOption   *parameter.NullableObject[inputOptions.GoogleAnalytics4InputOptionInput]   `json:"google_analytics4_input_option,omitempty"`
+	HTTPInputOption               *parameter.NullableObject[inputOptions.HTTPInputOptionInput]               `json:"http_input_option,omitempty"`
+	KintoneInputOption            *parameter.NullableObject[inputOptions.KintoneInputOptionInput]            `json:"kintone_input_option,omitempty"`
+	YahooAdsApiYssInputOption     *parameter.NullableObject[inputOptions.YahooAdsApiYssInputOptionInput]     `json:"yahoo_ads_api_yss_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
-	MySQLInputOption              *parameter.NullableObject[input_options.UpdateMySQLInputOptionInput]              `json:"mysql_input_option,omitempty"`
-	GcsInputOption                *parameter.NullableObject[input_options.UpdateGcsInputOptionInput]                `json:"gcs_input_option,omitempty"`
-	SnowflakeInputOption          *parameter.NullableObject[input_options.UpdateSnowflakeInputOptionInput]          `json:"snowflake_input_option,omitempty"`
-	SalesforceInputOption         *parameter.NullableObject[input_options.UpdateSalesforceInputOptionInput]         `json:"salesforce_input_option,omitempty"`
-	GoogleSpreadsheetsInputOption *parameter.NullableObject[input_options.UpdateGoogleSpreadsheetsInputOptionInput] `json:"google_spreadsheets_input_option,omitempty"`
-	S3InputOption                 *parameter.NullableObject[input_options.UpdateS3InputOptionInput]                 `json:"s3_input_option,omitempty"`
-	BigqueryInputOption           *parameter.NullableObject[input_options.UpdateBigqueryInputOptionInput]           `json:"bigquery_input_option,omitempty"`
-	PostgreSQLInputOption         *parameter.NullableObject[input_options.UpdatePostgreSQLInputOptionInput]         `json:"postgresql_input_option,omitempty"`
-	GoogleAnalytics4InputOption   *parameter.NullableObject[input_options.UpdateGoogleAnalytics4InputOptionInput]   `json:"google_analytics4_input_option,omitempty"`
-	HttpInputOption               *parameter.NullableObject[input_options.UpdateHttpInputOptionInput]               `json:"http_input_option,omitempty"`
-	KintoneInputOption            *parameter.NullableObject[input_options.UpdateKintoneInputOptionInput]            `json:"kintone_input_option,omitempty"`
-	YahooAdsApiYssInputOption     *parameter.NullableObject[input_options.UpdateYahooAdsApiYssInputOptionInput]     `json:"yahoo_ads_api_yss_input_option,omitempty"`
+	MySQLInputOption              *parameter.NullableObject[inputOptions.UpdateMySQLInputOptionInput]              `json:"mysql_input_option,omitempty"`
+	GcsInputOption                *parameter.NullableObject[inputOptions.UpdateGcsInputOptionInput]                `json:"gcs_input_option,omitempty"`
+	SnowflakeInputOption          *parameter.NullableObject[inputOptions.UpdateSnowflakeInputOptionInput]          `json:"snowflake_input_option,omitempty"`
+	SalesforceInputOption         *parameter.NullableObject[inputOptions.UpdateSalesforceInputOptionInput]         `json:"salesforce_input_option,omitempty"`
+	GoogleSpreadsheetsInputOption *parameter.NullableObject[inputOptions.UpdateGoogleSpreadsheetsInputOptionInput] `json:"google_spreadsheets_input_option,omitempty"`
+	S3InputOption                 *parameter.NullableObject[inputOptions.UpdateS3InputOptionInput]                 `json:"s3_input_option,omitempty"`
+	BigqueryInputOption           *parameter.NullableObject[inputOptions.UpdateBigqueryInputOptionInput]           `json:"bigquery_input_option,omitempty"`
+	PostgreSQLInputOption         *parameter.NullableObject[inputOptions.UpdatePostgreSQLInputOptionInput]         `json:"postgresql_input_option,omitempty"`
+	GoogleAnalytics4InputOption   *parameter.NullableObject[inputOptions.UpdateGoogleAnalytics4InputOptionInput]   `json:"google_analytics4_input_option,omitempty"`
+	HTTPInputOption               *parameter.NullableObject[inputOptions.UpdateHTTPInputOptionInput]               `json:"http_input_option,omitempty"`
+	KintoneInputOption            *parameter.NullableObject[inputOptions.UpdateKintoneInputOptionInput]            `json:"kintone_input_option,omitempty"`
+	YahooAdsApiYssInputOption     *parameter.NullableObject[inputOptions.UpdateYahooAdsApiYssInputOptionInput]     `json:"yahoo_ads_api_yss_input_option,omitempty"`
 }
 
 type OutputOption struct {
@@ -139,17 +139,17 @@ type OutputOption struct {
 }
 
 type OutputOptionInput struct {
-	BigQueryOutputOption           *parameter.NullableObject[output_options.BigQueryOutputOptionInput]           `json:"bigquery_output_option,omitempty"`
-	SnowflakeOutputOption          *parameter.NullableObject[output_options.SnowflakeOutputOptionInput]          `json:"snowflake_output_option,omitempty"`
-	SalesforceOutputOption         *parameter.NullableObject[output_options.SalesforceOutputOptionInput]         `json:"salesforce_output_option,omitempty"`
-	GoogleSpreadsheetsOutputOption *parameter.NullableObject[output_options.GoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
+	BigQueryOutputOption           *parameter.NullableObject[outputOptions.BigQueryOutputOptionInput]           `json:"bigquery_output_option,omitempty"`
+	SnowflakeOutputOption          *parameter.NullableObject[outputOptions.SnowflakeOutputOptionInput]          `json:"snowflake_output_option,omitempty"`
+	SalesforceOutputOption         *parameter.NullableObject[outputOptions.SalesforceOutputOptionInput]         `json:"salesforce_output_option,omitempty"`
+	GoogleSpreadsheetsOutputOption *parameter.NullableObject[outputOptions.GoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
-	BigQueryOutputOption           *parameter.NullableObject[output_options.UpdateBigQueryOutputOptionInput]           `json:"bigquery_output_option,omitempty"`
-	SnowflakeOutputOption          *parameter.NullableObject[output_options.UpdateSnowflakeOutputOptionInput]          `json:"snowflake_output_option,omitempty"`
-	SalesforceOutputOption         *parameter.NullableObject[output_options.UpdateSalesforceOutputOptionInput]         `json:"salesforce_output_option,omitempty"`
-	GoogleSpreadsheetsOutputOption *parameter.NullableObject[output_options.UpdateGoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
+	BigQueryOutputOption           *parameter.NullableObject[outputOptions.UpdateBigQueryOutputOptionInput]           `json:"bigquery_output_option,omitempty"`
+	SnowflakeOutputOption          *parameter.NullableObject[outputOptions.UpdateSnowflakeOutputOptionInput]          `json:"snowflake_output_option,omitempty"`
+	SalesforceOutputOption         *parameter.NullableObject[outputOptions.UpdateSalesforceOutputOptionInput]         `json:"salesforce_output_option,omitempty"`
+	GoogleSpreadsheetsOutputOption *parameter.NullableObject[outputOptions.UpdateGoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {
