@@ -1,7 +1,7 @@
 package parser
 
 import (
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	params "terraform-provider-trocco/internal/client/parameter/job_definition"
 	"terraform-provider-trocco/internal/provider/model"
 
@@ -20,7 +20,7 @@ type LtsvParserColumn struct {
 	Format types.String `tfsdk:"format"`
 }
 
-func NewLtsvParser(ltsvParser *job_definitions.LtsvParser) *LtsvParser {
+func NewLtsvParser(ltsvParser *jobDefinitions.LtsvParser) *LtsvParser {
 	if ltsvParser == nil {
 		return nil
 	}

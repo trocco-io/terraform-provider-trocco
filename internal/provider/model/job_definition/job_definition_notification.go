@@ -1,7 +1,7 @@
 package job_definitions
 
 import (
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	params "terraform-provider-trocco/internal/client/parameter/job_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 
@@ -21,7 +21,7 @@ type JobDefinitionNotification struct {
 	Minutes          types.Int64                    `tfsdk:"minutes"`
 }
 
-func NewJobDefinitionNotifications(jobDefinitionNotifications []job_definitions.JobDefinitionNotification) []JobDefinitionNotification {
+func NewJobDefinitionNotifications(jobDefinitionNotifications []jobDefinitions.JobDefinitionNotification) []JobDefinitionNotification {
 	if jobDefinitionNotifications == nil {
 		return nil
 	}

@@ -32,9 +32,9 @@ func TestAccJobDefinitionResourceMysqlToBigQuery(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources["trocco_job_definition.mysql_to_bigquery"].Primary.ID
+					jobDefinitionID := s.RootModule().Resources["trocco_job_definition.mysql_to_bigquery"].Primary.ID
 
-					return jobDefinitionId, nil
+					return jobDefinitionID, nil
 				},
 			},
 		},
@@ -62,8 +62,8 @@ func TestAccJobDefinitionResourceS3ToSnowflake(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources["trocco_job_definition.s3_test"].Primary.ID
-					return jobDefinitionId, nil
+					jobDefinitionID := s.RootModule().Resources["trocco_job_definition.s3_test"].Primary.ID
+					return jobDefinitionID, nil
 				},
 			},
 		},
@@ -109,8 +109,8 @@ func TestAccJobDefinitionResourceGoogleAnalytics4ToSnowflake(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
-					return jobDefinitionId, nil
+					jobDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionID, nil
 				},
 			},
 			// Update testing with null dimension
@@ -185,8 +185,8 @@ func TestAccJobDefinitionResourceKintoneToSnowflake(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
-					return jobDefinitionId, nil
+					jobDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionID, nil
 				},
 			},
 		},
@@ -241,8 +241,8 @@ func TestAccJobDefinitionResourceGoogleSpreadsheetToGoogleSpreadsheet(t *testing
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
-					return jobDefinitionId, nil
+					jobDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionID, nil
 				},
 			},
 		},
@@ -281,8 +281,8 @@ func TestAccJobDefinitionResourceGcsToBigQuery(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
-					return jobDefinitionId, nil
+					jobDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionID, nil
 				},
 			},
 		},
@@ -321,8 +321,8 @@ func TestAccJobDefinitionResourcePostgresqlToBigQuery(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
-					return jobDefinitionId, nil
+					jobDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionID, nil
 				},
 			},
 		},
@@ -367,8 +367,8 @@ func TestAccJobDefinitionResourceS3ToBigQuery(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
-					return jobDefinitionId, nil
+					jobDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionID, nil
 				},
 			},
 		},
@@ -408,8 +408,8 @@ func TestAccJobDefinitionResourceSalesforceToBigQuery(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
-					return jobDefinitionId, nil
+					jobDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionID, nil
 				},
 			},
 		},
@@ -449,8 +449,8 @@ func TestAccJobDefinitionResourceBigQueryToSnowflake(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
-					return jobDefinitionId, nil
+					jobDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionID, nil
 				},
 			},
 		},
@@ -493,15 +493,15 @@ func TestAccJobDefinitionResourceSnowflakeToBigQuery(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
-					return jobDefinitionId, nil
+					jobDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionID, nil
 				},
 			},
 		},
 	})
 }
 
-func TestAccJobDefinitionResourceHttpToBigQuery(t *testing.T) {
+func TestAccJobDefinitionResourceHTTPToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.http_to_bigquery"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -532,15 +532,15 @@ func TestAccJobDefinitionResourceHttpToBigQuery(t *testing.T) {
 				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
-					return jobDefinitionId, nil
+					jobDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionID, nil
 				},
 			},
 		},
 	})
 }
 
-func TestAccJobDefinitionResourceHttpToBigQueryInvalid(t *testing.T) {
+func TestAccJobDefinitionResourceHTTPToBigQueryInvalid(t *testing.T) {
 	resourceName := "trocco_job_definition.http_to_bigquery"
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -601,8 +601,8 @@ func TestAccJobDefinitionResourceNotifications(t *testing.T) {
 					"notifications.1.message",
 				},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
-					return jobDefinitionId, nil
+					jobDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionID, nil
 				},
 			},
 		},

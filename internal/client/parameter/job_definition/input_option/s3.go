@@ -2,7 +2,7 @@ package input_options
 
 import (
 	"terraform-provider-trocco/internal/client/parameter"
-	job_definitions "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefinitions "terraform-provider-trocco/internal/client/parameter/job_definition"
 )
 
 type S3InputOptionInput struct {
@@ -15,15 +15,15 @@ type S3InputOptionInput struct {
 	IsSkipHeaderLine          *parameter.NullableBool                 `json:"is_skip_header_line,omitempty"`
 	StopWhenFileNotFound      *parameter.NullableBool                 `json:"stop_when_file_not_found,omitempty"`
 	DecompressionType         *parameter.NullableString               `json:"decompression_type,omitempty"`
-	CsvParser                 *job_definitions.CsvParserInput         `json:"csv_parser,omitempty"`
-	JsonlParser               *job_definitions.JsonlParserInput       `json:"jsonl_parser,omitempty"`
-	JsonpathParser            *job_definitions.JsonpathParserInput    `json:"jsonpath_parser,omitempty"`
-	LtsvParser                *job_definitions.LtsvParserInput        `json:"ltsv_parser,omitempty"`
-	ExcelParser               *job_definitions.ExcelParserInput       `json:"excel_parser,omitempty"`
-	XmlParser                 *job_definitions.XmlParserInput         `json:"xml_parser,omitempty"`
-	ParquetParser             *job_definitions.ParquetParserInput     `json:"parquet_parser,omitempty"`
+	CsvParser                 *jobDefinitions.CsvParserInput          `json:"csv_parser,omitempty"`
+	JsonlParser               *jobDefinitions.JsonlParserInput        `json:"jsonl_parser,omitempty"`
+	JsonpathParser            *jobDefinitions.JsonpathParserInput     `json:"jsonpath_parser,omitempty"`
+	LtsvParser                *jobDefinitions.LtsvParserInput         `json:"ltsv_parser,omitempty"`
+	ExcelParser               *jobDefinitions.ExcelParserInput        `json:"excel_parser,omitempty"`
+	XmlParser                 *jobDefinitions.XmlParserInput          `json:"xml_parser,omitempty"`
+	ParquetParser             *jobDefinitions.ParquetParserInput      `json:"parquet_parser,omitempty"`
 	CustomVariableSettings    *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
-	Decoder                   *job_definitions.DecoderInput           `json:"decoder,omitempty"`
+	Decoder                   *jobDefinitions.DecoderInput            `json:"decoder,omitempty"`
 }
 
 type UpdateS3InputOptionInput struct {
@@ -36,13 +36,13 @@ type UpdateS3InputOptionInput struct {
 	IsSkipHeaderLine          *parameter.NullableBool                 `json:"is_skip_header_line,omitempty"`
 	StopWhenFileNotFound      *parameter.NullableBool                 `json:"stop_when_file_not_found,omitempty"`
 	DecompressionType         *parameter.NullableString               `json:"decompression_type,omitempty"`
-	CsvParser                 *job_definitions.CsvParserInput         `json:"csv_parser,omitempty"`
-	JsonlParser               *job_definitions.JsonlParserInput       `json:"jsonl_parser,omitempty"`
-	JsonpathParser            *job_definitions.JsonpathParserInput    `json:"jsonpath_parser,omitempty"`
-	LtsvParser                *job_definitions.LtsvParserInput        `json:"ltsv_parser,omitempty"`
-	ExcelParser               *job_definitions.ExcelParserInput       `json:"excel_parser,omitempty"`
-	XmlParser                 *job_definitions.XmlParserInput         `json:"xml_parser,omitempty"`
-	ParquetParser             *job_definitions.ParquetParserInput     `json:"parquet_parser,omitempty"`
+	CsvParser                 *jobDefinitions.CsvParserInput          `json:"csv_parser,omitempty"`
+	JsonlParser               *jobDefinitions.JsonlParserInput        `json:"jsonl_parser,omitempty"`
+	JsonpathParser            *jobDefinitions.JsonpathParserInput     `json:"jsonpath_parser,omitempty"`
+	LtsvParser                *jobDefinitions.LtsvParserInput         `json:"ltsv_parser,omitempty"`
+	ExcelParser               *jobDefinitions.ExcelParserInput        `json:"excel_parser,omitempty"`
+	XmlParser                 *jobDefinitions.XmlParserInput          `json:"xml_parser,omitempty"`
+	ParquetParser             *jobDefinitions.ParquetParserInput      `json:"parquet_parser,omitempty"`
 	CustomVariableSettings    *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
-	Decoder                   *job_definitions.DecoderInput           `json:"decoder,omitempty"`
+	Decoder                   *jobDefinitions.DecoderInput            `json:"decoder,omitempty"`
 }

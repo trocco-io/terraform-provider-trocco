@@ -2,7 +2,7 @@ package input_options
 
 import (
 	"terraform-provider-trocco/internal/client/parameter"
-	job_definitions "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefinitions "terraform-provider-trocco/internal/client/parameter/job_definition"
 )
 
 type RequestParamInput struct {
@@ -17,7 +17,7 @@ type RequestHeaderInput struct {
 	Masking *bool  `json:"masking,omitempty"`
 }
 
-type HttpInputOptionInput struct {
+type HTTPInputOptionInput struct {
 	URL                                   string                                  `json:"url"`
 	Method                                string                                  `json:"method"`
 	UserAgent                             *parameter.NullableString               `json:"user_agent,omitempty"`
@@ -42,15 +42,15 @@ type HttpInputOptionInput struct {
 	RetryInterval                         *parameter.NullableInt64                `json:"retry_interval,omitempty"`
 	RequestInterval                       *parameter.NullableInt64                `json:"request_interval,omitempty"`
 	CustomVariableSettings                *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
-	CsvParser                             *job_definitions.CsvParserInput         `json:"csv_parser,omitempty"`
-	JsonlParser                           *job_definitions.JsonlParserInput       `json:"jsonl_parser,omitempty"`
-	JsonpathParser                        *job_definitions.JsonpathParserInput    `json:"jsonpath_parser,omitempty"`
-	LtsvParser                            *job_definitions.LtsvParserInput        `json:"ltsv_parser,omitempty"`
-	ExcelParser                           *job_definitions.ExcelParserInput       `json:"excel_parser,omitempty"`
-	XmlParser                             *job_definitions.XmlParserInput         `json:"xml_parser,omitempty"`
+	CsvParser                             *jobDefinitions.CsvParserInput          `json:"csv_parser,omitempty"`
+	JsonlParser                           *jobDefinitions.JsonlParserInput        `json:"jsonl_parser,omitempty"`
+	JsonpathParser                        *jobDefinitions.JsonpathParserInput     `json:"jsonpath_parser,omitempty"`
+	LtsvParser                            *jobDefinitions.LtsvParserInput         `json:"ltsv_parser,omitempty"`
+	ExcelParser                           *jobDefinitions.ExcelParserInput        `json:"excel_parser,omitempty"`
+	XmlParser                             *jobDefinitions.XmlParserInput          `json:"xml_parser,omitempty"`
 }
 
-type UpdateHttpInputOptionInput struct {
+type UpdateHTTPInputOptionInput struct {
 	URL                                   *string                                 `json:"url,omitempty"`
 	Method                                *string                                 `json:"method,omitempty"`
 	UserAgent                             *parameter.NullableString               `json:"user_agent,omitempty"`
@@ -75,10 +75,10 @@ type UpdateHttpInputOptionInput struct {
 	RetryInterval                         *parameter.NullableInt64                `json:"retry_interval,omitempty"`
 	RequestInterval                       *parameter.NullableInt64                `json:"request_interval,omitempty"`
 	CustomVariableSettings                *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
-	CsvParser                             *job_definitions.CsvParserInput         `json:"csv_parser,omitempty"`
-	JsonlParser                           *job_definitions.JsonlParserInput       `json:"jsonl_parser,omitempty"`
-	JsonpathParser                        *job_definitions.JsonpathParserInput    `json:"jsonpath_parser,omitempty"`
-	LtsvParser                            *job_definitions.LtsvParserInput        `json:"ltsv_parser,omitempty"`
-	ExcelParser                           *job_definitions.ExcelParserInput       `json:"excel_parser,omitempty"`
-	XmlParser                             *job_definitions.XmlParserInput         `json:"xml_parser,omitempty"`
+	CsvParser                             *jobDefinitions.CsvParserInput          `json:"csv_parser,omitempty"`
+	JsonlParser                           *jobDefinitions.JsonlParserInput        `json:"jsonl_parser,omitempty"`
+	JsonpathParser                        *jobDefinitions.JsonpathParserInput     `json:"jsonpath_parser,omitempty"`
+	LtsvParser                            *jobDefinitions.LtsvParserInput         `json:"ltsv_parser,omitempty"`
+	ExcelParser                           *jobDefinitions.ExcelParserInput        `json:"excel_parser,omitempty"`
+	XmlParser                             *jobDefinitions.XmlParserInput          `json:"xml_parser,omitempty"`
 }

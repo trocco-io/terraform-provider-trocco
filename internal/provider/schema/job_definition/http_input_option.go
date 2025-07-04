@@ -15,7 +15,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
-func HttpInputOptionSchema() schema.Attribute {
+func HTTPInputOptionSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Optional:            true,
 		MarkdownDescription: "Attributes about source HTTP",

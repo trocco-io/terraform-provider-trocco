@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"terraform-provider-trocco/internal/client"
-	notification_parameter "terraform-provider-trocco/internal/client/parameter/notification_destination"
+	notificationParameter "terraform-provider-trocco/internal/client/parameter/notification_destination"
 	"terraform-provider-trocco/internal/provider/model/notification_destination"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
@@ -49,13 +49,13 @@ func (m *notificationDestinationResourceModel) ToCreateNotificationDestinationIn
 	switch m.Type.ValueString() {
 	case "email":
 		if m.EmailConfig != nil {
-			input.EmailConfig = &notification_parameter.EmailConfigInput{
+			input.EmailConfig = &notificationParameter.EmailConfigInput{
 				Email: m.EmailConfig.Email.ValueStringPointer(),
 			}
 		}
 	case "slack_channel":
 		if m.SlackChannelConfig != nil {
-			input.SlackChannelConfig = &notification_parameter.SlackChannelConfigInput{
+			input.SlackChannelConfig = &notificationParameter.SlackChannelConfigInput{
 				Channel:    m.SlackChannelConfig.Channel.ValueStringPointer(),
 				WebhookURL: m.SlackChannelConfig.WebhookURL.ValueStringPointer(),
 			}
@@ -71,13 +71,13 @@ func (m *notificationDestinationResourceModel) ToUpdateNotificationDestinationIn
 	switch m.Type.ValueString() {
 	case "email":
 		if m.EmailConfig != nil {
-			input.EmailConfig = &notification_parameter.EmailConfigInput{
+			input.EmailConfig = &notificationParameter.EmailConfigInput{
 				Email: m.EmailConfig.Email.ValueStringPointer(),
 			}
 		}
 	case "slack_channel":
 		if m.SlackChannelConfig != nil {
-			input.SlackChannelConfig = &notification_parameter.SlackChannelConfigInput{
+			input.SlackChannelConfig = &notificationParameter.SlackChannelConfigInput{
 				Channel:    m.SlackChannelConfig.Channel.ValueStringPointer(),
 				WebhookURL: m.SlackChannelConfig.WebhookURL.ValueStringPointer(),
 			}

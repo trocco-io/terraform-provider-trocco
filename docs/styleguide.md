@@ -1,5 +1,9 @@
 # Styleguide
 
+## Naming Conventions
+
+- Use names for import aliases and variables that are descriptive and consistent in the project
+
 ## Validations
 
 If you need to validate a single field, use validators.

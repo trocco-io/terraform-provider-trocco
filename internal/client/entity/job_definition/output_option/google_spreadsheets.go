@@ -5,7 +5,7 @@ import (
 )
 
 type GoogleSpreadsheetsOutputOption struct {
-	GoogleSpreadsheetsConnectionId      int64                                  `json:"google_spreadsheets_connection_id"`
+	GoogleSpreadsheetsConnectionID      int64                                  `json:"google_spreadsheets_connection_id"`
 	SpreadsheetsID                      string                                 `json:"spreadsheets_id"`
 	WorksheetTitle                      string                                 `json:"worksheet_title"`
 	Timezone                            string                                 `json:"timezone"`

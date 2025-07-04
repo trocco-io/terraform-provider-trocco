@@ -7,5 +7,5 @@ type SalesforceOutputOption struct {
 	UpsertKey              *string `json:"upsert_key"`
 	IgnoreNulls            bool    `json:"ignore_nulls"`
 	ThrowIfFailed          bool    `json:"throw_if_failed"`
-	SalesforceConnectionId int64   `json:"salesforce_connection_id"`
+	SalesforceConnectionID int64   `json:"salesforce_connection_id"`
 }

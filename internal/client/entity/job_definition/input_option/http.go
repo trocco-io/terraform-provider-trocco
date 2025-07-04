@@ -2,7 +2,7 @@ package input_option
 
 import (
 	"terraform-provider-trocco/internal/client/entity"
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitions "terraform-provider-trocco/internal/client/entity/job_definition"
 )
 
 type RequestParam struct {
@@ -16,7 +16,7 @@ type RequestHeader struct {
 	Masking *bool  `json:"masking"`
 }
 
-type HttpInputOption struct {
+type HTTPInputOption struct {
 	URL                                   string                          `json:"url"`
 	Method                                string                          `json:"method"`
 	UserAgent                             *string                         `json:"user_agent"`
@@ -41,11 +41,11 @@ type HttpInputOption struct {
 	RetryInterval                         *int64                          `json:"retry_interval"`
 	RequestInterval                       *int64                          `json:"request_interval"`
 	CustomVariableSettings                *[]entity.CustomVariableSetting `json:"custom_variable_settings"`
-	CsvParser                             *job_definitions.CsvParser      `json:"csv_parser"`
-	JsonlParser                           *job_definitions.JsonlParser    `json:"jsonl_parser"`
-	JsonpathParser                        *job_definitions.JsonpathParser `json:"jsonpath_parser"`
-	LtsvParser                            *job_definitions.LtsvParser     `json:"ltsv_parser"`
-	ExcelParser                           *job_definitions.ExcelParser    `json:"excel_parser"`
-	XmlParser                             *job_definitions.XmlParser      `json:"xml_parser"`
-	ParquetParser                         *job_definitions.ParquetParser  `json:"parquet_parser"`
+	CsvParser                             *jobDefinitions.CsvParser       `json:"csv_parser"`
+	JsonlParser                           *jobDefinitions.JsonlParser     `json:"jsonl_parser"`
+	JsonpathParser                        *jobDefinitions.JsonpathParser  `json:"jsonpath_parser"`
+	LtsvParser                            *jobDefinitions.LtsvParser      `json:"ltsv_parser"`
+	ExcelParser                           *jobDefinitions.ExcelParser     `json:"excel_parser"`
+	XmlParser                             *jobDefinitions.XmlParser       `json:"xml_parser"`
+	ParquetParser                         *jobDefinitions.ParquetParser   `json:"parquet_parser"`
 }

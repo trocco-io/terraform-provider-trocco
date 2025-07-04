@@ -9,7 +9,7 @@ import (
 )
 
 type GoogleSpreadsheetsOutputOption struct {
-	GoogleSpreadsheetsConnectionId      types.Int64                            `tfsdk:"google_spreadsheets_connection_id"`
+	GoogleSpreadsheetsConnectionID      types.Int64                            `tfsdk:"google_spreadsheets_connection_id"`
 	SpreadsheetsID                      types.String                           `tfsdk:"spreadsheets_id"`
 	WorksheetTitle                      types.String                           `tfsdk:"worksheet_title"`
 	Timezone                            types.String                           `tfsdk:"timezone"`
@@ -30,7 +30,7 @@ func NewGoogleSpreadsheetsOutputOption(googleSpreadsheetsOutputOption *output_op
 	}
 
 	return &GoogleSpreadsheetsOutputOption{
-		GoogleSpreadsheetsConnectionId:      types.Int64Value(googleSpreadsheetsOutputOption.GoogleSpreadsheetsConnectionId),
+		GoogleSpreadsheetsConnectionID:      types.Int64Value(googleSpreadsheetsOutputOption.GoogleSpreadsheetsConnectionID),
 		SpreadsheetsID:                      types.StringValue(googleSpreadsheetsOutputOption.SpreadsheetsID),
 		WorksheetTitle:                      types.StringValue(googleSpreadsheetsOutputOption.WorksheetTitle),
 		Timezone:                            types.StringValue(googleSpreadsheetsOutputOption.Timezone),
@@ -63,7 +63,7 @@ func (outputOption *GoogleSpreadsheetsOutputOption) ToInput() *parameter.GoogleS
 	}
 
 	return &parameter.GoogleSpreadsheetsOutputOptionInput{
-		GoogleSpreadsheetsConnectionId:      outputOption.GoogleSpreadsheetsConnectionId.ValueInt64(),
+		GoogleSpreadsheetsConnectionID:      outputOption.GoogleSpreadsheetsConnectionID.ValueInt64(),
 		SpreadsheetsID:                      outputOption.SpreadsheetsID.ValueString(),
 		WorksheetTitle:                      outputOption.WorksheetTitle.ValueString(),
 		Timezone:                            outputOption.Timezone.ValueString(),
@@ -80,7 +80,7 @@ func (outputOption *GoogleSpreadsheetsOutputOption) ToUpdateInput() *parameter.U
 	}
 
 	return &parameter.UpdateGoogleSpreadsheetsOutputOptionInput{
-		GoogleSpreadsheetsConnectionId:      outputOption.GoogleSpreadsheetsConnectionId.ValueInt64Pointer(),
+		GoogleSpreadsheetsConnectionID:      outputOption.GoogleSpreadsheetsConnectionID.ValueInt64Pointer(),
 		SpreadsheetsID:                      outputOption.SpreadsheetsID.ValueStringPointer(),
 		WorksheetTitle:                      outputOption.WorksheetTitle.ValueStringPointer(),
 		Timezone:                            outputOption.Timezone.ValueStringPointer(),

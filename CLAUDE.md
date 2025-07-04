@@ -10,6 +10,10 @@ This repository provides a Terraform provider for [TROCCO](https://trocco.io), a
 
 - Terraform Plugin Framework
 
+## References
+
+- [Styleguide](docs/styleguide.md)
+
 ## Commands
 
 ### Foramtting

@@ -2,7 +2,7 @@ package input_option
 
 import (
 	"terraform-provider-trocco/internal/client/entity"
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitions "terraform-provider-trocco/internal/client/entity/job_definition"
 )
 
 type GcsInputOption struct {
@@ -13,13 +13,13 @@ type GcsInputOption struct {
 	LastPath                  *string                         `json:"last_path"`
 	StopWhenFileNotFound      bool                            `json:"stop_when_file_not_found"`
 	DecompressionType         *string                         `json:"decompression_type"`
-	CsvParser                 *job_definitions.CsvParser      `json:"csv_parser"`
-	JsonlParser               *job_definitions.JsonlParser    `json:"jsonl_parser"`
-	JsonpathParser            *job_definitions.JsonpathParser `json:"jsonpath_parser"`
-	LtsvParser                *job_definitions.LtsvParser     `json:"ltsv_parser"`
-	ExcelParser               *job_definitions.ExcelParser    `json:"excel_parser"`
-	XmlParser                 *job_definitions.XmlParser      `json:"xml_parser"`
-	ParquetParser             *job_definitions.ParquetParser  `json:"parquet_parser"`
+	CsvParser                 *jobDefinitions.CsvParser       `json:"csv_parser"`
+	JsonlParser               *jobDefinitions.JsonlParser     `json:"jsonl_parser"`
+	JsonpathParser            *jobDefinitions.JsonpathParser  `json:"jsonpath_parser"`
+	LtsvParser                *jobDefinitions.LtsvParser      `json:"ltsv_parser"`
+	ExcelParser               *jobDefinitions.ExcelParser     `json:"excel_parser"`
+	XmlParser                 *jobDefinitions.XmlParser       `json:"xml_parser"`
+	ParquetParser             *jobDefinitions.ParquetParser   `json:"parquet_parser"`
 	CustomVariableSettings    *[]entity.CustomVariableSetting `json:"custom_variable_settings"`
-	Decoder                   *job_definitions.Decoder        `json:"decoder"`
+	Decoder                   *jobDefinitions.Decoder         `json:"decoder"`
 }

@@ -179,27 +179,27 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 }
 
 type jobDefinitionResourceModel struct {
-	ID                        types.Int64                                 `tfsdk:"id"`
-	Name                      types.String                                `tfsdk:"name"`
-	Description               types.String                                `tfsdk:"description"`
-	ResourceGroupID           types.Int64                                 `tfsdk:"resource_group_id"`
-	IsRunnableConcurrently    types.Bool                                  `tfsdk:"is_runnable_concurrently"`
-	RetryLimit                types.Int64                                 `tfsdk:"retry_limit"`
-	ResourceEnhancement       types.String                                `tfsdk:"resource_enhancement"`
-	InputOptionType           types.String                                `tfsdk:"input_option_type"`
+	ID                        types.Int64                             `tfsdk:"id"`
+	Name                      types.String                            `tfsdk:"name"`
+	Description               types.String                            `tfsdk:"description"`
+	ResourceGroupID           types.Int64                             `tfsdk:"resource_group_id"`
+	IsRunnableConcurrently    types.Bool                              `tfsdk:"is_runnable_concurrently"`
+	RetryLimit                types.Int64                             `tfsdk:"retry_limit"`
+	ResourceEnhancement       types.String                            `tfsdk:"resource_enhancement"`
+	InputOptionType           types.String                            `tfsdk:"input_option_type"`
 	InputOption               *jobDefModel.InputOption                `tfsdk:"input_option"`
-	OutputOptionType          types.String                                `tfsdk:"output_option_type"`
+	OutputOptionType          types.String                            `tfsdk:"output_option_type"`
 	OutputOption              *jobDefModel.OutputOption               `tfsdk:"output_option"`
-	FilterColumns             []filter.FilterColumn                       `tfsdk:"filter_columns"`
-	FilterRows                *filter.FilterRows                          `tfsdk:"filter_rows"`
-	FilterMasks               []filter.FilterMask                         `tfsdk:"filter_masks"`
-	FilterAddTime             *filter.FilterAddTime                       `tfsdk:"filter_add_time"`
-	FilterGsub                []filter.FilterGsub                         `tfsdk:"filter_gsub"`
-	FilterStringTransforms    []filter.FilterStringTransform              `tfsdk:"filter_string_transforms"`
-	FilterHashes              []filter.FilterHash                         `tfsdk:"filter_hashes"`
-	FilterUnixTimeConversions []filter.FilterUnixTimeConversion           `tfsdk:"filter_unixtime_conversions"`
+	FilterColumns             []filter.FilterColumn                   `tfsdk:"filter_columns"`
+	FilterRows                *filter.FilterRows                      `tfsdk:"filter_rows"`
+	FilterMasks               []filter.FilterMask                     `tfsdk:"filter_masks"`
+	FilterAddTime             *filter.FilterAddTime                   `tfsdk:"filter_add_time"`
+	FilterGsub                []filter.FilterGsub                     `tfsdk:"filter_gsub"`
+	FilterStringTransforms    []filter.FilterStringTransform          `tfsdk:"filter_string_transforms"`
+	FilterHashes              []filter.FilterHash                     `tfsdk:"filter_hashes"`
+	FilterUnixTimeConversions []filter.FilterUnixTimeConversion       `tfsdk:"filter_unixtime_conversions"`
 	Notifications             []jobDefModel.JobDefinitionNotification `tfsdk:"notifications"`
-	Schedules                 []model.Schedule                            `tfsdk:"schedules"`
+	Schedules                 []model.Schedule                        `tfsdk:"schedules"`
 	Labels                    []jobDefModel.Label                     `tfsdk:"labels"`
 }
 
@@ -568,15 +568,15 @@ func (r *jobDefinitionResource) ValidateConfig(
 	}
 
 	if data.InputOptionType.ValueString() == "http" {
-		if data.InputOption.HttpInputOption == nil {
+		if data.InputOption.HTTPInputOption == nil {
 			return
 		}
-		httpInputOption := data.InputOption.HttpInputOption
-		validateHttpInputOption(httpInputOption, resp)
+		httpInputOption := data.InputOption.HTTPInputOption
+		validateHTTPInputOption(httpInputOption, resp)
 	}
 }
 
-func validateHttpInputOption(httpInputOption *jobDefInputOptions.HttpInputOption, resp *resource.ValidateConfigResponse) {
+func validateHTTPInputOption(httpInputOption *jobDefInputOptions.HTTPInputOption, resp *resource.ValidateConfigResponse) {
 	// validate that request_body and request_params are not set at the same time
 	bodySet := !httpInputOption.RequestBody.IsNull() && !httpInputOption.RequestBody.IsUnknown()
 	paramsSet := !httpInputOption.RequestParams.IsNull() && len(httpInputOption.RequestParams.Elements()) > 0

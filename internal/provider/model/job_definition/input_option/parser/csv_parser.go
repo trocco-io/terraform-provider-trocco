@@ -1,7 +1,7 @@
 package parser
 
 import (
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	params "terraform-provider-trocco/internal/client/parameter/job_definition"
 	"terraform-provider-trocco/internal/provider/model"
 
@@ -36,7 +36,7 @@ type CsvParserColumn struct {
 	Date   types.String `tfsdk:"date"`
 }
 
-func NewCsvParser(csvParser *job_definitions.CsvParser) *CsvParser {
+func NewCsvParser(csvParser *jobDefinitions.CsvParser) *CsvParser {
 	if csvParser == nil {
 		return nil
 	}

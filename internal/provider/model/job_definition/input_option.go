@@ -3,52 +3,52 @@ package job_definitions
 import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
-	input_options "terraform-provider-trocco/internal/provider/model/job_definition/input_option"
+	inputOptions "terraform-provider-trocco/internal/provider/model/job_definition/input_option"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 )
 
 type InputOption struct {
-	MySQLInputOption              *input_options.MySQLInputOption              `tfsdk:"mysql_input_option"`
-	GcsInputOption                *input_options.GcsInputOption                `tfsdk:"gcs_input_option"`
-	SnowflakeInputOption          *input_options.SnowflakeInputOption          `tfsdk:"snowflake_input_option"`
-	SalesforceInputOption         *input_options.SalesforceInputOption         `tfsdk:"salesforce_input_option"`
-	GoogleSpreadsheetsInputOption *input_options.GoogleSpreadsheetsInputOption `tfsdk:"google_spreadsheets_input_option"`
-	S3InputOption                 *input_options.S3InputOption                 `tfsdk:"s3_input_option"`
-	BigqueryInputOption           *input_options.BigqueryInputOption           `tfsdk:"bigquery_input_option"`
-	PostgreSQLInputOption         *input_options.PostgreSQLInputOption         `tfsdk:"postgresql_input_option"`
-	GoogleAnalytics4InputOption   *input_options.GoogleAnalytics4InputOption   `tfsdk:"google_analytics4_input_option"`
-	HttpInputOption               *input_options.HttpInputOption               `tfsdk:"http_input_option"`
-	KintoneInputOption            *input_options.KintoneInputOption            `tfsdk:"kintone_input_option"`
-	YahooAdsApiYssInputOption     *input_options.YahooAdsApiYssInputOption     `tfsdk:"yahoo_ads_api_yss_input_option"`
+	MySQLInputOption              *inputOptions.MySQLInputOption              `tfsdk:"mysql_input_option"`
+	GcsInputOption                *inputOptions.GcsInputOption                `tfsdk:"gcs_input_option"`
+	SnowflakeInputOption          *inputOptions.SnowflakeInputOption          `tfsdk:"snowflake_input_option"`
+	SalesforceInputOption         *inputOptions.SalesforceInputOption         `tfsdk:"salesforce_input_option"`
+	GoogleSpreadsheetsInputOption *inputOptions.GoogleSpreadsheetsInputOption `tfsdk:"google_spreadsheets_input_option"`
+	S3InputOption                 *inputOptions.S3InputOption                 `tfsdk:"s3_input_option"`
+	BigqueryInputOption           *inputOptions.BigqueryInputOption           `tfsdk:"bigquery_input_option"`
+	PostgreSQLInputOption         *inputOptions.PostgreSQLInputOption         `tfsdk:"postgresql_input_option"`
+	GoogleAnalytics4InputOption   *inputOptions.GoogleAnalytics4InputOption   `tfsdk:"google_analytics4_input_option"`
+	HTTPInputOption               *inputOptions.HTTPInputOption               `tfsdk:"http_input_option"`
+	KintoneInputOption            *inputOptions.KintoneInputOption            `tfsdk:"kintone_input_option"`
+	YahooAdsApiYssInputOption     *inputOptions.YahooAdsApiYssInputOption     `tfsdk:"yahoo_ads_api_yss_input_option"`
 }
 
 func NewInputOption(inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics) {
-	var previousHttpInputOption *input_options.HttpInputOption
+	var previousHTTPInputOption *inputOptions.HTTPInputOption
 	if previous != nil {
-		previousHttpInputOption = previous.HttpInputOption
+		previousHTTPInputOption = previous.HTTPInputOption
 	}
-	httpInputOption, diags := input_options.NewHttpInputOption(inputOption.HttpInputOption, previousHttpInputOption)
+	httpInputOption, diags := inputOptions.NewHTTPInputOption(inputOption.HTTPInputOption, previousHTTPInputOption)
 	return &InputOption{
-		GcsInputOption:                input_options.NewGcsInputOption(inputOption.GcsInputOption),
-		MySQLInputOption:              input_options.NewMysqlInputOption(inputOption.MySQLInputOption),
-		SnowflakeInputOption:          input_options.NewSnowflakeInputOption(inputOption.SnowflakeInputOption),
-		SalesforceInputOption:         input_options.NewSalesforceInputOption(inputOption.SalesforceInputOption),
-		GoogleSpreadsheetsInputOption: input_options.NewGoogleSpreadsheetsInputOption(inputOption.GoogleSpreadsheetsInputOption),
-		S3InputOption:                 input_options.NewS3InputOption(inputOption.S3InputOption),
-		BigqueryInputOption:           input_options.NewBigqueryInputOption(inputOption.BigqueryInputOption),
-		PostgreSQLInputOption:         input_options.NewPostgreSQLInputOption(inputOption.PostgreSQLInputOption),
-		GoogleAnalytics4InputOption:   input_options.NewGoogleAnalytics4InputOption(inputOption.GoogleAnalytics4InputOption),
-		HttpInputOption:               httpInputOption,
-		KintoneInputOption:            input_options.NewKintoneInputOption(inputOption.KintoneInputOption),
-		YahooAdsApiYssInputOption:     input_options.NewYahooAdsApiYssInputOption(inputOption.YahooAdsApiYssInputOption),
+		GcsInputOption:                inputOptions.NewGcsInputOption(inputOption.GcsInputOption),
+		MySQLInputOption:              inputOptions.NewMysqlInputOption(inputOption.MySQLInputOption),
+		SnowflakeInputOption:          inputOptions.NewSnowflakeInputOption(inputOption.SnowflakeInputOption),
+		SalesforceInputOption:         inputOptions.NewSalesforceInputOption(inputOption.SalesforceInputOption),
+		GoogleSpreadsheetsInputOption: inputOptions.NewGoogleSpreadsheetsInputOption(inputOption.GoogleSpreadsheetsInputOption),
+		S3InputOption:                 inputOptions.NewS3InputOption(inputOption.S3InputOption),
+		BigqueryInputOption:           inputOptions.NewBigqueryInputOption(inputOption.BigqueryInputOption),
+		PostgreSQLInputOption:         inputOptions.NewPostgreSQLInputOption(inputOption.PostgreSQLInputOption),
+		GoogleAnalytics4InputOption:   inputOptions.NewGoogleAnalytics4InputOption(inputOption.GoogleAnalytics4InputOption),
+		HTTPInputOption:               httpInputOption,
+		KintoneInputOption:            inputOptions.NewKintoneInputOption(inputOption.KintoneInputOption),
+		YahooAdsApiYssInputOption:     inputOptions.NewYahooAdsApiYssInputOption(inputOption.YahooAdsApiYssInputOption),
 	}, diags
 }
 
 func (o InputOption) ToInput() (client.InputOptionInput, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	httpInput, d := o.HttpInputOption.ToInput()
+	httpInput, d := o.HTTPInputOption.ToInput()
 	diags.Append(d...)
 
 	return client.InputOptionInput{
@@ -61,7 +61,7 @@ func (o InputOption) ToInput() (client.InputOptionInput, diag.Diagnostics) {
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToInput()),
 		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToInput()),
 		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToInput()),
-		HttpInputOption:               model.WrapObject(httpInput),
+		HTTPInputOption:               model.WrapObject(httpInput),
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToInput()),
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToInput()),
 	}, diags
@@ -69,7 +69,7 @@ func (o InputOption) ToInput() (client.InputOptionInput, diag.Diagnostics) {
 
 func (o InputOption) ToUpdateInput() (*client.UpdateInputOptionInput, diag.Diagnostics) {
 	var diags diag.Diagnostics
-	httpInput, d := o.HttpInputOption.ToUpdateInput()
+	httpInput, d := o.HTTPInputOption.ToUpdateInput()
 	diags.Append(d...)
 
 	return &client.UpdateInputOptionInput{
@@ -82,7 +82,7 @@ func (o InputOption) ToUpdateInput() (*client.UpdateInputOptionInput, diag.Diagn
 		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToUpdateInput()),
 		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToUpdateInput()),
 		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToUpdateInput()),
-		HttpInputOption:               model.WrapObject(httpInput),
+		HTTPInputOption:               model.WrapObject(httpInput),
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToUpdateInput()),
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToUpdateInput()),
 	}, diags

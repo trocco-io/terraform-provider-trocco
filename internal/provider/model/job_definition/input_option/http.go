@@ -24,7 +24,7 @@ type RequestHeader struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-type HttpInputOption struct {
+type HTTPInputOption struct {
 	URL                                   types.String                   `tfsdk:"url"`
 	Method                                types.String                   `tfsdk:"method"`
 	UserAgent                             types.String                   `tfsdk:"user_agent"`
@@ -58,7 +58,7 @@ type HttpInputOption struct {
 	CustomVariableSettings                *[]model.CustomVariableSetting `tfsdk:"custom_variable_settings"`
 }
 
-func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpInputOption) (*HttpInputOption, diag.Diagnostics) {
+func NewHTTPInputOption(httpInputOption *entity.HTTPInputOption, previous *HTTPInputOption) (*HTTPInputOption, diag.Diagnostics) {
 	if httpInputOption == nil {
 		return nil, nil
 	}
@@ -79,7 +79,7 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 	requestHeaders, d := NewRequestHeaders(httpInputOption.RequestHeaders, previousRequestHeaders)
 	diags.Append(d...)
 
-	return &HttpInputOption{
+	return &HTTPInputOption{
 		URL:                                   types.StringValue(httpInputOption.URL),
 		Method:                                types.StringValue(httpInputOption.Method),
 		UserAgent:                             types.StringPointerValue(httpInputOption.UserAgent),
@@ -109,7 +109,7 @@ func NewHttpInputOption(httpInputOption *entity.HttpInputOption, previous *HttpI
 		LtsvParser:                            parser.NewLtsvParser(httpInputOption.LtsvParser),
 		ExcelParser:                           parser.NewExcelParser(httpInputOption.ExcelParser),
 		XmlParser:                             parser.NewXmlParser(httpInputOption.XmlParser),
-		ParquetParser:                         nil, // ParquetParser is not supported in Http input
+		ParquetParser:                         nil, // ParquetParser is not supported in HTTP input
 		CustomVariableSettings:                model.NewCustomVariableSettings(httpInputOption.CustomVariableSettings),
 	}, diags
 }
@@ -194,7 +194,7 @@ func headerParamType() types.ObjectType {
 	}
 }
 
-func (httpInputOption *HttpInputOption) ToInput() (*parameter.HttpInputOptionInput, diag.Diagnostics) {
+func (httpInputOption *HTTPInputOption) ToInput() (*parameter.HTTPInputOptionInput, diag.Diagnostics) {
 	if httpInputOption == nil {
 		return nil, nil
 	}
@@ -228,7 +228,7 @@ func (httpInputOption *HttpInputOption) ToInput() (*parameter.HttpInputOptionInp
 		})
 	}
 
-	return &parameter.HttpInputOptionInput{
+	return &parameter.HTTPInputOptionInput{
 		URL:                                   httpInputOption.URL.ValueString(),
 		Method:                                httpInputOption.Method.ValueString(),
 		UserAgent:                             model.NewNullableString(httpInputOption.UserAgent),
@@ -262,7 +262,7 @@ func (httpInputOption *HttpInputOption) ToInput() (*parameter.HttpInputOptionInp
 	}, diags
 }
 
-func (httpInputOption *HttpInputOption) ToUpdateInput() (*parameter.UpdateHttpInputOptionInput, diag.Diagnostics) {
+func (httpInputOption *HTTPInputOption) ToUpdateInput() (*parameter.UpdateHTTPInputOptionInput, diag.Diagnostics) {
 	if httpInputOption == nil {
 		return nil, nil
 	}
@@ -296,7 +296,7 @@ func (httpInputOption *HttpInputOption) ToUpdateInput() (*parameter.UpdateHttpIn
 		})
 	}
 
-	return &parameter.UpdateHttpInputOptionInput{
+	return &parameter.UpdateHTTPInputOptionInput{
 		URL:                                   httpInputOption.URL.ValueStringPointer(),
 		Method:                                httpInputOption.Method.ValueStringPointer(),
 		UserAgent:                             model.NewNullableString(httpInputOption.UserAgent),

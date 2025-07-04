@@ -1,7 +1,7 @@
 package parser
 
 import (
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitions "terraform-provider-trocco/internal/client/entity/job_definition"
 	params "terraform-provider-trocco/internal/client/parameter/job_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -20,7 +20,7 @@ type XmlParserColumn struct {
 	Format   types.String `tfsdk:"format"`
 }
 
-func NewXmlParser(xmlParser *job_definitions.XmlParser) *XmlParser {
+func NewXmlParser(xmlParser *jobDefinitions.XmlParser) *XmlParser {
 	if xmlParser == nil {
 		return nil
 	}
