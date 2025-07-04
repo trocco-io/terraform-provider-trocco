@@ -1,6 +1,8 @@
 package pipeline_definition
 
 import (
+	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
@@ -9,14 +11,14 @@ import (
 )
 
 type PeriodCustomVariableLoopConfig struct {
-	Interval  types.String                       `tfsdk:"interval"`
-	TimeZone  types.String                       `tfsdk:"time_zone"`
-	From      PeriodCustomVariableLoopFrom       `tfsdk:"from"`
-	To        PeriodCustomVariableLoopTo         `tfsdk:"to"`
-	Variables []PeriodCustomVariableLoopVariable `tfsdk:"variables"`
+	Interval  types.String                 `tfsdk:"interval"`
+	TimeZone  types.String                 `tfsdk:"time_zone"`
+	From      PeriodCustomVariableLoopFrom `tfsdk:"from"`
+	To        PeriodCustomVariableLoopTo   `tfsdk:"to"`
+	Variables types.List                   `tfsdk:"variables"`
 }
 
-func NewPeriodCustomVariableLoopConfig(en *we.PeriodCustomVariableLoopConfig) *PeriodCustomVariableLoopConfig {
+func NewPeriodCustomVariableLoopConfig(ctx context.Context, en *we.PeriodCustomVariableLoopConfig) *PeriodCustomVariableLoopConfig {
 	if en == nil {
 		return nil
 	}
@@ -26,18 +28,34 @@ func NewPeriodCustomVariableLoopConfig(en *we.PeriodCustomVariableLoopConfig) *P
 		variables = append(variables, NewPeriodCustomVariableLoopVariable(variable))
 	}
 
+	variablesList, diags := types.ListValueFrom(
+		ctx,
+		types.ObjectType{AttrTypes: PeriodCustomVariableLoopVariableAttrTypes()},
+		variables,
+	)
+	if diags.HasError() {
+		return nil
+	}
+
 	return &PeriodCustomVariableLoopConfig{
 		Interval:  types.StringValue(en.Interval),
 		TimeZone:  types.StringValue(en.TimeZone),
 		From:      NewPeriodCustomVariableLoopFrom(en.From),
 		To:        NewPeriodCustomVariableLoopTo(en.To),
-		Variables: variables,
+		Variables: variablesList,
 	}
 }
 
-func (c *PeriodCustomVariableLoopConfig) ToInput() wp.PeriodCustomVariableLoopConfig {
+func (c *PeriodCustomVariableLoopConfig) ToInput(ctx context.Context) wp.PeriodCustomVariableLoopConfig {
 	vars := []wp.PeriodCustomVariableLoopVariable{}
-	for _, v := range c.Variables {
+
+	var variables []PeriodCustomVariableLoopVariable
+	diags := c.Variables.ElementsAs(ctx, &variables, false)
+	if diags.HasError() {
+		return wp.PeriodCustomVariableLoopConfig{}
+	}
+
+	for _, v := range variables {
 		vars = append(vars, v.ToInput())
 	}
 

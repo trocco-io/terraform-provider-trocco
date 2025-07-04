@@ -1023,7 +1023,7 @@ Required:
 
 - `connection_id` (Number) BigQuery connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 
 
 <a id="nestedatt--tasks--trocco_azure_synapse_analytics_datamart_config--custom_variable_loop--period_config"></a>
@@ -1082,7 +1082,7 @@ Required:
 - `connection_id` (Number) Redshift connection ID
 - `database` (String) Redshift database
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 
 
 <a id="nestedatt--tasks--trocco_azure_synapse_analytics_datamart_config--custom_variable_loop--snowflake_config"></a>
@@ -1092,7 +1092,7 @@ Required:
 
 - `connection_id` (Number) Snowflake connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 - `warehouse` (String) Snowflake warehouse
 
 
@@ -1151,7 +1151,7 @@ Required:
 
 - `connection_id` (Number) BigQuery connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 
 
 <a id="nestedatt--tasks--trocco_bigquery_datamart_config--custom_variable_loop--period_config"></a>
@@ -1210,7 +1210,7 @@ Required:
 - `connection_id` (Number) Redshift connection ID
 - `database` (String) Redshift database
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 
 
 <a id="nestedatt--tasks--trocco_bigquery_datamart_config--custom_variable_loop--snowflake_config"></a>
@@ -1220,7 +1220,7 @@ Required:
 
 - `connection_id` (Number) Snowflake connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 - `warehouse` (String) Snowflake warehouse
 
 
@@ -1287,7 +1287,7 @@ Required:
 
 - `connection_id` (Number) BigQuery connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 
 
 <a id="nestedatt--tasks--trocco_pipeline_config--custom_variable_loop--period_config"></a>
@@ -1346,7 +1346,7 @@ Required:
 - `connection_id` (Number) Redshift connection ID
 - `database` (String) Redshift database
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 
 
 <a id="nestedatt--tasks--trocco_pipeline_config--custom_variable_loop--snowflake_config"></a>
@@ -1356,7 +1356,7 @@ Required:
 
 - `connection_id` (Number) Snowflake connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 - `warehouse` (String) Snowflake warehouse
 
 
@@ -1415,7 +1415,7 @@ Required:
 
 - `connection_id` (Number) BigQuery connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 
 
 <a id="nestedatt--tasks--trocco_redshift_datamart_config--custom_variable_loop--period_config"></a>
@@ -1474,7 +1474,7 @@ Required:
 - `connection_id` (Number) Redshift connection ID
 - `database` (String) Redshift database
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 
 
 <a id="nestedatt--tasks--trocco_redshift_datamart_config--custom_variable_loop--snowflake_config"></a>
@@ -1484,7 +1484,7 @@ Required:
 
 - `connection_id` (Number) Snowflake connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 - `warehouse` (String) Snowflake warehouse
 
 
@@ -1543,7 +1543,7 @@ Required:
 
 - `connection_id` (Number) BigQuery connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 
 
 <a id="nestedatt--tasks--trocco_snowflake_datamart_config--custom_variable_loop--period_config"></a>
@@ -1602,7 +1602,7 @@ Required:
 - `connection_id` (Number) Redshift connection ID
 - `database` (String) Redshift database
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 
 
 <a id="nestedatt--tasks--trocco_snowflake_datamart_config--custom_variable_loop--snowflake_config"></a>
@@ -1612,7 +1612,7 @@ Required:
 
 - `connection_id` (Number) Snowflake connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 - `warehouse` (String) Snowflake warehouse
 
 
@@ -1685,7 +1685,7 @@ Required:
 
 - `connection_id` (Number) BigQuery connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 
 
 <a id="nestedatt--tasks--trocco_transfer_config--custom_variable_loop--period_config"></a>
@@ -1744,7 +1744,7 @@ Required:
 - `connection_id` (Number) Redshift connection ID
 - `database` (String) Redshift database
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 
 
 <a id="nestedatt--tasks--trocco_transfer_config--custom_variable_loop--snowflake_config"></a>
@@ -1754,7 +1754,7 @@ Required:
 
 - `connection_id` (Number) Snowflake connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (List of String) Custom variables to be expanded
+- `variables` (Set of String) Custom variables to be expanded
 - `warehouse` (String) Snowflake warehouse
 
 

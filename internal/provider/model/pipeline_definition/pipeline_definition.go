@@ -30,7 +30,7 @@ type PipelineDefinition struct {
 	TaskDependencies             []*TaskDependency              `tfsdk:"task_dependencies"`
 }
 
-func NewPipelineDefinition(en *entity.PipelineDefinition, keys map[int64]types.String, previous *PipelineDefinition) *PipelineDefinition {
+func NewPipelineDefinition(ctx context.Context, en *entity.PipelineDefinition, keys map[int64]types.String, previous *PipelineDefinition) *PipelineDefinition {
 	var notifications types.Set
 	if previous == nil {
 		notifications = NewNotifications(en.Notifications, true)
@@ -52,12 +52,12 @@ func NewPipelineDefinition(en *entity.PipelineDefinition, keys map[int64]types.S
 		Labels:                       NewLabels(en.Labels, previous.Labels == nil),
 		Notifications:                notifications,
 		Schedules:                    NewSchedules(en.Schedules, previous),
-		Tasks:                        NewTasks(en.Tasks, keys, previous),
+		Tasks:                        NewTasks(ctx, en.Tasks, keys, previous),
 		TaskDependencies:             NewTaskDependencies(en.TaskDependencies, keys, previous),
 	}
 }
 
-func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInput {
+func (m *PipelineDefinition) ToCreateInput(ctx context.Context) *client.CreatePipelineDefinitionInput {
 	labels := []string{}
 	for _, l := range m.Labels {
 		labels = append(labels, l.ValueString())
@@ -87,7 +87,7 @@ func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInp
 		}
 
 		for _, t := range tfTasks {
-			tasks = append(tasks, *t.ToInput(map[string]int64{}))
+			tasks = append(tasks, *t.ToInput(ctx, map[string]int64{}))
 		}
 	}
 
@@ -117,7 +117,7 @@ func (m *PipelineDefinition) ToCreateInput() *client.CreatePipelineDefinitionInp
 	}
 }
 
-func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *client.UpdatePipelineDefinitionInput {
+func (m *PipelineDefinition) ToUpdateWorkflowInput(ctx context.Context, state *PipelineDefinition) *client.UpdatePipelineDefinitionInput {
 	labels := []string{}
 	for _, l := range m.Labels {
 		labels = append(labels, l.ValueString())
@@ -159,7 +159,7 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(state *PipelineDefinition) *c
 		}
 
 		for _, t := range tfTasks {
-			tasks = append(tasks, *t.ToInput(stateTaskIdentifiers))
+			tasks = append(tasks, *t.ToInput(ctx, stateTaskIdentifiers))
 		}
 	}
 

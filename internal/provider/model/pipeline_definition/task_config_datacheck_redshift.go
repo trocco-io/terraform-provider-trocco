@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
@@ -21,7 +22,7 @@ type RedshiftDataCheckTaskConfig struct {
 	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
 }
 
-func NewRedshiftDataCheckTaskConfig(c *we.RedshiftDataCheckTaskConfig) *RedshiftDataCheckTaskConfig {
+func NewRedshiftDataCheckTaskConfig(ctx context.Context, c *we.RedshiftDataCheckTaskConfig) *RedshiftDataCheckTaskConfig {
 	if c == nil {
 		return nil
 	}

@@ -1,6 +1,8 @@
 package pipeline_definition
 
 import (
+	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
@@ -15,7 +17,7 @@ type TroccoSnowflakeDatamartTaskConfig struct {
 	CustomVariableLoop *CustomVariableLoop `tfsdk:"custom_variable_loop"`
 }
 
-func NewTroccoSnowflakeDatamartTaskConfig(c *we.TroccoSnowflakeDatamartTaskConfig) *TroccoSnowflakeDatamartTaskConfig {
+func NewTroccoSnowflakeDatamartTaskConfig(ctx context.Context, c *we.TroccoSnowflakeDatamartTaskConfig) *TroccoSnowflakeDatamartTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -23,17 +25,17 @@ func NewTroccoSnowflakeDatamartTaskConfig(c *we.TroccoSnowflakeDatamartTaskConfi
 	return &TroccoSnowflakeDatamartTaskConfig{
 		DefinitionID: types.Int64Value(c.DefinitionID),
 
-		CustomVariableLoop: NewCustomVariableLoop(c.CustomVariableLoop),
+		CustomVariableLoop: NewCustomVariableLoop(ctx, c.CustomVariableLoop),
 	}
 }
 
-func (c *TroccoSnowflakeDatamartTaskConfig) ToInput() *wp.TroccoSnowflakeDatamartTaskConfig {
+func (c *TroccoSnowflakeDatamartTaskConfig) ToInput(ctx context.Context) *wp.TroccoSnowflakeDatamartTaskConfig {
 	in := &wp.TroccoSnowflakeDatamartTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
 	}
 
 	if c.CustomVariableLoop != nil {
-		in.CustomVariableLoop = lo.ToPtr(c.CustomVariableLoop.ToInput())
+		in.CustomVariableLoop = lo.ToPtr(c.CustomVariableLoop.ToInput(ctx))
 	}
 
 	return in

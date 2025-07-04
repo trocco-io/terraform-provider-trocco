@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
@@ -21,7 +22,7 @@ type SnowflakeDataCheckTaskConfig struct {
 	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
 }
 
-func NewSnowflakeDataCheckTaskConfig(c *we.SnowflakeDataCheckTaskConfig) *SnowflakeDataCheckTaskConfig {
+func NewSnowflakeDataCheckTaskConfig(ctx context.Context, c *we.SnowflakeDataCheckTaskConfig) *SnowflakeDataCheckTaskConfig {
 	if c == nil {
 		return nil
 	}
