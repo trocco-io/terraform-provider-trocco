@@ -87,7 +87,7 @@ func (m *PipelineDefinition) ToCreateInput(ctx context.Context) *client.CreatePi
 		}
 
 		for _, t := range tfTasks {
-			tasks = append(tasks, *t.ToInput(map[string]int64{}))
+			tasks = append(tasks, *t.ToInput(ctx, map[string]int64{}))
 		}
 	}
 
@@ -159,7 +159,7 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(ctx context.Context, state *P
 		}
 
 		for _, t := range tfTasks {
-			tasks = append(tasks, *t.ToInput(stateTaskIdentifiers))
+			tasks = append(tasks, *t.ToInput(ctx, stateTaskIdentifiers))
 		}
 	}
 
