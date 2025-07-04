@@ -38,10 +38,10 @@ func NewCustomVariableLoop(ctx context.Context, en *we.CustomVariableLoop) *Cust
 	}
 
 	if en.StringConfig != nil {
-		md.StringConfig = NewStringCustomVariableLoopConfig(en.StringConfig)
+		md.StringConfig = NewStringCustomVariableLoopConfig(ctx, en.StringConfig)
 	}
 	if en.PeriodConfig != nil {
-		md.PeriodConfig = NewPeriodCustomVariableLoopConfig(en.PeriodConfig)
+		md.PeriodConfig = NewPeriodCustomVariableLoopConfig(ctx, en.PeriodConfig)
 	}
 	if en.BigqueryConfig != nil {
 		md.BigqueryConfig = NewBigqueryCustomVariableLoopConfig(ctx, en.BigqueryConfig)
@@ -65,10 +65,10 @@ func (c *CustomVariableLoop) ToInput(ctx context.Context) wp.CustomVariableLoop 
 	}
 
 	if c.StringConfig != nil {
-		i.StringConfig = lo.ToPtr(c.StringConfig.ToInput())
+		i.StringConfig = lo.ToPtr(c.StringConfig.ToInput(ctx))
 	}
 	if c.PeriodConfig != nil {
-		i.PeriodConfig = lo.ToPtr(c.PeriodConfig.ToInput())
+		i.PeriodConfig = lo.ToPtr(c.PeriodConfig.ToInput(ctx))
 	}
 	if c.BigqueryConfig != nil {
 		i.BigqueryConfig = lo.ToPtr(c.BigqueryConfig.ToInput(ctx))
