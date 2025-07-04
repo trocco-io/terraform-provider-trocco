@@ -33,9 +33,9 @@ type PipelineDefinition struct {
 func NewPipelineDefinition(ctx context.Context, en *entity.PipelineDefinition, keys map[int64]types.String, previous *PipelineDefinition) *PipelineDefinition {
 	var notifications types.Set
 	if previous == nil {
-		notifications = NewNotifications(en.Notifications, true)
+		notifications = NewNotifications(ctx, en.Notifications, true)
 	} else {
-		notifications = NewNotifications(en.Notifications, previous.Notifications.IsNull())
+		notifications = NewNotifications(ctx, en.Notifications, previous.Notifications.IsNull())
 	}
 
 	var labels types.Set

@@ -42,7 +42,7 @@ func NewTasks(ctx context.Context, ens []*we.Task, keys map[int64]types.String, 
 
 	var previousTasks []*Task
 	if previous != nil && !previous.Tasks.IsNull() && !previous.Tasks.IsUnknown() {
-		if diags := previous.Tasks.ElementsAs(context.Background(), &previousTasks, false); diags.HasError() {
+		if diags := previous.Tasks.ElementsAs(ctx, &previousTasks, false); diags.HasError() {
 			return types.SetNull(TaskObjectType)
 		}
 	}
@@ -60,7 +60,7 @@ func NewTasks(ctx context.Context, ens []*we.Task, keys map[int64]types.String, 
 		tasks = append(tasks, NewTask(ctx, en, keys, previousTask))
 	}
 
-	set, diags := types.SetValueFrom(context.Background(), TaskObjectType, tasks)
+	set, diags := types.SetValueFrom(ctx, TaskObjectType, tasks)
 	if diags.HasError() {
 		return types.SetNull(TaskObjectType)
 	}

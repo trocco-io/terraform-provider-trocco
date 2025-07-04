@@ -35,12 +35,10 @@ func (s googleSpreadsheetsOutputOptionSorts) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewGoogleSpreadsheetsOutputOption(googleSpreadsheetsOutputOption *output_option.GoogleSpreadsheetsOutputOption) *GoogleSpreadsheetsOutputOption {
+func NewGoogleSpreadsheetsOutputOption(ctx context.Context, googleSpreadsheetsOutputOption *output_option.GoogleSpreadsheetsOutputOption) *GoogleSpreadsheetsOutputOption {
 	if googleSpreadsheetsOutputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 	result := &GoogleSpreadsheetsOutputOption{
 		GoogleSpreadsheetsConnectionId: types.Int64Value(googleSpreadsheetsOutputOption.GoogleSpreadsheetsConnectionId),
 		SpreadsheetsID:                 types.StringValue(googleSpreadsheetsOutputOption.SpreadsheetsID),
@@ -90,12 +88,10 @@ func newGoogleSpreadsheetsOutputOptionSorts(ctx context.Context, sorts *[]output
 	return listValue, nil
 }
 
-func (outputOption *GoogleSpreadsheetsOutputOption) ToInput() *parameter.GoogleSpreadsheetsOutputOptionInput {
+func (outputOption *GoogleSpreadsheetsOutputOption) ToInput(ctx context.Context) *parameter.GoogleSpreadsheetsOutputOptionInput {
 	if outputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var sorts *[]parameter.GoogleSpreadsheetsOutputOptionSortsInput
 	if !outputOption.GoogleSpreadsheetsOutputOptionSorts.IsNull() {
@@ -129,12 +125,10 @@ func (outputOption *GoogleSpreadsheetsOutputOption) ToInput() *parameter.GoogleS
 	}
 }
 
-func (outputOption *GoogleSpreadsheetsOutputOption) ToUpdateInput() *parameter.UpdateGoogleSpreadsheetsOutputOptionInput {
+func (outputOption *GoogleSpreadsheetsOutputOption) ToUpdateInput(ctx context.Context) *parameter.UpdateGoogleSpreadsheetsOutputOptionInput {
 	if outputOption == nil {
 		return nil
 	}
-
-	ctx := context.Background()
 
 	var sorts *[]parameter.GoogleSpreadsheetsOutputOptionSortsInput
 	if !outputOption.GoogleSpreadsheetsOutputOptionSorts.IsNull() {
