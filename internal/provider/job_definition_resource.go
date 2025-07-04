@@ -253,7 +253,7 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 			return nil, resp.Diagnostics
 		}
 		for _, f := range filterColumnValues {
-			filterColumns = append(filterColumns, f.ToInput())
+			filterColumns = append(filterColumns, f.ToInput(ctx))
 		}
 	}
 
@@ -333,7 +333,7 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 		RetryLimit:                m.RetryLimit.ValueInt64(),
 		ResourceEnhancement:       m.ResourceEnhancement.ValueStringPointer(),
 		FilterColumns:             filterColumns,
-		FilterRows:                model.WrapObject(m.FilterRows.ToInput()),
+		FilterRows:                model.WrapObject(m.FilterRows.ToInput(ctx)),
 		FilterMasks:               filterMasks,
 		FilterAddTime:             model.WrapObject(m.FilterAddTime.ToInput()),
 		FilterGsub:                filterGsub,
@@ -343,7 +343,7 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 		InputOptionType:           m.InputOptionType.ValueString(),
 		InputOption:               inputOption,
 		OutputOptionType:          m.OutputOptionType.ValueString(),
-		OutputOption:              m.OutputOption.ToInput(),
+		OutputOption:              m.OutputOption.ToInput(ctx),
 		Labels:                    labels,
 		Schedules:                 schedules,
 		Notifications:             notifications,
@@ -398,12 +398,12 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
 		InputOption:            inputOption,
 		OutputOptionType:       types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:           job_definitions.NewOutputOption(jobDefinition.OutputOption),
-		FilterRows:             filter.NewFilterRows(jobDefinition.FilterRows),
+		OutputOption:           job_definitions.NewOutputOption(ctx, jobDefinition.OutputOption),
+		FilterRows:             filter.NewFilterRows(ctx, jobDefinition.FilterRows),
 		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
 
-	filterColumns, diags := filter.NewFilterColumns(jobDefinition.FilterColumns)
+	filterColumns, diags := filter.NewFilterColumns(ctx, jobDefinition.FilterColumns)
 	resp.Diagnostics.Append(diags...)
 
 	filterColumnsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
@@ -572,7 +572,7 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 		}
 
 		for _, f := range filterColumnValues {
-			filterColumns = append(filterColumns, f.ToInput())
+			filterColumns = append(filterColumns, f.ToInput(ctx))
 		}
 	}
 
@@ -657,7 +657,7 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 		RetryLimit:                m.RetryLimit.ValueInt64Pointer(),
 		ResourceEnhancement:       m.ResourceEnhancement.ValueStringPointer(),
 		FilterColumns:             &filterColumns,
-		FilterRows:                model.WrapObject(m.FilterRows.ToInput()),
+		FilterRows:                model.WrapObject(m.FilterRows.ToInput(ctx)),
 		FilterMasks:               &filterMasks,
 		FilterAddTime:             model.WrapObject(m.FilterAddTime.ToInput()),
 		FilterGsub:                &filterGsub,
@@ -665,7 +665,7 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 		FilterHashes:              &filterHashes,
 		FilterUnixTimeConversions: &filterUnixTimeconversions,
 		InputOption:               inputOption,
-		OutputOption:              m.OutputOption.ToUpdateInput(),
+		OutputOption:              m.OutputOption.ToUpdateInput(ctx),
 		Labels:                    &labels,
 		Schedules:                 &schedules,
 		Notifications:             &notifications,
@@ -714,12 +714,12 @@ func (r *jobDefinitionResource) Create(
 		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
 		InputOption:            inputOption,
 		OutputOptionType:       types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:           job_definitions.NewOutputOption(jobDefinition.OutputOption),
-		FilterRows:             filter.NewFilterRows(jobDefinition.FilterRows),
+		OutputOption:           job_definitions.NewOutputOption(ctx, jobDefinition.OutputOption),
+		FilterRows:             filter.NewFilterRows(ctx, jobDefinition.FilterRows),
 		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
 
-	filterColumns, diags := filter.NewFilterColumns(jobDefinition.FilterColumns)
+	filterColumns, diags := filter.NewFilterColumns(ctx, jobDefinition.FilterColumns)
 	resp.Diagnostics.Append(diags...)
 
 	filterColumnsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
@@ -871,12 +871,12 @@ func (r *jobDefinitionResource) Read(
 		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
 		InputOption:            inputOption,
 		OutputOptionType:       types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:           job_definitions.NewOutputOption(jobDefinition.OutputOption),
-		FilterRows:             filter.NewFilterRows(jobDefinition.FilterRows),
+		OutputOption:           job_definitions.NewOutputOption(ctx, jobDefinition.OutputOption),
+		FilterRows:             filter.NewFilterRows(ctx, jobDefinition.FilterRows),
 		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
 
-	filterColumns, diags := filter.NewFilterColumns(jobDefinition.FilterColumns)
+	filterColumns, diags := filter.NewFilterColumns(ctx, jobDefinition.FilterColumns)
 	resp.Diagnostics.Append(diags...)
 
 	filterColumnsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
