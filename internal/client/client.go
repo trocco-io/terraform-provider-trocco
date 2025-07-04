@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	version2 "terraform-provider-trocco/version"
 )
@@ -96,7 +97,11 @@ func (client *TroccoClient) do(
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("failed to close response body: %v", err)
+		}
+	}()
 	if resp.StatusCode >= 400 {
 		var errorOutput ErrorOutput
 		respBody, err := io.ReadAll(resp.Body)
