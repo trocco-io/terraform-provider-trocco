@@ -4,6 +4,7 @@ import (
 	"terraform-provider-trocco/internal/client/entity/job_definition/filter"
 	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -28,5 +29,11 @@ func NewFilterHashes(filterHashes []filter.FilterHash) []FilterHash {
 func (filterHash FilterHash) ToInput() filter2.FilterHashInput {
 	return filter2.FilterHashInput{
 		Name: filterHash.Name.ValueString(),
+	}
+}
+
+func (h FilterHash) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name": types.StringType,
 	}
 }

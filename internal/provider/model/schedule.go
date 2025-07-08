@@ -4,6 +4,7 @@ import (
 	"terraform-provider-trocco/internal/client/entity"
 	"terraform-provider-trocco/internal/client/parameter"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -43,5 +44,16 @@ func (schedule Schedule) ToInput() parameter.ScheduleInput {
 		Day:       schedule.Day.ValueInt64Pointer(),
 		DayOfWeek: schedule.DayOfWeek.ValueInt64Pointer(),
 		TimeZone:  schedule.TimeZone.ValueString(),
+	}
+}
+
+func (s Schedule) AttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"frequency":   types.StringType,
+		"minute":      types.Int32Type,
+		"hour":        types.Int32Type,
+		"day":         types.Int32Type,
+		"day_of_week": types.Int32Type,
+		"time_zone":   types.StringType,
 	}
 }

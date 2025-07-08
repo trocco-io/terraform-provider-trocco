@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
@@ -18,10 +19,10 @@ type HTTPRequestTaskConfig struct {
 	RequestBody       types.String            `tfsdk:"request_body"`
 	RequestHeaders    []*HTTPRequestHeader    `tfsdk:"request_headers"`
 	RequestParameters []*HTTPRequestParameter `tfsdk:"request_parameters"`
-	CustomVariables   []CustomVariable        `tfsdk:"custom_variables"`
+	CustomVariables   types.Set               `tfsdk:"custom_variables"`
 }
 
-func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
+func NewHTTPRequestTaskConfig(ctx context.Context, en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
 	if en == nil {
 		return nil
 	}
@@ -41,11 +42,11 @@ func NewHTTPRequestTaskConfig(en *we.HTTPRequestTaskConfig, previous *HTTPReques
 		RequestBody:       types.StringPointerValue(en.RequestBody),
 		RequestHeaders:    NewHTTPRequestHeaders(en.RequestHeaders, previousRequestHeaders),
 		RequestParameters: NewHTTPRequestParameters(en.RequestParameters, previousRequestParameters),
-		CustomVariables:   NewCustomVariables(en.CustomVariables),
+		CustomVariables:   NewCustomVariables(ctx, en.CustomVariables),
 	}
 }
 
-func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
+func (c *HTTPRequestTaskConfig) ToInput(ctx context.Context) *wp.HTTPRequestTaskConfig {
 	requestHeaders := []wp.RequestHeader{}
 	for _, e := range c.RequestHeaders {
 		requestHeaders = append(requestHeaders, wp.RequestHeader{
@@ -65,8 +66,14 @@ func (c *HTTPRequestTaskConfig) ToInput() *wp.HTTPRequestTaskConfig {
 	}
 
 	customVariables := []wp.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, v.ToInput())
+	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
+		var customVariableValues []CustomVariable
+		diags := c.CustomVariables.ElementsAs(ctx, &customVariableValues, false)
+		if !diags.HasError() {
+			for _, v := range customVariableValues {
+				customVariables = append(customVariables, v.ToInput())
+			}
+		}
 	}
 
 	return &wp.HTTPRequestTaskConfig{

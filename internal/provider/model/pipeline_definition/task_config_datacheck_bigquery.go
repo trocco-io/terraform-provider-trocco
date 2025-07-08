@@ -1,6 +1,7 @@
 package pipeline_definition
 
 import (
+	"context"
 	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	p "terraform-provider-trocco/internal/client/parameter"
 	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
@@ -17,10 +18,10 @@ type BigqueryDataCheckTaskConfig struct {
 	Operator        types.String                   `tfsdk:"operator"`
 	QueryResult     types.Int64                    `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
-	CustomVariables []CustomVariable               `tfsdk:"custom_variables"`
+	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
-func NewBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig) *BigqueryDataCheckTaskConfig {
+func NewBigqueryDataCheckTaskConfig(ctx context.Context, c *we.BigqueryDataCheckTaskConfig) *BigqueryDataCheckTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -32,14 +33,20 @@ func NewBigqueryDataCheckTaskConfig(c *we.BigqueryDataCheckTaskConfig) *Bigquery
 		Operator:        types.StringValue(c.Operator),
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
-		CustomVariables: NewCustomVariables(c.CustomVariables),
+		CustomVariables: NewCustomVariables(ctx, c.CustomVariables),
 	}
 }
 
-func (c *BigqueryDataCheckTaskConfig) ToInput() *wp.BigqueryDataCheckTaskConfigInput {
+func (c *BigqueryDataCheckTaskConfig) ToInput(ctx context.Context) *wp.BigqueryDataCheckTaskConfigInput {
 	customVariables := []wp.CustomVariable{}
-	for _, v := range c.CustomVariables {
-		customVariables = append(customVariables, v.ToInput())
+	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
+		var customVariableValues []CustomVariable
+		diags := c.CustomVariables.ElementsAs(ctx, &customVariableValues, false)
+		if !diags.HasError() {
+			for _, v := range customVariableValues {
+				customVariables = append(customVariables, v.ToInput())
+			}
+		}
 	}
 
 	return &wp.BigqueryDataCheckTaskConfigInput{
