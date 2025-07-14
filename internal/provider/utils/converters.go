@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// ConvertSetToSlice converts a types.Set to a slice using a converter function
+// ConvertSetToSlice converts a types.Set to a slice using a converter function.
 func ConvertSetToSlice[T any, U any](
 	ctx context.Context,
 	source types.Set,
@@ -31,7 +31,7 @@ func ConvertSetToSlice[T any, U any](
 	return result
 }
 
-// ConvertListToSlice converts a types.List to a slice using a converter function
+// ConvertListToSlice converts a types.List to a slice using a converter function.
 func ConvertListToSlice[T any, U any](
 	ctx context.Context,
 	source types.List,
@@ -55,7 +55,7 @@ func ConvertListToSlice[T any, U any](
 	return result
 }
 
-// ConvertStringSet converts types.Set to string slice with error handling
+// ConvertStringSet converts types.Set to string slice with error handling.
 func ConvertStringSet(ctx context.Context, source types.Set) ([]string, bool) {
 	if source.IsNull() || source.IsUnknown() {
 		return []string{}, true
@@ -72,7 +72,7 @@ func ConvertStringSet(ctx context.Context, source types.Set) ([]string, bool) {
 	return []string{}, false
 }
 
-// ConvertStringList converts types.List to string slice
+// ConvertStringList converts types.List to string slice.
 func ConvertStringList(ctx context.Context, source types.List) []string {
 	if source.IsNull() || source.IsUnknown() {
 		return []string{}

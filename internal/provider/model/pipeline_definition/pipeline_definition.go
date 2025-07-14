@@ -158,9 +158,9 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(ctx context.Context, state *P
 	}
 }
 
-// Helper functions for pipeline definition to reduce code duplication
+// Helper functions for pipeline definition to reduce code duplication.
 
-// convertStringSet converts types.Set to string slice
+// convertStringSet converts types.Set to string slice.
 func convertStringSet(ctx context.Context, source types.Set) ([]string, bool) {
 	if source.IsNull() || source.IsUnknown() {
 		return []string{}, true
@@ -177,7 +177,7 @@ func convertStringSet(ctx context.Context, source types.Set) ([]string, bool) {
 	return []string{}, false
 }
 
-// convertNotificationSet converts notification set
+// convertNotificationSet converts notification set.
 func convertNotificationSet(ctx context.Context, source types.Set) ([]*pdp.Notification, bool) {
 	if source.IsNull() || source.IsUnknown() {
 		return []*pdp.Notification{}, true
@@ -194,7 +194,7 @@ func convertNotificationSet(ctx context.Context, source types.Set) ([]*pdp.Notif
 	return []*pdp.Notification{}, false
 }
 
-// convertScheduleSet converts schedule set
+// convertScheduleSet converts schedule set.
 func convertScheduleSet(ctx context.Context, source types.Set) ([]*pdp.Schedule, bool) {
 	if source.IsNull() || source.IsUnknown() {
 		return []*pdp.Schedule{}, true
@@ -211,7 +211,7 @@ func convertScheduleSet(ctx context.Context, source types.Set) ([]*pdp.Schedule,
 	return []*pdp.Schedule{}, false
 }
 
-// convertTaskDependencySet converts task dependency set
+// convertTaskDependencySet converts task dependency set.
 func convertTaskDependencySet(ctx context.Context, source types.Set) ([]pdp.TaskDependency, bool) {
 	if source.IsNull() || source.IsUnknown() {
 		return []pdp.TaskDependency{}, true
