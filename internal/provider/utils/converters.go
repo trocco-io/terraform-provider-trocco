@@ -21,7 +21,7 @@ func ConvertSetToSlice[T any, U any](
 	var values []T
 	diags.Append(source.ElementsAs(ctx, &values, false)...)
 	if diags.HasError() {
-		return nil
+		return []U{}
 	}
 
 	result := make([]U, 0, len(values))
@@ -45,7 +45,7 @@ func ConvertListToSlice[T any, U any](
 	var values []T
 	diags.Append(source.ElementsAs(ctx, &values, false)...)
 	if diags.HasError() {
-		return nil
+		return []U{}
 	}
 
 	result := make([]U, 0, len(values))
