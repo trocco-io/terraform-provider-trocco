@@ -3,7 +3,7 @@ package filter
 import (
 	"context"
 	"terraform-provider-trocco/internal/client/entity/job_definition/filter"
-	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
+	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -77,13 +77,13 @@ func NewFilterColumns(ctx context.Context, filterColumns []filter.FilterColumn) 
 	return outputs, diags
 }
 
-func (filterColumn FilterColumn) ToInput(ctx context.Context) filter2.FilterColumnInput {
+func (filterColumn FilterColumn) ToInput(ctx context.Context) filterParameters.FilterColumnInput {
 	var expandColumns []jsonExpandColumn
 	if !filterColumn.JSONExpandColumns.IsNull() && !filterColumn.JSONExpandColumns.IsUnknown() {
 		_ = filterColumn.JSONExpandColumns.ElementsAs(ctx, &expandColumns, false)
 	}
 
-	return filter2.FilterColumnInput{
+	return filterParameters.FilterColumnInput{
 		Name:                     filterColumn.Name.ValueString(),
 		Src:                      filterColumn.Src.ValueString(),
 		Type:                     filterColumn.Type.ValueString(),
@@ -95,10 +95,10 @@ func (filterColumn FilterColumn) ToInput(ctx context.Context) filter2.FilterColu
 	}
 }
 
-func jsonExpandColumns(columns []jsonExpandColumn) []filter2.JSONExpandColumnInput {
-	outputs := make([]filter2.JSONExpandColumnInput, 0, len(columns))
+func jsonExpandColumns(columns []jsonExpandColumn) []filterParameters.JSONExpandColumnInput {
+	outputs := make([]filterParameters.JSONExpandColumnInput, 0, len(columns))
 	for _, input := range columns {
-		column := filter2.JSONExpandColumnInput{
+		column := filterParameters.JSONExpandColumnInput{
 			Name:     input.Name.ValueString(),
 			JSONPath: input.JSONPath.ValueString(),
 			Type:     input.Type.ValueString(),

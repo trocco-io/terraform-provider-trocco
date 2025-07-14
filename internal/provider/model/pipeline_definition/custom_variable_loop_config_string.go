@@ -6,15 +6,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type StringCustomVariableLoopConfig struct {
 	Variables types.List `tfsdk:"variables"`
 }
 
-func NewStringCustomVariableLoopConfig(ctx context.Context, en *we.StringCustomVariableLoopConfig) *StringCustomVariableLoopConfig {
+func NewStringCustomVariableLoopConfig(ctx context.Context, en *pipelineDefinitionEntities.StringCustomVariableLoopConfig) *StringCustomVariableLoopConfig {
 	if en == nil {
 		return nil
 	}
@@ -38,14 +38,14 @@ func NewStringCustomVariableLoopConfig(ctx context.Context, en *we.StringCustomV
 	}
 }
 
-func (c *StringCustomVariableLoopConfig) ToInput(ctx context.Context) wp.StringCustomVariableLoopConfig {
-	vs := []wp.StringCustomVariableLoopVariable{}
+func (c *StringCustomVariableLoopConfig) ToInput(ctx context.Context) pipelineDefinitionParameters.StringCustomVariableLoopConfig {
+	vs := []pipelineDefinitionParameters.StringCustomVariableLoopVariable{}
 
 	var variables []StringCustomVariableLoopVariable
 	diags := c.Variables.ElementsAs(ctx, &variables, false)
 	if diags.HasError() {
-		return wp.StringCustomVariableLoopConfig{
-			Variables: []wp.StringCustomVariableLoopVariable{},
+		return pipelineDefinitionParameters.StringCustomVariableLoopConfig{
+			Variables: []pipelineDefinitionParameters.StringCustomVariableLoopVariable{},
 		}
 	}
 
@@ -53,7 +53,7 @@ func (c *StringCustomVariableLoopConfig) ToInput(ctx context.Context) wp.StringC
 		vs = append(vs, v.ToInput(ctx))
 	}
 
-	return wp.StringCustomVariableLoopConfig{
+	return pipelineDefinitionParameters.StringCustomVariableLoopConfig{
 		Variables: vs,
 	}
 }
@@ -63,7 +63,7 @@ type StringCustomVariableLoopVariable struct {
 	Values types.List   `tfsdk:"values"`
 }
 
-func NewStringCustomVariableLoopVariable(ctx context.Context, en we.StringCustomVariableLoopVariable) StringCustomVariableLoopVariable {
+func NewStringCustomVariableLoopVariable(ctx context.Context, en pipelineDefinitionEntities.StringCustomVariableLoopVariable) StringCustomVariableLoopVariable {
 	values := []attr.Value{}
 	for _, val := range en.Values {
 		values = append(values, types.StringValue(val))
@@ -87,7 +87,7 @@ func NewStringCustomVariableLoopVariable(ctx context.Context, en we.StringCustom
 	}
 }
 
-func (v *StringCustomVariableLoopVariable) ToInput(ctx context.Context) wp.StringCustomVariableLoopVariable {
+func (v *StringCustomVariableLoopVariable) ToInput(ctx context.Context) pipelineDefinitionParameters.StringCustomVariableLoopVariable {
 	values := []string{}
 
 	var stringValues []types.String
@@ -95,7 +95,7 @@ func (v *StringCustomVariableLoopVariable) ToInput(ctx context.Context) wp.Strin
 	if diags.HasError() {
 		// In a real application, you might want to handle this error differently
 		// For now, we'll just return an empty list if there's an error
-		return wp.StringCustomVariableLoopVariable{
+		return pipelineDefinitionParameters.StringCustomVariableLoopVariable{
 			Name:   v.Name.ValueString(),
 			Values: []string{},
 		}
@@ -105,7 +105,7 @@ func (v *StringCustomVariableLoopVariable) ToInput(ctx context.Context) wp.Strin
 		values = append(values, val.ValueString())
 	}
 
-	return wp.StringCustomVariableLoopVariable{
+	return pipelineDefinitionParameters.StringCustomVariableLoopVariable{
 		Name:   v.Name.ValueString(),
 		Values: values,
 	}

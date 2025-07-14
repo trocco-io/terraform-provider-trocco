@@ -4,15 +4,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type TroccoDBTTaskConfig struct {
 	DefinitionID types.Int64 `tfsdk:"definition_id"`
 }
 
-func NewTroccoDBTTaskConfig(c *we.TroccoDBTTaskConfig) *TroccoDBTTaskConfig {
+func NewTroccoDBTTaskConfig(c *pipelineDefinitionEntities.TroccoDBTTaskConfig) *TroccoDBTTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -22,8 +22,8 @@ func NewTroccoDBTTaskConfig(c *we.TroccoDBTTaskConfig) *TroccoDBTTaskConfig {
 	}
 }
 
-func (c *TroccoDBTTaskConfig) ToInput() *wp.TroccoDBTTaskConfig {
-	return &wp.TroccoDBTTaskConfig{
+func (c *TroccoDBTTaskConfig) ToInput() *pipelineDefinitionParameters.TroccoDBTTaskConfig {
+	return &pipelineDefinitionParameters.TroccoDBTTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
 	}
 }

@@ -2,8 +2,8 @@ package parser
 
 import (
 	"context"
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
-	param "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitionParameters "terraform-provider-trocco/internal/client/parameter/job_definition"
 	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -25,7 +25,7 @@ type JsonlParserColumn struct {
 	Format   types.String `tfsdk:"format"`
 }
 
-func NewJsonlParser(ctx context.Context, jsonlParser *job_definitions.JsonlParser) *JsonlParser {
+func NewJsonlParser(ctx context.Context, jsonlParser *jobDefinitionEntities.JsonlParser) *JsonlParser {
 	if jsonlParser == nil {
 		return nil
 	}
@@ -66,7 +66,7 @@ func NewJsonlParser(ctx context.Context, jsonlParser *job_definitions.JsonlParse
 	}
 }
 
-func (jsonlParser *JsonlParser) ToJsonlParserInput(ctx context.Context) *param.JsonlParserInput {
+func (jsonlParser *JsonlParser) ToJsonlParserInput(ctx context.Context) *jobDefinitionParameters.JsonlParserInput {
 	if jsonlParser == nil {
 		return nil
 	}
@@ -77,9 +77,9 @@ func (jsonlParser *JsonlParser) ToJsonlParserInput(ctx context.Context) *param.J
 		return nil
 	}
 
-	columns := make([]param.JsonlParserColumnInput, 0, len(columnElements))
+	columns := make([]jobDefinitionParameters.JsonlParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {
-		column := param.JsonlParserColumnInput{
+		column := jobDefinitionParameters.JsonlParserColumnInput{
 			Name:     input.Name.ValueString(),
 			Type:     input.Type.ValueString(),
 			TimeZone: input.TimeZone.ValueStringPointer(),
@@ -88,7 +88,7 @@ func (jsonlParser *JsonlParser) ToJsonlParserInput(ctx context.Context) *param.J
 		columns = append(columns, column)
 	}
 
-	return &param.JsonlParserInput{
+	return &jobDefinitionParameters.JsonlParserInput{
 		StopOnInvalidRecord: jsonlParser.StopOnInvalidRecord.ValueBool(),
 		DefaultTimeZone:     jsonlParser.DefaultTimeZone.ValueString(),
 		Newline:             model.NewNullableString(jsonlParser.Newline),

@@ -6,8 +6,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
-	validator2 "terraform-provider-trocco/internal/provider/validator"
+	planModifier "terraform-provider-trocco/internal/provider/planmodifier"
+	validatorHelpers "terraform-provider-trocco/internal/provider/validator"
 )
 
 func CustomVariableSettingsSchema() schema.Attribute {
@@ -18,7 +18,7 @@ func CustomVariableSettingsSchema() schema.Attribute {
 				"name": schema.StringAttribute{
 					Required: true,
 					Validators: []validator.String{
-						validator2.WrappingDollarValidator{},
+						validatorHelpers.WrappingDollarValidator{},
 					},
 					MarkdownDescription: "Custom variable name. It must start and end with `$`",
 				},
@@ -64,7 +64,7 @@ func CustomVariableSettingsSchema() schema.Attribute {
 				},
 			},
 			PlanModifiers: []planmodifier.Object{
-				&planmodifier2.CustomVariableSettingPlanModifier{},
+				&planModifier.CustomVariableSettingPlanModifier{},
 			},
 		},
 	}

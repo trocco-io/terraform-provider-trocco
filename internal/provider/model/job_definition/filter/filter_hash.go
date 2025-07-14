@@ -2,7 +2,7 @@ package filter
 
 import (
 	"terraform-provider-trocco/internal/client/entity/job_definition/filter"
-	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
+	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -26,8 +26,8 @@ func NewFilterHashes(filterHashes []filter.FilterHash) []FilterHash {
 	return outputs
 }
 
-func (filterHash FilterHash) ToInput() filter2.FilterHashInput {
-	return filter2.FilterHashInput{
+func (filterHash FilterHash) ToInput() filterParameters.FilterHashInput {
+	return filterParameters.FilterHashInput{
 		Name: filterHash.Name.ValueString(),
 	}
 }

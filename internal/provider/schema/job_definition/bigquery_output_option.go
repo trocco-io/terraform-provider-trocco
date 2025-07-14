@@ -1,7 +1,7 @@
 package job_definition
 
 import (
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+	planModifier "terraform-provider-trocco/internal/provider/planmodifier"
 	mergeKeysValidator "terraform-provider-trocco/internal/provider/validator/job_definition/output_option/bigquery_output_option"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
@@ -185,7 +185,7 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 					},
 				},
 				PlanModifiers: []planmodifier.List{
-					planmodifier2.EmptyListForNull(),
+					planModifier.EmptyListForNull(),
 				},
 			},
 			"bigquery_output_option_clustering_fields": schema.SetAttribute{
@@ -194,7 +194,7 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 				ElementType:         types.StringType,
 				MarkdownDescription: "Clustered column. Clustering can only be set when creating a new table. A maximum of four clustered columns can be specified.",
 				PlanModifiers: []planmodifier.Set{
-					planmodifier2.EmptySetForNull(),
+					planModifier.EmptySetForNull(),
 				},
 			},
 			"bigquery_output_option_merge_keys": schema.SetAttribute{
@@ -206,13 +206,13 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 					mergeKeysValidator.MergeKeysRequiredOnlyForMergeMode(),
 				},
 				PlanModifiers: []planmodifier.Set{
-					planmodifier2.EmptySetForNull(),
+					planModifier.EmptySetForNull(),
 				},
 			},
 			"custom_variable_settings": CustomVariableSettingsSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
-			&planmodifier2.BigqueryOutputOptionPlanModifier{},
+			&planModifier.BigqueryOutputOptionPlanModifier{},
 		},
 	}
 }

@@ -1,7 +1,7 @@
 package job_definition
 
 import (
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+	planModifier "terraform-provider-trocco/internal/provider/planmodifier"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -17,7 +17,7 @@ func OutputOptionSchema() schema.Attribute {
 			"google_spreadsheets_output_option": GoogleSpreadsheetsOutputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
-			&planmodifier2.OutputOptionPlanModifier{},
+			&planModifier.OutputOptionPlanModifier{},
 		},
 	}
 }

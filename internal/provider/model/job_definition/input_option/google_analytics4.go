@@ -3,8 +3,8 @@ package input_options
 import (
 	"context"
 	"fmt"
-	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	param "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
@@ -65,7 +65,7 @@ func (GoogleAnalytics4Column) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewGoogleAnalytics4InputOption(ctx context.Context, inputOption *input_option.GoogleAnalytics4InputOption) *GoogleAnalytics4InputOption {
+func NewGoogleAnalytics4InputOption(ctx context.Context, inputOption *inputOptionEntities.GoogleAnalytics4InputOption) *GoogleAnalytics4InputOption {
 	if inputOption == nil {
 		return nil
 	}
@@ -112,7 +112,7 @@ func NewGoogleAnalytics4InputOption(ctx context.Context, inputOption *input_opti
 
 func newGoogleAnalytics4Dimensions(
 	ctx context.Context,
-	inputOptionDimensions []input_option.GoogleAnalytics4Dimension,
+	inputOptionDimensions []inputOptionEntities.GoogleAnalytics4Dimension,
 ) (types.List, error) {
 	objectType := types.ObjectType{
 		AttrTypes: GoogleAnalytics4Dimension{}.attrTypes(),
@@ -140,7 +140,7 @@ func newGoogleAnalytics4Dimensions(
 
 func newGoogleAnalytics4Metrics(
 	ctx context.Context,
-	inputOptionMetrics []input_option.GoogleAnalytics4Metric,
+	inputOptionMetrics []inputOptionEntities.GoogleAnalytics4Metric,
 ) (types.List, error) {
 	objectType := types.ObjectType{
 		AttrTypes: GoogleAnalytics4Metric{}.attrTypes(),
@@ -168,7 +168,7 @@ func newGoogleAnalytics4Metrics(
 
 func newGoogleAnalytics4InputOptionColumns(
 	ctx context.Context,
-	inputOptionColumns []input_option.GoogleAnalytics4Column,
+	inputOptionColumns []inputOptionEntities.GoogleAnalytics4Column,
 ) (types.List, error) {
 	objectType := types.ObjectType{
 		AttrTypes: GoogleAnalytics4Column{}.attrTypes(),
@@ -194,7 +194,7 @@ func newGoogleAnalytics4InputOptionColumns(
 	return listValue, nil
 }
 
-func (inputOption *GoogleAnalytics4InputOption) ToInput(ctx context.Context) *param.GoogleAnalytics4InputOptionInput {
+func (inputOption *GoogleAnalytics4InputOption) ToInput(ctx context.Context) *inputOptionParameters.GoogleAnalytics4InputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
@@ -225,7 +225,7 @@ func (inputOption *GoogleAnalytics4InputOption) ToInput(ctx context.Context) *pa
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, inputOption.CustomVariableSettings)
 
-	return &param.GoogleAnalytics4InputOptionInput{
+	return &inputOptionParameters.GoogleAnalytics4InputOptionInput{
 		GoogleAnalytics4ConnectionID:          inputOption.GoogleAnalytics4ConnectionID.ValueInt64(),
 		PropertyID:                            inputOption.PropertyID.ValueString(),
 		TimeSeries:                            inputOption.TimeSeries.ValueString(),
@@ -243,7 +243,7 @@ func (inputOption *GoogleAnalytics4InputOption) ToInput(ctx context.Context) *pa
 	}
 }
 
-func (inputOption *GoogleAnalytics4InputOption) ToUpdateInput(ctx context.Context) *param.UpdateGoogleAnalytics4InputOptionInput {
+func (inputOption *GoogleAnalytics4InputOption) ToUpdateInput(ctx context.Context) *inputOptionParameters.UpdateGoogleAnalytics4InputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
@@ -296,7 +296,7 @@ func (inputOption *GoogleAnalytics4InputOption) ToUpdateInput(ctx context.Contex
 	metrics := toGoogleAnalytics4MetricsInput(metricValues)
 	columns := toGoogleAnalytics4ColumnsInput(columnValues)
 
-	return &param.UpdateGoogleAnalytics4InputOptionInput{
+	return &inputOptionParameters.UpdateGoogleAnalytics4InputOptionInput{
 		GoogleAnalytics4ConnectionID:          model.NewNullableInt64(inputOption.GoogleAnalytics4ConnectionID),
 		PropertyID:                            model.NewNullableString(inputOption.PropertyID),
 		TimeSeries:                            model.NewNullableString(inputOption.TimeSeries),
@@ -314,14 +314,14 @@ func (inputOption *GoogleAnalytics4InputOption) ToUpdateInput(ctx context.Contex
 	}
 }
 
-func toGoogleAnalytics4ColumnsInput(columns []GoogleAnalytics4Column) []param.GoogleAnalytics4Column {
+func toGoogleAnalytics4ColumnsInput(columns []GoogleAnalytics4Column) []inputOptionParameters.GoogleAnalytics4Column {
 	if columns == nil {
 		return nil
 	}
 
-	inputs := make([]param.GoogleAnalytics4Column, 0, len(columns))
+	inputs := make([]inputOptionParameters.GoogleAnalytics4Column, 0, len(columns))
 	for _, column := range columns {
-		inputs = append(inputs, param.GoogleAnalytics4Column{
+		inputs = append(inputs, inputOptionParameters.GoogleAnalytics4Column{
 			Name: column.Name.ValueString(),
 			Type: column.Type.ValueString(),
 		})
@@ -329,14 +329,14 @@ func toGoogleAnalytics4ColumnsInput(columns []GoogleAnalytics4Column) []param.Go
 	return inputs
 }
 
-func toGoogleAnalytics4DimensionsInput(dimensions []GoogleAnalytics4Dimension) []param.GoogleAnalytics4Dimension {
+func toGoogleAnalytics4DimensionsInput(dimensions []GoogleAnalytics4Dimension) []inputOptionParameters.GoogleAnalytics4Dimension {
 	if dimensions == nil {
 		return nil
 	}
 
-	inputs := make([]param.GoogleAnalytics4Dimension, 0, len(dimensions))
+	inputs := make([]inputOptionParameters.GoogleAnalytics4Dimension, 0, len(dimensions))
 	for _, dimension := range dimensions {
-		inputs = append(inputs, param.GoogleAnalytics4Dimension{
+		inputs = append(inputs, inputOptionParameters.GoogleAnalytics4Dimension{
 			Name:       dimension.Name.ValueString(),
 			Expression: model.NewNullableString(dimension.Expression),
 		})
@@ -344,14 +344,14 @@ func toGoogleAnalytics4DimensionsInput(dimensions []GoogleAnalytics4Dimension) [
 	return inputs
 }
 
-func toGoogleAnalytics4MetricsInput(metrics []GoogleAnalytics4Metric) []param.GoogleAnalytics4Metric {
+func toGoogleAnalytics4MetricsInput(metrics []GoogleAnalytics4Metric) []inputOptionParameters.GoogleAnalytics4Metric {
 	if metrics == nil {
 		return nil
 	}
 
-	inputs := make([]param.GoogleAnalytics4Metric, 0, len(metrics))
+	inputs := make([]inputOptionParameters.GoogleAnalytics4Metric, 0, len(metrics))
 	for _, metric := range metrics {
-		inputs = append(inputs, param.GoogleAnalytics4Metric{
+		inputs = append(inputs, inputOptionParameters.GoogleAnalytics4Metric{
 			Name:       metric.Name.ValueString(),
 			Expression: model.NewNullableString(metric.Expression),
 		})

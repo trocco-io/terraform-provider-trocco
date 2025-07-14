@@ -2,9 +2,9 @@ package pipeline_definition
 
 import (
 	"context"
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	p "terraform-provider-trocco/internal/client/parameter"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	parameter "terraform-provider-trocco/internal/client/parameter"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -23,7 +23,7 @@ type Schedule struct {
 	Minute    types.Int64  `tfsdk:"minute"`
 }
 
-func NewSchedules(ctx context.Context, ens []*we.Schedule, previous *PipelineDefinition) types.Set {
+func NewSchedules(ctx context.Context, ens []*pipelineDefinitionEntities.Schedule, previous *PipelineDefinition) types.Set {
 	objectType := types.ObjectType{
 		AttrTypes: map[string]attr.Type{
 			"frequency":   types.StringType,
@@ -64,7 +64,7 @@ func NewSchedules(ctx context.Context, ens []*we.Schedule, previous *PipelineDef
 	return setValue
 }
 
-func NewSchedule(en *we.Schedule) *Schedule {
+func NewSchedule(en *pipelineDefinitionEntities.Schedule) *Schedule {
 	return &Schedule{
 		Frequency: types.StringValue(en.Frequency),
 		TimeZone:  types.StringValue(en.TimeZone),
@@ -75,13 +75,13 @@ func NewSchedule(en *we.Schedule) *Schedule {
 	}
 }
 
-func (m *Schedule) ToInput() *wp.Schedule {
-	return &wp.Schedule{
+func (m *Schedule) ToInput() *pipelineDefinitionParameters.Schedule {
+	return &pipelineDefinitionParameters.Schedule{
 		Frequency: m.Frequency.ValueString(),
 		TimeZone:  m.TimeZone.ValueString(),
 		Minute:    m.Minute.ValueInt64(),
-		Day:       &p.NullableInt64{Valid: !m.Day.IsNull(), Value: m.Day.ValueInt64()},
-		DayOfWeek: &p.NullableInt64{Valid: !m.DayOfWeek.IsNull(), Value: m.DayOfWeek.ValueInt64()},
-		Hour:      &p.NullableInt64{Valid: !m.Hour.IsNull(), Value: m.Hour.ValueInt64()},
+		Day:       &parameter.NullableInt64{Valid: !m.Day.IsNull(), Value: m.Day.ValueInt64()},
+		DayOfWeek: &parameter.NullableInt64{Valid: !m.DayOfWeek.IsNull(), Value: m.DayOfWeek.ValueInt64()},
+		Hour:      &parameter.NullableInt64{Valid: !m.Hour.IsNull(), Value: m.Hour.ValueInt64()},
 	}
 }

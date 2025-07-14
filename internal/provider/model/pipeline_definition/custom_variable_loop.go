@@ -7,9 +7,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	p "terraform-provider-trocco/internal/client/parameter"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	parameter "terraform-provider-trocco/internal/client/parameter"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type CustomVariableLoop struct {
@@ -25,7 +25,7 @@ type CustomVariableLoop struct {
 	RedshiftConfig  *RedshiftCustomVariableLoopConfig  `tfsdk:"redshift_config"`
 }
 
-func NewCustomVariableLoop(ctx context.Context, en *we.CustomVariableLoop) *CustomVariableLoop {
+func NewCustomVariableLoop(ctx context.Context, en *pipelineDefinitionEntities.CustomVariableLoop) *CustomVariableLoop {
 	if en == nil {
 		return nil
 	}
@@ -56,12 +56,12 @@ func NewCustomVariableLoop(ctx context.Context, en *we.CustomVariableLoop) *Cust
 	return md
 }
 
-func (c *CustomVariableLoop) ToInput(ctx context.Context) wp.CustomVariableLoop {
-	i := wp.CustomVariableLoop{
+func (c *CustomVariableLoop) ToInput(ctx context.Context) pipelineDefinitionParameters.CustomVariableLoop {
+	i := pipelineDefinitionParameters.CustomVariableLoop{
 		Type:                       c.Type.ValueString(),
-		IsParallelExecutionAllowed: &p.NullableBool{Valid: !c.IsParallelExecutionAllowed.IsNull(), Value: c.IsParallelExecutionAllowed.ValueBool()},
-		IsStoppedOnErrors:          &p.NullableBool{Valid: !c.IsStoppedOnErrors.IsNull(), Value: c.IsStoppedOnErrors.ValueBool()},
-		MaxErrors:                  &p.NullableInt64{Valid: !c.MaxErrors.IsNull(), Value: c.MaxErrors.ValueInt64()},
+		IsParallelExecutionAllowed: &parameter.NullableBool{Valid: !c.IsParallelExecutionAllowed.IsNull(), Value: c.IsParallelExecutionAllowed.ValueBool()},
+		IsStoppedOnErrors:          &parameter.NullableBool{Valid: !c.IsStoppedOnErrors.IsNull(), Value: c.IsStoppedOnErrors.ValueBool()},
+		MaxErrors:                  &parameter.NullableInt64{Valid: !c.MaxErrors.IsNull(), Value: c.MaxErrors.ValueInt64()},
 	}
 
 	if c.StringConfig != nil {

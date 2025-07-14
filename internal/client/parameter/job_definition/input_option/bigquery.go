@@ -2,7 +2,7 @@ package input_options
 
 import (
 	"terraform-provider-trocco/internal/client/parameter"
-	job_definitions "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefinitionParameters "terraform-provider-trocco/internal/client/parameter/job_definition"
 )
 
 type BigqueryInputOptionInput struct {
@@ -19,7 +19,7 @@ type BigqueryInputOptionInput struct {
 	BigqueryJobWaitSecond  *int64                                  `json:"bigquery_job_wait_second,omitempty"`
 	Columns                []BigqueryColumn                        `json:"columns,omitempty"`
 	CustomVariableSettings *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
-	Decoder                *job_definitions.DecoderInput           `json:"decoder,omitempty"`
+	Decoder                *jobDefinitionParameters.DecoderInput   `json:"decoder,omitempty"`
 }
 
 type UpdateBigqueryInputOptionInput struct {
@@ -36,7 +36,7 @@ type UpdateBigqueryInputOptionInput struct {
 	BigqueryJobWaitSecond  *int64                                  `json:"bigquery_job_wait_second,omitempty"`
 	Columns                []BigqueryColumn                        `json:"columns,omitempty"`
 	CustomVariableSettings *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
-	Decoder                *job_definitions.DecoderInput           `json:"decoder,omitempty"`
+	Decoder                *jobDefinitionParameters.DecoderInput   `json:"decoder,omitempty"`
 }
 
 type BigqueryColumn struct {

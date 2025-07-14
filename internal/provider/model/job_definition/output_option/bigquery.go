@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"terraform-provider-trocco/internal/client/entity/job_definition/output_option"
-	output_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
+	outputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
@@ -185,7 +185,7 @@ func (bigQueryOutputOptionColumnOption) attrTypes() map[string]attr.Type {
 	}
 }
 
-func (bigqueryOutputOption *BigQueryOutputOption) ToInput(ctx context.Context) *output_options2.BigQueryOutputOptionInput {
+func (bigqueryOutputOption *BigQueryOutputOption) ToInput(ctx context.Context) *outputOptionParameters.BigQueryOutputOptionInput {
 	if bigqueryOutputOption == nil {
 		return nil
 	}
@@ -231,7 +231,7 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput(ctx context.Context) *
 	}
 	columnOptions := toInputBigqueryOutputOptionColumnOptions(&columnOptionValues)
 
-	return &output_options2.BigQueryOutputOptionInput{
+	return &outputOptionParameters.BigQueryOutputOptionInput{
 		Dataset:                              bigqueryOutputOption.Dataset.ValueString(),
 		Table:                                bigqueryOutputOption.Table.ValueString(),
 		AutoCreateDataset:                    bigqueryOutputOption.AutoCreateDataset.ValueBool(),
@@ -255,7 +255,7 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput(ctx context.Context) *
 	}
 }
 
-func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput(ctx context.Context) *output_options2.UpdateBigQueryOutputOptionInput {
+func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput(ctx context.Context) *outputOptionParameters.UpdateBigQueryOutputOptionInput {
 	if bigqueryOutputOption == nil {
 		return nil
 	}
@@ -307,7 +307,7 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput(ctx context.Cont
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, bigqueryOutputOption.CustomVariableSettings)
 
-	return &output_options2.UpdateBigQueryOutputOptionInput{
+	return &outputOptionParameters.UpdateBigQueryOutputOptionInput{
 		Dataset:                              bigqueryOutputOption.Dataset.ValueStringPointer(),
 		Table:                                bigqueryOutputOption.Table.ValueStringPointer(),
 		AutoCreateDataset:                    bigqueryOutputOption.AutoCreateDataset.ValueBoolPointer(),
@@ -331,14 +331,14 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput(ctx context.Cont
 	}
 }
 
-func toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOptionColumnOptions *[]bigQueryOutputOptionColumnOption) *[]output_options2.BigQueryOutputOptionColumnOptionInput {
+func toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOptionColumnOptions *[]bigQueryOutputOptionColumnOption) *[]outputOptionParameters.BigQueryOutputOptionColumnOptionInput {
 	if bigqueryOutputOptionColumnOptions == nil {
 		return nil
 	}
 
-	outputs := make([]output_options2.BigQueryOutputOptionColumnOptionInput, 0, len(*bigqueryOutputOptionColumnOptions))
+	outputs := make([]outputOptionParameters.BigQueryOutputOptionColumnOptionInput, 0, len(*bigqueryOutputOptionColumnOptions))
 	for _, input := range *bigqueryOutputOptionColumnOptions {
-		outputs = append(outputs, output_options2.BigQueryOutputOptionColumnOptionInput{
+		outputs = append(outputs, outputOptionParameters.BigQueryOutputOptionColumnOptionInput{
 			Name:            input.Name.ValueString(),
 			Type:            input.Type.ValueString(),
 			Mode:            input.Mode.ValueString(),

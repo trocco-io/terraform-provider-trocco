@@ -2,8 +2,8 @@ package parser
 
 import (
 	"context"
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
-	params "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitionParameters "terraform-provider-trocco/internal/client/parameter/job_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -22,7 +22,7 @@ type JsonpathParserColumn struct {
 	Format   types.String `tfsdk:"format"`
 }
 
-func NewJsonPathParser(ctx context.Context, jsonpathParser *job_definitions.JsonpathParser) *JsonpathParser {
+func NewJsonPathParser(ctx context.Context, jsonpathParser *jobDefinitionEntities.JsonpathParser) *JsonpathParser {
 	if jsonpathParser == nil {
 		return nil
 	}
@@ -61,7 +61,7 @@ func NewJsonPathParser(ctx context.Context, jsonpathParser *job_definitions.Json
 	}
 }
 
-func (jsonpathParser *JsonpathParser) ToJsonpathParserInput(ctx context.Context) *params.JsonpathParserInput {
+func (jsonpathParser *JsonpathParser) ToJsonpathParserInput(ctx context.Context) *jobDefinitionParameters.JsonpathParserInput {
 	if jsonpathParser == nil {
 		return nil
 	}
@@ -72,9 +72,9 @@ func (jsonpathParser *JsonpathParser) ToJsonpathParserInput(ctx context.Context)
 		return nil
 	}
 
-	columns := make([]params.JsonpathParserColumnInput, 0, len(columnElements))
+	columns := make([]jobDefinitionParameters.JsonpathParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {
-		column := params.JsonpathParserColumnInput{
+		column := jobDefinitionParameters.JsonpathParserColumnInput{
 			Name:     input.Name.ValueString(),
 			Type:     input.Type.ValueString(),
 			TimeZone: input.TimeZone.ValueStringPointer(),
@@ -83,7 +83,7 @@ func (jsonpathParser *JsonpathParser) ToJsonpathParserInput(ctx context.Context)
 		columns = append(columns, column)
 	}
 
-	return &params.JsonpathParserInput{
+	return &jobDefinitionParameters.JsonpathParserInput{
 		Root:            jsonpathParser.Root.ValueString(),
 		DefaultTimeZone: jsonpathParser.DefaultTimeZone.ValueString(),
 		Columns:         columns,

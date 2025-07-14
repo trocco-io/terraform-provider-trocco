@@ -2,7 +2,7 @@ package filter
 
 import (
 	filterEntities "terraform-provider-trocco/internal/client/entity/job_definition/filter"
-	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
+	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -37,8 +37,8 @@ func NewFilterMasks(filterMasks []filterEntities.FilterMask) []FilterMask {
 	return outputs
 }
 
-func (filterMask FilterMask) ToInput() filter2.FilterMaskInput {
-	input := filter2.FilterMaskInput{
+func (filterMask FilterMask) ToInput() filterParameters.FilterMaskInput {
+	input := filterParameters.FilterMaskInput{
 		Name:       filterMask.Name.ValueString(),
 		MaskType:   filterMask.MaskType.ValueString(),
 		Length:     filterMask.Length.ValueInt64Pointer(),

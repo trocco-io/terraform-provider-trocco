@@ -3,8 +3,8 @@ package input_options
 import (
 	"context"
 	"fmt"
-	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	param "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
@@ -38,7 +38,7 @@ func (SalesforceColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewSalesforceInputOption(ctx context.Context, salesforceInputOption *input_option.SalesforceInputOption) *SalesforceInputOption {
+func NewSalesforceInputOption(ctx context.Context, salesforceInputOption *inputOptionEntities.SalesforceInputOption) *SalesforceInputOption {
 	if salesforceInputOption == nil {
 		return nil
 	}
@@ -70,7 +70,7 @@ func NewSalesforceInputOption(ctx context.Context, salesforceInputOption *input_
 
 func newColumns(
 	ctx context.Context,
-	salesforceColumns []input_option.SalesforceColumn,
+	salesforceColumns []inputOptionEntities.SalesforceColumn,
 ) (types.List, error) {
 	objectType := types.ObjectType{
 		AttrTypes: SalesforceColumn{}.attrTypes(),
@@ -97,7 +97,7 @@ func newColumns(
 	return listValue, nil
 }
 
-func (salesforceInputOption *SalesforceInputOption) ToInput(ctx context.Context) *param.SalesforceInputOptionInput {
+func (salesforceInputOption *SalesforceInputOption) ToInput(ctx context.Context) *inputOptionParameters.SalesforceInputOptionInput {
 	if salesforceInputOption == nil {
 		return nil
 	}
@@ -112,7 +112,7 @@ func (salesforceInputOption *SalesforceInputOption) ToInput(ctx context.Context)
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, salesforceInputOption.CustomVariableSettings)
 
-	return &param.SalesforceInputOptionInput{
+	return &inputOptionParameters.SalesforceInputOptionInput{
 		Object:                          salesforceInputOption.Object.ValueString(),
 		ObjectAcquisitionMethod:         model.NewNullableString(salesforceInputOption.ObjectAcquisitionMethod),
 		IsConvertTypeCustomColumns:      model.NewNullableBool(salesforceInputOption.IsConvertTypeCustomColumns),
@@ -125,7 +125,7 @@ func (salesforceInputOption *SalesforceInputOption) ToInput(ctx context.Context)
 	}
 }
 
-func (salesforceInputOption *SalesforceInputOption) ToUpdateInput(ctx context.Context) *param.UpdateSalesforceInputOptionInput {
+func (salesforceInputOption *SalesforceInputOption) ToUpdateInput(ctx context.Context) *inputOptionParameters.UpdateSalesforceInputOptionInput {
 	if salesforceInputOption == nil {
 		return nil
 	}
@@ -146,7 +146,7 @@ func (salesforceInputOption *SalesforceInputOption) ToUpdateInput(ctx context.Co
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, salesforceInputOption.CustomVariableSettings)
 
-	return &param.UpdateSalesforceInputOptionInput{
+	return &inputOptionParameters.UpdateSalesforceInputOptionInput{
 		Object:                          salesforceInputOption.Object.ValueStringPointer(),
 		ObjectAcquisitionMethod:         model.NewNullableString(salesforceInputOption.ObjectAcquisitionMethod),
 		IsConvertTypeCustomColumns:      model.NewNullableBool(salesforceInputOption.IsConvertTypeCustomColumns),
@@ -159,14 +159,14 @@ func (salesforceInputOption *SalesforceInputOption) ToUpdateInput(ctx context.Co
 	}
 }
 
-func toSalesforceColumnsInput(columns []SalesforceColumn) []param.SalesforceColumn {
+func toSalesforceColumnsInput(columns []SalesforceColumn) []inputOptionParameters.SalesforceColumn {
 	if columns == nil {
 		return nil
 	}
 
-	inputs := make([]param.SalesforceColumn, 0, len(columns))
+	inputs := make([]inputOptionParameters.SalesforceColumn, 0, len(columns))
 	for _, column := range columns {
-		inputs = append(inputs, param.SalesforceColumn{
+		inputs = append(inputs, inputOptionParameters.SalesforceColumn{
 			Name:   column.Name.ValueString(),
 			Type:   column.Type.ValueString(),
 			Format: column.Format.ValueStringPointer(),

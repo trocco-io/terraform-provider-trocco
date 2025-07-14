@@ -4,8 +4,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type TableauDataExtractionTaskConfig struct {
@@ -14,7 +14,7 @@ type TableauDataExtractionTaskConfig struct {
 	TaskID       types.String `tfsdk:"task_id"`
 }
 
-func NewTableauDataExtractionTaskConfig(c *we.TableauDataExtractionTaskConfig) *TableauDataExtractionTaskConfig {
+func NewTableauDataExtractionTaskConfig(c *pipelineDefinitionEntities.TableauDataExtractionTaskConfig) *TableauDataExtractionTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -26,8 +26,8 @@ func NewTableauDataExtractionTaskConfig(c *we.TableauDataExtractionTaskConfig) *
 	}
 }
 
-func (c *TableauDataExtractionTaskConfig) ToInput() *wp.TableauDataExtractionTaskConfig {
-	return &wp.TableauDataExtractionTaskConfig{
+func (c *TableauDataExtractionTaskConfig) ToInput() *pipelineDefinitionParameters.TableauDataExtractionTaskConfig {
+	return &pipelineDefinitionParameters.TableauDataExtractionTaskConfig{
 		Name:         c.Name.ValueString(),
 		ConnectionID: c.ConnectionID.ValueInt64(),
 		TaskID:       c.TaskID.ValueString(),

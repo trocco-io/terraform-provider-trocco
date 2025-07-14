@@ -7,8 +7,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type TroccoPipelineTaskConfig struct {
@@ -17,7 +17,7 @@ type TroccoPipelineTaskConfig struct {
 	CustomVariableLoop *CustomVariableLoop `tfsdk:"custom_variable_loop"`
 }
 
-func NewTroccoPipelineTaskConfig(ctx context.Context, c *we.TroccoPipelineTaskConfig) *TroccoPipelineTaskConfig {
+func NewTroccoPipelineTaskConfig(ctx context.Context, c *pipelineDefinitionEntities.TroccoPipelineTaskConfig) *TroccoPipelineTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -29,8 +29,8 @@ func NewTroccoPipelineTaskConfig(ctx context.Context, c *we.TroccoPipelineTaskCo
 	}
 }
 
-func (c *TroccoPipelineTaskConfig) ToInput(ctx context.Context) *wp.TroccoPipelineTaskConfig {
-	in := &wp.TroccoPipelineTaskConfig{
+func (c *TroccoPipelineTaskConfig) ToInput(ctx context.Context) *pipelineDefinitionParameters.TroccoPipelineTaskConfig {
+	in := &pipelineDefinitionParameters.TroccoPipelineTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
 	}
 

@@ -2,8 +2,8 @@ package parser
 
 import (
 	"context"
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
-	params "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitionParameters "terraform-provider-trocco/internal/client/parameter/job_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -19,7 +19,7 @@ type ParquetParserColumn struct {
 	Format types.String `tfsdk:"format"`
 }
 
-func NewParquetParser(ctx context.Context, parquetParser *job_definitions.ParquetParser) *ParquetParser {
+func NewParquetParser(ctx context.Context, parquetParser *jobDefinitionEntities.ParquetParser) *ParquetParser {
 	if parquetParser == nil {
 		return nil
 	}
@@ -53,7 +53,7 @@ func NewParquetParser(ctx context.Context, parquetParser *job_definitions.Parque
 	}
 }
 
-func (parquetParser *ParquetParser) ToParquetParserInput(ctx context.Context) *params.ParquetParserInput {
+func (parquetParser *ParquetParser) ToParquetParserInput(ctx context.Context) *jobDefinitionParameters.ParquetParserInput {
 	if parquetParser == nil {
 		return nil
 	}
@@ -64,9 +64,9 @@ func (parquetParser *ParquetParser) ToParquetParserInput(ctx context.Context) *p
 		return nil
 	}
 
-	columns := make([]params.ParquetParserColumnInput, 0, len(columnElements))
+	columns := make([]jobDefinitionParameters.ParquetParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {
-		column := params.ParquetParserColumnInput{
+		column := jobDefinitionParameters.ParquetParserColumnInput{
 			Name:   input.Name.ValueString(),
 			Type:   input.Type.ValueString(),
 			Format: input.Format.ValueStringPointer(),
@@ -74,5 +74,5 @@ func (parquetParser *ParquetParser) ToParquetParserInput(ctx context.Context) *p
 		columns = append(columns, column)
 	}
 
-	return &params.ParquetParserInput{Columns: columns}
+	return &jobDefinitionParameters.ParquetParserInput{Columns: columns}
 }

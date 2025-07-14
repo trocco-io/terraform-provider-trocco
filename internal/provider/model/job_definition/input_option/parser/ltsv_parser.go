@@ -2,8 +2,8 @@ package parser
 
 import (
 	"context"
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
-	params "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitionParameters "terraform-provider-trocco/internal/client/parameter/job_definition"
 	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -22,7 +22,7 @@ type LtsvParserColumn struct {
 	Format types.String `tfsdk:"format"`
 }
 
-func NewLtsvParser(ctx context.Context, ltsvParser *job_definitions.LtsvParser) *LtsvParser {
+func NewLtsvParser(ctx context.Context, ltsvParser *jobDefinitionEntities.LtsvParser) *LtsvParser {
 	if ltsvParser == nil {
 		return nil
 	}
@@ -59,7 +59,7 @@ func NewLtsvParser(ctx context.Context, ltsvParser *job_definitions.LtsvParser) 
 	}
 }
 
-func (ltsvParser *LtsvParser) ToLtsvParserInput(ctx context.Context) *params.LtsvParserInput {
+func (ltsvParser *LtsvParser) ToLtsvParserInput(ctx context.Context) *jobDefinitionParameters.LtsvParserInput {
 	if ltsvParser == nil {
 		return nil
 	}
@@ -70,9 +70,9 @@ func (ltsvParser *LtsvParser) ToLtsvParserInput(ctx context.Context) *params.Lts
 		return nil
 	}
 
-	columns := make([]params.LtsvParserColumnInput, 0, len(columnElements))
+	columns := make([]jobDefinitionParameters.LtsvParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {
-		column := params.LtsvParserColumnInput{
+		column := jobDefinitionParameters.LtsvParserColumnInput{
 			Name:   input.Name.ValueString(),
 			Type:   input.Type.ValueString(),
 			Format: input.Format.ValueStringPointer(),
@@ -80,7 +80,7 @@ func (ltsvParser *LtsvParser) ToLtsvParserInput(ctx context.Context) *params.Lts
 		columns = append(columns, column)
 	}
 
-	return &params.LtsvParserInput{
+	return &jobDefinitionParameters.LtsvParserInput{
 		Newline: model.NewNullableString(ltsvParser.Newline),
 		Charset: model.NewNullableString(ltsvParser.Charset),
 		Columns: columns,

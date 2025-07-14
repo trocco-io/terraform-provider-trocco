@@ -6,8 +6,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type PeriodCustomVariableLoopConfig struct {
@@ -18,7 +18,7 @@ type PeriodCustomVariableLoopConfig struct {
 	Variables types.List                   `tfsdk:"variables"`
 }
 
-func NewPeriodCustomVariableLoopConfig(ctx context.Context, en *we.PeriodCustomVariableLoopConfig) *PeriodCustomVariableLoopConfig {
+func NewPeriodCustomVariableLoopConfig(ctx context.Context, en *pipelineDefinitionEntities.PeriodCustomVariableLoopConfig) *PeriodCustomVariableLoopConfig {
 	if en == nil {
 		return nil
 	}
@@ -46,20 +46,20 @@ func NewPeriodCustomVariableLoopConfig(ctx context.Context, en *we.PeriodCustomV
 	}
 }
 
-func (c *PeriodCustomVariableLoopConfig) ToInput(ctx context.Context) wp.PeriodCustomVariableLoopConfig {
-	vars := []wp.PeriodCustomVariableLoopVariable{}
+func (c *PeriodCustomVariableLoopConfig) ToInput(ctx context.Context) pipelineDefinitionParameters.PeriodCustomVariableLoopConfig {
+	vars := []pipelineDefinitionParameters.PeriodCustomVariableLoopVariable{}
 
 	var variables []PeriodCustomVariableLoopVariable
 	diags := c.Variables.ElementsAs(ctx, &variables, false)
 	if diags.HasError() {
-		return wp.PeriodCustomVariableLoopConfig{}
+		return pipelineDefinitionParameters.PeriodCustomVariableLoopConfig{}
 	}
 
 	for _, v := range variables {
 		vars = append(vars, v.ToInput())
 	}
 
-	return wp.PeriodCustomVariableLoopConfig{
+	return pipelineDefinitionParameters.PeriodCustomVariableLoopConfig{
 		Interval:  c.Interval.ValueString(),
 		TimeZone:  c.TimeZone.ValueString(),
 		From:      c.From.ToInput(),
@@ -73,15 +73,15 @@ type PeriodCustomVariableLoopFrom struct {
 	Unit  types.String `tfsdk:"unit"`
 }
 
-func NewPeriodCustomVariableLoopFrom(en we.PeriodCustomVariableLoopFrom) PeriodCustomVariableLoopFrom {
+func NewPeriodCustomVariableLoopFrom(en pipelineDefinitionEntities.PeriodCustomVariableLoopFrom) PeriodCustomVariableLoopFrom {
 	return PeriodCustomVariableLoopFrom{
 		Value: types.Int64Value(en.Value),
 		Unit:  types.StringValue(en.Unit),
 	}
 }
 
-func (f *PeriodCustomVariableLoopFrom) ToInput() wp.PeriodCustomVariableLoopFrom {
-	return wp.PeriodCustomVariableLoopFrom{
+func (f *PeriodCustomVariableLoopFrom) ToInput() pipelineDefinitionParameters.PeriodCustomVariableLoopFrom {
+	return pipelineDefinitionParameters.PeriodCustomVariableLoopFrom{
 		Value: f.Value.ValueInt64Pointer(),
 		Unit:  f.Unit.ValueString(),
 	}
@@ -92,15 +92,15 @@ type PeriodCustomVariableLoopTo struct {
 	Unit  types.String `tfsdk:"unit"`
 }
 
-func NewPeriodCustomVariableLoopTo(en we.PeriodCustomVariableLoopTo) PeriodCustomVariableLoopTo {
+func NewPeriodCustomVariableLoopTo(en pipelineDefinitionEntities.PeriodCustomVariableLoopTo) PeriodCustomVariableLoopTo {
 	return PeriodCustomVariableLoopTo{
 		Value: types.Int64Value(en.Value),
 		Unit:  types.StringValue(en.Unit),
 	}
 }
 
-func (t *PeriodCustomVariableLoopTo) ToInput() wp.PeriodCustomVariableLoopTo {
-	return wp.PeriodCustomVariableLoopTo{
+func (t *PeriodCustomVariableLoopTo) ToInput() pipelineDefinitionParameters.PeriodCustomVariableLoopTo {
+	return pipelineDefinitionParameters.PeriodCustomVariableLoopTo{
 		Value: t.Value.ValueInt64Pointer(),
 		Unit:  t.Unit.ValueString(),
 	}
@@ -111,15 +111,15 @@ type PeriodCustomVariableLoopVariable struct {
 	Offset PeriodCustomVariableLoopVariableOffset `tfsdk:"offset"`
 }
 
-func NewPeriodCustomVariableLoopVariable(en we.PeriodCustomVariableLoopVariable) PeriodCustomVariableLoopVariable {
+func NewPeriodCustomVariableLoopVariable(en pipelineDefinitionEntities.PeriodCustomVariableLoopVariable) PeriodCustomVariableLoopVariable {
 	return PeriodCustomVariableLoopVariable{
 		Name:   types.StringValue(en.Name),
 		Offset: NewStringCustomVariableLoopVariableOffset(en.Offset),
 	}
 }
 
-func (v *PeriodCustomVariableLoopVariable) ToInput() wp.PeriodCustomVariableLoopVariable {
-	return wp.PeriodCustomVariableLoopVariable{
+func (v *PeriodCustomVariableLoopVariable) ToInput() pipelineDefinitionParameters.PeriodCustomVariableLoopVariable {
+	return pipelineDefinitionParameters.PeriodCustomVariableLoopVariable{
 		Name:   v.Name.ValueString(),
 		Offset: v.Offset.ToInput(),
 	}
@@ -130,15 +130,15 @@ type PeriodCustomVariableLoopVariableOffset struct {
 	Unit  types.String `tfsdk:"unit"`
 }
 
-func NewStringCustomVariableLoopVariableOffset(en we.PeriodCustomVariableLoopVariableOffset) PeriodCustomVariableLoopVariableOffset {
+func NewStringCustomVariableLoopVariableOffset(en pipelineDefinitionEntities.PeriodCustomVariableLoopVariableOffset) PeriodCustomVariableLoopVariableOffset {
 	return PeriodCustomVariableLoopVariableOffset{
 		Value: types.Int64Value(en.Value),
 		Unit:  types.StringValue(en.Unit),
 	}
 }
 
-func (o *PeriodCustomVariableLoopVariableOffset) ToInput() wp.PeriodCustomVariableLoopVariableOffset {
-	return wp.PeriodCustomVariableLoopVariableOffset{
+func (o *PeriodCustomVariableLoopVariableOffset) ToInput() pipelineDefinitionParameters.PeriodCustomVariableLoopVariableOffset {
+	return pipelineDefinitionParameters.PeriodCustomVariableLoopVariableOffset{
 		Value: o.Value.ValueInt64Pointer(),
 		Unit:  o.Unit.ValueString(),
 	}

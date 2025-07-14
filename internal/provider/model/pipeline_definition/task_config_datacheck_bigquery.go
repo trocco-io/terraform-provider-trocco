@@ -2,9 +2,9 @@ package pipeline_definition
 
 import (
 	"context"
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	p "terraform-provider-trocco/internal/client/parameter"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	parameter "terraform-provider-trocco/internal/client/parameter"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -21,7 +21,7 @@ type BigqueryDataCheckTaskConfig struct {
 	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
-func NewBigqueryDataCheckTaskConfig(ctx context.Context, c *we.BigqueryDataCheckTaskConfig) *BigqueryDataCheckTaskConfig {
+func NewBigqueryDataCheckTaskConfig(ctx context.Context, c *pipelineDefinitionEntities.BigqueryDataCheckTaskConfig) *BigqueryDataCheckTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -37,8 +37,8 @@ func NewBigqueryDataCheckTaskConfig(ctx context.Context, c *we.BigqueryDataCheck
 	}
 }
 
-func (c *BigqueryDataCheckTaskConfig) ToInput(ctx context.Context) *wp.BigqueryDataCheckTaskConfigInput {
-	customVariables := []wp.CustomVariable{}
+func (c *BigqueryDataCheckTaskConfig) ToInput(ctx context.Context) *pipelineDefinitionParameters.BigqueryDataCheckTaskConfigInput {
+	customVariables := []pipelineDefinitionParameters.CustomVariable{}
 	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
 		var customVariableValues []CustomVariable
 		diags := c.CustomVariables.ElementsAs(ctx, &customVariableValues, false)
@@ -49,13 +49,13 @@ func (c *BigqueryDataCheckTaskConfig) ToInput(ctx context.Context) *wp.BigqueryD
 		}
 	}
 
-	return &wp.BigqueryDataCheckTaskConfigInput{
+	return &pipelineDefinitionParameters.BigqueryDataCheckTaskConfigInput{
 		Name:            c.Name.ValueString(),
 		ConnectionID:    c.ConnectionID.ValueInt64(),
 		Query:           c.Query.ValueString(),
 		Operator:        c.Operator.ValueString(),
-		QueryResult:     &p.NullableInt64{Valid: !c.QueryResult.IsNull(), Value: c.QueryResult.ValueInt64()},
-		AcceptsNull:     &p.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
+		QueryResult:     &parameter.NullableInt64{Valid: !c.QueryResult.IsNull(), Value: c.QueryResult.ValueInt64()},
+		AcceptsNull:     &parameter.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
 		CustomVariables: customVariables,
 	}
 }
