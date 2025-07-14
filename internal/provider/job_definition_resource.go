@@ -204,127 +204,77 @@ type jobDefinitionResourceModel struct {
 }
 
 func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Context, resp *resource.CreateResponse) (*client.CreateJobDefinitionInput, diag.Diagnostics) {
-	var labels []string
-	if !m.Labels.IsNull() && !m.Labels.IsUnknown() {
-		var labelValues []job_definitions.Label
-		diags := m.Labels.ElementsAs(ctx, &labelValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-
-		for _, l := range labelValues {
-			labels = append(labels, l.Name.ValueString())
-		}
-	}
-
-	var notifications []params.JobDefinitionNotificationInput
-	if !m.Notifications.IsNull() && !m.Notifications.IsUnknown() {
-		var notificationValues []job_definitions.JobDefinitionNotification
-		diags := m.Notifications.ElementsAs(ctx, &notificationValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-		for _, n := range notificationValues {
-			notifications = append(notifications, n.ToInput())
-		}
-	}
-
-	var schedules []parameter.ScheduleInput
-	if !m.Schedules.IsNull() && !m.Schedules.IsUnknown() {
-		var scheduleValues []model.Schedule
-		diags := m.Schedules.ElementsAs(ctx, &scheduleValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-		for _, s := range scheduleValues {
-			schedules = append(schedules, s.ToInput())
-		}
-	}
-
-	var filterColumns []filterParameters.FilterColumnInput
-	if !m.FilterColumns.IsNull() && !m.FilterColumns.IsUnknown() {
-		var filterColumnValues []filter.FilterColumn
-		diags := m.FilterColumns.ElementsAs(ctx, &filterColumnValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-		for _, f := range filterColumnValues {
-			filterColumns = append(filterColumns, f.ToInput(ctx))
-		}
-	}
-
-	var filterMasks []filterParameters.FilterMaskInput
-	if !m.FilterMasks.IsNull() && !m.FilterMasks.IsUnknown() {
-		var filterMaskValues []filter.FilterMask
-		diags := m.FilterMasks.ElementsAs(ctx, &filterMaskValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-		for _, f := range filterMaskValues {
-			filterMasks = append(filterMasks, f.ToInput())
-		}
-	}
-
-	var filterGsub []filterParameters.FilterGsubInput
-	if !m.FilterGsub.IsNull() && !m.FilterGsub.IsUnknown() {
-		var filterGsubValues []filter.FilterGsub
-		diags := m.FilterGsub.ElementsAs(ctx, &filterGsubValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-		for _, f := range filterGsubValues {
-			filterGsub = append(filterGsub, f.ToInput())
-		}
-	}
-
-	var filterStringTransforms []filterParameters.FilterStringTransformInput
-	if !m.FilterStringTransforms.IsNull() && !m.FilterStringTransforms.IsUnknown() {
-		var filterStringTransformValues []filter.FilterStringTransform
-		diags := m.FilterStringTransforms.ElementsAs(ctx, &filterStringTransformValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-		for _, f := range filterStringTransformValues {
-			filterStringTransforms = append(filterStringTransforms, f.ToInput())
-		}
-	}
-
-	var filterHashes []filterParameters.FilterHashInput
-	if !m.FilterHashes.IsNull() && !m.FilterHashes.IsUnknown() {
-		var filterHashValues []filter.FilterHash
-		diags := m.FilterHashes.ElementsAs(ctx, &filterHashValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-		for _, f := range filterHashValues {
-			filterHashes = append(filterHashes, f.ToInput())
-		}
-	}
-
-	var filterUnixTimeconversions []filterParameters.FilterUnixTimeConversionInput
-	if !m.FilterUnixTimeConversions.IsNull() && !m.FilterUnixTimeConversions.IsUnknown() {
-		var filterUnixTimeConversionValues []filter.FilterUnixTimeConversion
-		diags := m.FilterUnixTimeConversions.ElementsAs(ctx, &filterUnixTimeConversionValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-		for _, f := range filterUnixTimeConversionValues {
-			filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
-		}
-	}
-
 	var diags diag.Diagnostics
+
+	// Extract labels using helper function
+	labels := convertSetToSlice(ctx, m.Labels, 
+		func(l job_definitions.Label) string { return l.Name.ValueString() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract notifications using helper function
+	notifications := convertSetToSlice(ctx, m.Notifications,
+		func(n job_definitions.JobDefinitionNotification) params.JobDefinitionNotificationInput { return n.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract schedules using helper function
+	schedules := convertSetToSlice(ctx, m.Schedules,
+		func(s model.Schedule) parameter.ScheduleInput { return s.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract filter columns using helper function
+	filterColumns := convertListToSlice(ctx, m.FilterColumns,
+		func(f filter.FilterColumn) filterParameters.FilterColumnInput { return f.ToInput(ctx) }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract filter masks using helper function
+	filterMasks := convertListToSlice(ctx, m.FilterMasks,
+		func(f filter.FilterMask) filterParameters.FilterMaskInput { return f.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract filter gsub using helper function
+	filterGsub := convertListToSlice(ctx, m.FilterGsub,
+		func(f filter.FilterGsub) filterParameters.FilterGsubInput { return f.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract filter string transforms using helper function
+	filterStringTransforms := convertListToSlice(ctx, m.FilterStringTransforms,
+		func(f filter.FilterStringTransform) filterParameters.FilterStringTransformInput { return f.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract filter hashes using helper function
+	filterHashes := convertListToSlice(ctx, m.FilterHashes,
+		func(f filter.FilterHash) filterParameters.FilterHashInput { return f.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract filter unix time conversions using helper function
+	filterUnixTimeconversions := convertListToSlice(ctx, m.FilterUnixTimeConversions,
+		func(f filter.FilterUnixTimeConversion) filterParameters.FilterUnixTimeConversionInput { return f.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
 	inputOption, d := m.InputOption.ToInput(ctx)
 	diags.Append(d...)
+	if diags.HasError() {
+		return nil, diags
+	}
+
 	return &client.CreateJobDefinitionInput{
 		Name:                      m.Name.ValueString(),
 		Description:               model.NewNullableString(m.Description),
@@ -520,135 +470,77 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 }
 
 func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Context, resp *resource.UpdateResponse) (*client.UpdateJobDefinitionInput, diag.Diagnostics) {
-	labels := []string{}
-	if !m.Labels.IsNull() && !m.Labels.IsUnknown() {
-		var labelValues []job_definitions.Label
-		diags := m.Labels.ElementsAs(ctx, &labelValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-
-		for _, l := range labelValues {
-			labels = append(labels, l.Name.ValueString())
-		}
-	}
-
-	notifications := []params.JobDefinitionNotificationInput{}
-	if !m.Notifications.IsNull() && !m.Notifications.IsUnknown() {
-		var notificationValues []job_definitions.JobDefinitionNotification
-		diags := m.Notifications.ElementsAs(ctx, &notificationValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-
-		for _, n := range notificationValues {
-			notifications = append(notifications, n.ToInput())
-		}
-	}
-
-	schedules := []parameter.ScheduleInput{}
-	if !m.Schedules.IsNull() && !m.Schedules.IsUnknown() {
-		var scheduleValues []model.Schedule
-		diags := m.Schedules.ElementsAs(ctx, &scheduleValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-
-		for _, s := range scheduleValues {
-			schedules = append(schedules, s.ToInput())
-		}
-	}
-
-	filterColumns := []filterParameters.FilterColumnInput{}
-	if !m.FilterColumns.IsNull() && !m.FilterColumns.IsUnknown() {
-		var filterColumnValues []filter.FilterColumn
-		diags := m.FilterColumns.ElementsAs(ctx, &filterColumnValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-
-		for _, f := range filterColumnValues {
-			filterColumns = append(filterColumns, f.ToInput(ctx))
-		}
-	}
-
-	filterMasks := []filterParameters.FilterMaskInput{}
-	if !m.FilterMasks.IsNull() && !m.FilterMasks.IsUnknown() {
-		var filterMaskValues []filter.FilterMask
-		diags := m.FilterMasks.ElementsAs(ctx, &filterMaskValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-
-		for _, f := range filterMaskValues {
-			filterMasks = append(filterMasks, f.ToInput())
-		}
-	}
-
-	filterGsub := []filterParameters.FilterGsubInput{}
-	if !m.FilterGsub.IsNull() && !m.FilterGsub.IsUnknown() {
-		var filterGsubValues []filter.FilterGsub
-		diags := m.FilterGsub.ElementsAs(ctx, &filterGsubValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-
-		for _, f := range filterGsubValues {
-			filterGsub = append(filterGsub, f.ToInput())
-		}
-	}
-
-	filterStringTransforms := []filterParameters.FilterStringTransformInput{}
-	if !m.FilterStringTransforms.IsNull() && !m.FilterStringTransforms.IsUnknown() {
-		var filterStringTransformValues []filter.FilterStringTransform
-		diags := m.FilterStringTransforms.ElementsAs(ctx, &filterStringTransformValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-
-		for _, f := range filterStringTransformValues {
-			filterStringTransforms = append(filterStringTransforms, f.ToInput())
-		}
-	}
-
-	filterHashes := []filterParameters.FilterHashInput{}
-	if !m.FilterHashes.IsNull() && !m.FilterHashes.IsUnknown() {
-		var filterHashValues []filter.FilterHash
-		diags := m.FilterHashes.ElementsAs(ctx, &filterHashValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-
-		for _, f := range filterHashValues {
-			filterHashes = append(filterHashes, f.ToInput())
-		}
-	}
-
-	filterUnixTimeconversions := []filterParameters.FilterUnixTimeConversionInput{}
-	if !m.FilterUnixTimeConversions.IsNull() && !m.FilterUnixTimeConversions.IsUnknown() {
-		var filterUnixTimeConversionValues []filter.FilterUnixTimeConversion
-		diags := m.FilterUnixTimeConversions.ElementsAs(ctx, &filterUnixTimeConversionValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return nil, resp.Diagnostics
-		}
-
-		for _, f := range filterUnixTimeConversionValues {
-			filterUnixTimeconversions = append(filterUnixTimeconversions, f.ToInput())
-		}
-	}
-
 	var diags diag.Diagnostics
+
+	// Extract labels using helper function
+	labels := convertSetToSlice(ctx, m.Labels, 
+		func(l job_definitions.Label) string { return l.Name.ValueString() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract notifications using helper function
+	notifications := convertSetToSlice(ctx, m.Notifications,
+		func(n job_definitions.JobDefinitionNotification) params.JobDefinitionNotificationInput { return n.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract schedules using helper function
+	schedules := convertSetToSlice(ctx, m.Schedules,
+		func(s model.Schedule) parameter.ScheduleInput { return s.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract filter columns using helper function
+	filterColumns := convertListToSlice(ctx, m.FilterColumns,
+		func(f filter.FilterColumn) filterParameters.FilterColumnInput { return f.ToInput(ctx) }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract filter masks using helper function
+	filterMasks := convertListToSlice(ctx, m.FilterMasks,
+		func(f filter.FilterMask) filterParameters.FilterMaskInput { return f.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract filter gsub using helper function
+	filterGsub := convertListToSlice(ctx, m.FilterGsub,
+		func(f filter.FilterGsub) filterParameters.FilterGsubInput { return f.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract filter string transforms using helper function
+	filterStringTransforms := convertListToSlice(ctx, m.FilterStringTransforms,
+		func(f filter.FilterStringTransform) filterParameters.FilterStringTransformInput { return f.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract filter hashes using helper function
+	filterHashes := convertListToSlice(ctx, m.FilterHashes,
+		func(f filter.FilterHash) filterParameters.FilterHashInput { return f.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	// Extract filter unix time conversions using helper function
+	filterUnixTimeconversions := convertListToSlice(ctx, m.FilterUnixTimeConversions,
+		func(f filter.FilterUnixTimeConversion) filterParameters.FilterUnixTimeConversionInput { return f.ToInput() }, &diags)
+	if diags.HasError() {
+		return nil, diags
+	}
+
 	inputOption, d := m.InputOption.ToUpdateInput(ctx)
 	diags.Append(d...)
+	if diags.HasError() {
+		return nil, diags
+	}
+
 	return &client.UpdateJobDefinitionInput{
 		Name:                      m.Name.ValueStringPointer(),
 		Description:               model.NewNullableString(m.Description),
@@ -1083,4 +975,54 @@ func validateHttpInputOption(httpInputOption *input_options.HttpInputOption, res
 			)
 		}
 	}
+}
+
+// Common helper functions for reducing code duplication
+
+// convertSetToSlice converts a types.Set to a slice using a converter function
+func convertSetToSlice[T any, U any](
+	ctx context.Context,
+	source types.Set,
+	converter func(T) U,
+	diags *diag.Diagnostics,
+) []U {
+	if source.IsNull() || source.IsUnknown() {
+		return []U{}
+	}
+
+	var values []T
+	diags.Append(source.ElementsAs(ctx, &values, false)...)
+	if diags.HasError() {
+		return nil
+	}
+
+	result := make([]U, 0, len(values))
+	for _, v := range values {
+		result = append(result, converter(v))
+	}
+	return result
+}
+
+// convertListToSlice converts a types.List to a slice using a converter function
+func convertListToSlice[T any, U any](
+	ctx context.Context,
+	source types.List,
+	converter func(T) U,
+	diags *diag.Diagnostics,
+) []U {
+	if source.IsNull() || source.IsUnknown() {
+		return []U{}
+	}
+
+	var values []T
+	diags.Append(source.ElementsAs(ctx, &values, false)...)
+	if diags.HasError() {
+		return nil
+	}
+
+	result := make([]U, 0, len(values))
+	for _, v := range values {
+		result = append(result, converter(v))
+	}
+	return result
 }
