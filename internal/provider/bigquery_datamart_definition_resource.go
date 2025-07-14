@@ -1185,8 +1185,6 @@ func (l labelModel) attrTypes() map[string]attr.Type {
 
 // Helper functions for BigQuery datamart definition to reduce code duplication
 
-
-
 // convertCustomVariableSettingsForCreate converts custom variable settings for create operation
 func convertCustomVariableSettingsForCreate(ctx context.Context, source types.List, diags *resource.CreateResponse) []client.CustomVariableSettingInput {
 	if source.IsNull() || source.IsUnknown() {

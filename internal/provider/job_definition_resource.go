@@ -985,4 +985,3 @@ func validateHttpInputOption(httpInputOption *input_options.HttpInputOption, res
 		}
 	}
 }
-

@@ -160,7 +160,7 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(ctx context.Context, state *P
 
 // Helper functions for pipeline definition to reduce code duplication
 
-// convertStringSet converts types.Set to string slice  
+// convertStringSet converts types.Set to string slice
 func convertStringSet(ctx context.Context, source types.Set) ([]string, bool) {
 	if source.IsNull() || source.IsUnknown() {
 		return []string{}, true
