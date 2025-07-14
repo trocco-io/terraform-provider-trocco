@@ -68,9 +68,9 @@ func (r *labelResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			"name": schema.StringAttribute{
 				Required: true,
 				Validators: []validator.String{
-					stringvalidator.UTF8LengthAtLeast(1),
+					stringvalidator.UTF8LengthBetween(1, 100),
 				},
-				MarkdownDescription: "The name of the label. It must be at least 1 character.",
+				MarkdownDescription: "The name of the label. It must be between 1 and 100 characters.",
 			},
 			"description": schema.StringAttribute{
 				Optional:            true,
