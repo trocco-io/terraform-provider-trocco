@@ -424,7 +424,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 	if !plan.ResourceGroupID.IsNull() {
 		input.SetResourceGroupID(plan.ResourceGroupID.ValueInt64())
 	}
-	if customVariableSettingInputs := convertCustomVariableSettingsForCreate(ctx, plan.CustomVariableSettings, resp); customVariableSettingInputs != nil && resp.Diagnostics.HasError() == false {
+	if customVariableSettingInputs := convertCustomVariableSettingsForCreate(ctx, plan.CustomVariableSettings, resp); customVariableSettingInputs != nil && !resp.Diagnostics.HasError() {
 		input.SetCustomVariableSettings(customVariableSettingInputs)
 	}
 	if resp.Diagnostics.HasError() {
@@ -559,7 +559,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		input.SetNotifications(notificationInputs)
 	}
-	if labelInputs := convertLabelsForCreate(ctx, plan.Labels, resp); labelInputs != nil && resp.Diagnostics.HasError() == false {
+	if labelInputs := convertLabelsForCreate(ctx, plan.Labels, resp); labelInputs != nil && !resp.Diagnostics.HasError() {
 		input.SetLabels(labelInputs)
 	}
 	if resp.Diagnostics.HasError() {
