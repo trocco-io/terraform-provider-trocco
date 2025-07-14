@@ -107,3 +107,41 @@ func TestAccLabelResourceInvalidName(t *testing.T) {
 		},
 	})
 }
+
+func TestAccLabelResourceLongName(t *testing.T) {
+	testCases := []struct {
+		name        string
+		configFile  string
+		expectError string
+	}{
+		{
+			name:        "max_length_name",
+			configFile:  "testdata/label/max_length_name.tf",
+			expectError: "", // Should succeed - exactly 100 characters
+		},
+		{
+			name:        "too_long_name",
+			configFile:  "testdata/label/long_name.tf",
+			expectError: "UTF-8 character count must be between 1 and 100, got: 101",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			resource.Test(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{
+						Config:      providerConfig + LoadTextFile(tc.configFile),
+						ExpectError: func() *regexp.Regexp {
+							if tc.expectError == "" {
+								return nil
+							}
+							return regexp.MustCompile(tc.expectError)
+						}(),
+					},
+				},
+			})
+		})
+	}
+}
