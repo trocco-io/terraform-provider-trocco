@@ -8,6 +8,7 @@ import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/custom_type"
 	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
+	"terraform-provider-trocco/internal/provider/utils"
 	troccoValidator "terraform-provider-trocco/internal/provider/validator"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
@@ -449,7 +450,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		if !plan.PartitioningField.IsNull() {
 			optionInput.SetPartitioningField(plan.PartitioningField.ValueString())
 		}
-		if clusteringFields := convertTypesStringListToStringSlice(ctx, plan.ClusteringFields, resp); clusteringFields != nil && resp.Diagnostics.HasError() == false {
+		if clusteringFields := utils.ConvertStringList(ctx, plan.ClusteringFields); len(clusteringFields) > 0 {
 			optionInput.SetClusteringFields(clusteringFields)
 		}
 		if resp.Diagnostics.HasError() {
@@ -1184,45 +1185,7 @@ func (l labelModel) attrTypes() map[string]attr.Type {
 
 // Helper functions for BigQuery datamart definition to reduce code duplication
 
-// convertTypesStringListToStringSlice converts types.String list to string slice
-func convertTypesStringListToStringSlice(ctx context.Context, source types.List, diags *resource.CreateResponse) []string {
-	if source.IsNull() || source.IsUnknown() {
-		return []string{}
-	}
 
-	var values []types.String
-	elemDiags := source.ElementsAs(ctx, &values, false)
-	diags.Diagnostics.Append(elemDiags...)
-	if diags.Diagnostics.HasError() {
-		return nil
-	}
-
-	result := make([]string, 0, len(values))
-	for _, v := range values {
-		result = append(result, v.ValueString())
-	}
-	return result
-}
-
-// convertTypesStringSetToStringSlice converts types.String set to string slice
-func convertTypesStringSetToStringSlice(ctx context.Context, source types.Set, diags *resource.CreateResponse) []string {
-	if source.IsNull() || source.IsUnknown() {
-		return []string{}
-	}
-
-	var values []types.String
-	elemDiags := source.ElementsAs(ctx, &values, false)
-	diags.Diagnostics.Append(elemDiags...)
-	if diags.Diagnostics.HasError() {
-		return nil
-	}
-
-	result := make([]string, 0, len(values))
-	for _, v := range values {
-		result = append(result, v.ValueString())
-	}
-	return result
-}
 
 // convertCustomVariableSettingsForCreate converts custom variable settings for create operation
 func convertCustomVariableSettingsForCreate(ctx context.Context, source types.List, diags *resource.CreateResponse) []client.CustomVariableSettingInput {

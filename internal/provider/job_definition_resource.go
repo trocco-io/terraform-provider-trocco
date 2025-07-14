@@ -14,6 +14,7 @@ import (
 	input_options "terraform-provider-trocco/internal/provider/model/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/schema/job_definition"
 	"terraform-provider-trocco/internal/provider/schema/job_definition/filters"
+	"terraform-provider-trocco/internal/provider/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -207,14 +208,14 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 	var diags diag.Diagnostics
 
 	// Extract labels using helper function
-	labels := convertSetToSlice(ctx, m.Labels,
+	labels := utils.ConvertSetToSlice(ctx, m.Labels,
 		func(l job_definitions.Label) string { return l.Name.ValueString() }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract notifications using helper function
-	notifications := convertSetToSlice(ctx, m.Notifications,
+	notifications := utils.ConvertSetToSlice(ctx, m.Notifications,
 		func(n job_definitions.JobDefinitionNotification) params.JobDefinitionNotificationInput {
 			return n.ToInput()
 		}, &diags)
@@ -223,49 +224,49 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 	}
 
 	// Extract schedules using helper function
-	schedules := convertSetToSlice(ctx, m.Schedules,
+	schedules := utils.ConvertSetToSlice(ctx, m.Schedules,
 		func(s model.Schedule) parameter.ScheduleInput { return s.ToInput() }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract filter columns using helper function
-	filterColumns := convertListToSlice(ctx, m.FilterColumns,
+	filterColumns := utils.ConvertListToSlice(ctx, m.FilterColumns,
 		func(f filter.FilterColumn) filterParameters.FilterColumnInput { return f.ToInput(ctx) }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract filter masks using helper function
-	filterMasks := convertListToSlice(ctx, m.FilterMasks,
+	filterMasks := utils.ConvertListToSlice(ctx, m.FilterMasks,
 		func(f filter.FilterMask) filterParameters.FilterMaskInput { return f.ToInput() }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract filter gsub using helper function
-	filterGsub := convertListToSlice(ctx, m.FilterGsub,
+	filterGsub := utils.ConvertListToSlice(ctx, m.FilterGsub,
 		func(f filter.FilterGsub) filterParameters.FilterGsubInput { return f.ToInput() }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract filter string transforms using helper function
-	filterStringTransforms := convertListToSlice(ctx, m.FilterStringTransforms,
+	filterStringTransforms := utils.ConvertListToSlice(ctx, m.FilterStringTransforms,
 		func(f filter.FilterStringTransform) filterParameters.FilterStringTransformInput { return f.ToInput() }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract filter hashes using helper function
-	filterHashes := convertListToSlice(ctx, m.FilterHashes,
+	filterHashes := utils.ConvertListToSlice(ctx, m.FilterHashes,
 		func(f filter.FilterHash) filterParameters.FilterHashInput { return f.ToInput() }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract filter unix time conversions using helper function
-	filterUnixTimeconversions := convertListToSlice(ctx, m.FilterUnixTimeConversions,
+	filterUnixTimeconversions := utils.ConvertListToSlice(ctx, m.FilterUnixTimeConversions,
 		func(f filter.FilterUnixTimeConversion) filterParameters.FilterUnixTimeConversionInput {
 			return f.ToInput()
 		}, &diags)
@@ -477,14 +478,14 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 	var diags diag.Diagnostics
 
 	// Extract labels using helper function
-	labels := convertSetToSlice(ctx, m.Labels,
+	labels := utils.ConvertSetToSlice(ctx, m.Labels,
 		func(l job_definitions.Label) string { return l.Name.ValueString() }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract notifications using helper function
-	notifications := convertSetToSlice(ctx, m.Notifications,
+	notifications := utils.ConvertSetToSlice(ctx, m.Notifications,
 		func(n job_definitions.JobDefinitionNotification) params.JobDefinitionNotificationInput {
 			return n.ToInput()
 		}, &diags)
@@ -493,49 +494,49 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 	}
 
 	// Extract schedules using helper function
-	schedules := convertSetToSlice(ctx, m.Schedules,
+	schedules := utils.ConvertSetToSlice(ctx, m.Schedules,
 		func(s model.Schedule) parameter.ScheduleInput { return s.ToInput() }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract filter columns using helper function
-	filterColumns := convertListToSlice(ctx, m.FilterColumns,
+	filterColumns := utils.ConvertListToSlice(ctx, m.FilterColumns,
 		func(f filter.FilterColumn) filterParameters.FilterColumnInput { return f.ToInput(ctx) }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract filter masks using helper function
-	filterMasks := convertListToSlice(ctx, m.FilterMasks,
+	filterMasks := utils.ConvertListToSlice(ctx, m.FilterMasks,
 		func(f filter.FilterMask) filterParameters.FilterMaskInput { return f.ToInput() }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract filter gsub using helper function
-	filterGsub := convertListToSlice(ctx, m.FilterGsub,
+	filterGsub := utils.ConvertListToSlice(ctx, m.FilterGsub,
 		func(f filter.FilterGsub) filterParameters.FilterGsubInput { return f.ToInput() }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract filter string transforms using helper function
-	filterStringTransforms := convertListToSlice(ctx, m.FilterStringTransforms,
+	filterStringTransforms := utils.ConvertListToSlice(ctx, m.FilterStringTransforms,
 		func(f filter.FilterStringTransform) filterParameters.FilterStringTransformInput { return f.ToInput() }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract filter hashes using helper function
-	filterHashes := convertListToSlice(ctx, m.FilterHashes,
+	filterHashes := utils.ConvertListToSlice(ctx, m.FilterHashes,
 		func(f filter.FilterHash) filterParameters.FilterHashInput { return f.ToInput() }, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
 
 	// Extract filter unix time conversions using helper function
-	filterUnixTimeconversions := convertListToSlice(ctx, m.FilterUnixTimeConversions,
+	filterUnixTimeconversions := utils.ConvertListToSlice(ctx, m.FilterUnixTimeConversions,
 		func(f filter.FilterUnixTimeConversion) filterParameters.FilterUnixTimeConversionInput {
 			return f.ToInput()
 		}, &diags)
@@ -985,52 +986,3 @@ func validateHttpInputOption(httpInputOption *input_options.HttpInputOption, res
 	}
 }
 
-// Common helper functions for reducing code duplication
-
-// convertSetToSlice converts a types.Set to a slice using a converter function
-func convertSetToSlice[T any, U any](
-	ctx context.Context,
-	source types.Set,
-	converter func(T) U,
-	diags *diag.Diagnostics,
-) []U {
-	if source.IsNull() || source.IsUnknown() {
-		return []U{}
-	}
-
-	var values []T
-	diags.Append(source.ElementsAs(ctx, &values, false)...)
-	if diags.HasError() {
-		return nil
-	}
-
-	result := make([]U, 0, len(values))
-	for _, v := range values {
-		result = append(result, converter(v))
-	}
-	return result
-}
-
-// convertListToSlice converts a types.List to a slice using a converter function
-func convertListToSlice[T any, U any](
-	ctx context.Context,
-	source types.List,
-	converter func(T) U,
-	diags *diag.Diagnostics,
-) []U {
-	if source.IsNull() || source.IsUnknown() {
-		return []U{}
-	}
-
-	var values []T
-	diags.Append(source.ElementsAs(ctx, &values, false)...)
-	if diags.HasError() {
-		return nil
-	}
-
-	result := make([]U, 0, len(values))
-	for _, v := range values {
-		result = append(result, converter(v))
-	}
-	return result
-}

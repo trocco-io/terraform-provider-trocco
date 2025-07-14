@@ -65,10 +65,15 @@ func NewPipelineDefinition(ctx context.Context, en *entity.PipelineDefinition, k
 }
 
 func (m *PipelineDefinition) ToCreateInput(ctx context.Context) *client.CreatePipelineDefinitionInput {
-	labels := convertStringSet(ctx, m.Labels)
-	notifications := convertNotificationSet(ctx, m.Notifications)
-	schedules := convertScheduleSet(ctx, m.Schedules)
-	taskDependencies := convertTaskDependencySet(ctx, m.TaskDependencies)
+	labels, labelsOk := convertStringSet(ctx, m.Labels)
+	notifications, notificationsOk := convertNotificationSet(ctx, m.Notifications)
+	schedules, schedulesOk := convertScheduleSet(ctx, m.Schedules)
+	taskDependencies, taskDepsOk := convertTaskDependencySet(ctx, m.TaskDependencies)
+
+	// Return nil if any conversion failed
+	if !labelsOk || !notificationsOk || !schedulesOk || !taskDepsOk {
+		return nil
+	}
 
 	tasks := []pdp.Task{}
 	if !m.Tasks.IsNull() && !m.Tasks.IsUnknown() {
@@ -101,10 +106,15 @@ func (m *PipelineDefinition) ToCreateInput(ctx context.Context) *client.CreatePi
 }
 
 func (m *PipelineDefinition) ToUpdateWorkflowInput(ctx context.Context, state *PipelineDefinition) *client.UpdatePipelineDefinitionInput {
-	labels := convertStringSet(ctx, m.Labels)
-	notifications := convertNotificationSet(ctx, m.Notifications)
-	schedules := convertScheduleSet(ctx, m.Schedules)
-	taskDependencies := convertTaskDependencySet(ctx, m.TaskDependencies)
+	labels, labelsOk := convertStringSet(ctx, m.Labels)
+	notifications, notificationsOk := convertNotificationSet(ctx, m.Notifications)
+	schedules, schedulesOk := convertScheduleSet(ctx, m.Schedules)
+	taskDependencies, taskDepsOk := convertTaskDependencySet(ctx, m.TaskDependencies)
+
+	// Return nil if any conversion failed
+	if !labelsOk || !notificationsOk || !schedulesOk || !taskDepsOk {
+		return nil
+	}
 
 	stateTaskIdentifiers := map[string]int64{}
 	if !state.Tasks.IsNull() && !state.Tasks.IsUnknown() {
@@ -150,10 +160,10 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(ctx context.Context, state *P
 
 // Helper functions for pipeline definition to reduce code duplication
 
-// convertStringSet converts types.Set to string slice
-func convertStringSet(ctx context.Context, source types.Set) []string {
+// convertStringSet converts types.Set to string slice  
+func convertStringSet(ctx context.Context, source types.Set) ([]string, bool) {
 	if source.IsNull() || source.IsUnknown() {
-		return []string{}
+		return []string{}, true
 	}
 
 	var values []types.String
@@ -162,15 +172,15 @@ func convertStringSet(ctx context.Context, source types.Set) []string {
 		for _, v := range values {
 			result = append(result, v.ValueString())
 		}
-		return result
+		return result, true
 	}
-	return []string{}
+	return []string{}, false
 }
 
 // convertNotificationSet converts notification set
-func convertNotificationSet(ctx context.Context, source types.Set) []*pdp.Notification {
+func convertNotificationSet(ctx context.Context, source types.Set) ([]*pdp.Notification, bool) {
 	if source.IsNull() || source.IsUnknown() {
-		return []*pdp.Notification{}
+		return []*pdp.Notification{}, true
 	}
 
 	var notificationValues []*Notification
@@ -179,15 +189,15 @@ func convertNotificationSet(ctx context.Context, source types.Set) []*pdp.Notifi
 		for _, n := range notificationValues {
 			result = append(result, n.ToInput())
 		}
-		return result
+		return result, true
 	}
-	return []*pdp.Notification{}
+	return []*pdp.Notification{}, false
 }
 
 // convertScheduleSet converts schedule set
-func convertScheduleSet(ctx context.Context, source types.Set) []*pdp.Schedule {
+func convertScheduleSet(ctx context.Context, source types.Set) ([]*pdp.Schedule, bool) {
 	if source.IsNull() || source.IsUnknown() {
-		return []*pdp.Schedule{}
+		return []*pdp.Schedule{}, true
 	}
 
 	var scheduleValues []*Schedule
@@ -196,15 +206,15 @@ func convertScheduleSet(ctx context.Context, source types.Set) []*pdp.Schedule {
 		for _, s := range scheduleValues {
 			result = append(result, s.ToInput())
 		}
-		return result
+		return result, true
 	}
-	return []*pdp.Schedule{}
+	return []*pdp.Schedule{}, false
 }
 
 // convertTaskDependencySet converts task dependency set
-func convertTaskDependencySet(ctx context.Context, source types.Set) []pdp.TaskDependency {
+func convertTaskDependencySet(ctx context.Context, source types.Set) ([]pdp.TaskDependency, bool) {
 	if source.IsNull() || source.IsUnknown() {
-		return []pdp.TaskDependency{}
+		return []pdp.TaskDependency{}, true
 	}
 
 	var taskDependencyValues []*TaskDependency
@@ -216,7 +226,7 @@ func convertTaskDependencySet(ctx context.Context, source types.Set) []pdp.TaskD
 				Destination: d.Destination.ValueString(),
 			})
 		}
-		return result
+		return result, true
 	}
-	return []pdp.TaskDependency{}
+	return []pdp.TaskDependency{}, false
 }
