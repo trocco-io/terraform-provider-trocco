@@ -280,6 +280,12 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 		return nil, diags
 	}
 
+	// Only set schedules if not empty to avoid "not allowed to schedule setting" error
+	var schedulesToSet []parameter.ScheduleInput
+	if len(schedules) > 0 {
+		schedulesToSet = schedules
+	}
+
 	return &client.CreateJobDefinitionInput{
 		Name:                      m.Name.ValueString(),
 		Description:               model.NewNullableString(m.Description),
@@ -300,7 +306,7 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 		OutputOptionType:          m.OutputOptionType.ValueString(),
 		OutputOption:              m.OutputOption.ToInput(ctx),
 		Labels:                    labels,
-		Schedules:                 schedules,
+		Schedules:                 schedulesToSet,
 		Notifications:             notifications,
 	}, diags
 }
@@ -550,6 +556,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 		return nil, diags
 	}
 
+	// Only set schedules if not empty to avoid "not allowed to schedule setting" error
+	var schedulesPointer *[]parameter.ScheduleInput
+	if len(schedules) > 0 {
+		schedulesPointer = &schedules
+	}
+
 	return &client.UpdateJobDefinitionInput{
 		Name:                      m.Name.ValueStringPointer(),
 		Description:               model.NewNullableString(m.Description),
@@ -568,7 +580,7 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 		InputOption:               inputOption,
 		OutputOption:              m.OutputOption.ToUpdateInput(ctx),
 		Labels:                    &labels,
-		Schedules:                 &schedules,
+		Schedules:                 schedulesPointer,
 		Notifications:             &notifications,
 	}, diags
 }
