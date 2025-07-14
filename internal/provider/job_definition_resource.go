@@ -207,7 +207,7 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 	var diags diag.Diagnostics
 
 	// Extract labels using helper function
-	labels := convertSetToSlice(ctx, m.Labels, 
+	labels := convertSetToSlice(ctx, m.Labels,
 		func(l job_definitions.Label) string { return l.Name.ValueString() }, &diags)
 	if diags.HasError() {
 		return nil, diags
@@ -215,7 +215,9 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 
 	// Extract notifications using helper function
 	notifications := convertSetToSlice(ctx, m.Notifications,
-		func(n job_definitions.JobDefinitionNotification) params.JobDefinitionNotificationInput { return n.ToInput() }, &diags)
+		func(n job_definitions.JobDefinitionNotification) params.JobDefinitionNotificationInput {
+			return n.ToInput()
+		}, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
@@ -264,7 +266,9 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 
 	// Extract filter unix time conversions using helper function
 	filterUnixTimeconversions := convertListToSlice(ctx, m.FilterUnixTimeConversions,
-		func(f filter.FilterUnixTimeConversion) filterParameters.FilterUnixTimeConversionInput { return f.ToInput() }, &diags)
+		func(f filter.FilterUnixTimeConversion) filterParameters.FilterUnixTimeConversionInput {
+			return f.ToInput()
+		}, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
@@ -473,7 +477,7 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 	var diags diag.Diagnostics
 
 	// Extract labels using helper function
-	labels := convertSetToSlice(ctx, m.Labels, 
+	labels := convertSetToSlice(ctx, m.Labels,
 		func(l job_definitions.Label) string { return l.Name.ValueString() }, &diags)
 	if diags.HasError() {
 		return nil, diags
@@ -481,7 +485,9 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 
 	// Extract notifications using helper function
 	notifications := convertSetToSlice(ctx, m.Notifications,
-		func(n job_definitions.JobDefinitionNotification) params.JobDefinitionNotificationInput { return n.ToInput() }, &diags)
+		func(n job_definitions.JobDefinitionNotification) params.JobDefinitionNotificationInput {
+			return n.ToInput()
+		}, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}
@@ -530,7 +536,9 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 
 	// Extract filter unix time conversions using helper function
 	filterUnixTimeconversions := convertListToSlice(ctx, m.FilterUnixTimeConversions,
-		func(f filter.FilterUnixTimeConversion) filterParameters.FilterUnixTimeConversionInput { return f.ToInput() }, &diags)
+		func(f filter.FilterUnixTimeConversion) filterParameters.FilterUnixTimeConversionInput {
+			return f.ToInput()
+		}, &diags)
 	if diags.HasError() {
 		return nil, diags
 	}

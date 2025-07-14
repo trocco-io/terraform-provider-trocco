@@ -148,7 +148,6 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(ctx context.Context, state *P
 	}
 }
 
-
 // Helper functions for pipeline definition to reduce code duplication
 
 // convertStringSet converts types.Set to string slice
