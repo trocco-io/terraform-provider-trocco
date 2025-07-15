@@ -20,16 +20,16 @@ func (m IgnoreChangesBoolPlanModifier) MarkdownDescription(ctx context.Context) 
 }
 
 func (m IgnoreChangesBoolPlanModifier) PlanModifyBool(ctx context.Context, req planmodifier.BoolRequest, resp *planmodifier.BoolResponse) {
-	// リソース作成時は無視しない
+	// Do not ignore during resource creation
 	if req.State.Raw.IsNull() {
 		return
 	}
 
-	// unknown値または変化なしならスキップ
+	// Skip if the value is unknown or there is no change
 	if req.PlanValue.IsUnknown() || req.StateValue.IsUnknown() || req.PlanValue == req.StateValue {
 		return
 	}
 
-	// Plan値をStateの値で上書きし、差分を無視する
+	// Overwrite the Plan value with the State value to ignore the difference
 	resp.PlanValue = req.StateValue
 }
