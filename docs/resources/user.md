@@ -11,10 +11,21 @@ Provides a TROCCO user resource.
 
 ## Example Usage
 
+The following examples demonstrate how to create a user with a specified password or with an auto-generated password.
+
 ```terraform
-resource "trocco_user" "example" {
+resource "trocco_user" "example_with_password" {
   email                           = "trocco@example.com"
   password                        = "Jb1p4f1uuC"
+  password_auto_generated         = false
+  role                            = "member"
+  can_use_audit_log               = false
+  is_restricted_connection_modify = false
+}
+
+resource "trocco_user" "example_with_auto_generated_password" {
+  email                           = "auto-generated@example.com"
+  password_auto_generated         = true
   role                            = "member"
   can_use_audit_log               = false
   is_restricted_connection_modify = false
@@ -33,7 +44,8 @@ resource "trocco_user" "example" {
 
 - `can_use_audit_log` (Boolean) Whether the user can use the audit log.
 - `is_restricted_connection_modify` (Boolean) Whether the user is restricted to modify connections.
-- `password` (String, Sensitive) The password of the user. It must be at least 8 characters long and contain at least one letter and one number. It is required when creating a new user but optional during updates.
+- `password` (String, Sensitive) The password of the user. It must be at least 8 characters long and contain at least one letter and one number. If password_auto_generated is false, password is required during creation. If password_auto_generated is true, password cannot be specified. Password is optional during updates.
+- `password_auto_generated` (Boolean) Whether the password should be auto-generated. If true, password cannot be specified. If false, password is required. This only applies during resource creation.
 
 ### Read-Only
 
@@ -59,4 +71,3 @@ Using the [`terraform import` command](https://developer.hashicorp.com/terraform
 ```shell
 terraform import trocco_user.example <user_id>
 ```
-
