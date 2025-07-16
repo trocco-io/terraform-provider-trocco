@@ -7,7 +7,7 @@ import (
 
 func LabelsSchema() schema.Attribute {
 	return schema.SetAttribute{
-		MarkdownDescription: "The labels of the pipeline definition",
+		MarkdownDescription: "Labels to be attached to the pipeline definition",
 		Optional:            true,
 		ElementType:         types.StringType,
 	}
