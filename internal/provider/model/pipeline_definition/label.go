@@ -6,8 +6,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func NewLabels(ctx context.Context, ens []string, returnsNilIfEmpty bool) types.Set {
-	if ens == nil || (returnsNilIfEmpty && len(ens) == 0) {
+func NewLabels(ctx context.Context, ens []string, previousIsNull bool) types.Set {
+	if ens == nil {
+		return types.SetNull(types.StringType)
+	}
+
+	if previousIsNull && len(ens) == 0 {
 		return types.SetNull(types.StringType)
 	}
 
