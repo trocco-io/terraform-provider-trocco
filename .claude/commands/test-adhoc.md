@@ -10,13 +10,23 @@
 /test-adhoc [options]
 ```
 
-## Options
+### Options
 
 Option | Required | Description
 --- | --- | ---
 `--dry-run` | No | Generate Terraform HCL files but do not run tests.
+`--property <property_names...>` |No | Generate Terraform HCL files only for specific properties.
 `--resource <resource_types...>` | No | Generate Terraform HCL files only for specific resource types.
 `--language <language>` | No | Use the specified language for outputs.
+`--max-cases <number>` | No | Specify the maximum number of test cases to generate.
+`--min-cases <number>` | No | Specify the minimum number o
+f test cases to generate.
+
+### Examples
+
+```sh
+/test-adhoc --resource trocco_pipeline_definition --property labels,notifications --language ja --max-cases 10 --min-cases 5
+```
 
 ## Rules
 
@@ -128,8 +138,8 @@ You can use the following existing resources to generate Terraform HCL files (DO
     - ID = 10626
     - ID = 10652
 - Labels
-    - ID = 5192
-    - ID = 5193
+    - ID = 5192, Nmae = "label1"
+    - ID = 5193, Name = "label2"
 - Connections
     - Redshift
         - ID = 256
@@ -149,8 +159,12 @@ Typically, problems occur in the following scenarios.
     2. Run `terraform state rm` to remove resources from a Terraform state
     3. Run `terraform import` to import resources
 
-However, these scenarios are just examples, so you must try out other scenarios that might cause problems actively.
+However, these scenarios are just examples, so you must try out actively other scenarios that might cause problems.
 
 ### 4. Clean up the test enviornment
 
 Delete the created resources using `terraform destroy` command.
+
+### 5. Create a report
+
+Create a report in the `result.md` file.
