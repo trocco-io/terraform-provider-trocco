@@ -1,3 +1,18 @@
+## 0.19.0
+FEATURES:
+- Added ad hoc testing infrastructure and configuration with new test-adhoc command
+
+CHORE:
+- Updated testify from v1.8.3 to v1.10.0
+- Updated terraform plugin dependencies
+- Updated golangci-lint to v2.2.0
+- Improved code documentation with connection type comments
+- Improved code quality with enhanced linting and context handling
+- Improved acceptance test readability and maintainability
+- Added error handling for response body close operations
+- Removed unused duplicate testdata files
+- Changed internal column types from int32 to int64 for consistency
+
 ## 0.18.0
 FEATURES:
 - `trocco_pipeline_definition` resource:
