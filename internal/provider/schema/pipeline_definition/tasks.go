@@ -6,8 +6,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -33,9 +31,6 @@ func TasksSchema() schema.Attribute {
 				"task_identifier": schema.Int64Attribute{
 					MarkdownDescription: "The task identifier.",
 					Computed:            true,
-					PlanModifiers: []planmodifier.Int64{
-						int64planmodifier.UseStateForUnknown(),
-					},
 				},
 				"type": schema.StringAttribute{
 					MarkdownDescription: "The type of the task.",
