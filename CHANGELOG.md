@@ -1,3 +1,12 @@
+## 0.20.0
+- `trocco_user` resource:
+  - Added support for `password_auto_generated` field for user invitations with auto-generated passwords
+- Refactored codebase to reduce duplicate code by introducing generic helper functions
+- Standardized package aliases throughout codebase to follow Go naming conventions (affects 87+ files)
+- Removed PlanModifiers to improve code maintainability
+- Improved code quality with better error handling for empty schedules
+- Enhanced type safety while maintaining backward compatibility
+
 ## 0.19.0
 - Added ad hoc testing infrastructure and configuration with new test-adhoc command
 - Updated testify from v1.8.3 to v1.10.0
