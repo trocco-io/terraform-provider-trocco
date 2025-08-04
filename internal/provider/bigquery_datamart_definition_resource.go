@@ -8,6 +8,7 @@ import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/custom_type"
 	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
+	"terraform-provider-trocco/internal/provider/utils"
 	troccoValidator "terraform-provider-trocco/internal/provider/validator"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
@@ -423,34 +424,11 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 	if !plan.ResourceGroupID.IsNull() {
 		input.SetResourceGroupID(plan.ResourceGroupID.ValueInt64())
 	}
-	if !plan.CustomVariableSettings.IsNull() && !plan.CustomVariableSettings.IsUnknown() {
-		var settings []customVariableSettingModel
-		diags := plan.CustomVariableSettings.ElementsAs(ctx, &settings, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return
-		}
-
-		customVariableSettingInputs := make([]client.CustomVariableSettingInput, len(settings))
-		for i, v := range settings {
-			if v.Type.ValueString() == "string" {
-				customVariableSettingInputs[i] = client.NewStringTypeCustomVariableSettingInput(
-					v.Name.ValueString(),
-					v.Value.ValueString(),
-				)
-			} else {
-				customVariableSettingInputs[i] = client.NewTimestampTypeCustomVariableSettingInput(
-					v.Name.ValueString(),
-					v.Type.ValueString(),
-					int(v.Quantity.ValueInt64()),
-					v.Unit.ValueString(),
-					v.Direction.ValueString(),
-					v.Format.ValueString(),
-					v.TimeZone.ValueString(),
-				)
-			}
-		}
+	if customVariableSettingInputs := convertCustomVariableSettingsForCreate(ctx, plan.CustomVariableSettings, resp); customVariableSettingInputs != nil && !resp.Diagnostics.HasError() {
 		input.SetCustomVariableSettings(customVariableSettingInputs)
+	}
+	if resp.Diagnostics.HasError() {
+		return
 	}
 	if plan.QueryMode.ValueString() == "insert" {
 		optionInput := client.NewInsertModeCreateDatamartBigqueryOptionInput(
@@ -472,19 +450,11 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		if !plan.PartitioningField.IsNull() {
 			optionInput.SetPartitioningField(plan.PartitioningField.ValueString())
 		}
-		if !plan.ClusteringFields.IsNull() {
-			var clusteringFieldsValues []types.String
-			diags := plan.ClusteringFields.ElementsAs(ctx, &clusteringFieldsValues, false)
-			resp.Diagnostics.Append(diags...)
-			if resp.Diagnostics.HasError() {
-				return
-			}
-
-			clusteringFields := make([]string, len(clusteringFieldsValues))
-			for i, v := range clusteringFieldsValues {
-				clusteringFields[i] = v.ValueString()
-			}
+		if clusteringFields := utils.ConvertStringList(ctx, plan.ClusteringFields); len(clusteringFields) > 0 {
 			optionInput.SetClusteringFields(clusteringFields)
+		}
+		if resp.Diagnostics.HasError() {
+			return
 		}
 		input.SetDatamartBigqueryOption(optionInput)
 	} else {
@@ -589,19 +559,11 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		input.SetNotifications(notificationInputs)
 	}
-	if !plan.Labels.IsNull() {
-		var labelValues []labelModel
-		diags := plan.Labels.ElementsAs(ctx, &labelValues, false)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return
-		}
-
-		labelInputs := make([]string, len(labelValues))
-		for i, v := range labelValues {
-			labelInputs[i] = v.Name.ValueString()
-		}
+	if labelInputs := convertLabelsForCreate(ctx, plan.Labels, resp); labelInputs != nil && !resp.Diagnostics.HasError() {
 		input.SetLabels(labelInputs)
+	}
+	if resp.Diagnostics.HasError() {
+		return
 	}
 	res, err := r.client.CreateDatamartDefinition(&input)
 	if err != nil {
@@ -1219,4 +1181,61 @@ func (l labelModel) attrTypes() map[string]attr.Type {
 		"id":   types.Int64Type,
 		"name": types.StringType,
 	}
+}
+
+// Helper functions for BigQuery datamart definition to reduce code duplication
+
+// convertCustomVariableSettingsForCreate converts custom variable settings for create operation.
+func convertCustomVariableSettingsForCreate(ctx context.Context, source types.List, diags *resource.CreateResponse) []client.CustomVariableSettingInput {
+	if source.IsNull() || source.IsUnknown() {
+		return []client.CustomVariableSettingInput{}
+	}
+
+	var settings []customVariableSettingModel
+	elemDiags := source.ElementsAs(ctx, &settings, false)
+	diags.Diagnostics.Append(elemDiags...)
+	if diags.Diagnostics.HasError() {
+		return nil
+	}
+
+	result := make([]client.CustomVariableSettingInput, 0, len(settings))
+	for _, v := range settings {
+		if v.Type.ValueString() == "string" {
+			result = append(result, client.NewStringTypeCustomVariableSettingInput(
+				v.Name.ValueString(),
+				v.Value.ValueString(),
+			))
+		} else {
+			result = append(result, client.NewTimestampTypeCustomVariableSettingInput(
+				v.Name.ValueString(),
+				v.Type.ValueString(),
+				int(v.Quantity.ValueInt64()),
+				v.Unit.ValueString(),
+				v.Direction.ValueString(),
+				v.Format.ValueString(),
+				v.TimeZone.ValueString(),
+			))
+		}
+	}
+	return result
+}
+
+// convertLabelsForCreate converts labels for create operation.
+func convertLabelsForCreate(ctx context.Context, source types.Set, diags *resource.CreateResponse) []string {
+	if source.IsNull() {
+		return []string{}
+	}
+
+	var labelValues []labelModel
+	elemDiags := source.ElementsAs(ctx, &labelValues, false)
+	diags.Diagnostics.Append(elemDiags...)
+	if diags.Diagnostics.HasError() {
+		return nil
+	}
+
+	result := make([]string, 0, len(labelValues))
+	for _, v := range labelValues {
+		result = append(result, v.Name.ValueString())
+	}
+	return result
 }

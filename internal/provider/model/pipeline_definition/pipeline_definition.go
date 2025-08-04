@@ -65,37 +65,14 @@ func NewPipelineDefinition(ctx context.Context, en *entity.PipelineDefinition, k
 }
 
 func (m *PipelineDefinition) ToCreateInput(ctx context.Context) *client.CreatePipelineDefinitionInput {
-	labels := []string{}
-	if !m.Labels.IsNull() && !m.Labels.IsUnknown() {
-		var labelValues []types.String
-		diags := m.Labels.ElementsAs(ctx, &labelValues, false)
-		if !diags.HasError() {
-			for _, l := range labelValues {
-				labels = append(labels, l.ValueString())
-			}
-		}
-	}
+	labels, labelsOk := convertStringSet(ctx, m.Labels)
+	notifications, notificationsOk := convertNotificationSet(ctx, m.Notifications)
+	schedules, schedulesOk := convertScheduleSet(ctx, m.Schedules)
+	taskDependencies, taskDepsOk := convertTaskDependencySet(ctx, m.TaskDependencies)
 
-	notifications := []*pdp.Notification{}
-	if !m.Notifications.IsNull() && !m.Notifications.IsUnknown() {
-		var notificationValues []*Notification
-		diags := m.Notifications.ElementsAs(ctx, &notificationValues, false)
-		if !diags.HasError() {
-			for _, n := range notificationValues {
-				notifications = append(notifications, n.ToInput())
-			}
-		}
-	}
-
-	schedules := []*pdp.Schedule{}
-	if !m.Schedules.IsNull() && !m.Schedules.IsUnknown() {
-		var scheduleValues []*Schedule
-		diags := m.Schedules.ElementsAs(ctx, &scheduleValues, false)
-		if !diags.HasError() {
-			for _, s := range scheduleValues {
-				schedules = append(schedules, s.ToInput())
-			}
-		}
+	// Return nil if any conversion failed
+	if !labelsOk || !notificationsOk || !schedulesOk || !taskDepsOk {
+		return nil
 	}
 
 	tasks := []pdp.Task{}
@@ -107,20 +84,6 @@ func (m *PipelineDefinition) ToCreateInput(ctx context.Context) *client.CreatePi
 
 		for _, t := range tfTasks {
 			tasks = append(tasks, *t.ToInput(ctx, map[string]int64{}))
-		}
-	}
-
-	taskDependencies := []pdp.TaskDependency{}
-	if !m.TaskDependencies.IsNull() && !m.TaskDependencies.IsUnknown() {
-		var taskDependencyValues []*TaskDependency
-		diags := m.TaskDependencies.ElementsAs(ctx, &taskDependencyValues, false)
-		if !diags.HasError() {
-			for _, d := range taskDependencyValues {
-				taskDependencies = append(taskDependencies, pdp.TaskDependency{
-					Source:      d.Source.ValueString(),
-					Destination: d.Destination.ValueString(),
-				})
-			}
 		}
 	}
 
@@ -143,37 +106,14 @@ func (m *PipelineDefinition) ToCreateInput(ctx context.Context) *client.CreatePi
 }
 
 func (m *PipelineDefinition) ToUpdateWorkflowInput(ctx context.Context, state *PipelineDefinition) *client.UpdatePipelineDefinitionInput {
-	labels := []string{}
-	if !m.Labels.IsNull() && !m.Labels.IsUnknown() {
-		var labelValues []types.String
-		diags := m.Labels.ElementsAs(ctx, &labelValues, false)
-		if !diags.HasError() {
-			for _, l := range labelValues {
-				labels = append(labels, l.ValueString())
-			}
-		}
-	}
+	labels, labelsOk := convertStringSet(ctx, m.Labels)
+	notifications, notificationsOk := convertNotificationSet(ctx, m.Notifications)
+	schedules, schedulesOk := convertScheduleSet(ctx, m.Schedules)
+	taskDependencies, taskDepsOk := convertTaskDependencySet(ctx, m.TaskDependencies)
 
-	notifications := []*pdp.Notification{}
-	if !m.Notifications.IsNull() && !m.Notifications.IsUnknown() {
-		var notificationValues []*Notification
-		diags := m.Notifications.ElementsAs(ctx, &notificationValues, false)
-		if !diags.HasError() {
-			for _, n := range notificationValues {
-				notifications = append(notifications, n.ToInput())
-			}
-		}
-	}
-
-	schedules := []*pdp.Schedule{}
-	if !m.Schedules.IsNull() && !m.Schedules.IsUnknown() {
-		var scheduleValues []*Schedule
-		diags := m.Schedules.ElementsAs(ctx, &scheduleValues, false)
-		if !diags.HasError() {
-			for _, s := range scheduleValues {
-				schedules = append(schedules, s.ToInput())
-			}
-		}
+	// Return nil if any conversion failed
+	if !labelsOk || !notificationsOk || !schedulesOk || !taskDepsOk {
+		return nil
 	}
 
 	stateTaskIdentifiers := map[string]int64{}
@@ -200,20 +140,6 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(ctx context.Context, state *P
 		}
 	}
 
-	taskDependencies := []pdp.TaskDependency{}
-	if !m.TaskDependencies.IsNull() && !m.TaskDependencies.IsUnknown() {
-		var taskDependencyValues []*TaskDependency
-		diags := m.TaskDependencies.ElementsAs(ctx, &taskDependencyValues, false)
-		if !diags.HasError() {
-			for _, d := range taskDependencyValues {
-				taskDependencies = append(taskDependencies, pdp.TaskDependency{
-					Source:      d.Source.ValueString(),
-					Destination: d.Destination.ValueString(),
-				})
-			}
-		}
-	}
-
 	return &client.UpdatePipelineDefinitionInput{
 		ResourceGroupID:              model.NewNullableInt64(m.ResourceGroupID),
 		Name:                         m.Name.ValueStringPointer(),
@@ -230,4 +156,77 @@ func (m *PipelineDefinition) ToUpdateWorkflowInput(ctx context.Context, state *P
 		Tasks:                        lo.ToPtr(tasks),
 		TaskDependencies:             lo.ToPtr(taskDependencies),
 	}
+}
+
+// Helper functions for pipeline definition to reduce code duplication.
+
+// convertStringSet converts types.Set to string slice.
+func convertStringSet(ctx context.Context, source types.Set) ([]string, bool) {
+	if source.IsNull() || source.IsUnknown() {
+		return []string{}, true
+	}
+
+	var values []types.String
+	if diags := source.ElementsAs(ctx, &values, false); !diags.HasError() {
+		result := make([]string, 0, len(values))
+		for _, v := range values {
+			result = append(result, v.ValueString())
+		}
+		return result, true
+	}
+	return []string{}, false
+}
+
+// convertNotificationSet converts notification set.
+func convertNotificationSet(ctx context.Context, source types.Set) ([]*pdp.Notification, bool) {
+	if source.IsNull() || source.IsUnknown() {
+		return []*pdp.Notification{}, true
+	}
+
+	var notificationValues []*Notification
+	if diags := source.ElementsAs(ctx, &notificationValues, false); !diags.HasError() {
+		result := make([]*pdp.Notification, 0, len(notificationValues))
+		for _, n := range notificationValues {
+			result = append(result, n.ToInput())
+		}
+		return result, true
+	}
+	return []*pdp.Notification{}, false
+}
+
+// convertScheduleSet converts schedule set.
+func convertScheduleSet(ctx context.Context, source types.Set) ([]*pdp.Schedule, bool) {
+	if source.IsNull() || source.IsUnknown() {
+		return []*pdp.Schedule{}, true
+	}
+
+	var scheduleValues []*Schedule
+	if diags := source.ElementsAs(ctx, &scheduleValues, false); !diags.HasError() {
+		result := make([]*pdp.Schedule, 0, len(scheduleValues))
+		for _, s := range scheduleValues {
+			result = append(result, s.ToInput())
+		}
+		return result, true
+	}
+	return []*pdp.Schedule{}, false
+}
+
+// convertTaskDependencySet converts task dependency set.
+func convertTaskDependencySet(ctx context.Context, source types.Set) ([]pdp.TaskDependency, bool) {
+	if source.IsNull() || source.IsUnknown() {
+		return []pdp.TaskDependency{}, true
+	}
+
+	var taskDependencyValues []*TaskDependency
+	if diags := source.ElementsAs(ctx, &taskDependencyValues, false); !diags.HasError() {
+		result := make([]pdp.TaskDependency, 0, len(taskDependencyValues))
+		for _, d := range taskDependencyValues {
+			result = append(result, pdp.TaskDependency{
+				Source:      d.Source.ValueString(),
+				Destination: d.Destination.ValueString(),
+			})
+		}
+		return result, true
+	}
+	return []pdp.TaskDependency{}, false
 }
