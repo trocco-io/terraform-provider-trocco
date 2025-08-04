@@ -7,8 +7,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type TroccoSnowflakeDatamartTaskConfig struct {
@@ -17,7 +17,7 @@ type TroccoSnowflakeDatamartTaskConfig struct {
 	CustomVariableLoop *CustomVariableLoop `tfsdk:"custom_variable_loop"`
 }
 
-func NewTroccoSnowflakeDatamartTaskConfig(ctx context.Context, c *we.TroccoSnowflakeDatamartTaskConfig) *TroccoSnowflakeDatamartTaskConfig {
+func NewTroccoSnowflakeDatamartTaskConfig(ctx context.Context, c *pipelineDefinitionEntities.TroccoSnowflakeDatamartTaskConfig) *TroccoSnowflakeDatamartTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -29,8 +29,8 @@ func NewTroccoSnowflakeDatamartTaskConfig(ctx context.Context, c *we.TroccoSnowf
 	}
 }
 
-func (c *TroccoSnowflakeDatamartTaskConfig) ToInput(ctx context.Context) *wp.TroccoSnowflakeDatamartTaskConfig {
-	in := &wp.TroccoSnowflakeDatamartTaskConfig{
+func (c *TroccoSnowflakeDatamartTaskConfig) ToInput(ctx context.Context) *pipelineDefinitionParameters.TroccoSnowflakeDatamartTaskConfig {
+	in := &pipelineDefinitionParameters.TroccoSnowflakeDatamartTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
 	}
 

@@ -2,8 +2,8 @@ package parser
 
 import (
 	"context"
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
-	params "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitionParameters "terraform-provider-trocco/internal/client/parameter/job_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -23,7 +23,7 @@ type ExcelParserColumn struct {
 	FormulaHandling types.String `tfsdk:"formula_handling"`
 }
 
-func NewExcelParser(ctx context.Context, excelParser *job_definitions.ExcelParser) *ExcelParser {
+func NewExcelParser(ctx context.Context, excelParser *jobDefinitionEntities.ExcelParser) *ExcelParser {
 	if excelParser == nil {
 		return nil
 	}
@@ -62,7 +62,7 @@ func NewExcelParser(ctx context.Context, excelParser *job_definitions.ExcelParse
 	}
 }
 
-func (excelParser *ExcelParser) ToExcelParserInput(ctx context.Context) *params.ExcelParserInput {
+func (excelParser *ExcelParser) ToExcelParserInput(ctx context.Context) *jobDefinitionParameters.ExcelParserInput {
 	if excelParser == nil {
 		return nil
 	}
@@ -73,9 +73,9 @@ func (excelParser *ExcelParser) ToExcelParserInput(ctx context.Context) *params.
 		return nil
 	}
 
-	columns := make([]params.ExcelParserColumnInput, 0, len(columnElements))
+	columns := make([]jobDefinitionParameters.ExcelParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {
-		column := params.ExcelParserColumnInput{
+		column := jobDefinitionParameters.ExcelParserColumnInput{
 			Name:            input.Name.ValueString(),
 			Type:            input.Type.ValueString(),
 			Format:          input.Format.ValueStringPointer(),
@@ -84,7 +84,7 @@ func (excelParser *ExcelParser) ToExcelParserInput(ctx context.Context) *params.
 		columns = append(columns, column)
 	}
 
-	return &params.ExcelParserInput{
+	return &jobDefinitionParameters.ExcelParserInput{
 		DefaultTimeZone: excelParser.DefaultTimeZone.ValueString(),
 		SheetName:       excelParser.SheetName.ValueString(),
 		SkipHeaderLines: excelParser.SkipHeaderLines.ValueInt64(),

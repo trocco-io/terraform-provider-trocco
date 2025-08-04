@@ -2,9 +2,9 @@ package pipeline_definition
 
 import (
 	"context"
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	p "terraform-provider-trocco/internal/client/parameter"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	parameter "terraform-provider-trocco/internal/client/parameter"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -21,7 +21,7 @@ type CustomVariable struct {
 	TimeZone  types.String `tfsdk:"time_zone"`
 }
 
-func NewCustomVariables(ctx context.Context, ens []we.CustomVariable) types.Set {
+func NewCustomVariables(ctx context.Context, ens []pipelineDefinitionEntities.CustomVariable) types.Set {
 	objectType := types.ObjectType{
 		AttrTypes: CustomVariableAttrTypes(),
 	}
@@ -44,7 +44,7 @@ func NewCustomVariables(ctx context.Context, ens []we.CustomVariable) types.Set 
 	return setValue
 }
 
-func NewCustomVariable(en we.CustomVariable) CustomVariable {
+func NewCustomVariable(en pipelineDefinitionEntities.CustomVariable) CustomVariable {
 	return CustomVariable{
 		Name:      types.StringPointerValue(en.Name),
 		Type:      types.StringPointerValue(en.Type),
@@ -57,12 +57,12 @@ func NewCustomVariable(en we.CustomVariable) CustomVariable {
 	}
 }
 
-func (v *CustomVariable) ToInput() wp.CustomVariable {
-	return wp.CustomVariable{
+func (v *CustomVariable) ToInput() pipelineDefinitionParameters.CustomVariable {
+	return pipelineDefinitionParameters.CustomVariable{
 		Name:      v.Name.ValueStringPointer(),
 		Type:      v.Type.ValueStringPointer(),
 		Value:     v.Value.ValueStringPointer(),
-		Quantity:  &p.NullableInt64{Valid: !v.Quantity.IsNull(), Value: v.Quantity.ValueInt64()},
+		Quantity:  &parameter.NullableInt64{Valid: !v.Quantity.IsNull(), Value: v.Quantity.ValueInt64()},
 		Unit:      v.Unit.ValueStringPointer(),
 		Direction: v.Direction.ValueStringPointer(),
 		Format:    v.Format.ValueStringPointer(),

@@ -7,8 +7,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type TroccoRedshiftDatamartTaskConfig struct {
@@ -17,7 +17,7 @@ type TroccoRedshiftDatamartTaskConfig struct {
 	CustomVariableLoop *CustomVariableLoop `tfsdk:"custom_variable_loop"`
 }
 
-func NewTroccoRedshiftDatamartTaskConfig(ctx context.Context, c *we.TroccoRedshiftDatamartTaskConfig) *TroccoRedshiftDatamartTaskConfig {
+func NewTroccoRedshiftDatamartTaskConfig(ctx context.Context, c *pipelineDefinitionEntities.TroccoRedshiftDatamartTaskConfig) *TroccoRedshiftDatamartTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -29,8 +29,8 @@ func NewTroccoRedshiftDatamartTaskConfig(ctx context.Context, c *we.TroccoRedshi
 	}
 }
 
-func (c *TroccoRedshiftDatamartTaskConfig) ToInput(ctx context.Context) *wp.TroccoRedshiftDatamartTaskConfig {
-	in := &wp.TroccoRedshiftDatamartTaskConfig{
+func (c *TroccoRedshiftDatamartTaskConfig) ToInput(ctx context.Context) *pipelineDefinitionParameters.TroccoRedshiftDatamartTaskConfig {
+	in := &pipelineDefinitionParameters.TroccoRedshiftDatamartTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
 	}
 

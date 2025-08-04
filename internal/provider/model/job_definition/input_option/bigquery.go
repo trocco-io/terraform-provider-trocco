@@ -3,9 +3,9 @@ package input_options
 import (
 	"context"
 	"fmt"
-	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
 	parmas "terraform-provider-trocco/internal/client/parameter/job_definition"
-	param "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
@@ -45,7 +45,7 @@ func (BigqueryColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewBigqueryInputOption(ctx context.Context, bigqueryInputOption *input_option.BigqueryInputOption) *BigqueryInputOption {
+func NewBigqueryInputOption(ctx context.Context, bigqueryInputOption *inputOptionEntities.BigqueryInputOption) *BigqueryInputOption {
 	if bigqueryInputOption == nil {
 		return nil
 	}
@@ -78,7 +78,7 @@ func NewBigqueryInputOption(ctx context.Context, bigqueryInputOption *input_opti
 	return result
 }
 
-func (bigqueryInputOption *BigqueryInputOption) ToInput(ctx context.Context) *param.BigqueryInputOptionInput {
+func (bigqueryInputOption *BigqueryInputOption) ToInput(ctx context.Context) *inputOptionParameters.BigqueryInputOptionInput {
 	if bigqueryInputOption == nil {
 		return nil
 	}
@@ -98,7 +98,7 @@ func (bigqueryInputOption *BigqueryInputOption) ToInput(ctx context.Context) *pa
 		decoder = bigqueryInputOption.Decoder.ToDecoderInput()
 	}
 
-	return &param.BigqueryInputOptionInput{
+	return &inputOptionParameters.BigqueryInputOptionInput{
 		BigqueryConnectionID:  bigqueryInputOption.BigqueryConnectionID.ValueInt64(),
 		GcsUri:                bigqueryInputOption.GcsUri.ValueString(),
 		GcsUriFormat:          model.NewNullableString(bigqueryInputOption.GcsUriFormat),
@@ -117,7 +117,7 @@ func (bigqueryInputOption *BigqueryInputOption) ToInput(ctx context.Context) *pa
 	}
 }
 
-func (bigqueryInputOption *BigqueryInputOption) ToUpdateInput(ctx context.Context) *param.UpdateBigqueryInputOptionInput {
+func (bigqueryInputOption *BigqueryInputOption) ToUpdateInput(ctx context.Context) *inputOptionParameters.UpdateBigqueryInputOptionInput {
 	if bigqueryInputOption == nil {
 		return nil
 	}
@@ -143,7 +143,7 @@ func (bigqueryInputOption *BigqueryInputOption) ToUpdateInput(ctx context.Contex
 		decoder = bigqueryInputOption.Decoder.ToDecoderInput()
 	}
 
-	return &param.UpdateBigqueryInputOptionInput{
+	return &inputOptionParameters.UpdateBigqueryInputOptionInput{
 		BigqueryConnectionID:  bigqueryInputOption.BigqueryConnectionID.ValueInt64Pointer(),
 		GcsUri:                model.NewNullableString(bigqueryInputOption.GcsUri),
 		GcsUriFormat:          model.NewNullableString(bigqueryInputOption.GcsUriFormat),
@@ -164,7 +164,7 @@ func (bigqueryInputOption *BigqueryInputOption) ToUpdateInput(ctx context.Contex
 
 func newBigqueryColumns(
 	ctx context.Context,
-	bigqueryColumns []input_option.BigqueryColumn,
+	bigqueryColumns []inputOptionEntities.BigqueryColumn,
 ) (types.List, error) {
 	objectType := types.ObjectType{
 		AttrTypes: BigqueryColumn{}.attrTypes(),
@@ -191,14 +191,14 @@ func newBigqueryColumns(
 	return listValue, nil
 }
 
-func toBigqueryColumnsInput(columns []BigqueryColumn) []param.BigqueryColumn {
+func toBigqueryColumnsInput(columns []BigqueryColumn) []inputOptionParameters.BigqueryColumn {
 	if columns == nil {
 		return nil
 	}
 
-	inputs := make([]param.BigqueryColumn, 0, len(columns))
+	inputs := make([]inputOptionParameters.BigqueryColumn, 0, len(columns))
 	for _, column := range columns {
-		inputs = append(inputs, param.BigqueryColumn{
+		inputs = append(inputs, inputOptionParameters.BigqueryColumn{
 			Name:   column.Name.ValueString(),
 			Type:   column.Type.ValueString(),
 			Format: column.Format.ValueStringPointer(),

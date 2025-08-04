@@ -1,7 +1,7 @@
 package job_definition
 
 import (
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+	planModifier "terraform-provider-trocco/internal/provider/planmodifier"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -25,7 +25,7 @@ func InputOptionSchema() schema.Attribute {
 			"yahoo_ads_api_yss_input_option":   YahooAdsApiYssInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
-			&planmodifier2.InputOptionPlanModifier{},
+			&planModifier.InputOptionPlanModifier{},
 		},
 	}
 }

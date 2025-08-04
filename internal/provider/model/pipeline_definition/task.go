@@ -2,8 +2,8 @@ package pipeline_definition
 
 import (
 	"context"
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -31,7 +31,7 @@ type Task struct {
 	TroccoTransferConfig                      *TroccoTransferTaskConfig                      `tfsdk:"trocco_transfer_config"`
 }
 
-func NewTasks(ctx context.Context, ens []*we.Task, keys map[int64]types.String, previous *PipelineDefinition) types.Set {
+func NewTasks(ctx context.Context, ens []*pipelineDefinitionEntities.Task, keys map[int64]types.String, previous *PipelineDefinition) types.Set {
 	var TaskObjectType = types.ObjectType{
 		AttrTypes: TaskObjectAttrTypes(),
 	}
@@ -67,7 +67,7 @@ func NewTasks(ctx context.Context, ens []*we.Task, keys map[int64]types.String, 
 	return set
 }
 
-func NewTask(ctx context.Context, en *we.Task, keys map[int64]types.String, previous *Task) *Task {
+func NewTask(ctx context.Context, en *pipelineDefinitionEntities.Task, keys map[int64]types.String, previous *Task) *Task {
 	if en == nil {
 		return nil
 	}
@@ -118,8 +118,8 @@ func NewTask(ctx context.Context, en *we.Task, keys map[int64]types.String, prev
 	}
 }
 
-func (t *Task) ToInput(ctx context.Context, identifiers map[string]int64) *wp.Task {
-	in := &wp.Task{
+func (t *Task) ToInput(ctx context.Context, identifiers map[string]int64) *pipelineDefinitionParameters.Task {
+	in := &pipelineDefinitionParameters.Task{
 		Key:            t.Key.ValueString(),
 		TaskIdentifier: lo.ValueOr(identifiers, t.Key.ValueString(), t.TaskIdentifier.ValueInt64()),
 		Type:           t.Type.ValueString(),

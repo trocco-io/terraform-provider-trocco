@@ -3,8 +3,8 @@ package input_options
 import (
 	"context"
 	"fmt"
-	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	param "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
@@ -54,7 +54,7 @@ func (PostgreSQLInputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewPostgreSQLInputOption(ctx context.Context, postgresqlInputOption *input_option.PostgreSQLInputOption) *PostgreSQLInputOption {
+func NewPostgreSQLInputOption(ctx context.Context, postgresqlInputOption *inputOptionEntities.PostgreSQLInputOption) *PostgreSQLInputOption {
 	if postgresqlInputOption == nil {
 		return nil
 	}
@@ -97,7 +97,7 @@ func NewPostgreSQLInputOption(ctx context.Context, postgresqlInputOption *input_
 
 func newPostgresqlInputOptionColumns(
 	ctx context.Context,
-	inputOptionColumns []input_option.PostgreSQLInputOptionColumn,
+	inputOptionColumns []inputOptionEntities.PostgreSQLInputOptionColumn,
 ) (types.List, error) {
 	objectType := types.ObjectType{
 		AttrTypes: PostgreSQLInputOptionColumn{}.attrTypes(),
@@ -123,7 +123,7 @@ func newPostgresqlInputOptionColumns(
 	return listValue, nil
 }
 
-func newInputOptionColumnOptions(ctx context.Context, inputOptions []input_option.InputOptionColumnOptions) (types.List, error) {
+func newInputOptionColumnOptions(ctx context.Context, inputOptions []inputOptionEntities.InputOptionColumnOptions) (types.List, error) {
 
 	objectType := types.ObjectType{
 		AttrTypes: InputOptionColumnOptions{}.attrTypes(),
@@ -149,7 +149,7 @@ func newInputOptionColumnOptions(ctx context.Context, inputOptions []input_optio
 	return setValue, nil
 }
 
-func (postgresqlInputOption *PostgreSQLInputOption) ToInput(ctx context.Context) *param.PostgreSQLInputOptionInput {
+func (postgresqlInputOption *PostgreSQLInputOption) ToInput(ctx context.Context) *inputOptionParameters.PostgreSQLInputOptionInput {
 	if postgresqlInputOption == nil {
 		return nil
 	}
@@ -172,7 +172,7 @@ func (postgresqlInputOption *PostgreSQLInputOption) ToInput(ctx context.Context)
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, postgresqlInputOption.CustomVariableSettings)
 
-	return &param.PostgreSQLInputOptionInput{
+	return &inputOptionParameters.PostgreSQLInputOptionInput{
 		Database:                  postgresqlInputOption.Database.ValueString(),
 		Schema:                    model.NewNullableString(postgresqlInputOption.Schema),
 		Table:                     model.NewNullableString(postgresqlInputOption.Table),
@@ -191,7 +191,7 @@ func (postgresqlInputOption *PostgreSQLInputOption) ToInput(ctx context.Context)
 	}
 }
 
-func (postgresqlInputOption *PostgreSQLInputOption) ToUpdateInput(ctx context.Context) *param.UpdatePostgreSQLInputOptionInput {
+func (postgresqlInputOption *PostgreSQLInputOption) ToUpdateInput(ctx context.Context) *inputOptionParameters.UpdatePostgreSQLInputOptionInput {
 	if postgresqlInputOption == nil {
 		return nil
 	}
@@ -226,7 +226,7 @@ func (postgresqlInputOption *PostgreSQLInputOption) ToUpdateInput(ctx context.Co
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, postgresqlInputOption.CustomVariableSettings)
 
-	return &param.UpdatePostgreSQLInputOptionInput{
+	return &inputOptionParameters.UpdatePostgreSQLInputOptionInput{
 		Database:                  postgresqlInputOption.Database.ValueStringPointer(),
 		Schema:                    model.NewNullableString(postgresqlInputOption.Schema),
 		Table:                     model.NewNullableString(postgresqlInputOption.Table),
@@ -245,14 +245,14 @@ func (postgresqlInputOption *PostgreSQLInputOption) ToUpdateInput(ctx context.Co
 	}
 }
 
-func toPostgresqlInputOptionColumnsInput(columns []PostgreSQLInputOptionColumn) []param.PostgreSQLInputOptionColumn {
+func toPostgresqlInputOptionColumnsInput(columns []PostgreSQLInputOptionColumn) []inputOptionParameters.PostgreSQLInputOptionColumn {
 	if columns == nil {
 		return nil
 	}
 
-	inputs := make([]param.PostgreSQLInputOptionColumn, 0, len(columns))
+	inputs := make([]inputOptionParameters.PostgreSQLInputOptionColumn, 0, len(columns))
 	for _, column := range columns {
-		inputs = append(inputs, param.PostgreSQLInputOptionColumn{
+		inputs = append(inputs, inputOptionParameters.PostgreSQLInputOptionColumn{
 			Name: column.Name.ValueString(),
 			Type: column.Type.ValueString(),
 		})
@@ -260,14 +260,14 @@ func toPostgresqlInputOptionColumnsInput(columns []PostgreSQLInputOptionColumn) 
 	return inputs
 }
 
-func toInputOptionColumnOptions(options []InputOptionColumnOptions) *[]param.InputOptionColumnOptions {
+func toInputOptionColumnOptions(options []InputOptionColumnOptions) *[]inputOptionParameters.InputOptionColumnOptions {
 	if options == nil {
 		return nil
 	}
 
-	inputs := make([]param.InputOptionColumnOptions, len(options))
+	inputs := make([]inputOptionParameters.InputOptionColumnOptions, len(options))
 	for i, option := range options {
-		inputs[i] = param.InputOptionColumnOptions{
+		inputs[i] = inputOptionParameters.InputOptionColumnOptions{
 			ColumnName:      option.ColumnName.ValueString(),
 			ColumnValueType: option.ColumnValueType.ValueString(),
 		}

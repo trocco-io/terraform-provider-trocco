@@ -6,8 +6,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type BigqueryCustomVariableLoopConfig struct {
@@ -16,7 +16,7 @@ type BigqueryCustomVariableLoopConfig struct {
 	Variables    types.Set    `tfsdk:"variables"`
 }
 
-func NewBigqueryCustomVariableLoopConfig(ctx context.Context, en *we.BigqueryCustomVariableLoopConfig) *BigqueryCustomVariableLoopConfig {
+func NewBigqueryCustomVariableLoopConfig(ctx context.Context, en *pipelineDefinitionEntities.BigqueryCustomVariableLoopConfig) *BigqueryCustomVariableLoopConfig {
 	if en == nil {
 		return nil
 	}
@@ -33,7 +33,7 @@ func NewBigqueryCustomVariableLoopConfig(ctx context.Context, en *we.BigqueryCus
 	}
 }
 
-func (c *BigqueryCustomVariableLoopConfig) ToInput(ctx context.Context) wp.BigqueryCustomVariableLoopConfig {
+func (c *BigqueryCustomVariableLoopConfig) ToInput(ctx context.Context) pipelineDefinitionParameters.BigqueryCustomVariableLoopConfig {
 	vs := []string{}
 	if !c.Variables.IsNull() && !c.Variables.IsUnknown() {
 		var variableValues []types.String
@@ -45,7 +45,7 @@ func (c *BigqueryCustomVariableLoopConfig) ToInput(ctx context.Context) wp.Bigqu
 		}
 	}
 
-	return wp.BigqueryCustomVariableLoopConfig{
+	return pipelineDefinitionParameters.BigqueryCustomVariableLoopConfig{
 		ConnectionID: c.ConnectionID.ValueInt64(),
 		Query:        c.Query.ValueString(),
 		Variables:    vs,

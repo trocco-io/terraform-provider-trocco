@@ -1,8 +1,8 @@
 package job_definitions
 
 import (
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
-	params "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitionParameters "terraform-provider-trocco/internal/client/parameter/job_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -22,7 +22,7 @@ type JobDefinitionNotification struct {
 	Minutes          types.Int64                    `tfsdk:"minutes"`
 }
 
-func NewJobDefinitionNotifications(jobDefinitionNotifications []job_definitions.JobDefinitionNotification) []JobDefinitionNotification {
+func NewJobDefinitionNotifications(jobDefinitionNotifications []jobDefinitionEntities.JobDefinitionNotification) []JobDefinitionNotification {
 	if jobDefinitionNotifications == nil {
 		return nil
 	}
@@ -45,8 +45,8 @@ func NewJobDefinitionNotifications(jobDefinitionNotifications []job_definitions.
 	return notifications
 }
 
-func (notification JobDefinitionNotification) ToInput() params.JobDefinitionNotificationInput {
-	input := params.JobDefinitionNotificationInput{
+func (notification JobDefinitionNotification) ToInput() jobDefinitionParameters.JobDefinitionNotificationInput {
+	input := jobDefinitionParameters.JobDefinitionNotificationInput{
 		DestinationType:  notification.DestinationType.ValueString(),
 		SlackChannelID:   notification.SlackChannelID.ValueInt64Pointer(),
 		EmailID:          notification.EmailID.ValueInt64Pointer(),

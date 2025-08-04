@@ -2,8 +2,8 @@ package parser
 
 import (
 	"context"
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
-	params "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitionParameters "terraform-provider-trocco/internal/client/parameter/job_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -22,7 +22,7 @@ type XmlParserColumn struct {
 	Format   types.String `tfsdk:"format"`
 }
 
-func NewXmlParser(ctx context.Context, xmlParser *job_definitions.XmlParser) *XmlParser {
+func NewXmlParser(ctx context.Context, xmlParser *jobDefinitionEntities.XmlParser) *XmlParser {
 	if xmlParser == nil {
 		return nil
 	}
@@ -62,7 +62,7 @@ func NewXmlParser(ctx context.Context, xmlParser *job_definitions.XmlParser) *Xm
 	}
 }
 
-func (xmlParser *XmlParser) ToXmlParserInput(ctx context.Context) *params.XmlParserInput {
+func (xmlParser *XmlParser) ToXmlParserInput(ctx context.Context) *jobDefinitionParameters.XmlParserInput {
 	if xmlParser == nil {
 		return nil
 	}
@@ -73,9 +73,9 @@ func (xmlParser *XmlParser) ToXmlParserInput(ctx context.Context) *params.XmlPar
 		return nil
 	}
 
-	columns := make([]params.XmlParserColumnInput, 0, len(columnElements))
+	columns := make([]jobDefinitionParameters.XmlParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {
-		column := params.XmlParserColumnInput{
+		column := jobDefinitionParameters.XmlParserColumnInput{
 			Name:     input.Name.ValueString(),
 			Type:     input.Type.ValueString(),
 			Path:     input.Path.ValueString(),
@@ -85,7 +85,7 @@ func (xmlParser *XmlParser) ToXmlParserInput(ctx context.Context) *params.XmlPar
 		columns = append(columns, column)
 	}
 
-	return &params.XmlParserInput{
+	return &jobDefinitionParameters.XmlParserInput{
 		Root:    xmlParser.Root.ValueString(),
 		Columns: columns,
 	}

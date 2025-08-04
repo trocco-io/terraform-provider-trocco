@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"terraform-provider-trocco/internal/client/entity/job_definition/output_option"
-	output_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
+	outputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
@@ -134,7 +134,7 @@ func (s snowflakeOutputOptionColumnOption) attrTypes() map[string]attr.Type {
 	}
 }
 
-func (snowflakeOutputOption *SnowflakeOutputOption) ToInput(ctx context.Context) *output_options2.SnowflakeOutputOptionInput {
+func (snowflakeOutputOption *SnowflakeOutputOption) ToInput(ctx context.Context) *outputOptionParameters.SnowflakeOutputOptionInput {
 	if snowflakeOutputOption == nil {
 		return nil
 	}
@@ -153,7 +153,7 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToInput(ctx context.Context)
 		mergeKeys = &mk
 	}
 
-	var columnOptions *[]output_options2.SnowflakeOutputOptionColumnOptionInput
+	var columnOptions *[]outputOptionParameters.SnowflakeOutputOptionColumnOptionInput
 	if !snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.IsNull() && !snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.IsUnknown() {
 		var columnOptionValues []snowflakeOutputOptionColumnOption
 		diags := snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.ElementsAs(ctx, &columnOptionValues, false)
@@ -161,9 +161,9 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToInput(ctx context.Context)
 			return nil
 		}
 
-		outputs := make([]output_options2.SnowflakeOutputOptionColumnOptionInput, 0, len(columnOptionValues))
+		outputs := make([]outputOptionParameters.SnowflakeOutputOptionColumnOptionInput, 0, len(columnOptionValues))
 		for _, input := range columnOptionValues {
-			outputs = append(outputs, output_options2.SnowflakeOutputOptionColumnOptionInput{
+			outputs = append(outputs, outputOptionParameters.SnowflakeOutputOptionColumnOptionInput{
 				Name:            input.Name.ValueString(),
 				Type:            input.Type.ValueString(),
 				ValueType:       input.ValueType.ValueStringPointer(),
@@ -176,7 +176,7 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToInput(ctx context.Context)
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, snowflakeOutputOption.CustomVariableSettings)
 
-	return &output_options2.SnowflakeOutputOptionInput{
+	return &outputOptionParameters.SnowflakeOutputOptionInput{
 		Warehouse:                          snowflakeOutputOption.Warehouse.ValueString(),
 		Database:                           snowflakeOutputOption.Database.ValueString(),
 		Schema:                             snowflakeOutputOption.Schema.ValueString(),
@@ -196,7 +196,7 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToInput(ctx context.Context)
 	}
 }
 
-func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput(ctx context.Context) *output_options2.UpdateSnowflakeOutputOptionInput {
+func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput(ctx context.Context) *outputOptionParameters.UpdateSnowflakeOutputOptionInput {
 	if snowflakeOutputOption == nil {
 		return nil
 	}
@@ -216,7 +216,7 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput(ctx context.Co
 		mergeKeys = &mk
 	}
 
-	var columnOptions *[]output_options2.SnowflakeOutputOptionColumnOptionInput
+	var columnOptions *[]outputOptionParameters.SnowflakeOutputOptionColumnOptionInput
 	if !snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.IsNull() && !snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.IsUnknown() {
 		var columnOptionValues []snowflakeOutputOptionColumnOption
 		diags := snowflakeOutputOption.SnowflakeOutputOptionColumnOptions.ElementsAs(ctx, &columnOptionValues, false)
@@ -224,9 +224,9 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput(ctx context.Co
 			return nil
 		}
 
-		outputs := make([]output_options2.SnowflakeOutputOptionColumnOptionInput, 0, len(columnOptionValues))
+		outputs := make([]outputOptionParameters.SnowflakeOutputOptionColumnOptionInput, 0, len(columnOptionValues))
 		for _, input := range columnOptionValues {
-			outputs = append(outputs, output_options2.SnowflakeOutputOptionColumnOptionInput{
+			outputs = append(outputs, outputOptionParameters.SnowflakeOutputOptionColumnOptionInput{
 				Name:            input.Name.ValueString(),
 				Type:            input.Type.ValueString(),
 				ValueType:       input.ValueType.ValueStringPointer(),
@@ -239,7 +239,7 @@ func (snowflakeOutputOption *SnowflakeOutputOption) ToUpdateInput(ctx context.Co
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, snowflakeOutputOption.CustomVariableSettings)
 
-	return &output_options2.UpdateSnowflakeOutputOptionInput{
+	return &outputOptionParameters.UpdateSnowflakeOutputOptionInput{
 		Warehouse:                          snowflakeOutputOption.Warehouse.ValueStringPointer(),
 		Database:                           snowflakeOutputOption.Database.ValueStringPointer(),
 		Schema:                             snowflakeOutputOption.Schema.ValueStringPointer(),

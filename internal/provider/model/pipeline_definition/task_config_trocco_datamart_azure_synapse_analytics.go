@@ -7,8 +7,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type TroccoAzureSynapseAnalyticsDatamartTaskConfig struct {
@@ -17,7 +17,7 @@ type TroccoAzureSynapseAnalyticsDatamartTaskConfig struct {
 	CustomVariableLoop *CustomVariableLoop `tfsdk:"custom_variable_loop"`
 }
 
-func NewTroccoAzureSynapseAnalyticsDatamartTaskConfig(ctx context.Context, c *we.TroccoAzureSynapseAnalyticsDatamartTaskConfig) *TroccoAzureSynapseAnalyticsDatamartTaskConfig {
+func NewTroccoAzureSynapseAnalyticsDatamartTaskConfig(ctx context.Context, c *pipelineDefinitionEntities.TroccoAzureSynapseAnalyticsDatamartTaskConfig) *TroccoAzureSynapseAnalyticsDatamartTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -29,8 +29,8 @@ func NewTroccoAzureSynapseAnalyticsDatamartTaskConfig(ctx context.Context, c *we
 	}
 }
 
-func (c *TroccoAzureSynapseAnalyticsDatamartTaskConfig) ToInput(ctx context.Context) *wp.TroccoAzureSynapseAnalyticsDatamartTaskConfig {
-	in := &wp.TroccoAzureSynapseAnalyticsDatamartTaskConfig{
+func (c *TroccoAzureSynapseAnalyticsDatamartTaskConfig) ToInput(ctx context.Context) *pipelineDefinitionParameters.TroccoAzureSynapseAnalyticsDatamartTaskConfig {
+	in := &pipelineDefinitionParameters.TroccoAzureSynapseAnalyticsDatamartTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
 	}
 

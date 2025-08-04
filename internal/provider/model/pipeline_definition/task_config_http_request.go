@@ -2,9 +2,9 @@ package pipeline_definition
 
 import (
 	"context"
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	p "terraform-provider-trocco/internal/client/parameter"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	parameter "terraform-provider-trocco/internal/client/parameter"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	model "terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -22,7 +22,7 @@ type HTTPRequestTaskConfig struct {
 	CustomVariables   types.Set               `tfsdk:"custom_variables"`
 }
 
-func NewHTTPRequestTaskConfig(ctx context.Context, en *we.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
+func NewHTTPRequestTaskConfig(ctx context.Context, en *pipelineDefinitionEntities.HTTPRequestTaskConfig, previous *HTTPRequestTaskConfig) *HTTPRequestTaskConfig {
 	if en == nil {
 		return nil
 	}
@@ -46,26 +46,26 @@ func NewHTTPRequestTaskConfig(ctx context.Context, en *we.HTTPRequestTaskConfig,
 	}
 }
 
-func (c *HTTPRequestTaskConfig) ToInput(ctx context.Context) *wp.HTTPRequestTaskConfig {
-	requestHeaders := []wp.RequestHeader{}
+func (c *HTTPRequestTaskConfig) ToInput(ctx context.Context) *pipelineDefinitionParameters.HTTPRequestTaskConfig {
+	requestHeaders := []pipelineDefinitionParameters.RequestHeader{}
 	for _, e := range c.RequestHeaders {
-		requestHeaders = append(requestHeaders, wp.RequestHeader{
+		requestHeaders = append(requestHeaders, pipelineDefinitionParameters.RequestHeader{
 			Key:     e.Key.ValueString(),
 			Value:   e.Value.ValueString(),
 			Masking: model.NewNullableBool(e.Masking),
 		})
 	}
 
-	requestParameters := []wp.RequestParameter{}
+	requestParameters := []pipelineDefinitionParameters.RequestParameter{}
 	for _, e := range c.RequestParameters {
-		requestParameters = append(requestParameters, wp.RequestParameter{
+		requestParameters = append(requestParameters, pipelineDefinitionParameters.RequestParameter{
 			Key:     e.Key.ValueString(),
 			Value:   e.Value.ValueString(),
 			Masking: model.NewNullableBool(e.Masking),
 		})
 	}
 
-	customVariables := []wp.CustomVariable{}
+	customVariables := []pipelineDefinitionParameters.CustomVariable{}
 	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
 		var customVariableValues []CustomVariable
 		diags := c.CustomVariables.ElementsAs(ctx, &customVariableValues, false)
@@ -76,9 +76,9 @@ func (c *HTTPRequestTaskConfig) ToInput(ctx context.Context) *wp.HTTPRequestTask
 		}
 	}
 
-	return &wp.HTTPRequestTaskConfig{
+	return &pipelineDefinitionParameters.HTTPRequestTaskConfig{
 		Name:              c.Name.ValueString(),
-		ConnectionID:      &p.NullableInt64{Valid: !c.ConnectionID.IsNull(), Value: c.ConnectionID.ValueInt64()},
+		ConnectionID:      &parameter.NullableInt64{Valid: !c.ConnectionID.IsNull(), Value: c.ConnectionID.ValueInt64()},
 		HTTPMethod:        c.Method.ValueString(),
 		URL:               c.URL.ValueString(),
 		RequestBody:       c.RequestBody.ValueStringPointer(),
@@ -94,7 +94,7 @@ type HTTPRequestHeader struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-func NewHTTPRequestHeaders(ens []we.RequestHeader, previous []*HTTPRequestHeader) []*HTTPRequestHeader {
+func NewHTTPRequestHeaders(ens []pipelineDefinitionEntities.RequestHeader, previous []*HTTPRequestHeader) []*HTTPRequestHeader {
 	if len(ens) == 0 {
 		return nil
 	}
@@ -112,7 +112,7 @@ func NewHTTPRequestHeaders(ens []we.RequestHeader, previous []*HTTPRequestHeader
 	return mds
 }
 
-func NewHTTPRequestHeader(en we.RequestHeader, previous *HTTPRequestHeader) *HTTPRequestHeader {
+func NewHTTPRequestHeader(en pipelineDefinitionEntities.RequestHeader, previous *HTTPRequestHeader) *HTTPRequestHeader {
 	value := types.StringValue(en.Value)
 	if en.Masking && previous != nil {
 		value = previous.Value
@@ -131,7 +131,7 @@ type HTTPRequestParameter struct {
 	Masking types.Bool   `tfsdk:"masking"`
 }
 
-func NewHTTPRequestParameters(ens []we.RequestParameter, previous []*HTTPRequestParameter) []*HTTPRequestParameter {
+func NewHTTPRequestParameters(ens []pipelineDefinitionEntities.RequestParameter, previous []*HTTPRequestParameter) []*HTTPRequestParameter {
 	if len(ens) == 0 {
 		return nil
 	}
@@ -149,7 +149,7 @@ func NewHTTPRequestParameters(ens []we.RequestParameter, previous []*HTTPRequest
 	return mds
 }
 
-func NewHTTPRequestParameter(en we.RequestParameter, previous *HTTPRequestParameter) *HTTPRequestParameter {
+func NewHTTPRequestParameter(en pipelineDefinitionEntities.RequestParameter, previous *HTTPRequestParameter) *HTTPRequestParameter {
 	value := types.StringValue(en.Value)
 	if en.Masking && previous != nil {
 		value = previous.Value
@@ -162,7 +162,7 @@ func NewHTTPRequestParameter(en we.RequestParameter, previous *HTTPRequestParame
 	}
 }
 
-func NewHTTPRequestParameterValue(en we.RequestParameter, previous *HTTPRequestParameter) types.String {
+func NewHTTPRequestParameterValue(en pipelineDefinitionEntities.RequestParameter, previous *HTTPRequestParameter) types.String {
 	value := types.StringValue(en.Value)
 	if en.Masking && previous != nil {
 		value = previous.Value

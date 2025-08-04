@@ -6,8 +6,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type SnowflakeCustomVariableLoopConfig struct {
@@ -17,7 +17,7 @@ type SnowflakeCustomVariableLoopConfig struct {
 	Variables    types.Set    `tfsdk:"variables"`
 }
 
-func NewSnowflakeCustomVariableLoopConfig(ctx context.Context, en *we.SnowflakeCustomVariableLoopConfig) *SnowflakeCustomVariableLoopConfig {
+func NewSnowflakeCustomVariableLoopConfig(ctx context.Context, en *pipelineDefinitionEntities.SnowflakeCustomVariableLoopConfig) *SnowflakeCustomVariableLoopConfig {
 	if en == nil {
 		return nil
 	}
@@ -35,7 +35,7 @@ func NewSnowflakeCustomVariableLoopConfig(ctx context.Context, en *we.SnowflakeC
 	}
 }
 
-func (c *SnowflakeCustomVariableLoopConfig) ToInput(ctx context.Context) wp.SnowflakeCustomVariableLoopConfig {
+func (c *SnowflakeCustomVariableLoopConfig) ToInput(ctx context.Context) pipelineDefinitionParameters.SnowflakeCustomVariableLoopConfig {
 	vs := []string{}
 	if !c.Variables.IsNull() && !c.Variables.IsUnknown() {
 		var variableValues []types.String
@@ -47,7 +47,7 @@ func (c *SnowflakeCustomVariableLoopConfig) ToInput(ctx context.Context) wp.Snow
 		}
 	}
 
-	return wp.SnowflakeCustomVariableLoopConfig{
+	return pipelineDefinitionParameters.SnowflakeCustomVariableLoopConfig{
 		ConnectionID: c.ConnectionID.ValueInt64(),
 		Query:        c.Query.ValueString(),
 		Warehouse:    c.Warehouse.ValueString(),

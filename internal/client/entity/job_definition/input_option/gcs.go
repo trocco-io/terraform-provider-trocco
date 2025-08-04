@@ -2,24 +2,24 @@ package input_option
 
 import (
 	"terraform-provider-trocco/internal/client/entity"
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
 )
 
 type GcsInputOption struct {
-	GcsConnectionID           int64                           `json:"gcs_connection_id"`
-	Bucket                    string                          `json:"bucket"`
-	PathPrefix                string                          `json:"path_prefix"`
-	IncrementalLoadingEnabled bool                            `json:"incremental_loading_enabled"`
-	LastPath                  *string                         `json:"last_path"`
-	StopWhenFileNotFound      bool                            `json:"stop_when_file_not_found"`
-	DecompressionType         *string                         `json:"decompression_type"`
-	CsvParser                 *job_definitions.CsvParser      `json:"csv_parser"`
-	JsonlParser               *job_definitions.JsonlParser    `json:"jsonl_parser"`
-	JsonpathParser            *job_definitions.JsonpathParser `json:"jsonpath_parser"`
-	LtsvParser                *job_definitions.LtsvParser     `json:"ltsv_parser"`
-	ExcelParser               *job_definitions.ExcelParser    `json:"excel_parser"`
-	XmlParser                 *job_definitions.XmlParser      `json:"xml_parser"`
-	ParquetParser             *job_definitions.ParquetParser  `json:"parquet_parser"`
-	CustomVariableSettings    *[]entity.CustomVariableSetting `json:"custom_variable_settings"`
-	Decoder                   *job_definitions.Decoder        `json:"decoder"`
+	GcsConnectionID           int64                                 `json:"gcs_connection_id"`
+	Bucket                    string                                `json:"bucket"`
+	PathPrefix                string                                `json:"path_prefix"`
+	IncrementalLoadingEnabled bool                                  `json:"incremental_loading_enabled"`
+	LastPath                  *string                               `json:"last_path"`
+	StopWhenFileNotFound      bool                                  `json:"stop_when_file_not_found"`
+	DecompressionType         *string                               `json:"decompression_type"`
+	CsvParser                 *jobDefinitionEntities.CsvParser      `json:"csv_parser"`
+	JsonlParser               *jobDefinitionEntities.JsonlParser    `json:"jsonl_parser"`
+	JsonpathParser            *jobDefinitionEntities.JsonpathParser `json:"jsonpath_parser"`
+	LtsvParser                *jobDefinitionEntities.LtsvParser     `json:"ltsv_parser"`
+	ExcelParser               *jobDefinitionEntities.ExcelParser    `json:"excel_parser"`
+	XmlParser                 *jobDefinitionEntities.XmlParser      `json:"xml_parser"`
+	ParquetParser             *jobDefinitionEntities.ParquetParser  `json:"parquet_parser"`
+	CustomVariableSettings    *[]entity.CustomVariableSetting       `json:"custom_variable_settings"`
+	Decoder                   *jobDefinitionEntities.Decoder        `json:"decoder"`
 }

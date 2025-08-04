@@ -3,8 +3,8 @@ package input_options
 import (
 	"context"
 	"fmt"
-	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	param "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
@@ -36,7 +36,7 @@ func (KintoneInputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewKintoneInputOption(ctx context.Context, inputOption *input_option.KintoneInputOption) *KintoneInputOption {
+func NewKintoneInputOption(ctx context.Context, inputOption *inputOptionEntities.KintoneInputOption) *KintoneInputOption {
 	if inputOption == nil {
 		return nil
 	}
@@ -66,7 +66,7 @@ func NewKintoneInputOption(ctx context.Context, inputOption *input_option.Kinton
 
 func newKintoneInputOptionColumns(
 	ctx context.Context,
-	inputOptionColumns []input_option.KintoneInputOptionColumn,
+	inputOptionColumns []inputOptionEntities.KintoneInputOptionColumn,
 ) (types.List, error) {
 	objectType := types.ObjectType{
 		AttrTypes: KintoneInputOptionColumn{}.attrTypes(),
@@ -93,7 +93,7 @@ func newKintoneInputOptionColumns(
 	return listValue, nil
 }
 
-func (inputOption *KintoneInputOption) ToInput(ctx context.Context) *param.KintoneInputOptionInput {
+func (inputOption *KintoneInputOption) ToInput(ctx context.Context) *inputOptionParameters.KintoneInputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
@@ -108,7 +108,7 @@ func (inputOption *KintoneInputOption) ToInput(ctx context.Context) *param.Kinto
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, inputOption.CustomVariableSettings)
 
-	return &param.KintoneInputOptionInput{
+	return &inputOptionParameters.KintoneInputOptionInput{
 		AppID:                  inputOption.AppID.ValueString(),
 		GuestSpaceID:           model.NewNullableString(inputOption.GuestSpaceID),
 		ExpandSubtable:         model.NewNullableBool(inputOption.ExpandSubtable),
@@ -119,7 +119,7 @@ func (inputOption *KintoneInputOption) ToInput(ctx context.Context) *param.Kinto
 	}
 }
 
-func (inputOption *KintoneInputOption) ToUpdateInput(ctx context.Context) *param.UpdateKintoneInputOptionInput {
+func (inputOption *KintoneInputOption) ToUpdateInput(ctx context.Context) *inputOptionParameters.UpdateKintoneInputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
@@ -140,7 +140,7 @@ func (inputOption *KintoneInputOption) ToUpdateInput(ctx context.Context) *param
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, inputOption.CustomVariableSettings)
 
-	return &param.UpdateKintoneInputOptionInput{
+	return &inputOptionParameters.UpdateKintoneInputOptionInput{
 		AppID:                  model.NewNullableString(inputOption.AppID),
 		GuestSpaceID:           model.NewNullableString(inputOption.GuestSpaceID),
 		ExpandSubtable:         model.NewNullableBool(inputOption.ExpandSubtable),
@@ -151,14 +151,14 @@ func (inputOption *KintoneInputOption) ToUpdateInput(ctx context.Context) *param
 	}
 }
 
-func toKintoneInputOptionColumnsInput(columns []KintoneInputOptionColumn) []param.KintoneInputOptionColumn {
+func toKintoneInputOptionColumnsInput(columns []KintoneInputOptionColumn) []inputOptionParameters.KintoneInputOptionColumn {
 	if columns == nil {
 		return nil
 	}
 
-	inputs := make([]param.KintoneInputOptionColumn, 0, len(columns))
+	inputs := make([]inputOptionParameters.KintoneInputOptionColumn, 0, len(columns))
 	for _, column := range columns {
-		inputs = append(inputs, param.KintoneInputOptionColumn{
+		inputs = append(inputs, inputOptionParameters.KintoneInputOptionColumn{
 			Name:   column.Name.ValueString(),
 			Type:   column.Type.ValueString(),
 			Format: column.Format.ValueStringPointer(),

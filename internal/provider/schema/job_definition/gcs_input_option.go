@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+	planModifier "terraform-provider-trocco/internal/provider/planmodifier"
 	"terraform-provider-trocco/internal/provider/schema/job_definition/parser"
 )
 
@@ -71,8 +71,8 @@ func GcsInputOptionSchema() schema.Attribute {
 			"custom_variable_settings": CustomVariableSettingsSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
-			&planmodifier2.FileParserPlanModifier{},
-			&planmodifier2.GcsInputOptionPlanModifier{},
+			&planModifier.FileParserPlanModifier{},
+			&planModifier.GcsInputOptionPlanModifier{},
 		},
 	}
 }

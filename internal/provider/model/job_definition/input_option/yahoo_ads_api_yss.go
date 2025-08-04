@@ -3,8 +3,8 @@ package input_options
 import (
 	"context"
 	"fmt"
-	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	param "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
@@ -31,7 +31,7 @@ type YahooAdsApiYssInputOptionColumn struct {
 	Format types.String `tfsdk:"format"`
 }
 
-func NewYahooAdsApiYssInputOption(ctx context.Context, inputOption *input_option.YahooAdsApiYssInputOption) *YahooAdsApiYssInputOption {
+func NewYahooAdsApiYssInputOption(ctx context.Context, inputOption *inputOptionEntities.YahooAdsApiYssInputOption) *YahooAdsApiYssInputOption {
 	if inputOption == nil {
 		return nil
 	}
@@ -64,7 +64,7 @@ func NewYahooAdsApiYssInputOption(ctx context.Context, inputOption *input_option
 
 func newYahooAdsApiYssInputOptionColumns(
 	ctx context.Context,
-	inputOptionColumns []input_option.YahooAdsApiYssInputOptionColumn,
+	inputOptionColumns []inputOptionEntities.YahooAdsApiYssInputOptionColumn,
 ) (types.List, error) {
 	objectType := types.ObjectType{
 		AttrTypes: YahooAdsApiYssInputOptionColumn{}.attrTypes(),
@@ -99,7 +99,7 @@ func (YahooAdsApiYssInputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func (inputOption *YahooAdsApiYssInputOption) ToInput(ctx context.Context) *param.YahooAdsApiYssInputOptionInput {
+func (inputOption *YahooAdsApiYssInputOption) ToInput(ctx context.Context) *inputOptionParameters.YahooAdsApiYssInputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
@@ -114,7 +114,7 @@ func (inputOption *YahooAdsApiYssInputOption) ToInput(ctx context.Context) *para
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, inputOption.CustomVariableSettings)
 
-	return &param.YahooAdsApiYssInputOptionInput{
+	return &inputOptionParameters.YahooAdsApiYssInputOptionInput{
 		AccountID:               inputOption.AccountID.ValueString(),
 		BaseAccountID:           inputOption.BaseAccountID.ValueString(),
 		Service:                 model.NewNullableString(inputOption.Service),
@@ -128,7 +128,7 @@ func (inputOption *YahooAdsApiYssInputOption) ToInput(ctx context.Context) *para
 	}
 }
 
-func (inputOption *YahooAdsApiYssInputOption) ToUpdateInput(ctx context.Context) *param.UpdateYahooAdsApiYssInputOptionInput {
+func (inputOption *YahooAdsApiYssInputOption) ToUpdateInput(ctx context.Context) *inputOptionParameters.UpdateYahooAdsApiYssInputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
@@ -149,7 +149,7 @@ func (inputOption *YahooAdsApiYssInputOption) ToUpdateInput(ctx context.Context)
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, inputOption.CustomVariableSettings)
 
-	return &param.UpdateYahooAdsApiYssInputOptionInput{
+	return &inputOptionParameters.UpdateYahooAdsApiYssInputOptionInput{
 		AccountID:               model.NewNullableString(inputOption.AccountID),
 		BaseAccountID:           model.NewNullableString(inputOption.BaseAccountID),
 		Service:                 model.NewNullableString(inputOption.Service),
@@ -163,13 +163,13 @@ func (inputOption *YahooAdsApiYssInputOption) ToUpdateInput(ctx context.Context)
 	}
 }
 
-func toYahooAdsApiYssInputOptionColumnsInput(columns []YahooAdsApiYssInputOptionColumn) []param.YahooAdsApiYssInputOptionColumn {
+func toYahooAdsApiYssInputOptionColumnsInput(columns []YahooAdsApiYssInputOptionColumn) []inputOptionParameters.YahooAdsApiYssInputOptionColumn {
 	if columns == nil {
 		return nil
 	}
-	result := make([]param.YahooAdsApiYssInputOptionColumn, 0, len(columns))
+	result := make([]inputOptionParameters.YahooAdsApiYssInputOptionColumn, 0, len(columns))
 	for _, column := range columns {
-		result = append(result, param.YahooAdsApiYssInputOptionColumn{
+		result = append(result, inputOptionParameters.YahooAdsApiYssInputOptionColumn{
 			Name:   column.Name.ValueString(),
 			Type:   column.Type.ValueString(),
 			Format: column.Format.ValueStringPointer(),

@@ -2,8 +2,8 @@ package pipeline_definition
 
 import (
 	"strconv"
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -23,7 +23,7 @@ type TaskDependency struct {
 	Destination types.String `tfsdk:"destination"`
 }
 
-func NewTaskDependencies(ens []*we.TaskDependency, keys map[int64]types.String, previous *PipelineDefinition) types.Set {
+func NewTaskDependencies(ens []*pipelineDefinitionEntities.TaskDependency, keys map[int64]types.String, previous *PipelineDefinition) types.Set {
 	if ens == nil {
 		return types.SetNull(taskDependencyObjectType)
 	}
@@ -62,7 +62,7 @@ func NewTaskDependencies(ens []*we.TaskDependency, keys map[int64]types.String, 
 	return set
 }
 
-func NewTaskDependency(en *we.TaskDependency, keys map[int64]types.String) *TaskDependency {
+func NewTaskDependency(en *pipelineDefinitionEntities.TaskDependency, keys map[int64]types.String) *TaskDependency {
 	if en == nil {
 		return nil
 	}
@@ -85,8 +85,8 @@ func NewTaskDependency(en *we.TaskDependency, keys map[int64]types.String) *Task
 	}
 }
 
-func (d *TaskDependency) ToInput() *wp.TaskDependency {
-	return &wp.TaskDependency{
+func (d *TaskDependency) ToInput() *pipelineDefinitionParameters.TaskDependency {
+	return &pipelineDefinitionParameters.TaskDependency{
 		Source:      d.Source.ValueString(),
 		Destination: d.Destination.ValueString(),
 	}
