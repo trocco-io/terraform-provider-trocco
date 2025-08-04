@@ -7,8 +7,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 //
@@ -21,7 +21,7 @@ type TroccoBigqueryDatamartTaskConfig struct {
 	CustomVariableLoop *CustomVariableLoop `tfsdk:"custom_variable_loop"`
 }
 
-func NewTroccoBigqueryDatamartTaskConfig(ctx context.Context, c *we.TroccoBigqueryDatamartTaskConfig) *TroccoBigqueryDatamartTaskConfig {
+func NewTroccoBigqueryDatamartTaskConfig(ctx context.Context, c *pipelineDefinitionEntities.TroccoBigqueryDatamartTaskConfig) *TroccoBigqueryDatamartTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -33,8 +33,8 @@ func NewTroccoBigqueryDatamartTaskConfig(ctx context.Context, c *we.TroccoBigque
 	}
 }
 
-func (c *TroccoBigqueryDatamartTaskConfig) ToInput(ctx context.Context) *wp.TroccoBigqueryDatamartTaskConfig {
-	in := &wp.TroccoBigqueryDatamartTaskConfig{
+func (c *TroccoBigqueryDatamartTaskConfig) ToInput(ctx context.Context) *pipelineDefinitionParameters.TroccoBigqueryDatamartTaskConfig {
+	in := &pipelineDefinitionParameters.TroccoBigqueryDatamartTaskConfig{
 		DefinitionID: c.DefinitionID.ValueInt64(),
 	}
 

@@ -2,8 +2,8 @@ package input_options
 
 import (
 	"context"
-	input_options "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 	"terraform-provider-trocco/internal/provider/model/job_definition/input_option/parser"
@@ -32,7 +32,7 @@ type S3InputOption struct {
 	Decoder                   *Decoder               `tfsdk:"decoder"`
 }
 
-func NewS3InputOption(ctx context.Context, s3InputOption *input_options.S3InputOption) *S3InputOption {
+func NewS3InputOption(ctx context.Context, s3InputOption *inputOptionEntities.S3InputOption) *S3InputOption {
 	if s3InputOption == nil {
 		return nil
 	}
@@ -66,13 +66,13 @@ func NewS3InputOption(ctx context.Context, s3InputOption *input_options.S3InputO
 	return result
 }
 
-func (s3InputOption *S3InputOption) ToInput(ctx context.Context) *input_options2.S3InputOptionInput {
+func (s3InputOption *S3InputOption) ToInput(ctx context.Context) *inputOptionParameters.S3InputOptionInput {
 	if s3InputOption == nil {
 		return nil
 	}
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, s3InputOption.CustomVariableSettings)
 
-	return &input_options2.S3InputOptionInput{
+	return &inputOptionParameters.S3InputOptionInput{
 		S3ConnectionID:            s3InputOption.S3ConnectionID.ValueInt64(),
 		Bucket:                    s3InputOption.Bucket.ValueString(),
 		PathPrefix:                model.NewNullableString(s3InputOption.PathPrefix),
@@ -94,13 +94,13 @@ func (s3InputOption *S3InputOption) ToInput(ctx context.Context) *input_options2
 	}
 }
 
-func (s3InputOption *S3InputOption) ToUpdateInput(ctx context.Context) *input_options2.UpdateS3InputOptionInput {
+func (s3InputOption *S3InputOption) ToUpdateInput(ctx context.Context) *inputOptionParameters.UpdateS3InputOptionInput {
 	if s3InputOption == nil {
 		return nil
 	}
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, s3InputOption.CustomVariableSettings)
 
-	return &input_options2.UpdateS3InputOptionInput{
+	return &inputOptionParameters.UpdateS3InputOptionInput{
 		S3ConnectionID:            s3InputOption.S3ConnectionID.ValueInt64Pointer(),
 		Bucket:                    s3InputOption.Bucket.ValueStringPointer(),
 		PathPrefix:                model.NewNullableString(s3InputOption.PathPrefix),

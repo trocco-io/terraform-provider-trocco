@@ -1,8 +1,8 @@
 package pipeline_definition
 
 import (
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	model "terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -16,7 +16,7 @@ type SlackNotificationTaskConfig struct {
 	IgnoreError  types.Bool   `tfsdk:"ignore_error"`
 }
 
-func NewSlackNotificationTaskConfig(c *we.SlackNotificationTaskConfig) *SlackNotificationTaskConfig {
+func NewSlackNotificationTaskConfig(c *pipelineDefinitionEntities.SlackNotificationTaskConfig) *SlackNotificationTaskConfig {
 	if c == nil {
 		return nil
 	}
@@ -29,8 +29,8 @@ func NewSlackNotificationTaskConfig(c *we.SlackNotificationTaskConfig) *SlackNot
 	}
 }
 
-func (c *SlackNotificationTaskConfig) ToInput() *wp.SlackNotificationTaskConfig {
-	return &wp.SlackNotificationTaskConfig{
+func (c *SlackNotificationTaskConfig) ToInput() *pipelineDefinitionParameters.SlackNotificationTaskConfig {
+	return &pipelineDefinitionParameters.SlackNotificationTaskConfig{
 		Name:         c.Name.ValueString(),
 		ConnectionID: c.ConnectionID.ValueInt64(),
 		Message:      c.Message.ValueString(),

@@ -2,7 +2,7 @@ package filter
 
 import (
 	"terraform-provider-trocco/internal/client/entity/job_definition/filter"
-	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
+	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -35,8 +35,8 @@ func NewFilterUnixTimeConversions(filterUnixTimeConversions []filter.FilterUnixT
 	return outputs
 }
 
-func (filterUnixTimeConversion FilterUnixTimeConversion) ToInput() filter2.FilterUnixTimeConversionInput {
-	return filter2.FilterUnixTimeConversionInput{
+func (filterUnixTimeConversion FilterUnixTimeConversion) ToInput() filterParameters.FilterUnixTimeConversionInput {
+	return filterParameters.FilterUnixTimeConversionInput{
 		ColumnName:       filterUnixTimeConversion.ColumnName.ValueString(),
 		Kind:             filterUnixTimeConversion.Kind.ValueString(),
 		UnixtimeUnit:     filterUnixTimeConversion.UnixtimeUnit.ValueString(),

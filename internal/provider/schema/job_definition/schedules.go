@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+	planModifier "terraform-provider-trocco/internal/provider/planmodifier"
 )
 
 func SchedulesSchema() schema.Attribute {
@@ -55,7 +55,7 @@ func SchedulesSchema() schema.Attribute {
 				},
 			},
 			PlanModifiers: []planmodifier.Object{
-				&planmodifier2.SchedulePlanModifier{},
+				&planModifier.SchedulePlanModifier{},
 			},
 		},
 		MarkdownDescription: "Schedules to be attached to the job definition",

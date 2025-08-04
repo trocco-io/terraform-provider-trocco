@@ -1,7 +1,7 @@
 package job_definition
 
 import (
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+	planModifier "terraform-provider-trocco/internal/provider/planmodifier"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
@@ -87,7 +87,7 @@ func GoogleAnalytics4InputOptionSchema() schema.Attribute {
 					listvalidator.SizeAtMost(8),
 				},
 				PlanModifiers: []planmodifier.List{
-					planmodifier2.EmptyListForNull(),
+					planModifier.EmptyListForNull(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{

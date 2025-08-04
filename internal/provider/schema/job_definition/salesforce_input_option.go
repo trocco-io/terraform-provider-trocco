@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+	planModifier "terraform-provider-trocco/internal/provider/planmodifier"
 )
 
 func SalesforceInputOptionSchema() schema.Attribute {
@@ -91,7 +91,7 @@ func SalesforceInputOptionSchema() schema.Attribute {
 			"custom_variable_settings": CustomVariableSettingsSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
-			&planmodifier2.SalesforceInputOptionPlanModifier{},
+			&planModifier.SalesforceInputOptionPlanModifier{},
 		},
 	}
 }

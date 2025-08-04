@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"terraform-provider-trocco/internal/client/entity/job_definition/filter"
-	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
+	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -76,7 +76,7 @@ func newFilterRowConditions(
 	return listValue, nil
 }
 
-func (filterRows *FilterRows) ToInput(ctx context.Context) *filter2.FilterRowsInput {
+func (filterRows *FilterRows) ToInput(ctx context.Context) *filterParameters.FilterRowsInput {
 	if filterRows == nil {
 		return nil
 	}
@@ -89,16 +89,16 @@ func (filterRows *FilterRows) ToInput(ctx context.Context) *filter2.FilterRowsIn
 		}
 	}
 
-	conditions := make([]filter2.FilterRowConditionInput, 0, len(conditionValues))
+	conditions := make([]filterParameters.FilterRowConditionInput, 0, len(conditionValues))
 	for _, input := range conditionValues {
-		condition := filter2.FilterRowConditionInput{
+		condition := filterParameters.FilterRowConditionInput{
 			Column:   input.Column.ValueString(),
 			Operator: input.Operator.ValueString(),
 			Argument: input.Argument.ValueString(),
 		}
 		conditions = append(conditions, condition)
 	}
-	return &filter2.FilterRowsInput{
+	return &filterParameters.FilterRowsInput{
 		Condition:           filterRows.Condition.ValueString(),
 		FilterRowConditions: conditions,
 	}

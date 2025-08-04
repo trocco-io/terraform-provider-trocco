@@ -2,8 +2,8 @@ package pipeline_definition
 
 import (
 	"context"
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 	model "terraform-provider-trocco/internal/provider/model"
 
@@ -24,7 +24,7 @@ type Notification struct {
 	SlackConfig     *SlackNotificationConfig `tfsdk:"slack_config"`
 }
 
-func NewNotifications(ctx context.Context, ens []*we.Notification, previousIsNull bool) types.Set {
+func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Notification, previousIsNull bool) types.Set {
 	objectType := types.ObjectType{
 		AttrTypes: map[string]attr.Type{
 			"type":             types.StringType,
@@ -67,7 +67,7 @@ func NewNotifications(ctx context.Context, ens []*we.Notification, previousIsNul
 	return setValue
 }
 
-func NewNotification(en *we.Notification) *Notification {
+func NewNotification(en *pipelineDefinitionEntities.Notification) *Notification {
 	return &Notification{
 		Type:            types.StringValue(en.Type),
 		DestinationType: types.StringValue(en.DestinationType),
@@ -78,8 +78,8 @@ func NewNotification(en *we.Notification) *Notification {
 	}
 }
 
-func (n *Notification) ToInput() *wp.Notification {
-	param := &wp.Notification{
+func (n *Notification) ToInput() *pipelineDefinitionParameters.Notification {
+	param := &pipelineDefinitionParameters.Notification{
 		Type:            n.Type.ValueString(),
 		DestinationType: n.DestinationType.ValueString(),
 		NotifyWhen:      model.NewNullableString(n.NotifyWhen),
@@ -105,7 +105,7 @@ type EmailNotificationConfig struct {
 	Message        custom_type.TrimmedStringValue `tfsdk:"message"`
 }
 
-func NewEmailNotificationConfig(en *we.EmailNotificationConfig) *EmailNotificationConfig {
+func NewEmailNotificationConfig(en *pipelineDefinitionEntities.EmailNotificationConfig) *EmailNotificationConfig {
 	if en == nil {
 		return nil
 	}
@@ -116,8 +116,8 @@ func NewEmailNotificationConfig(en *we.EmailNotificationConfig) *EmailNotificati
 	}
 }
 
-func (c *EmailNotificationConfig) ToInput() *wp.EmailNotificationConfig {
-	return &wp.EmailNotificationConfig{
+func (c *EmailNotificationConfig) ToInput() *pipelineDefinitionParameters.EmailNotificationConfig {
+	return &pipelineDefinitionParameters.EmailNotificationConfig{
 		NotificationID: c.NotificationID.ValueInt64(),
 		Message:        c.Message.ValueString(),
 	}
@@ -132,7 +132,7 @@ type SlackNotificationConfig struct {
 	Message        custom_type.TrimmedStringValue `tfsdk:"message"`
 }
 
-func NewSlackNotificationConfig(en *we.SlackNotificationConfig) *SlackNotificationConfig {
+func NewSlackNotificationConfig(en *pipelineDefinitionEntities.SlackNotificationConfig) *SlackNotificationConfig {
 	if en == nil {
 		return nil
 	}
@@ -143,8 +143,8 @@ func NewSlackNotificationConfig(en *we.SlackNotificationConfig) *SlackNotificati
 	}
 }
 
-func (c *SlackNotificationConfig) ToInput() *wp.SlackNotificationConfig {
-	return &wp.SlackNotificationConfig{
+func (c *SlackNotificationConfig) ToInput() *pipelineDefinitionParameters.SlackNotificationConfig {
+	return &pipelineDefinitionParameters.SlackNotificationConfig{
 		NotificationID: c.NotificationID.ValueInt64(),
 		Message:        c.Message.ValueString(),
 	}

@@ -2,7 +2,7 @@ package output_options
 
 import (
 	"terraform-provider-trocco/internal/client/entity/job_definition/output_option"
-	output_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
+	outputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/output_option"
 	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -34,12 +34,12 @@ func NewSalesforceOutputOption(salesforceOutputOption *output_option.SalesforceO
 	}
 }
 
-func (salesforceOutputOption *SalesforceOutputOption) ToInput() *output_options2.SalesforceOutputOptionInput {
+func (salesforceOutputOption *SalesforceOutputOption) ToInput() *outputOptionParameters.SalesforceOutputOptionInput {
 	if salesforceOutputOption == nil {
 		return nil
 	}
 
-	return &output_options2.SalesforceOutputOptionInput{
+	return &outputOptionParameters.SalesforceOutputOptionInput{
 		Object:                 salesforceOutputOption.Object.ValueString(),
 		ActionType:             model.NewNullableString(salesforceOutputOption.ActionType),
 		ApiVersion:             model.NewNullableString(salesforceOutputOption.ApiVersion),
@@ -50,12 +50,12 @@ func (salesforceOutputOption *SalesforceOutputOption) ToInput() *output_options2
 	}
 }
 
-func (salesforceOutputOption *SalesforceOutputOption) ToUpdateInput() *output_options2.UpdateSalesforceOutputOptionInput {
+func (salesforceOutputOption *SalesforceOutputOption) ToUpdateInput() *outputOptionParameters.UpdateSalesforceOutputOptionInput {
 	if salesforceOutputOption == nil {
 		return nil
 	}
 
-	return &output_options2.UpdateSalesforceOutputOptionInput{
+	return &outputOptionParameters.UpdateSalesforceOutputOptionInput{
 		Object:                 salesforceOutputOption.Object.ValueStringPointer(),
 		ActionType:             model.NewNullableString(salesforceOutputOption.ActionType),
 		ApiVersion:             model.NewNullableString(salesforceOutputOption.ApiVersion),

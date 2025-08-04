@@ -2,8 +2,8 @@ package input_options
 
 import (
 	"context"
-	input_options "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 	"terraform-provider-trocco/internal/provider/model/job_definition/input_option/parser"
@@ -30,7 +30,7 @@ type GcsInputOption struct {
 	Decoder                   *Decoder               `tfsdk:"decoder"`
 }
 
-func NewGcsInputOption(ctx context.Context, gcsInputOption *input_options.GcsInputOption) *GcsInputOption {
+func NewGcsInputOption(ctx context.Context, gcsInputOption *inputOptionEntities.GcsInputOption) *GcsInputOption {
 	if gcsInputOption == nil {
 		return nil
 	}
@@ -62,14 +62,14 @@ func NewGcsInputOption(ctx context.Context, gcsInputOption *input_options.GcsInp
 	return result
 }
 
-func (gcsInputOption *GcsInputOption) ToInput(ctx context.Context) *input_options2.GcsInputOptionInput {
+func (gcsInputOption *GcsInputOption) ToInput(ctx context.Context) *inputOptionParameters.GcsInputOptionInput {
 	if gcsInputOption == nil {
 		return nil
 	}
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, gcsInputOption.CustomVariableSettings)
 
-	return &input_options2.GcsInputOptionInput{
+	return &inputOptionParameters.GcsInputOptionInput{
 		GcsConnectionID:           gcsInputOption.GcsConnectionID.ValueInt64(),
 		Bucket:                    gcsInputOption.Bucket.ValueString(),
 		PathPrefix:                gcsInputOption.PathPrefix.ValueString(),
@@ -89,14 +89,14 @@ func (gcsInputOption *GcsInputOption) ToInput(ctx context.Context) *input_option
 	}
 }
 
-func (gcsInputOption *GcsInputOption) ToUpdateInput(ctx context.Context) *input_options2.UpdateGcsInputOptionInput {
+func (gcsInputOption *GcsInputOption) ToUpdateInput(ctx context.Context) *inputOptionParameters.UpdateGcsInputOptionInput {
 	if gcsInputOption == nil {
 		return nil
 	}
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, gcsInputOption.CustomVariableSettings)
 
-	return &input_options2.UpdateGcsInputOptionInput{
+	return &inputOptionParameters.UpdateGcsInputOptionInput{
 		GcsConnectionID:           gcsInputOption.GcsConnectionID.ValueInt64Pointer(),
 		Bucket:                    gcsInputOption.Bucket.ValueStringPointer(),
 		PathPrefix:                gcsInputOption.PathPrefix.ValueStringPointer(),

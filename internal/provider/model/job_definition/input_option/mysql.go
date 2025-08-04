@@ -3,8 +3,8 @@ package input_options
 import (
 	"context"
 	"fmt"
-	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	input_options2 "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
@@ -34,7 +34,7 @@ type InputOptionColumn struct {
 	Type types.String `tfsdk:"type"`
 }
 
-func NewMysqlInputOption(ctx context.Context, mysqlInputOption *input_option.MySQLInputOption) *MySQLInputOption {
+func NewMysqlInputOption(ctx context.Context, mysqlInputOption *inputOptionEntities.MySQLInputOption) *MySQLInputOption {
 	if mysqlInputOption == nil {
 		return nil
 	}
@@ -71,7 +71,7 @@ func NewMysqlInputOption(ctx context.Context, mysqlInputOption *input_option.MyS
 
 func newInputOptionColumns(
 	ctx context.Context,
-	inputOptionColumns []input_option.InputOptionColumn,
+	inputOptionColumns []inputOptionEntities.InputOptionColumn,
 ) (types.List, error) {
 	objectType := types.ObjectType{
 		AttrTypes: InputOptionColumn{}.attrTypes(),
@@ -104,7 +104,7 @@ func (InputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func (mysqlInputOption *MySQLInputOption) ToInput(ctx context.Context) *input_options2.MySQLInputOptionInput {
+func (mysqlInputOption *MySQLInputOption) ToInput(ctx context.Context) *inputOptionParameters.MySQLInputOptionInput {
 	if mysqlInputOption == nil {
 		return nil
 	}
@@ -119,7 +119,7 @@ func (mysqlInputOption *MySQLInputOption) ToInput(ctx context.Context) *input_op
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, mysqlInputOption.CustomVariableSettings)
 
-	return &input_options2.MySQLInputOptionInput{
+	return &inputOptionParameters.MySQLInputOptionInput{
 		Database:                  mysqlInputOption.Database.ValueString(),
 		Table:                     model.NewNullableString(mysqlInputOption.Table),
 		Query:                     model.NewNullableString(mysqlInputOption.Query),
@@ -137,7 +137,7 @@ func (mysqlInputOption *MySQLInputOption) ToInput(ctx context.Context) *input_op
 	}
 }
 
-func (mysqlInputOption *MySQLInputOption) ToUpdateInput(ctx context.Context) *input_options2.UpdateMySQLInputOptionInput {
+func (mysqlInputOption *MySQLInputOption) ToUpdateInput(ctx context.Context) *inputOptionParameters.UpdateMySQLInputOptionInput {
 	if mysqlInputOption == nil {
 		return nil
 	}
@@ -159,7 +159,7 @@ func (mysqlInputOption *MySQLInputOption) ToUpdateInput(ctx context.Context) *in
 	inputOptionColumns := toMysqlInputOptionColumnsInput(columnOptionValues)
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, mysqlInputOption.CustomVariableSettings)
 
-	return &input_options2.UpdateMySQLInputOptionInput{
+	return &inputOptionParameters.UpdateMySQLInputOptionInput{
 		Database:                  mysqlInputOption.Database.ValueStringPointer(),
 		Table:                     model.NewNullableString(mysqlInputOption.Table),
 		Query:                     model.NewNullableString(mysqlInputOption.Query),
@@ -177,14 +177,14 @@ func (mysqlInputOption *MySQLInputOption) ToUpdateInput(ctx context.Context) *in
 	}
 }
 
-func toMysqlInputOptionColumnsInput(columns []InputOptionColumn) []input_options2.InputOptionColumn {
+func toMysqlInputOptionColumnsInput(columns []InputOptionColumn) []inputOptionParameters.InputOptionColumn {
 	if columns == nil {
 		return nil
 	}
 
-	inputs := make([]input_options2.InputOptionColumn, 0, len(columns))
+	inputs := make([]inputOptionParameters.InputOptionColumn, 0, len(columns))
 	for _, column := range columns {
-		inputs = append(inputs, input_options2.InputOptionColumn{
+		inputs = append(inputs, inputOptionParameters.InputOptionColumn{
 			Name: column.Name.ValueString(),
 			Type: column.Type.ValueString(),
 		})

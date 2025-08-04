@@ -3,8 +3,8 @@ package input_options
 import (
 	"context"
 	"fmt"
-	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	param "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
@@ -37,7 +37,7 @@ func (SnowflakeInputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewSnowflakeInputOption(ctx context.Context, snowflakeInputOption *input_option.SnowflakeInputOption) *SnowflakeInputOption {
+func NewSnowflakeInputOption(ctx context.Context, snowflakeInputOption *inputOptionEntities.SnowflakeInputOption) *SnowflakeInputOption {
 	if snowflakeInputOption == nil {
 		return nil
 	}
@@ -70,7 +70,7 @@ func NewSnowflakeInputOption(ctx context.Context, snowflakeInputOption *input_op
 
 func newSnowflakeInputOptionColumns(
 	ctx context.Context,
-	inputOptionColumns []input_option.SnowflakeInputOptionColumn,
+	inputOptionColumns []inputOptionEntities.SnowflakeInputOptionColumn,
 ) (types.List, error) {
 	objectType := types.ObjectType{
 		AttrTypes: SnowflakeInputOptionColumn{}.attrTypes(),
@@ -96,7 +96,7 @@ func newSnowflakeInputOptionColumns(
 	return listValue, nil
 }
 
-func (snowflakeInputOption *SnowflakeInputOption) ToInput(ctx context.Context) *param.SnowflakeInputOptionInput {
+func (snowflakeInputOption *SnowflakeInputOption) ToInput(ctx context.Context) *inputOptionParameters.SnowflakeInputOptionInput {
 	if snowflakeInputOption == nil {
 		return nil
 	}
@@ -111,7 +111,7 @@ func (snowflakeInputOption *SnowflakeInputOption) ToInput(ctx context.Context) *
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, snowflakeInputOption.CustomVariableSettings)
 
-	return &param.SnowflakeInputOptionInput{
+	return &inputOptionParameters.SnowflakeInputOptionInput{
 		Warehouse:              snowflakeInputOption.Warehouse.ValueString(),
 		Database:               snowflakeInputOption.Database.ValueString(),
 		Schema:                 model.NewNullableString(snowflakeInputOption.Schema),
@@ -125,7 +125,7 @@ func (snowflakeInputOption *SnowflakeInputOption) ToInput(ctx context.Context) *
 	}
 }
 
-func (snowflakeInputOption *SnowflakeInputOption) ToUpdateInput(ctx context.Context) *param.UpdateSnowflakeInputOptionInput {
+func (snowflakeInputOption *SnowflakeInputOption) ToUpdateInput(ctx context.Context) *inputOptionParameters.UpdateSnowflakeInputOptionInput {
 	if snowflakeInputOption == nil {
 		return nil
 	}
@@ -146,7 +146,7 @@ func (snowflakeInputOption *SnowflakeInputOption) ToUpdateInput(ctx context.Cont
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, snowflakeInputOption.CustomVariableSettings)
 
-	return &param.UpdateSnowflakeInputOptionInput{
+	return &inputOptionParameters.UpdateSnowflakeInputOptionInput{
 		Warehouse:              snowflakeInputOption.Warehouse.ValueStringPointer(),
 		Database:               snowflakeInputOption.Database.ValueStringPointer(),
 		Schema:                 model.NewNullableString(snowflakeInputOption.Schema),
@@ -160,14 +160,14 @@ func (snowflakeInputOption *SnowflakeInputOption) ToUpdateInput(ctx context.Cont
 	}
 }
 
-func toSnowflakeInputOptionColumnsInput(columns []SnowflakeInputOptionColumn) []param.SnowflakeInputOptionColumn {
+func toSnowflakeInputOptionColumnsInput(columns []SnowflakeInputOptionColumn) []inputOptionParameters.SnowflakeInputOptionColumn {
 	if columns == nil {
 		return nil
 	}
 
-	inputs := make([]param.SnowflakeInputOptionColumn, 0, len(columns))
+	inputs := make([]inputOptionParameters.SnowflakeInputOptionColumn, 0, len(columns))
 	for _, column := range columns {
-		inputs = append(inputs, param.SnowflakeInputOptionColumn{
+		inputs = append(inputs, inputOptionParameters.SnowflakeInputOptionColumn{
 			Name: column.Name.ValueString(),
 			Type: column.Type.ValueString(),
 		})

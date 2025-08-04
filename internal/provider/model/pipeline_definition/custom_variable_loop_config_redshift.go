@@ -6,8 +6,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type RedshiftCustomVariableLoopConfig struct {
@@ -17,7 +17,7 @@ type RedshiftCustomVariableLoopConfig struct {
 	Variables    types.Set    `tfsdk:"variables"`
 }
 
-func NewRedshiftCustomVariableLoopConfig(ctx context.Context, en *we.RedshiftCustomVariableLoopConfig) *RedshiftCustomVariableLoopConfig {
+func NewRedshiftCustomVariableLoopConfig(ctx context.Context, en *pipelineDefinitionEntities.RedshiftCustomVariableLoopConfig) *RedshiftCustomVariableLoopConfig {
 	if en == nil {
 		return nil
 	}
@@ -35,7 +35,7 @@ func NewRedshiftCustomVariableLoopConfig(ctx context.Context, en *we.RedshiftCus
 	}
 }
 
-func (c *RedshiftCustomVariableLoopConfig) ToInput(ctx context.Context) wp.RedshiftCustomVariableLoopConfig {
+func (c *RedshiftCustomVariableLoopConfig) ToInput(ctx context.Context) pipelineDefinitionParameters.RedshiftCustomVariableLoopConfig {
 	vs := []string{}
 	if !c.Variables.IsNull() && !c.Variables.IsUnknown() {
 		var variableValues []types.String
@@ -47,7 +47,7 @@ func (c *RedshiftCustomVariableLoopConfig) ToInput(ctx context.Context) wp.Redsh
 		}
 	}
 
-	return wp.RedshiftCustomVariableLoopConfig{
+	return pipelineDefinitionParameters.RedshiftCustomVariableLoopConfig{
 		ConnectionID: c.ConnectionID.ValueInt64(),
 		Query:        c.Query.ValueString(),
 		Database:     c.Database.ValueString(),

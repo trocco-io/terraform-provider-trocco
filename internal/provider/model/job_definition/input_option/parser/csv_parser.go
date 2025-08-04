@@ -2,8 +2,8 @@ package parser
 
 import (
 	"context"
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
-	params "terraform-provider-trocco/internal/client/parameter/job_definition"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitionParameters "terraform-provider-trocco/internal/client/parameter/job_definition"
 	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -38,7 +38,7 @@ type CsvParserColumn struct {
 	Date   types.String `tfsdk:"date"`
 }
 
-func NewCsvParser(ctx context.Context, csvParser *job_definitions.CsvParser) *CsvParser {
+func NewCsvParser(ctx context.Context, csvParser *jobDefinitionEntities.CsvParser) *CsvParser {
 	if csvParser == nil {
 		return nil
 	}
@@ -92,7 +92,7 @@ func NewCsvParser(ctx context.Context, csvParser *job_definitions.CsvParser) *Cs
 	}
 }
 
-func (csvParser *CsvParser) ToCsvParserInput(ctx context.Context) *params.CsvParserInput {
+func (csvParser *CsvParser) ToCsvParserInput(ctx context.Context) *jobDefinitionParameters.CsvParserInput {
 	if csvParser == nil {
 		return nil
 	}
@@ -103,9 +103,9 @@ func (csvParser *CsvParser) ToCsvParserInput(ctx context.Context) *params.CsvPar
 		return nil
 	}
 
-	columns := make([]params.CsvParserColumnInput, 0, len(columnElements))
+	columns := make([]jobDefinitionParameters.CsvParserColumnInput, 0, len(columnElements))
 	for _, input := range columnElements {
-		column := params.CsvParserColumnInput{
+		column := jobDefinitionParameters.CsvParserColumnInput{
 			Name:   input.Name.ValueString(),
 			Type:   input.Type.ValueString(),
 			Format: input.Format.ValueStringPointer(),
@@ -114,7 +114,7 @@ func (csvParser *CsvParser) ToCsvParserInput(ctx context.Context) *params.CsvPar
 		columns = append(columns, column)
 	}
 
-	return &params.CsvParserInput{
+	return &jobDefinitionParameters.CsvParserInput{
 		Delimiter:            csvParser.Delimiter.ValueString(),
 		Quote:                model.NewNullableString(csvParser.Quote),
 		Escape:               model.NewNullableString(csvParser.Escape),

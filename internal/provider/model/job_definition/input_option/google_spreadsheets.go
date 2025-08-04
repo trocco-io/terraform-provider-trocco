@@ -3,8 +3,8 @@ package input_options
 import (
 	"context"
 	"fmt"
-	"terraform-provider-trocco/internal/client/entity/job_definition/input_option"
-	param "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
+	inputOptionEntities "terraform-provider-trocco/internal/client/entity/job_definition/input_option"
+	inputOptionParameters "terraform-provider-trocco/internal/client/parameter/job_definition/input_option"
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
@@ -38,7 +38,7 @@ func (GoogleSpreadsheetsInputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewGoogleSpreadsheetsInputOption(ctx context.Context, inputOption *input_option.GoogleSpreadsheetsInputOption) *GoogleSpreadsheetsInputOption {
+func NewGoogleSpreadsheetsInputOption(ctx context.Context, inputOption *inputOptionEntities.GoogleSpreadsheetsInputOption) *GoogleSpreadsheetsInputOption {
 	if inputOption == nil {
 		return nil
 	}
@@ -70,7 +70,7 @@ func NewGoogleSpreadsheetsInputOption(ctx context.Context, inputOption *input_op
 
 func newGoogleSpreadsheetsInputOptionColumns(
 	ctx context.Context,
-	inputOptionColumns []input_option.GoogleSpreadsheetsInputOptionColumn,
+	inputOptionColumns []inputOptionEntities.GoogleSpreadsheetsInputOptionColumn,
 ) (types.List, error) {
 	objectType := types.ObjectType{
 		AttrTypes: GoogleSpreadsheetsInputOptionColumn{}.attrTypes(),
@@ -97,7 +97,7 @@ func newGoogleSpreadsheetsInputOptionColumns(
 	return listValue, nil
 }
 
-func (inputOption *GoogleSpreadsheetsInputOption) ToInput(ctx context.Context) *param.GoogleSpreadsheetsInputOptionInput {
+func (inputOption *GoogleSpreadsheetsInputOption) ToInput(ctx context.Context) *inputOptionParameters.GoogleSpreadsheetsInputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
@@ -112,7 +112,7 @@ func (inputOption *GoogleSpreadsheetsInputOption) ToInput(ctx context.Context) *
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, inputOption.CustomVariableSettings)
 
-	return &param.GoogleSpreadsheetsInputOptionInput{
+	return &inputOptionParameters.GoogleSpreadsheetsInputOptionInput{
 		SpreadsheetsURL:                inputOption.SpreadsheetsURL.ValueString(),
 		WorksheetTitle:                 inputOption.WorksheetTitle.ValueString(),
 		StartRow:                       inputOption.StartRow.ValueInt64(),
@@ -125,7 +125,7 @@ func (inputOption *GoogleSpreadsheetsInputOption) ToInput(ctx context.Context) *
 	}
 }
 
-func (inputOption *GoogleSpreadsheetsInputOption) ToUpdateInput(ctx context.Context) *param.UpdateGoogleSpreadsheetsInputOptionInput {
+func (inputOption *GoogleSpreadsheetsInputOption) ToUpdateInput(ctx context.Context) *inputOptionParameters.UpdateGoogleSpreadsheetsInputOptionInput {
 	if inputOption == nil {
 		return nil
 	}
@@ -146,7 +146,7 @@ func (inputOption *GoogleSpreadsheetsInputOption) ToUpdateInput(ctx context.Cont
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, inputOption.CustomVariableSettings)
 
-	return &param.UpdateGoogleSpreadsheetsInputOptionInput{
+	return &inputOptionParameters.UpdateGoogleSpreadsheetsInputOptionInput{
 		SpreadsheetsURL:                inputOption.SpreadsheetsURL.ValueStringPointer(),
 		WorksheetTitle:                 inputOption.WorksheetTitle.ValueStringPointer(),
 		StartRow:                       inputOption.StartRow.ValueInt64Pointer(),
@@ -159,14 +159,14 @@ func (inputOption *GoogleSpreadsheetsInputOption) ToUpdateInput(ctx context.Cont
 	}
 }
 
-func toGoogleSpreadsheetsInputOptionColumnsInput(columns []GoogleSpreadsheetsInputOptionColumn) []param.GoogleSpreadsheetsInputOptionColumn {
+func toGoogleSpreadsheetsInputOptionColumnsInput(columns []GoogleSpreadsheetsInputOptionColumn) []inputOptionParameters.GoogleSpreadsheetsInputOptionColumn {
 	if columns == nil {
 		return nil
 	}
 
-	inputs := make([]param.GoogleSpreadsheetsInputOptionColumn, 0, len(columns))
+	inputs := make([]inputOptionParameters.GoogleSpreadsheetsInputOptionColumn, 0, len(columns))
 	for _, column := range columns {
-		inputs = append(inputs, param.GoogleSpreadsheetsInputOptionColumn{
+		inputs = append(inputs, inputOptionParameters.GoogleSpreadsheetsInputOptionColumn{
 			Name:   column.Name.ValueString(),
 			Type:   column.Type.ValueString(),
 			Format: column.Format.ValueStringPointer(),

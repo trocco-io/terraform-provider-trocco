@@ -1,7 +1,7 @@
 package job_definition
 
 import (
-	planmodifier2 "terraform-provider-trocco/internal/provider/planmodifier"
+	planModifier "terraform-provider-trocco/internal/provider/planmodifier"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
@@ -162,7 +162,7 @@ func PostgresqlInputOptionSchema() schema.Attribute {
 			"custom_variable_settings": CustomVariableSettingsSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
-			&planmodifier2.PostgresqlInputOptionPlanModifier{},
+			&planModifier.PostgresqlInputOptionPlanModifier{},
 		},
 	}
 }

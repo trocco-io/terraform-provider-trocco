@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"terraform-provider-trocco/internal/client/entity"
-	job_definitions "terraform-provider-trocco/internal/client/entity/job_definition"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
 	"terraform-provider-trocco/internal/client/entity/job_definition/filter"
 	"terraform-provider-trocco/internal/client/parameter"
-	filter2 "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
+	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
 	"testing"
 
 	"github.com/samber/lo"
@@ -77,28 +77,28 @@ func TestCreateJobDefinition(t *testing.T) {
 		IsRunnableConcurrently: true,
 		RetryLimit:             10,
 		ResourceEnhancement:    lo.ToPtr("medium"),
-		FilterColumns:          []filter2.FilterColumnInput{},
-		FilterRows: lo.ToPtr(parameter.NullableObject[filter2.FilterRowsInput]{
+		FilterColumns:          []filterParameters.FilterColumnInput{},
+		FilterRows: lo.ToPtr(parameter.NullableObject[filterParameters.FilterRowsInput]{
 			Valid: true,
-			Value: &filter2.FilterRowsInput{
+			Value: &filterParameters.FilterRowsInput{
 				Condition:           "or",
-				FilterRowConditions: make([]filter2.FilterRowConditionInput, 0),
+				FilterRowConditions: make([]filterParameters.FilterRowConditionInput, 0),
 			},
 		}),
-		FilterMasks: []filter2.FilterMaskInput{},
-		FilterAddTime: lo.ToPtr(parameter.NullableObject[filter2.FilterAddTimeInput]{
+		FilterMasks: []filterParameters.FilterMaskInput{},
+		FilterAddTime: lo.ToPtr(parameter.NullableObject[filterParameters.FilterAddTimeInput]{
 			Valid: true,
-			Value: &filter2.FilterAddTimeInput{
+			Value: &filterParameters.FilterAddTimeInput{
 				ColumnName:      "col_name",
 				Type:            "string",
 				TimestampFormat: nil,
 				TimeZone:        nil,
 			},
 		}),
-		FilterGsub:                []filter2.FilterGsubInput{},
-		FilterStringTransforms:    []filter2.FilterStringTransformInput{},
-		FilterHashes:              []filter2.FilterHashInput{},
-		FilterUnixTimeConversions: []filter2.FilterUnixTimeConversionInput{},
+		FilterGsub:                []filterParameters.FilterGsubInput{},
+		FilterStringTransforms:    []filterParameters.FilterStringTransformInput{},
+		FilterHashes:              []filterParameters.FilterHashInput{},
+		FilterUnixTimeConversions: []filterParameters.FilterUnixTimeConversionInput{},
 		InputOptionType:           "gcs",
 		InputOption:               InputOptionInput{},
 		OutputOptionType:          "mysql",
@@ -130,7 +130,7 @@ func TestCreateJobDefinition(t *testing.T) {
 	assert.Equal(t, OutputOption{}, out.OutputOption)
 	assert.Equal(t, []entity.Label(nil), out.Labels)
 	assert.Equal(t, []entity.Schedule(nil), out.Schedules)
-	assert.Equal(t, []job_definitions.JobDefinitionNotification(nil), out.Notifications)
+	assert.Equal(t, []jobDefinitionEntities.JobDefinitionNotification(nil), out.Notifications)
 }
 
 func TestUpdateJobDefinition(t *testing.T) {
@@ -203,7 +203,7 @@ func TestUpdateJobDefinition(t *testing.T) {
 	assert.Equal(t, OutputOption{}, out.OutputOption)
 	assert.Equal(t, []entity.Label(nil), out.Labels)
 	assert.Equal(t, []entity.Schedule(nil), out.Schedules)
-	assert.Equal(t, []job_definitions.JobDefinitionNotification(nil), out.Notifications)
+	assert.Equal(t, []jobDefinitionEntities.JobDefinitionNotification(nil), out.Notifications)
 }
 
 func TestGetJobDefinition(t *testing.T) {
@@ -270,5 +270,5 @@ func TestGetJobDefinition(t *testing.T) {
 	assert.Equal(t, OutputOption{}, out.OutputOption)
 	assert.Equal(t, []entity.Label(nil), out.Labels)
 	assert.Equal(t, []entity.Schedule(nil), out.Schedules)
-	assert.Equal(t, []job_definitions.JobDefinitionNotification(nil), out.Notifications)
+	assert.Equal(t, []jobDefinitionEntities.JobDefinitionNotification(nil), out.Notifications)
 }

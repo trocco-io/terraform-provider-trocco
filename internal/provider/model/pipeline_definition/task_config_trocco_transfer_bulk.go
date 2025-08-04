@@ -4,9 +4,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	we "terraform-provider-trocco/internal/client/entity/pipeline_definition"
-	p "terraform-provider-trocco/internal/client/parameter"
-	wp "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
+	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
+	parameter "terraform-provider-trocco/internal/client/parameter"
+	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 )
 
 type TroccoTransferBulkTaskConfig struct {
@@ -16,7 +16,7 @@ type TroccoTransferBulkTaskConfig struct {
 	MaxErrors                  types.Int64 `tfsdk:"max_errors"`
 }
 
-func NewTroccoTransferBulkTaskConfig(en *we.TroccoTransferBulkTaskConfig) *TroccoTransferBulkTaskConfig {
+func NewTroccoTransferBulkTaskConfig(en *pipelineDefinitionEntities.TroccoTransferBulkTaskConfig) *TroccoTransferBulkTaskConfig {
 	if en == nil {
 		return nil
 	}
@@ -29,12 +29,12 @@ func NewTroccoTransferBulkTaskConfig(en *we.TroccoTransferBulkTaskConfig) *Trocc
 	}
 }
 
-func (c *TroccoTransferBulkTaskConfig) ToInput() *wp.TroccoTransferBulkTaskConfig {
-	return &wp.TroccoTransferBulkTaskConfig{
+func (c *TroccoTransferBulkTaskConfig) ToInput() *pipelineDefinitionParameters.TroccoTransferBulkTaskConfig {
+	return &pipelineDefinitionParameters.TroccoTransferBulkTaskConfig{
 		DefinitionID:               c.DefinitionID.ValueInt64(),
-		IsParallelExecutionAllowed: &p.NullableBool{Valid: !c.IsParallelExecutionAllowed.IsNull(), Value: c.IsParallelExecutionAllowed.ValueBool()},
-		IsStoppedOnErrors:          &p.NullableBool{Valid: !c.IsStoppedOnErrors.IsNull(), Value: c.IsStoppedOnErrors.ValueBool()},
-		MaxErrors:                  &p.NullableInt64{Valid: !c.MaxErrors.IsNull(), Value: c.MaxErrors.ValueInt64()},
+		IsParallelExecutionAllowed: &parameter.NullableBool{Valid: !c.IsParallelExecutionAllowed.IsNull(), Value: c.IsParallelExecutionAllowed.ValueBool()},
+		IsStoppedOnErrors:          &parameter.NullableBool{Valid: !c.IsStoppedOnErrors.IsNull(), Value: c.IsStoppedOnErrors.ValueBool()},
+		MaxErrors:                  &parameter.NullableInt64{Valid: !c.MaxErrors.IsNull(), Value: c.MaxErrors.ValueInt64()},
 	}
 }
 
