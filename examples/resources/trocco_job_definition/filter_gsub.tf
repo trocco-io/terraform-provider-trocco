@@ -4,6 +4,6 @@ resource "trocco_job_definition" "filter_gsub_example" {
       column_name = "regex_col"
       pattern     = "/regex/"
       to          = "replace_string"
-    },
+    }
   ]
 }
