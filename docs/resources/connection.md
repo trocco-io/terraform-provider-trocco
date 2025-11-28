@@ -282,30 +282,29 @@ resource "trocco_connection" "kintone_login_method_username_and_password" {
 ```
 
 ### Databricks
+
 ```terraform
-# auth_type: pat
 resource "trocco_connection" "databricks_pat" {
   connection_type = "databricks"
 
-  name        = "Databricks Example with PAT Auth"
-  description = "This is a Databricks connection example"
-  host                   = "example.databricks.com"
-  http_path              = "/sql/1.0/warehouses/xxxx-xxxx-xxxx-xxxx"
+  name                  = "Databricks Example with PAT Auth"
+  description           = "This is a Databricks connection example"
+  host                  = "example.databricks.com"
+  http_path             = "/sql/1.0/warehouses/xxxx-xxxx-xxxx-xxxx"
   auth_type             = "pat"
   personal_access_token = "dapiXXXXXXXXXXXXXXXXXXXX"
 }
 
-# auth_type: oauth2-m2m
 resource "trocco_connection" "databricks_oauth2" {
   connection_type = "databricks"
 
-  name        = "Databricks Example with OAuth2"
-  description = "This is a Databricks connection example using OAuth2"
-  host                   = "example.databricks.com"
-  http_path              = "/sql/1.0/warehouses/xxxx-xxxx-xxxx-xxxx"
-  auth_type             = "oauth-m2m"
-  oauth2_client_id      = "your-oauth2-client-id"
-  oauth2_client_secret  = "your-oauth2-client-secret"
+  name                 = "Databricks Example with OAuth2"
+  description          = "This is a Databricks connection example using OAuth2"
+  host                 = "example.databricks.com"
+  http_path            = "/sql/1.0/warehouses/xxxx-xxxx-xxxx-xxxx"
+  auth_type            = "oauth-m2m"
+  oauth2_client_id     = "your-oauth2-client-id"
+  oauth2_client_secret = "your-oauth2-client-secret"
 }
 ```
 
@@ -314,7 +313,7 @@ resource "trocco_connection" "databricks_oauth2" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, `postgresql`, `google_analytics4`, `kintone`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, `postgresql`, `google_analytics4`, `kintone`, `databricks`.
 - `name` (String) The name of the connection.
 
 ### Optional
@@ -322,6 +321,7 @@ resource "trocco_connection" "databricks_oauth2" {
 - `application_name` (String) GCS: Application name.
 - `auth_end_point` (String) Salesforce: Authentication endpoint.
 - `auth_method` (String) Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`.
+- `auth_type` (String) Databricks: The Auth Type for the Databricks connection. It must be one of `pat` or `oauth-m2m`.
 - `aws_assume_role` (Attributes) S3: AssumeRole configuration. (see [below for nested schema](#nestedatt--aws_assume_role))
 - `aws_auth_type` (String) S3: The authentication type for the S3 connection. It must be one of `iam_user` or `assume_role`.
 - `aws_iam_user` (Attributes) S3: IAM User configuration. (see [below for nested schema](#nestedatt--aws_iam_user))
@@ -334,9 +334,13 @@ resource "trocco_connection" "databricks_oauth2" {
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
 - `gateway` (Attributes) MySQL, PostgreSQL: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
-- `host` (String) Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.
+- `host` (String) Snowflake, PostgreSQL, Databricks: The host of a (Snowflake, PostgreSQL, Databricks) account.
+- `http_path` (String) Databricks: The HTTP Path for the Databricks connection.
 - `login_method` (String) Kintone: Login Method
+- `oauth2_client_id` (String) Databricks: The OAuth2 Client ID for the Databricks connection.
+- `oauth2_client_secret` (String, Sensitive) Databricks: The OAuth2 Client Secret for the Databricks connection.
 - `password` (String, Sensitive) Snowflake, PostgreSQL: The password for the (Snowflake, PostgreSQL) user.
+- `personal_access_token` (String, Sensitive) Databricks: The Personal Access Token for the Databricks connection.
 - `port` (Number) MySQL, PostgreSQL: The port of the (MySQL, PostgreSQL) server.
 - `private_key` (String, Sensitive) Snowflake: A private key for the Snowflake user.
 - `project_id` (String) BigQuery, GCS: A GCP project ID.
