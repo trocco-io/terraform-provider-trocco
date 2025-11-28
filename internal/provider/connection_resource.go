@@ -272,8 +272,8 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 	return input
 }
 
-// getHostValue returns the appropriate host value based on connection type
-func getHostValue(connectionType string, conn *client.Connection, planHost types.String) types.String {
+// getHostValue returns the appropriate host value based on connection type.
+func getHostValue(connectionType string, conn *client.Connection) types.String {
 	if connectionType == "databricks" {
 		// For Databricks, map from server_hostname in response to host in state
 		return types.StringPointerValue(conn.ServerHostname)
@@ -790,7 +790,7 @@ func (r *connectionResource) Create(
 		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
 
 		// Snowflake/PostgreSQL/Databricks Fields
-		Host:       getHostValue(plan.ConnectionType.ValueString(), conn, plan.Host),
+		Host:       getHostValue(plan.ConnectionType.ValueString(), conn),
 		UserName:   types.StringPointerValue(conn.UserName),
 		Role:       types.StringPointerValue(conn.Role),
 		AuthMethod: types.StringPointerValue(conn.AuthMethod),
@@ -897,7 +897,7 @@ func (r *connectionResource) Update(
 		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
 
 		// Snowflake/PostgreSQL/Databricks Fields
-		Host:       getHostValue(state.ConnectionType.ValueString(), connection, plan.Host),
+		Host:       getHostValue(state.ConnectionType.ValueString(), connection),
 		UserName:   types.StringPointerValue(connection.UserName),
 		Role:       types.StringPointerValue(connection.Role),
 		AuthMethod: types.StringPointerValue(connection.AuthMethod),
@@ -979,7 +979,7 @@ func (r *connectionResource) Read(
 		ServiceAccountJSONKey: state.ServiceAccountJSONKey,
 
 		// Snowflake/PostgreSQL/Databricks Fields
-		Host:       getHostValue(state.ConnectionType.ValueString(), conn, state.Host),
+		Host:       getHostValue(state.ConnectionType.ValueString(), conn),
 		UserName:   types.StringPointerValue(conn.UserName),
 		Role:       types.StringPointerValue(conn.Role),
 		AuthMethod: types.StringPointerValue(conn.AuthMethod),
