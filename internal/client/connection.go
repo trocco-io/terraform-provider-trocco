@@ -42,6 +42,10 @@ type Connection struct {
 	LoginMethod              *string `json:"login_method"`                         // kintone
 	Username                 *string `json:"username"`                             // kintone
 	BasicAuthUsername        *string `json:"basic_auth_username"`                  // kintone
+	ServerHostname           *string `json:"server_hostname"`                      // databricks
+	HttpPath                 *string `json:"http_path"`                            // databricks
+	AuthType                 *string `json:"auth_type"`                            // databricks
+	OAuth2ClientID           *string `json:"oauth2_client_id"`                     // databricks
 }
 
 type GetConnectionsInput struct {
@@ -92,6 +96,12 @@ type CreateConnectionInput struct {
 	Username               *parameter.NullableString `json:"username,omitempty"`                   // kintone
 	BasicAuthUsername      *parameter.NullableString `json:"basic_auth_username,omitempty"`        // kintone
 	BasicAuthPassword      *parameter.NullableString `json:"basic_auth_password,omitempty"`        // kintone
+	HttpPath               *string                   `json:"http_path,omitempty"`                  // databricks
+	AuthType               *string                   `json:"auth_type,omitempty"`                  // databricks
+	PersonalAccessToken    *parameter.NullableString `json:"personal_access_token,omitempty"`      // databricks
+	OAuth2ClientID         *parameter.NullableString `json:"oauth2_client_id,omitempty"`           // databricks
+	OAuth2ClientSecret     *parameter.NullableString `json:"oauth2_client_secret,omitempty"`       // databricks
+	ServerHostname         *string                   `json:"server_hostname,omitempty"`            // databricks
 }
 
 type UpdateConnectionInput struct {
@@ -137,6 +147,12 @@ type UpdateConnectionInput struct {
 	Username               *parameter.NullableString `json:"username,omitempty"`                   // kintone
 	BasicAuthUsername      *parameter.NullableString `json:"basic_auth_username,omitempty"`        // kintone
 	BasicAuthPassword      *parameter.NullableString `json:"basic_auth_password,omitempty"`        // kintone
+	HttpPath               *string                   `json:"http_path,omitempty"`                  // databricks
+	AuthType               *string                   `json:"auth_type,omitempty"`                  // databricks
+	PersonalAccessToken    *parameter.NullableString `json:"personal_access_token,omitempty"`      // databricks
+	OAuth2ClientID         *parameter.NullableString `json:"oauth2_client_id,omitempty"`           // databricks
+	OAuth2ClientSecret     *parameter.NullableString `json:"oauth2_client_secret,omitempty"`       // databricks
+	ServerHostname         *string                   `json:"server_hostname,omitempty"`            // databricks
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {

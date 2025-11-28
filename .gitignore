@@ -57,3 +57,5 @@ examples/provider-install-verification/
 
 # Keep windows files with windows line endings
 *.winfile eol=crlf
+
+terraform/terraform.tfvars
