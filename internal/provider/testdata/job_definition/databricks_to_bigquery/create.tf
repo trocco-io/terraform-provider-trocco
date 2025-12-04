@@ -27,7 +27,7 @@ resource "trocco_connection" "test_bq2" {
 }
 
 resource "trocco_team" "test" {
-  name = "databricks_test_team"
+  name = "test"
   members = [
     {
       user_id = 10626
@@ -37,8 +37,8 @@ resource "trocco_team" "test" {
 }
 
 resource "trocco_resource_group" "test" {
-  name        = "databricks_test_rg"
-  description = "Test resource group for Databricks integration"
+  name        = "test"
+  description = "test"
   teams = [
     {
       team_id = trocco_team.test.id
@@ -46,7 +46,6 @@ resource "trocco_resource_group" "test" {
     },
   ]
 }
-
 resource "trocco_job_definition" "databricks_to_bigquery" {
   name                     = "test databricks_to_bigquery job"
   description              = "Test job definition for Databricks to BigQuery transfer"
@@ -142,12 +141,12 @@ resource "trocco_job_definition" "databricks_to_bigquery" {
 
   # please create labels if testing in local environment
   # see https://trocco.io/labels#side-nav-labels
-  labels = [
-    {
-      name = "databricks"
-    },
-    {
-      name = "integration_test"
-    }
-  ]
+  # labels = [
+  #   {
+  #     name = "databricks"
+  #   },
+  #   {
+  #     name = "integration_test"
+  #   }
+  # ]
 }
