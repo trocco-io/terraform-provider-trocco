@@ -99,6 +99,7 @@ type InputOption struct {
 	HttpInputOption               *inputOptionEntities.HttpInputOption               `json:"http_input_option"`
 	KintoneInputOption            *inputOptionEntities.KintoneInputOption            `json:"kintone_input_option"`
 	YahooAdsApiYssInputOption     *inputOptionEntities.YahooAdsApiYssInputOption     `json:"yahoo_ads_api_yss_input_option"`
+	DatabricksInputOption         *inputOptionEntities.DatabricksInputOption         `json:"databricks_input_option"`
 }
 
 type InputOptionInput struct {
@@ -114,6 +115,7 @@ type InputOptionInput struct {
 	HttpInputOption               *parameter.NullableObject[inputOptionParameters.HttpInputOptionInput]               `json:"http_input_option,omitempty"`
 	KintoneInputOption            *parameter.NullableObject[inputOptionParameters.KintoneInputOptionInput]            `json:"kintone_input_option,omitempty"`
 	YahooAdsApiYssInputOption     *parameter.NullableObject[inputOptionParameters.YahooAdsApiYssInputOptionInput]     `json:"yahoo_ads_api_yss_input_option,omitempty"`
+	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.DatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
@@ -129,6 +131,7 @@ type UpdateInputOptionInput struct {
 	HttpInputOption               *parameter.NullableObject[inputOptionParameters.UpdateHttpInputOptionInput]               `json:"http_input_option,omitempty"`
 	KintoneInputOption            *parameter.NullableObject[inputOptionParameters.UpdateKintoneInputOptionInput]            `json:"kintone_input_option,omitempty"`
 	YahooAdsApiYssInputOption     *parameter.NullableObject[inputOptionParameters.UpdateYahooAdsApiYssInputOptionInput]     `json:"yahoo_ads_api_yss_input_option,omitempty"`
+	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.UpdateDatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
 }
 
 type OutputOption struct {
