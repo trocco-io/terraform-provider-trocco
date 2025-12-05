@@ -79,6 +79,7 @@ type connectionResourceModel struct {
 	BasicAuthPassword types.String `tfsdk:"basic_auth_password"`
 
 	// Databricks Fields
+	ServerHostname      types.String `tfsdk:"server_hostname"`
 	HttpPath            types.String `tfsdk:"http_path"`
 	AuthType            types.String `tfsdk:"auth_type"`
 	PersonalAccessToken types.String `tfsdk:"personal_access_token"`
@@ -131,6 +132,7 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		BasicAuthPassword: model.NewNullableString(m.BasicAuthPassword),
 
 		// Databricks Fields
+		ServerHostname:      m.ServerHostname.ValueStringPointer(),
 		HttpPath:            m.HttpPath.ValueStringPointer(),
 		AuthType:            m.AuthType.ValueStringPointer(),
 		PersonalAccessToken: model.NewNullableString(m.PersonalAccessToken),
@@ -229,6 +231,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		BasicAuthPassword: model.NewNullableString(m.BasicAuthPassword),
 
 		// Databricks Fields
+		ServerHostname:      m.ServerHostname.ValueStringPointer(),
 		HttpPath:            m.HttpPath.ValueStringPointer(),
 		AuthType:            m.AuthType.ValueStringPointer(),
 		PersonalAccessToken: model.NewNullableString(m.PersonalAccessToken),
@@ -723,6 +726,13 @@ func (r *connectionResource) Schema(
 				},
 			},
 			// Databricks Fields
+			"server_hostname": schema.StringAttribute{
+				MarkdownDescription: "Databricks: The host of a (Databricks) account.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
 			"http_path": schema.StringAttribute{
 				MarkdownDescription: "Databricks: The HTTP Path for the Databricks connection.",
 				Optional:            true,
@@ -841,6 +851,7 @@ func (r *connectionResource) Create(
 		BasicAuthPassword: plan.BasicAuthPassword,
 
 		// Databricks Fields
+		ServerHostname:      types.StringPointerValue(conn.ServerHostname),
 		HttpPath:            types.StringPointerValue(conn.HttpPath),
 		AuthType:            types.StringPointerValue(conn.AuthType),
 		PersonalAccessToken: plan.PersonalAccessToken,
@@ -944,6 +955,7 @@ func (r *connectionResource) Update(
 		BasicAuthPassword: plan.BasicAuthPassword,
 
 		// Databricks Fields
+		ServerHostname:      types.StringPointerValue(connection.ServerHostname),
 		HttpPath:            types.StringPointerValue(connection.HttpPath),
 		AuthType:            types.StringPointerValue(connection.AuthType),
 		PersonalAccessToken: plan.PersonalAccessToken,
@@ -989,7 +1001,7 @@ func (r *connectionResource) Read(
 		ServiceAccountJSONKey: state.ServiceAccountJSONKey,
 
 		// Snowflake/PostgreSQL/Databricks Fields
-		Host:       getHostValue(state.ConnectionType.ValueString(), conn, state.Host),
+		Host:       types.StringPointerValue(conn.Host),
 		UserName:   types.StringPointerValue(conn.UserName),
 		Role:       types.StringPointerValue(conn.Role),
 		AuthMethod: types.StringPointerValue(conn.AuthMethod),
@@ -1227,6 +1239,7 @@ func (r *connectionResource) ValidateConfig(
 			}
 		}
 	case "databricks":
+		validateRequiredString(plan.ServerHostname, "server_hostname", "Databricks", resp)
 		validateRequiredString(plan.HttpPath, "http_path", "Databricks", resp)
 		validateRequiredString(plan.AuthType, "auth_type", "Databricks", resp)
 		validateStringAgainstPatterns(plan.AuthType, "auth_type", "Databricks", resp, "pat", "oauth-m2m")
