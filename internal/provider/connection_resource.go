@@ -178,11 +178,6 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.AWSAssumeRoleName = m.AWSAssumeRole.AccountRoleName.ValueStringPointer()
 	}
 
-	// Set ServerHostname for Databricks (map from host field)
-	// if m.ConnectionType.ValueString() == "databricks" {
-	// 	input.ServerHostname = m.Host.ValueStringPointer()
-	// }
-
 	return input
 }
 
@@ -277,22 +272,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.AWSAssumeRoleName = m.AWSAssumeRole.AccountRoleName.ValueStringPointer()
 	}
 
-	// // Set ServerHostname for Databricks (map from host field)
-	// if m.ConnectionType.ValueString() == "databricks" {
-	// 	input.ServerHostname = m.Host.ValueStringPointer()
-	// }
-
 	return input
-}
-
-// getHostValue returns the appropriate host value based on connection type
-func getHostValue(connectionType string, conn *client.Connection, planHost types.String) types.String {
-	if connectionType == "databricks" {
-		// For Databricks, map from server_hostname in response to host in state
-		return types.StringPointerValue(conn.ServerHostname)
-	}
-	// For other connection types (snowflake, postgresql), use regular host
-	return types.StringPointerValue(conn.Host)
 }
 
 type connectionResource struct {
@@ -424,7 +404,7 @@ func (r *connectionResource) Schema(
 
 			// Snowflake Fields
 			"host": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, Databricks: The host of a (Snowflake, PostgreSQL, Databricks) account.",
+				MarkdownDescription: "Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
@@ -809,8 +789,8 @@ func (r *connectionResource) Create(
 		ProjectID:             types.StringPointerValue(conn.ProjectID),
 		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
 
-		// Snowflake/PostgreSQL/Databricks Fields
-		Host:       getHostValue(plan.ConnectionType.ValueString(), conn, plan.Host),
+		// Snowflake Fields
+		Host:       types.StringPointerValue(conn.Host),
 		UserName:   types.StringPointerValue(conn.UserName),
 		Role:       types.StringPointerValue(conn.Role),
 		AuthMethod: types.StringPointerValue(conn.AuthMethod),
@@ -917,8 +897,8 @@ func (r *connectionResource) Update(
 		ProjectID:             types.StringPointerValue(connection.ProjectID),
 		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
 
-		// Snowflake/PostgreSQL/Databricks Fields
-		Host:       getHostValue(state.ConnectionType.ValueString(), connection, plan.Host),
+		// Snowflake Fields
+		Host:       types.StringPointerValue(connection.Host),
 		UserName:   types.StringPointerValue(connection.UserName),
 		Role:       types.StringPointerValue(connection.Role),
 		AuthMethod: types.StringPointerValue(connection.AuthMethod),
