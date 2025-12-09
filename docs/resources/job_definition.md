@@ -2821,6 +2821,7 @@ Optional:
 Optional:
 
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
+- `databricks_output_option` (Attributes) Attributes of destination Databricks settings (see [below for nested schema](#nestedatt--output_option--databricks_output_option))
 - `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
@@ -2887,6 +2888,21 @@ Optional:
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
 
+
+
+<a id="nestedatt--output_option--databricks_output_option"></a>
+### Nested Schema for `output_option.databricks_output_option`
+
+Required:
+
+- `catalog_name` (String) Databricks catalog name
+- `databricks_connection_id` (Number) ID of Databricks connection
+- `schema_name` (String) Databricks schema name
+- `table` (String) Table name
+
+Optional:
+
+- `batch_size` (Number) Batch size for data transfer. Default is 10000
 
 
 <a id="nestedatt--output_option--google_spreadsheets_output_option"></a>
