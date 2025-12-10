@@ -635,6 +635,8 @@ func TestAccJobDefinitionResourceNotifications(t *testing.T) {
 // 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.schema_name", "test_schema"),
 // 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.table", "test_table"),
 // 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.batch_size", "40000"),
+// 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.mode", "insert"),
+// 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.default_time_zone", "Etc/UTC"),
 // 				),
 // 			},
 // 			{
