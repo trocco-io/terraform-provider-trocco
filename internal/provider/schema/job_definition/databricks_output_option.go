@@ -50,6 +50,20 @@ func DatabricksOutputOptionSchema() schema.Attribute {
 				},
 				MarkdownDescription: "Batch size for data transfer. Default is 10000",
 			},
+			"mode": schema.StringAttribute{
+				Required: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("insert", "insert_direct", "truncate_insert", "replace", "merge"),
+				},
+				MarkdownDescription: "Write mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`",
+			},
+			"default_time_zone": schema.StringAttribute{
+				Required: true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+				MarkdownDescription: "Default time zone for timestamp without time zone",
+			},
 		},
 	}
 }

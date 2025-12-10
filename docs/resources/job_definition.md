@@ -2898,6 +2898,8 @@ Required:
 
 - `catalog_name` (String) Databricks catalog name
 - `databricks_connection_id` (Number) ID of Databricks connection
+- `default_time_zone` (String) Default time zone for timestamp without time zone
+- `mode` (String) Write mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`
 - `schema_name` (String) Databricks schema name
 - `table` (String) Table name
 

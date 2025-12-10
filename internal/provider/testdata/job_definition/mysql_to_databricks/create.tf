@@ -83,6 +83,8 @@ resource "trocco_job_definition" "mysql_to_databricks" {
       schema_name              = "test_schema"
       table                    = "test_table"
       batch_size               = 40000
+      mode                     = "insert"
+      default_time_zone        = "Etc/UTC"
     }
   }
 }

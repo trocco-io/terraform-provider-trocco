@@ -13,6 +13,8 @@ type DatabricksOutputOption struct {
 	SchemaName             types.String `tfsdk:"schema_name"`
 	Table                  types.String `tfsdk:"table"`
 	BatchSize              types.Int64  `tfsdk:"batch_size"`
+	Mode                   types.String `tfsdk:"mode"`
+	DefaultTimeZone        types.String `tfsdk:"default_time_zone"`
 }
 
 func NewDatabricksOutputOption(entity *output_option.DatabricksOutputOption) *DatabricksOutputOption {
@@ -26,6 +28,8 @@ func NewDatabricksOutputOption(entity *output_option.DatabricksOutputOption) *Da
 		SchemaName:             types.StringValue(entity.SchemaName),
 		Table:                  types.StringValue(entity.Table),
 		BatchSize:              types.Int64Value(entity.BatchSize),
+		Mode:                   types.StringValue(entity.Mode),
+		DefaultTimeZone:        types.StringValue(entity.DefaultTimeZone),
 	}
 }
 
@@ -40,6 +44,8 @@ func (o *DatabricksOutputOption) ToInput() *outputOptionParameters.DatabricksOut
 		SchemaName:             o.SchemaName.ValueString(),
 		Table:                  o.Table.ValueString(),
 		BatchSize:              o.BatchSize.ValueInt64(),
+		Mode:                   o.Mode.ValueString(),
+		DefaultTimeZone:        o.DefaultTimeZone.ValueString(),
 	}
 }
 
@@ -54,5 +60,7 @@ func (o *DatabricksOutputOption) ToUpdateInput() *outputOptionParameters.UpdateD
 		SchemaName:             o.SchemaName.ValueStringPointer(),
 		Table:                  o.Table.ValueStringPointer(),
 		BatchSize:              o.BatchSize.ValueInt64Pointer(),
+		Mode:                   o.Mode.ValueStringPointer(),
+		DefaultTimeZone:        o.DefaultTimeZone.ValueStringPointer(),
 	}
 }

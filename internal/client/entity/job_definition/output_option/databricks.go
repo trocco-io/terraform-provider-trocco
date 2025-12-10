@@ -6,4 +6,6 @@ type DatabricksOutputOption struct {
 	SchemaName             string `json:"schema_name"`
 	Table                  string `json:"table"`
 	BatchSize              int64  `json:"batch_size"`
+	Mode                   string `json:"mode"`
+	DefaultTimeZone        string `json:"default_time_zone"`
 }
