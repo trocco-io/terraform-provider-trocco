@@ -609,6 +609,48 @@ func TestAccJobDefinitionResourceNotifications(t *testing.T) {
 	})
 }
 
+// func TestAccJobDefinitionResourceMysqlToDatabricks(t *testing.T) {
+// 	resourceName := "trocco_job_definition.mysql_to_databricks"
+// 	resource.Test(t, resource.TestCase{
+// 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+// 		Steps: []resource.TestStep{
+// 			{
+// 				ResourceName: resourceName,
+// 				Config:       providerConfig + LoadTextFile("testdata/job_definition/mysql_to_databricks/create.tf"),
+// 				Check: resource.ComposeAggregateTestCheckFunc(
+// 					resource.TestCheckResourceAttr(resourceName, "name", "MySQL to Databricks Test"),
+// 					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from MySQL to Databricks"),
+// 					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+// 					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+// 					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+// 					resource.TestCheckResourceAttr(resourceName, "input_option_type", "mysql"),
+// 					resource.TestCheckResourceAttr(resourceName, "output_option_type", "databricks"),
+// 					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.database", "test_database"),
+// 					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.table", "test_table"),
+// 					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.connect_timeout", "300"),
+// 					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.socket_timeout", "1800"),
+// 					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.default_time_zone", "Asia/Tokyo"),
+// 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_connection_id", "1"),
+// 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.catalog_name", "test_catalog"),
+// 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.schema_name", "test_schema"),
+// 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.table", "test_table"),
+// 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.batch_size", "40000"),
+// 				),
+// 			},
+// 			{
+// 				ResourceName:            resourceName,
+// 				ImportState:             true,
+// 				ImportStateVerify:       true,
+// 				ImportStateVerifyIgnore: []string{},
+// 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+// 					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+// 					return jobDefinitionId, nil
+// 				},
+// 			},
+// 		},
+// 	})
+// }
+
 // func TestAccJobDefinitionResourceDatabricksToBigQuery(t *testing.T) {
 // 	resourceName := "trocco_job_definition.databricks_to_bigquery"
 // 	resource.Test(t, resource.TestCase{
