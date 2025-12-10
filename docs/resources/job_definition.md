@@ -1566,6 +1566,7 @@ Required:
 Optional:
 
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--databricks_input_option--custom_variable_settings))
+- `fetch_rows` (Number) Number of records processed by the cursor at one time
 
 <a id="nestedatt--input_option--databricks_input_option--input_option_columns"></a>
 ### Nested Schema for `input_option.databricks_input_option.input_option_columns`
