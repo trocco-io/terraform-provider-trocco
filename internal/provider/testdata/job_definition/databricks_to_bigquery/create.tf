@@ -46,11 +46,12 @@ resource "trocco_resource_group" "test" {
     },
   ]
 }
+
 resource "trocco_job_definition" "databricks_to_bigquery" {
   name                     = "test databricks_to_bigquery job"
   description              = "Test job definition for Databricks to BigQuery transfer"
   resource_enhancement     = "medium"
-  # resource_group_id        = trocco_resource_group.test.id
+  resource_group_id        = trocco_resource_group.test.id
   retry_limit              = 2
   is_runnable_concurrently = false
 
@@ -138,15 +139,4 @@ resource "trocco_job_definition" "databricks_to_bigquery" {
       template_table                           = ""
     }
   }
-
-  # please create labels if testing in local environment
-  # see https://trocco.io/labels#side-nav-labels
-  # labels = [
-  #   {
-  #     name = "databricks"
-  #   },
-  #   {
-  #     name = "integration_test"
-  #   }
-  # ]
 }

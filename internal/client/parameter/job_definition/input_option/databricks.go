@@ -9,6 +9,7 @@ type DatabricksInputOptionInput struct {
 	CatalogName            string `json:"catalog_name"`
 	SchemaName             string `json:"schema_name"`
 	Query                  string `json:"query"`
+	FetchRows              *parameter.NullableInt64 `json:"fetch_rows,omitempty"`
 
 	InputOptionColumns     []DatabricksInputOptionColumn           `json:"input_option_columns"`
 	CustomVariableSettings *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
@@ -19,6 +20,7 @@ type UpdateDatabricksInputOptionInput struct {
 	CatalogName            string `json:"catalog_name"`
 	SchemaName             string `json:"schema_name"`
 	Query                  string `json:"query"`
+	FetchRows              *parameter.NullableInt64 `json:"fetch_rows,omitempty"`
 
 	InputOptionColumns     []DatabricksInputOptionColumn           `json:"input_option_columns,omitempty"`
 	CustomVariableSettings *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`

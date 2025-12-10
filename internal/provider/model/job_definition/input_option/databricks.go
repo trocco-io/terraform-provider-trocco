@@ -17,6 +17,7 @@ type DatabricksInputOption struct {
 	CatalogName            types.String `tfsdk:"catalog_name"`
 	SchemaName             types.String `tfsdk:"schema_name"`
 	Query                  types.String `tfsdk:"query"`
+	FetchRows              types.Int64  `tfsdk:"fetch_rows"`
 
 	InputOptionColumns     types.List `tfsdk:"input_option_columns"`
 	CustomVariableSettings types.List `tfsdk:"custom_variable_settings"`
@@ -38,6 +39,7 @@ func NewDatabricksInputOption(ctx context.Context, inputOption *inputOptionEntit
 		CatalogName:            types.StringValue(inputOption.CatalogName),
 		SchemaName:             types.StringValue(inputOption.SchemaName),
 		Query:                  types.StringValue(inputOption.Query),
+		FetchRows:              types.Int64Value(inputOption.FetchRows),
 	}
 
 	inputOptionColumns, err := newDatabricksInputOptionColumns(ctx, inputOption.InputOptionColumns)
@@ -112,6 +114,7 @@ func (inputOption *DatabricksInputOption) ToInput(ctx context.Context) *inputOpt
 		CatalogName:            inputOption.CatalogName.ValueString(),
 		SchemaName:             inputOption.SchemaName.ValueString(),
 		Query:                  inputOption.Query.ValueString(),
+		FetchRows:              model.NewNullableInt64(inputOption.FetchRows),
 
 		InputOptionColumns:     toDatabricksInputOptionColumnsInput(columnOptionValues),
 		CustomVariableSettings: model.ToCustomVariableSettingInputs(customVarSettings),
@@ -144,6 +147,7 @@ func (inputOption *DatabricksInputOption) ToUpdateInput(ctx context.Context) *in
 		CatalogName:            inputOption.CatalogName.ValueString(),
 		SchemaName:             inputOption.SchemaName.ValueString(),
 		Query:                  inputOption.Query.ValueString(),
+		FetchRows:              model.NewNullableInt64(inputOption.FetchRows),
 
 		InputOptionColumns:     toDatabricksInputOptionColumnsInput(columnOptionValues),
 		CustomVariableSettings: model.ToCustomVariableSettingInputs(customVarSettings),

@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
@@ -42,6 +43,15 @@ func DatabricksInputOptionSchema() schema.Attribute {
 				MarkdownDescription: "SQL query to execute",
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"fetch_rows": schema.Int64Attribute{
+				Optional:            true,
+				Computed:            true,
+				Default:             int64default.StaticInt64(10000),
+				MarkdownDescription: "Number of records processed by the cursor at one time",
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
 				},
 			},
 			"input_option_columns": schema.ListNestedAttribute{

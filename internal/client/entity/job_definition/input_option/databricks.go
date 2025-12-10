@@ -7,6 +7,7 @@ type DatabricksInputOption struct {
 	CatalogName            string `json:"catalog_name"`
 	SchemaName             string `json:"schema_name"`
 	Query                  string `json:"query"`
+	FetchRows              int64  `json:"fetch_rows"`
 
 	InputOptionColumns     []DatabricksColumn              `json:"input_option_columns"`
 	CustomVariableSettings *[]entity.CustomVariableSetting `json:"custom_variable_settings"`
