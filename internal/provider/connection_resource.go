@@ -980,7 +980,7 @@ func (r *connectionResource) Read(
 		ProjectID:             types.StringPointerValue(conn.ProjectID),
 		ServiceAccountJSONKey: state.ServiceAccountJSONKey,
 
-		// Snowflake/PostgreSQL/Databricks Fields
+		// Snowflake Fields
 		Host:       types.StringPointerValue(conn.Host),
 		UserName:   types.StringPointerValue(conn.UserName),
 		Role:       types.StringPointerValue(conn.Role),
@@ -1018,6 +1018,7 @@ func (r *connectionResource) Read(
 		BasicAuthPassword: state.BasicAuthPassword,
 
 		// Databricks Fields
+		ServerHostname:      types.StringPointerValue(conn.ServerHostname),
 		HttpPath:            types.StringPointerValue(conn.HttpPath),
 		AuthType:            types.StringPointerValue(conn.AuthType),
 		PersonalAccessToken: state.PersonalAccessToken,
