@@ -4,7 +4,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -42,13 +41,11 @@ func DatabricksOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Table name",
 			},
 			"batch_size": schema.Int64Attribute{
-				Optional: true,
-				Computed: true,
-				Default:  int64default.StaticInt64(10000),
+				Required: true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
-				MarkdownDescription: "Batch size for data transfer. Default is 10000",
+				MarkdownDescription: "Batch size for data transfer.",
 			},
 			"mode": schema.StringAttribute{
 				Required: true,
