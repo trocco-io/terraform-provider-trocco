@@ -83,8 +83,20 @@ resource "trocco_job_definition" "mysql_to_databricks" {
       schema_name              = "test_schema"
       table                    = "test_table"
       batch_size               = 40000
-      mode                     = "insert"
-      default_time_zone        = "Etc/UTC"
+      mode                     = "merge"
+      default_time_zone        = "Asia/Tokyo"
+      databricks_output_option_column_options = [
+        {
+          name             = "id"
+          type             = "TIMESTAMP"
+          value_type       = "timestamp"
+          timestamp_format = "%Y-%m-%d %H:%M:%S"
+          timezone         = "Asia/Tokyo"
+        }
+      ]
+      databricks_output_option_merge_keys = [
+        "id"
+      ]
     }
   }
 }
