@@ -1,10 +1,14 @@
 package job_definition
 
 import (
+	planModifier "terraform-provider-trocco/internal/provider/planmodifier"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 func DatabricksOutputOptionSchema() schema.Attribute {
@@ -61,6 +65,44 @@ func DatabricksOutputOptionSchema() schema.Attribute {
 				},
 				MarkdownDescription: "Default time zone for timestamp without time zone",
 			},
+			"databricks_output_option_column_options": schema.ListNestedAttribute{
+				Optional: true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"name": schema.StringAttribute{
+							Required:            true,
+							MarkdownDescription: "Column name",
+						},
+						"type": schema.StringAttribute{
+							Required:            true,
+							MarkdownDescription: "Data type",
+						},
+						"value_type": schema.StringAttribute{
+							Optional:            true,
+							MarkdownDescription: "Value type",
+						},
+						"timestamp_format": schema.StringAttribute{
+							Optional:            true,
+							MarkdownDescription: "Timestamp format",
+						},
+						"timezone": schema.StringAttribute{
+							Optional:            true,
+							MarkdownDescription: "Time zone",
+						},
+					},
+					PlanModifiers: []planmodifier.Object{
+						&planModifier.DatabricksOutputOptionColumnPlanModifier{},
+					},
+				},
+			},
+			"databricks_output_option_merge_keys": schema.SetAttribute{
+				Optional:            true,
+				ElementType:         types.StringType,
+				MarkdownDescription: "Merge keys (only applicable if mode is 'merge')",
+			},
+		},
+		PlanModifiers: []planmodifier.Object{
+			&planModifier.DatabricksOutputOptionPlanModifier{},
 		},
 	}
 }

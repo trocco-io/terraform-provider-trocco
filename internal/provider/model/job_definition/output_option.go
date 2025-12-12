@@ -21,7 +21,7 @@ func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *Out
 		SnowflakeOutputOption:          outputOptionModel.NewSnowflakeOutputOption(ctx, outputOption.SnowflakeOutputOption),
 		SalesforceOutputOption:         outputOptionModel.NewSalesforceOutputOption(outputOption.SalesforceOutputOption),
 		GoogleSpreadsheetsOutputOption: outputOptionModel.NewGoogleSpreadsheetsOutputOption(ctx, outputOption.GoogleSpreadsheetsOutputOption),
-		DatabricksOutputOption:         outputOptionModel.NewDatabricksOutputOption(outputOption.DatabricksOutputOption),
+		DatabricksOutputOption:         outputOptionModel.NewDatabricksOutputOption(ctx, outputOption.DatabricksOutputOption),
 	}
 }
 
@@ -31,7 +31,7 @@ func (o OutputOption) ToInput(ctx context.Context) client.OutputOptionInput {
 		SnowflakeOutputOption:          model.WrapObject(o.SnowflakeOutputOption.ToInput(ctx)),
 		SalesforceOutputOption:         model.WrapObject(o.SalesforceOutputOption.ToInput()),
 		GoogleSpreadsheetsOutputOption: model.WrapObject(o.GoogleSpreadsheetsOutputOption.ToInput(ctx)),
-		DatabricksOutputOption:         model.WrapObject(o.DatabricksOutputOption.ToInput()),
+		DatabricksOutputOption:         model.WrapObject(o.DatabricksOutputOption.ToInput(ctx)),
 	}
 }
 
@@ -41,6 +41,6 @@ func (o OutputOption) ToUpdateInput(ctx context.Context) *client.UpdateOutputOpt
 		SnowflakeOutputOption:          model.WrapObject(o.SnowflakeOutputOption.ToUpdateInput(ctx)),
 		SalesforceOutputOption:         model.WrapObject(o.SalesforceOutputOption.ToUpdateInput()),
 		GoogleSpreadsheetsOutputOption: model.WrapObject(o.GoogleSpreadsheetsOutputOption.ToUpdateInput(ctx)),
-		DatabricksOutputOption:         model.WrapObject(o.DatabricksOutputOption.ToUpdateInput()),
+		DatabricksOutputOption:         model.WrapObject(o.DatabricksOutputOption.ToUpdateInput(ctx)),
 	}
 }
