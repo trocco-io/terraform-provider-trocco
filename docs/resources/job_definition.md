@@ -2923,6 +2923,26 @@ Required:
 - `schema_name` (String) Databricks schema name
 - `table` (String) Table name
 
+Optional:
+
+- `databricks_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--databricks_output_option--databricks_output_option_column_options))
+- `databricks_output_option_merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
+
+<a id="nestedatt--output_option--databricks_output_option--databricks_output_option_column_options"></a>
+### Nested Schema for `output_option.databricks_output_option.databricks_output_option_column_options`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Data type
+
+Optional:
+
+- `timestamp_format` (String) Timestamp format
+- `timezone` (String) Time zone
+- `value_type` (String) Value type
+
+
 
 <a id="nestedatt--output_option--google_spreadsheets_output_option"></a>
 ### Nested Schema for `output_option.google_spreadsheets_output_option`
