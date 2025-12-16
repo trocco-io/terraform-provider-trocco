@@ -29,6 +29,7 @@ type Task struct {
 	TroccoAzureSynapseAnalyticsDatamartConfig *TroccoAzureSynapseAnalyticsDatamartTaskConfig `tfsdk:"trocco_azure_synapse_analytics_datamart_config"`
 	TroccoTransferBulkConfig                  *TroccoTransferBulkTaskConfig                  `tfsdk:"trocco_transfer_bulk_config"`
 	TroccoTransferConfig                      *TroccoTransferTaskConfig                      `tfsdk:"trocco_transfer_config"`
+	IfElseConfig                              *IfElseTaskConfig                              `tfsdk:"if_else_config"`
 }
 
 func NewTasks(ctx context.Context, ens []*pipelineDefinitionEntities.Task, keys map[int64]types.String, previous *PipelineDefinition) types.Set {
@@ -115,6 +116,7 @@ func NewTask(ctx context.Context, en *pipelineDefinitionEntities.Task, keys map[
 		SnowflakeDataCheckConfig:                  NewSnowflakeDataCheckTaskConfig(ctx, en.SnowflakeDataCheckConfig),
 		RedshiftDataCheckConfig:                   NewRedshiftDataCheckTaskConfig(ctx, en.RedshiftDataCheckConfig),
 		HTTPRequestConfig:                         NewHTTPRequestTaskConfig(ctx, en.HTTPRequestConfig, previousHTTPRequestConfig),
+		IfElseConfig:                              NewIfElseTaskConfig(ctx, en.IfElseConfig),
 	}
 }
 
@@ -167,6 +169,9 @@ func (t *Task) ToInput(ctx context.Context, identifiers map[string]int64) *pipel
 	if t.HTTPRequestConfig != nil {
 		in.HTTPRequestConfig = t.HTTPRequestConfig.ToInput(ctx)
 	}
+	if t.IfElseConfig != nil {
+		in.IfElseConfig = t.IfElseConfig.ToInput(ctx)
+	}
 
 	return in
 }
@@ -218,6 +223,9 @@ func TaskObjectAttrTypes() map[string]attr.Type {
 		},
 		"trocco_transfer_config": types.ObjectType{
 			AttrTypes: TroccoTransferTaskConfigAttrTypes(),
+		},
+		"if_else_config": types.ObjectType{
+			AttrTypes: IfElseTaskConfigAttrTypes(),
 		},
 	}
 }
