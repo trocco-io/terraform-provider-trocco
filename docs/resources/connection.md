@@ -286,7 +286,7 @@ resource "trocco_connection" "kintone_login_method_username_and_password" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, `postgresql`, `google_analytics4`, `kintone`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, `postgresql`, `google_analytics4`, `kintone`, `sftp`.
 - `name` (String) The name of the connection.
 
 ### Optional
@@ -297,6 +297,7 @@ resource "trocco_connection" "kintone_login_method_username_and_password" {
 - `aws_assume_role` (Attributes) S3: AssumeRole configuration. (see [below for nested schema](#nestedatt--aws_assume_role))
 - `aws_auth_type` (String) S3: The authentication type for the S3 connection. It must be one of `iam_user` or `assume_role`.
 - `aws_iam_user` (Attributes) S3: IAM User configuration. (see [below for nested schema](#nestedatt--aws_iam_user))
+- `aws_privatelink_enabled` (Boolean) SFTP: Whether AWS PrivateLink is enabled. Default is false.
 - `basic_auth_password` (String, Sensitive) Kintone: Basic Auth Password
 - `basic_auth_username` (String) Kintone: Basic Auth Username
 - `description` (String) The description of the connection.
@@ -314,13 +315,18 @@ resource "trocco_connection" "kintone_login_method_username_and_password" {
 - `project_id` (String) BigQuery, GCS: A GCP project ID.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
 - `role` (String) Snowflake: A role attached to the Snowflake user.
+- `secret_key` (String, Sensitive) SFTP: RSA private key for authentication.
+- `secret_key_passphrase` (String, Sensitive) SFTP: Passphrase for the RSA private key.
 - `security_token` (String, Sensitive) Salesforce: Security token.
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery, Google Sheets, Google Analytics4: A GCP service account key.
+- `ssh_tunnel_id` (Number) SFTP: SSH tunnel ID. Required when aws_privatelink_enabled is true.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
 - `token` (String, Sensitive) Kintone: Token.
+- `user_directory_is_root` (Boolean) SFTP: Whether the user directory is root. Default is true.
 - `user_name` (String) Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.
 - `username` (String) Kintone: The name of a user.
+- `windows_server` (Boolean) SFTP: Whether the server is a Windows server. Default is false.
 
 ### Read-Only
 

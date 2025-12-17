@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 	version "terraform-provider-trocco/version"
 )
 
@@ -68,8 +69,9 @@ func NewDevTroccoClient(apiKey, baseURL string) *TroccoClient {
 }
 
 type ErrorOutput struct {
-	Error   string `json:"error"`
-	Message string `json:"message"`
+	Error   string   `json:"error"`
+	Message string   `json:"message"`
+	Errors  []string `json:"errors"`
 }
 
 func (client *TroccoClient) do(
@@ -119,6 +121,9 @@ func (client *TroccoClient) do(
 		if errorOutput.Message != "" {
 			return fmt.Errorf("%s", errorOutput.Message)
 		}
+		if len(errorOutput.Errors) > 0 {
+			return fmt.Errorf("%s", strings.Join(errorOutput.Errors, ", "))
+		}
 	}
 	if output == nil {
 		return nil
@@ -128,6 +133,12 @@ func (client *TroccoClient) do(
 	if err != nil {
 		return err
 	}
+
+	// Handle empty response body
+	if len(respBody) == 0 {
+		return nil
+	}
+
 	err = json.Unmarshal(respBody, output)
 	if err != nil {
 		return err
