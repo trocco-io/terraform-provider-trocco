@@ -5,10 +5,10 @@ import (
 )
 
 type DatabricksInputOptionInput struct {
-	DatabricksConnectionID int64  `json:"databricks_connection_id"`
-	CatalogName            string `json:"catalog_name"`
-	SchemaName             string `json:"schema_name"`
-	Query                  string `json:"query"`
+	DatabricksConnectionID int64                    `json:"databricks_connection_id"`
+	CatalogName            string                   `json:"catalog_name"`
+	SchemaName             string                   `json:"schema_name"`
+	Query                  string                   `json:"query"`
 	FetchRows              *parameter.NullableInt64 `json:"fetch_rows,omitempty"`
 
 	InputOptionColumns     []DatabricksInputOptionColumn           `json:"input_option_columns"`
@@ -16,10 +16,10 @@ type DatabricksInputOptionInput struct {
 }
 
 type UpdateDatabricksInputOptionInput struct {
-	DatabricksConnectionID int64  `json:"databricks_connection_id"`
-	CatalogName            string `json:"catalog_name"`
-	SchemaName             string `json:"schema_name"`
-	Query                  string `json:"query"`
+	DatabricksConnectionID int64                    `json:"databricks_connection_id"`
+	CatalogName            string                   `json:"catalog_name"`
+	SchemaName             string                   `json:"schema_name"`
+	Query                  string                   `json:"query"`
 	FetchRows              *parameter.NullableInt64 `json:"fetch_rows,omitempty"`
 
 	InputOptionColumns     []DatabricksInputOptionColumn           `json:"input_option_columns,omitempty"`
@@ -27,7 +27,6 @@ type UpdateDatabricksInputOptionInput struct {
 }
 
 type DatabricksInputOptionColumn struct {
-	Name   string  `json:"name"`
-	Type   string  `json:"type"`
-	Format *string `json:"format"`
+	Name string `json:"name"`
+	Type string `json:"type"`
 }

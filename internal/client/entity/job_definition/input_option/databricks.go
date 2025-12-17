@@ -14,7 +14,6 @@ type DatabricksInputOption struct {
 }
 
 type DatabricksColumn struct {
-	Name   string  `json:"name"`
-	Type   string  `json:"type"`
-	Format *string `json:"format"`
+	Name string `json:"name"`
+	Type string `json:"type"`
 }

@@ -1607,10 +1607,6 @@ Required:
 - `name` (String) Column name
 - `type` (String) Column type
 
-Optional:
-
-- `format` (String) Column format (for timestamp types)
-
 
 <a id="nestedatt--input_option--databricks_input_option--custom_variable_settings"></a>
 ### Nested Schema for `input_option.databricks_input_option.custom_variable_settings`

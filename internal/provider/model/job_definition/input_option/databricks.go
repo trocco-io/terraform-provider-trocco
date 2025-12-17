@@ -24,9 +24,8 @@ type DatabricksInputOption struct {
 }
 
 type DatabricksInputOptionColumn struct {
-	Name   types.String `tfsdk:"name"`
-	Type   types.String `tfsdk:"type"`
-	Format types.String `tfsdk:"format"`
+	Name types.String `tfsdk:"name"`
+	Type types.String `tfsdk:"type"`
 }
 
 func NewDatabricksInputOption(ctx context.Context, inputOption *inputOptionEntities.DatabricksInputOption) *DatabricksInputOption {
@@ -72,9 +71,8 @@ func newDatabricksInputOptionColumns(
 	columns := make([]DatabricksInputOptionColumn, 0, len(inputOptionColumns))
 	for _, input := range inputOptionColumns {
 		column := DatabricksInputOptionColumn{
-			Name:   types.StringValue(input.Name),
-			Type:   types.StringValue(input.Type),
-			Format: types.StringPointerValue(input.Format),
+			Name: types.StringValue(input.Name),
+			Type: types.StringValue(input.Type),
 		}
 		columns = append(columns, column)
 	}
@@ -88,9 +86,8 @@ func newDatabricksInputOptionColumns(
 
 func (DatabricksInputOptionColumn) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"name":   types.StringType,
-		"type":   types.StringType,
-		"format": types.StringType,
+		"name": types.StringType,
+		"type": types.StringType,
 	}
 }
 
@@ -161,9 +158,8 @@ func toDatabricksInputOptionColumnsInput(columns []DatabricksInputOptionColumn) 
 	result := make([]inputOptionParameters.DatabricksInputOptionColumn, 0, len(columns))
 	for _, column := range columns {
 		result = append(result, inputOptionParameters.DatabricksInputOptionColumn{
-			Name:   column.Name.ValueString(),
-			Type:   column.Type.ValueString(),
-			Format: column.Format.ValueStringPointer(),
+			Name: column.Name.ValueString(),
+			Type: column.Type.ValueString(),
 		})
 	}
 	return result
