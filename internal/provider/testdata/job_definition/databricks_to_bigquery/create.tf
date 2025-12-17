@@ -3,7 +3,7 @@ resource "trocco_connection" "test_databricks" {
 
   name                  = "Databricks Example with PAT Auth "
   description           = "This is a Databricks connection example"
-  host                  = "example.databricks.com"
+  server_hostname       = "example.databricks.com"
   http_path             = "/sql/1.0/warehouses/xxxx-xxxx-xxxx-xxxx"
   auth_type             = "pat"
   personal_access_token = "dapiXXXXXXXXXXXXXXXXXXXX"
@@ -104,16 +104,16 @@ resource "trocco_job_definition" "databricks_to_bigquery" {
       EOT
       input_option_columns = [
         {
-          name   = "id"
-          type   = "long"
+          name = "id"
+          type = "long"
         },
         {
-          name   = "user_name"
-          type   = "string"
+          name = "user_name"
+          type = "string"
         },
         {
-          name   = "email"
-          type   = "string"
+          name = "email"
+          type = "string"
         }
       ]
     }
