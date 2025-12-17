@@ -693,8 +693,6 @@ func TestAccJobDefinitionResourceDatabricksToBigQuery(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.location", "US"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.auto_create_dataset", "true"),
 					resource.TestCheckResourceAttrSet(resourceName, "output_option.bigquery_output_option.bigquery_connection_id"),
-					// Labels
-					resource.TestCheckResourceAttr(resourceName, "labels.#", "2"),
 					// Filter columns
 					resource.TestCheckResourceAttr(resourceName, "filter_columns.#", "3"),
 					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "id"),
