@@ -73,7 +73,7 @@ func DatabricksInputOptionSchema() schema.Attribute {
 								stringvalidator.OneOf("boolean", "long", "timestamp", "double", "string", "json"),
 							},
 						},
-	 					},
+					},
 				},
 				Validators: []validator.List{
 					listvalidator.SizeAtLeast(1),
