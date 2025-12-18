@@ -77,7 +77,8 @@ resource "trocco_job_definition" "mysql_to_kintone" {
   output_option = {
     kintone_output_option = {
       kintone_connection_id = trocco_connection.test_kintone.id
-      app_id                = 123
+      app_id                = "123"
+      guest_space_id        = "1"
       mode                  = "upsert"
       update_key            = "id"
       ignore_nulls          = true

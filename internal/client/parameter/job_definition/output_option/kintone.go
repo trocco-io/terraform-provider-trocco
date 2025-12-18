@@ -4,8 +4,8 @@ import "terraform-provider-trocco/internal/client/parameter"
 
 type KintoneOutputOptionInput struct {
 	KintoneConnectionID              int64                                                               `json:"kintone_connection_id"`
-	AppID                            int64                                                               `json:"app_id"`
-	GuestSpaceID                     *int64                                                              `json:"guest_space_id,omitempty"`
+	AppID                            string                                                              `json:"app_id"`
+	GuestSpaceID                     *string                                                             `json:"guest_space_id,omitempty"`
 	Mode                             string                                                              `json:"mode"`
 	UpdateKey                        *string                                                             `json:"update_key,omitempty"`
 	IgnoreNulls                      bool                                                                `json:"ignore_nulls"`
@@ -16,8 +16,8 @@ type KintoneOutputOptionInput struct {
 
 type UpdateKintoneOutputOptionInput struct {
 	KintoneConnectionID              *int64                                                              `json:"kintone_connection_id,omitempty"`
-	AppID                            *int64                                                              `json:"app_id,omitempty"`
-	GuestSpaceID                     *int64                                                              `json:"guest_space_id,omitempty"`
+	AppID                            *string                                                             `json:"app_id,omitempty"`
+	GuestSpaceID                     *string                                                             `json:"guest_space_id,omitempty"`
 	Mode                             *string                                                             `json:"mode,omitempty"`
 	UpdateKey                        *string                                                             `json:"update_key,omitempty"`
 	IgnoreNulls                      *bool                                                               `json:"ignore_nulls,omitempty"`

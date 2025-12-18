@@ -22,18 +22,12 @@ func KintoneOutputOptionSchema() schema.Attribute {
 				},
 				MarkdownDescription: "Kintone connection ID",
 			},
-			"app_id": schema.Int64Attribute{
-				Required: true,
-				Validators: []validator.Int64{
-					int64validator.AtLeast(1),
-				},
+			"app_id": schema.StringAttribute{
+				Required:            true,
 				MarkdownDescription: "Kintone app ID",
 			},
-			"guest_space_id": schema.Int64Attribute{
-				Optional: true,
-				Validators: []validator.Int64{
-					int64validator.AtLeast(1),
-				},
+			"guest_space_id": schema.StringAttribute{
+				Optional:            true,
 				MarkdownDescription: "Guest space ID",
 			},
 			"mode": schema.StringAttribute{

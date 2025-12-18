@@ -4,8 +4,8 @@ resource "trocco_job_definition" "kintone_output_example" {
   output_option = {
     kintone_output_option = {
       kintone_connection_id = 1
-      app_id                = 1
-      guest_space_id        = 1
+      app_id                = "1"
+      guest_space_id        = "1"
       mode                  = "upsert"
       update_key            = "id"
       ignore_nulls          = true

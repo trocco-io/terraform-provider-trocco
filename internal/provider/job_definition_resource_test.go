@@ -634,6 +634,7 @@ func TestAccJobDefinitionResourceNotifications(t *testing.T) {
 // 					// Kintone output option attributes
 // 					resource.TestCheckResourceAttrSet(resourceName, "output_option.kintone_output_option.kintone_connection_id"),
 // 					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.app_id", "123"),
+// 					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.guest_space_id", "1"),
 // 					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.mode", "upsert"),
 // 					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.update_key", "id"),
 // 					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.ignore_nulls", "true"),

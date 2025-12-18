@@ -13,8 +13,8 @@ import (
 
 type KintoneOutputOption struct {
 	KintoneConnectionID              types.Int64  `tfsdk:"kintone_connection_id"`
-	AppID                            types.Int64  `tfsdk:"app_id"`
-	GuestSpaceID                     types.Int64  `tfsdk:"guest_space_id"`
+	AppID                            types.String `tfsdk:"app_id"`
+	GuestSpaceID                     types.String `tfsdk:"guest_space_id"`
 	Mode                             types.String `tfsdk:"mode"`
 	UpdateKey                        types.String `tfsdk:"update_key"`
 	IgnoreNulls                      types.Bool   `tfsdk:"ignore_nulls"`
@@ -38,8 +38,8 @@ func NewKintoneOutputOption(ctx context.Context, kintoneOutputOption *output_opt
 
 	result := &KintoneOutputOption{
 		KintoneConnectionID: types.Int64Value(kintoneOutputOption.KintoneConnectionID),
-		AppID:               types.Int64Value(kintoneOutputOption.GetAppIDAsInt64()),
-		GuestSpaceID:        types.Int64PointerValue(kintoneOutputOption.GuestSpaceID),
+		AppID:               types.StringValue(kintoneOutputOption.AppID),
+		GuestSpaceID:        types.StringPointerValue(kintoneOutputOption.GuestSpaceID),
 		Mode:                types.StringValue(kintoneOutputOption.Mode),
 		UpdateKey:           types.StringPointerValue(kintoneOutputOption.UpdateKey),
 		IgnoreNulls:         types.BoolValue(kintoneOutputOption.IgnoreNulls),
@@ -122,8 +122,8 @@ func (kintoneOutputOption *KintoneOutputOption) ToInput(ctx context.Context) *ou
 
 	return &outputOptionParameters.KintoneOutputOptionInput{
 		KintoneConnectionID:              kintoneOutputOption.KintoneConnectionID.ValueInt64(),
-		AppID:                            kintoneOutputOption.AppID.ValueInt64(),
-		GuestSpaceID:                     kintoneOutputOption.GuestSpaceID.ValueInt64Pointer(),
+		AppID:                            kintoneOutputOption.AppID.ValueString(),
+		GuestSpaceID:                     kintoneOutputOption.GuestSpaceID.ValueStringPointer(),
 		Mode:                             kintoneOutputOption.Mode.ValueString(),
 		UpdateKey:                        kintoneOutputOption.UpdateKey.ValueStringPointer(),
 		IgnoreNulls:                      kintoneOutputOption.IgnoreNulls.ValueBool(),
@@ -161,8 +161,8 @@ func (kintoneOutputOption *KintoneOutputOption) ToUpdateInput(ctx context.Contex
 
 	return &outputOptionParameters.UpdateKintoneOutputOptionInput{
 		KintoneConnectionID:              kintoneOutputOption.KintoneConnectionID.ValueInt64Pointer(),
-		AppID:                            kintoneOutputOption.AppID.ValueInt64Pointer(),
-		GuestSpaceID:                     kintoneOutputOption.GuestSpaceID.ValueInt64Pointer(),
+		AppID:                            kintoneOutputOption.AppID.ValueStringPointer(),
+		GuestSpaceID:                     kintoneOutputOption.GuestSpaceID.ValueStringPointer(),
 		Mode:                             kintoneOutputOption.Mode.ValueStringPointer(),
 		UpdateKey:                        kintoneOutputOption.UpdateKey.ValueStringPointer(),
 		IgnoreNulls:                      kintoneOutputOption.IgnoreNulls.ValueBoolPointer(),
