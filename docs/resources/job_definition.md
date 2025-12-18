@@ -2747,6 +2747,7 @@ Optional:
 
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
 - `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
+- `kintone_output_option` (Attributes) Attributes of destination Kintone settings (see [below for nested schema](#nestedatt--output_option--kintone_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
 
@@ -2856,6 +2857,40 @@ Required:
 
 - `column` (String) Column name
 - `order` (String) Data type
+
+
+
+<a id="nestedatt--output_option--kintone_output_option"></a>
+### Nested Schema for `output_option.kintone_output_option`
+
+Required:
+
+- `app_id` (Number) Kintone app ID
+- `kintone_connection_id` (Number) Kintone connection ID
+
+Optional:
+
+- `chunk_size` (Number) Chunk size
+- `guest_space_id` (Number) Guest space ID
+- `ignore_nulls` (Boolean) Whether to ignore NULL values
+- `kintone_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--kintone_output_option--kintone_output_option_column_options))
+- `mode` (String) Transfer mode. One of `insert`, `update`, `upsert`
+- `reduce_key` (String) Reduce key for deduplication
+- `update_key` (String) Update key (only applicable if mode is 'update' or 'upsert')
+
+<a id="nestedatt--output_option--kintone_output_option--kintone_output_option_column_options"></a>
+### Nested Schema for `output_option.kintone_output_option.kintone_output_option_column_options`
+
+Required:
+
+- `field_code` (String) Field code
+- `name` (String) Column name
+- `type` (String) Field type
+
+Optional:
+
+- `sort_column` (String) Sort column (only applicable if type is 'SUBTABLE')
+- `timezone` (String) Timezone (only applicable if type is 'DATE' or 'TIME')
 
 
 
