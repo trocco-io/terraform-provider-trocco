@@ -1458,6 +1458,7 @@ Optional:
 - `postgresql_input_option` (Attributes) Attributes of source postgresql (see [below for nested schema](#nestedatt--input_option--postgresql_input_option))
 - `s3_input_option` (Attributes) Attributes about source S3 (see [below for nested schema](#nestedatt--input_option--s3_input_option))
 - `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
+- `sftp_input_option` (Attributes) Attributes about source SFTP (see [below for nested schema](#nestedatt--input_option--sftp_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
 - `yahoo_ads_api_yss_input_option` (Attributes) Attributes of source yahoo_ads_api_yss (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_yss_input_option))
 
@@ -2638,6 +2639,233 @@ Optional:
 - `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--input_option--sftp_input_option"></a>
+### Nested Schema for `input_option.sftp_input_option`
+
+Required:
+
+- `path_prefix` (String) Path to file/folder on SFTP server. Supports custom variables (replaced at runtime).
+- `sftp_connection_id` (Number) ID of SFTP connection
+
+Optional:
+
+- `csv_parser` (Attributes) For files in CSV format, this parameter is required (see [below for nested schema](#nestedatt--input_option--sftp_input_option--csv_parser))
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--sftp_input_option--custom_variable_settings))
+- `decoder` (Attributes) (see [below for nested schema](#nestedatt--input_option--sftp_input_option--decoder))
+- `decompression_type` (String) Compression type of file. Valid values: guess (auto-detect), zip, targz.
+- `excel_parser` (Attributes) For files in excel format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--sftp_input_option--excel_parser))
+- `incremental_loading_enabled` (Boolean) If true, enables incremental loading. If false, performs all record loading.
+- `jsonl_parser` (Attributes) For files in JSONL format, this parameter is required (see [below for nested schema](#nestedatt--input_option--sftp_input_option--jsonl_parser))
+- `jsonpath_parser` (Attributes) For files in jsonpath format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--sftp_input_option--jsonpath_parser))
+- `last_path` (String) Path of last transferred file (for incremental loading). Only used when incremental_loading_enabled is true.
+- `ltsv_parser` (Attributes) For files in LTSV format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--sftp_input_option--ltsv_parser))
+- `path_match_pattern` (String) Pattern to match files (regex). Supports custom variables.
+- `stop_when_file_not_found` (Boolean) If true, stop job with error when file not found. If false, continue job (skip file).
+- `xml_parser` (Attributes) For files in xml format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--sftp_input_option--xml_parser))
+
+<a id="nestedatt--input_option--sftp_input_option--csv_parser"></a>
+### Nested Schema for `input_option.sftp_input_option.csv_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--sftp_input_option--csv_parser--columns))
+
+Optional:
+
+- `allow_extra_columns` (Boolean) If true, ignore the column. If false, treat as invalid record.
+- `allow_optional_columns` (Boolean) If true, NULL-complete the missing columns. If false, treat as invalid record.
+- `charset` (String) Character set
+- `comment_line_marker` (String) Comment line marker. Skip if this character is at the beginning of a line
+- `default_date` (String) Default date
+- `default_time_zone` (String) Default time zone
+- `delimiter` (String) Delimiter
+- `escape` (String) Escape character
+- `max_quoted_size_limit` (Number) Maximum amount of data that can be enclosed in quotation marks.
+- `newline` (String) Newline character
+- `null_string` (String) Replacement source string to be converted to NULL
+- `null_string_enabled` (Boolean) Flag whether or not to set the string to be replaced by NULL
+- `quote` (String) Quote character
+- `quotes_in_quoted_fields` (String) Processing method for irregular quarts
+- `skip_header_lines` (Number) Number of header lines to skip
+- `stop_on_invalid_record` (Boolean) Flag whether or not to abort the transfer if an invalid record is found.
+- `trim_if_not_quoted` (Boolean) Flag whether or not to remove spaces from the value if it is not quoted
+
+<a id="nestedatt--input_option--sftp_input_option--csv_parser--columns"></a>
+### Nested Schema for `input_option.sftp_input_option.csv_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `date` (String) Date
+- `format` (String) Format of the column
+
+
+
+<a id="nestedatt--input_option--sftp_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.sftp_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--sftp_input_option--decoder"></a>
+### Nested Schema for `input_option.sftp_input_option.decoder`
+
+Optional:
+
+- `match_name` (String) Relative path after decompression (regular expression). If not entered, all data in the compressed file will be transferred.
+
+
+<a id="nestedatt--input_option--sftp_input_option--excel_parser"></a>
+### Nested Schema for `input_option.sftp_input_option.excel_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--sftp_input_option--excel_parser--columns))
+- `sheet_name` (String) Sheet name
+
+Optional:
+
+- `default_time_zone` (String) Default time zone
+- `skip_header_lines` (Number) Number of header lines to skip
+
+<a id="nestedatt--input_option--sftp_input_option--excel_parser--columns"></a>
+### Nested Schema for `input_option.sftp_input_option.excel_parser.columns`
+
+Required:
+
+- `formula_handling` (String) Formula handling
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+
+
+
+<a id="nestedatt--input_option--sftp_input_option--jsonl_parser"></a>
+### Nested Schema for `input_option.sftp_input_option.jsonl_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--sftp_input_option--jsonl_parser--columns))
+
+Optional:
+
+- `charset` (String) Character set
+- `default_time_zone` (String) Default time zone
+- `newline` (String) Newline character
+- `stop_on_invalid_record` (Boolean) Flag whether the transfer should stop if an invalid record is found
+
+<a id="nestedatt--input_option--sftp_input_option--jsonl_parser--columns"></a>
+### Nested Schema for `input_option.sftp_input_option.jsonl_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column
+- `time_zone` (String) time zone
+
+
+
+<a id="nestedatt--input_option--sftp_input_option--jsonpath_parser"></a>
+### Nested Schema for `input_option.sftp_input_option.jsonpath_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--sftp_input_option--jsonpath_parser--columns))
+- `root` (String) JSONPath
+
+Optional:
+
+- `default_time_zone` (String) Default time zone
+
+<a id="nestedatt--input_option--sftp_input_option--jsonpath_parser--columns"></a>
+### Nested Schema for `input_option.sftp_input_option.jsonpath_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+- `time_zone` (String) time zone
+
+
+
+<a id="nestedatt--input_option--sftp_input_option--ltsv_parser"></a>
+### Nested Schema for `input_option.sftp_input_option.ltsv_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--sftp_input_option--ltsv_parser--columns))
+
+Optional:
+
+- `charset` (String) Character set
+- `newline` (String) Newline character
+
+<a id="nestedatt--input_option--sftp_input_option--ltsv_parser--columns"></a>
+### Nested Schema for `input_option.sftp_input_option.ltsv_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+
+
+
+<a id="nestedatt--input_option--sftp_input_option--xml_parser"></a>
+### Nested Schema for `input_option.sftp_input_option.xml_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--sftp_input_option--xml_parser--columns))
+- `root` (String) Root element
+
+<a id="nestedatt--input_option--sftp_input_option--xml_parser--columns"></a>
+### Nested Schema for `input_option.sftp_input_option.xml_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `path` (String) XPath
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+- `timezone` (String) time zone
+
 
 
 
