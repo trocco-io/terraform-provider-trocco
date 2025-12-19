@@ -12,13 +12,13 @@ import (
 )
 
 type DatabricksOutputOption struct {
-	DatabricksConnectionID types.Int64  `tfsdk:"databricks_connection_id"`
-	CatalogName            types.String `tfsdk:"catalog_name"`
-	SchemaName             types.String `tfsdk:"schema_name"`
-	Table                  types.String `tfsdk:"table"`
-	BatchSize              types.Int64  `tfsdk:"batch_size"`
-	Mode                   types.String `tfsdk:"mode"`
-	DefaultTimeZone        types.String `tfsdk:"default_time_zone"`
+	DatabricksConnectionID              types.Int64  `tfsdk:"databricks_connection_id"`
+	CatalogName                         types.String `tfsdk:"catalog_name"`
+	SchemaName                          types.String `tfsdk:"schema_name"`
+	Table                               types.String `tfsdk:"table"`
+	BatchSize                           types.Int64  `tfsdk:"batch_size"`
+	Mode                                types.String `tfsdk:"mode"`
+	DefaultTimeZone                     types.String `tfsdk:"default_time_zone"`
 	DatabricksOutputOptionColumnOptions types.List   `tfsdk:"databricks_output_option_column_options"`
 	DatabricksOutputOptionMergeKeys     types.Set    `tfsdk:"databricks_output_option_merge_keys"`
 }
@@ -155,13 +155,13 @@ func (o *DatabricksOutputOption) ToInput(ctx context.Context) *outputOptionParam
 	}
 
 	return &outputOptionParameters.DatabricksOutputOptionInput{
-		DatabricksConnectionID: o.DatabricksConnectionID.ValueInt64(),
-		CatalogName:            o.CatalogName.ValueString(),
-		SchemaName:             o.SchemaName.ValueString(),
-		Table:                  o.Table.ValueString(),
-		BatchSize:              o.BatchSize.ValueInt64(),
-		Mode:                   o.Mode.ValueString(),
-		DefaultTimeZone:        o.DefaultTimeZone.ValueString(),
+		DatabricksConnectionID:              o.DatabricksConnectionID.ValueInt64(),
+		CatalogName:                         o.CatalogName.ValueString(),
+		SchemaName:                          o.SchemaName.ValueString(),
+		Table:                               o.Table.ValueString(),
+		BatchSize:                           o.BatchSize.ValueInt64(),
+		Mode:                                o.Mode.ValueString(),
+		DefaultTimeZone:                     o.DefaultTimeZone.ValueString(),
 		DatabricksOutputOptionColumnOptions: model.WrapObjectList(columnOptions),
 		DatabricksOutputOptionMergeKeys:     model.WrapObjectList(mergeKeys),
 	}
@@ -209,13 +209,13 @@ func (o *DatabricksOutputOption) ToUpdateInput(ctx context.Context) *outputOptio
 	}
 
 	return &outputOptionParameters.UpdateDatabricksOutputOptionInput{
-		DatabricksConnectionID: o.DatabricksConnectionID.ValueInt64Pointer(),
-		CatalogName:            o.CatalogName.ValueStringPointer(),
-		SchemaName:             o.SchemaName.ValueStringPointer(),
-		Table:                  o.Table.ValueStringPointer(),
-		BatchSize:              o.BatchSize.ValueInt64Pointer(),
-		Mode:                   o.Mode.ValueStringPointer(),
-		DefaultTimeZone:        o.DefaultTimeZone.ValueStringPointer(),
+		DatabricksConnectionID:              o.DatabricksConnectionID.ValueInt64Pointer(),
+		CatalogName:                         o.CatalogName.ValueStringPointer(),
+		SchemaName:                          o.SchemaName.ValueStringPointer(),
+		Table:                               o.Table.ValueStringPointer(),
+		BatchSize:                           o.BatchSize.ValueInt64Pointer(),
+		Mode:                                o.Mode.ValueStringPointer(),
+		DefaultTimeZone:                     o.DefaultTimeZone.ValueStringPointer(),
 		DatabricksOutputOptionColumnOptions: model.WrapObjectList(columnOptions),
 		DatabricksOutputOptionMergeKeys:     model.WrapObjectList(mergeKeys),
 	}
