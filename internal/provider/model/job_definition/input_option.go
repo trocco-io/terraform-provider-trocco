@@ -22,6 +22,7 @@ type InputOption struct {
 	HttpInputOption               *inputOptionModel.HttpInputOption               `tfsdk:"http_input_option"`
 	KintoneInputOption            *inputOptionModel.KintoneInputOption            `tfsdk:"kintone_input_option"`
 	YahooAdsApiYssInputOption     *inputOptionModel.YahooAdsApiYssInputOption     `tfsdk:"yahoo_ads_api_yss_input_option"`
+	HubspotInputOption            *inputOptionModel.HubspotInputOption            `tfsdk:"hubspot_input_option"`
 }
 
 func NewInputOption(ctx context.Context, inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics) {
@@ -43,6 +44,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		HttpInputOption:               httpInputOption,
 		KintoneInputOption:            inputOptionModel.NewKintoneInputOption(ctx, inputOption.KintoneInputOption),
 		YahooAdsApiYssInputOption:     inputOptionModel.NewYahooAdsApiYssInputOption(ctx, inputOption.YahooAdsApiYssInputOption),
+		HubspotInputOption:            inputOptionModel.NewHubspotInputOption(ctx, inputOption.HubspotInputOption),
 	}, diags
 }
 
@@ -65,6 +67,7 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 		HttpInputOption:               model.WrapObject(httpInput),
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToInput(ctx)),
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToInput(ctx)),
+		HubspotInputOption:            model.WrapObject(o.HubspotInputOption.ToInput(ctx)),
 	}, diags
 }
 
@@ -86,5 +89,6 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 		HttpInputOption:               model.WrapObject(httpInput),
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToUpdateInput(ctx)),
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToUpdateInput(ctx)),
+		HubspotInputOption:            model.WrapObject(o.HubspotInputOption.ToUpdateInput(ctx)),
 	}, diags
 }
