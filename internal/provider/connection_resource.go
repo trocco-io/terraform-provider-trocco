@@ -1022,7 +1022,7 @@ func (r *connectionResource) Read(
 		HttpPath:            types.StringPointerValue(conn.HttpPath),
 		AuthType:            types.StringPointerValue(conn.AuthType),
 		PersonalAccessToken: state.PersonalAccessToken,
-		OAuth2ClientID:      state.OAuth2ClientID,
+		OAuth2ClientID:      types.StringPointerValue(conn.OAuth2ClientID),
 		OAuth2ClientSecret:  state.OAuth2ClientSecret,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
