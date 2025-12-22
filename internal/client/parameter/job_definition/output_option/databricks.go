@@ -9,9 +9,9 @@ type DatabricksOutputOptionInput struct {
 	CatalogName                         string                                                                 `json:"catalog_name"`
 	SchemaName                          string                                                                 `json:"schema_name"`
 	Table                               string                                                                 `json:"table"`
-	BatchSize                           int64                                                                  `json:"batch_size"`
+	BatchSize                           *int64                                                                 `json:"batch_size,omitempty"`
 	Mode                                string                                                                 `json:"mode"`
-	DefaultTimeZone                     string                                                                 `json:"default_time_zone"`
+	DefaultTimeZone                     *string                                                                `json:"default_time_zone,omitempty"`
 	DatabricksOutputOptionColumnOptions *parameter.NullableObjectList[DatabricksOutputOptionColumnOptionInput] `json:"databricks_output_option_column_options,omitempty"`
 	DatabricksOutputOptionMergeKeys     *parameter.NullableObjectList[string]                                  `json:"databricks_output_option_merge_keys,omitempty"`
 }

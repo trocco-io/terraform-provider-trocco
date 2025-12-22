@@ -154,14 +154,24 @@ func (o *DatabricksOutputOption) ToInput(ctx context.Context) *outputOptionParam
 		columnOptions = &outputs
 	}
 
+	var batchSize *int64
+	if !o.BatchSize.IsNull() && !o.BatchSize.IsUnknown() {
+		batchSize = o.BatchSize.ValueInt64Pointer()
+	}
+
+	var defaultTimeZone *string
+	if !o.DefaultTimeZone.IsNull() && !o.DefaultTimeZone.IsUnknown() {
+		defaultTimeZone = o.DefaultTimeZone.ValueStringPointer()
+	}
+
 	return &outputOptionParameters.DatabricksOutputOptionInput{
 		DatabricksConnectionID:              o.DatabricksConnectionID.ValueInt64(),
 		CatalogName:                         o.CatalogName.ValueString(),
 		SchemaName:                          o.SchemaName.ValueString(),
 		Table:                               o.Table.ValueString(),
-		BatchSize:                           o.BatchSize.ValueInt64(),
+		BatchSize:                           batchSize,
 		Mode:                                o.Mode.ValueString(),
-		DefaultTimeZone:                     o.DefaultTimeZone.ValueString(),
+		DefaultTimeZone:                     defaultTimeZone,
 		DatabricksOutputOptionColumnOptions: model.WrapObjectList(columnOptions),
 		DatabricksOutputOptionMergeKeys:     model.WrapObjectList(mergeKeys),
 	}

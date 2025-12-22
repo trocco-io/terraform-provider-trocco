@@ -45,7 +45,8 @@ func DatabricksOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Table name",
 			},
 			"batch_size": schema.Int64Attribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
@@ -59,7 +60,8 @@ func DatabricksOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Write mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`",
 			},
 			"default_time_zone": schema.StringAttribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
