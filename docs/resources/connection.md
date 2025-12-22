@@ -289,7 +289,7 @@ resource "trocco_connection" "databricks_pat" {
 
   name                  = "Databricks Example with PAT Auth"
   description           = "This is a Databricks connection example"
-  host                  = "example.databricks.com"
+  server_hostname       = "example.databricks.com"
   http_path             = "/sql/1.0/warehouses/xxxx-xxxx-xxxx-xxxx"
   auth_type             = "pat"
   personal_access_token = "dapiXXXXXXXXXXXXXXXXXXXX"
@@ -300,7 +300,7 @@ resource "trocco_connection" "databricks_oauth2" {
 
   name                 = "Databricks Example with OAuth2"
   description          = "This is a Databricks connection example using OAuth2"
-  host                 = "example.databricks.com"
+  server_hostname      = "example.databricks.com"
   http_path            = "/sql/1.0/warehouses/xxxx-xxxx-xxxx-xxxx"
   auth_type            = "oauth-m2m"
   oauth2_client_id     = "your-oauth2-client-id"
@@ -334,7 +334,7 @@ resource "trocco_connection" "databricks_oauth2" {
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
 - `gateway` (Attributes) MySQL, PostgreSQL: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
-- `host` (String) Snowflake, PostgreSQL, Databricks: The host of a (Snowflake, PostgreSQL, Databricks) account.
+- `host` (String) Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.
 - `http_path` (String) Databricks: The HTTP Path for the Databricks connection.
 - `login_method` (String) Kintone: Login Method
 - `oauth2_client_id` (String) Databricks: The OAuth2 Client ID for the Databricks connection.
@@ -347,6 +347,7 @@ resource "trocco_connection" "databricks_oauth2" {
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
 - `role` (String) Snowflake: A role attached to the Snowflake user.
 - `security_token` (String, Sensitive) Salesforce: Security token.
+- `server_hostname` (String) Databricks: The host of a (Databricks) account.
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery, Google Sheets, Google Analytics4: A GCP service account key.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
