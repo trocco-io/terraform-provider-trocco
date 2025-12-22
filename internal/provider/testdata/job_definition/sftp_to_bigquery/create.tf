@@ -1,4 +1,4 @@
-resource "trocco_connection" "test_sftp" {
+resource "trocco_connection" "sftp" {
   connection_type = "sftp"
   name            = "SFTP Example"
   host            = "sftp.example.com"
@@ -7,7 +7,7 @@ resource "trocco_connection" "test_sftp" {
   password        = "password"
 }
 
-resource "trocco_connection" "test_bq" {
+resource "trocco_connection" "bigquery" {
   connection_type          = "bigquery"
   name                     = "BigQuery Example"
   project_id               = "example"
@@ -49,7 +49,7 @@ resource "trocco_job_definition" "sftp_to_bigquery" {
   input_option_type = "sftp"
   input_option = {
     sftp_input_option = {
-      sftp_connection_id          = trocco_connection.test_sftp.id
+      sftp_connection_id          = trocco_connection.sftp.id
       path_prefix                 = "/data/files/"
       path_match_pattern          = ".*\\.csv$"
       incremental_loading_enabled = false
@@ -84,7 +84,7 @@ resource "trocco_job_definition" "sftp_to_bigquery" {
       read_timeout_sec                         = 300
       send_timeout_sec                         = 300
       retries                                  = 2
-      bigquery_connection_id                   = trocco_connection.test_bq.id
+      bigquery_connection_id                   = trocco_connection.bigquery.id
       location                                 = "us-west1"
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []

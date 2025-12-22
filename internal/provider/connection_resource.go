@@ -277,28 +277,6 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 	return input
 }
 
-// Helper functions for SFTP-specific fields.
-func getSftpStringValue(connectionType string, value types.String) types.String {
-	if connectionType == "sftp" {
-		return value
-	}
-	return types.StringNull()
-}
-
-func getSftpBoolValue(connectionType string, value *bool) types.Bool {
-	if connectionType == "sftp" {
-		return types.BoolPointerValue(value)
-	}
-	return types.BoolNull()
-}
-
-func getSftpInt64Value(connectionType string, value *int64) types.Int64 {
-	if connectionType == "sftp" {
-		return types.Int64PointerValue(value)
-	}
-	return types.Int64Null()
-}
-
 type connectionResource struct {
 	client *client.TroccoClient
 }
@@ -858,13 +836,13 @@ func (r *connectionResource) Create(
 		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
 		BasicAuthPassword: plan.BasicAuthPassword,
 
-		// SFTP Fields (conditional based on connection type)
-		SecretKey:             getSftpStringValue(plan.ConnectionType.ValueString(), plan.SecretKey),
-		SecretKeyPassphrase:   getSftpStringValue(plan.ConnectionType.ValueString(), plan.SecretKeyPassphrase),
-		UserDirectoryIsRoot:   getSftpBoolValue(plan.ConnectionType.ValueString(), conn.UserDirectoryIsRoot),
-		WindowsServer:         getSftpBoolValue(plan.ConnectionType.ValueString(), conn.WindowsServer),
-		SSHTunnelID:           getSftpInt64Value(plan.ConnectionType.ValueString(), conn.SSHTunnelID),
-		AWSPrivatelinkEnabled: getSftpBoolValue(plan.ConnectionType.ValueString(), conn.AWSPrivatelinkEnabled),
+		// SFTP Fields
+		SecretKey:             plan.SecretKey,
+		SecretKeyPassphrase:   plan.SecretKeyPassphrase,
+		UserDirectoryIsRoot:   types.BoolPointerValue(conn.UserDirectoryIsRoot),
+		WindowsServer:         types.BoolPointerValue(conn.WindowsServer),
+		SSHTunnelID:           types.Int64PointerValue(conn.SSHTunnelID),
+		AWSPrivatelinkEnabled: types.BoolPointerValue(conn.AWSPrivatelinkEnabled),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -962,13 +940,13 @@ func (r *connectionResource) Update(
 		BasicAuthUsername: types.StringPointerValue(connection.BasicAuthUsername),
 		BasicAuthPassword: plan.BasicAuthPassword,
 
-		// SFTP Fields (conditional based on connection type)
-		SecretKey:             getSftpStringValue(state.ConnectionType.ValueString(), plan.SecretKey),
-		SecretKeyPassphrase:   getSftpStringValue(state.ConnectionType.ValueString(), plan.SecretKeyPassphrase),
-		UserDirectoryIsRoot:   getSftpBoolValue(state.ConnectionType.ValueString(), connection.UserDirectoryIsRoot),
-		WindowsServer:         getSftpBoolValue(state.ConnectionType.ValueString(), connection.WindowsServer),
-		SSHTunnelID:           getSftpInt64Value(state.ConnectionType.ValueString(), connection.SSHTunnelID),
-		AWSPrivatelinkEnabled: getSftpBoolValue(state.ConnectionType.ValueString(), connection.AWSPrivatelinkEnabled),
+		// SFTP Fields
+		SecretKey:             plan.SecretKey,
+		SecretKeyPassphrase:   plan.SecretKeyPassphrase,
+		UserDirectoryIsRoot:   types.BoolPointerValue(connection.UserDirectoryIsRoot),
+		WindowsServer:         types.BoolPointerValue(connection.WindowsServer),
+		SSHTunnelID:           types.Int64PointerValue(connection.SSHTunnelID),
+		AWSPrivatelinkEnabled: types.BoolPointerValue(connection.AWSPrivatelinkEnabled),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1045,13 +1023,13 @@ func (r *connectionResource) Read(
 		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
 		BasicAuthPassword: state.BasicAuthPassword,
 
-		// SFTP Fields (conditional based on connection type)
-		SecretKey:             getSftpStringValue(state.ConnectionType.ValueString(), state.SecretKey),
-		SecretKeyPassphrase:   getSftpStringValue(state.ConnectionType.ValueString(), state.SecretKeyPassphrase),
-		UserDirectoryIsRoot:   getSftpBoolValue(state.ConnectionType.ValueString(), conn.UserDirectoryIsRoot),
-		WindowsServer:         getSftpBoolValue(state.ConnectionType.ValueString(), conn.WindowsServer),
-		SSHTunnelID:           getSftpInt64Value(state.ConnectionType.ValueString(), conn.SSHTunnelID),
-		AWSPrivatelinkEnabled: getSftpBoolValue(state.ConnectionType.ValueString(), conn.AWSPrivatelinkEnabled),
+		// SFTP Fields
+		SecretKey:             state.SecretKey,
+		SecretKeyPassphrase:   state.SecretKeyPassphrase,
+		UserDirectoryIsRoot:   types.BoolPointerValue(conn.UserDirectoryIsRoot),
+		WindowsServer:         types.BoolPointerValue(conn.WindowsServer),
+		SSHTunnelID:           types.Int64PointerValue(conn.SSHTunnelID),
+		AWSPrivatelinkEnabled: types.BoolPointerValue(conn.AWSPrivatelinkEnabled),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }

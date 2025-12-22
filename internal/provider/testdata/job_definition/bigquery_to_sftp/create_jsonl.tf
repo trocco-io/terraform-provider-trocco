@@ -67,7 +67,7 @@ resource "trocco_connection" "bigquery" {
   description    = "BigQuery connection for analytics data"
   
   project_id               = "my-analytics-project"
-  service_account_json_key = = <<JSON
+  service_account_json_key = <<JSON
   {
     "type": "service_account",
     "project_id": "example-project-id",

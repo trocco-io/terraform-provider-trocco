@@ -161,9 +161,9 @@ func newSftpOutputOptionCsvFormatterColumnOptions(ctx context.Context, columnOpt
 	return listValue, nil
 }
 
-// normalizeEncoding converts API encoding format to Terraform format
-// API returns: utf_8, utf_16LE, utf_32BE, utf_32LE
-// Terraform uses: UTF-8, UTF-16LE, UTF-32BE, UTF-32LE
+// normalizeEncoding converts API encoding format to Terraform format.
+// API returns: utf_8, utf_16LE, utf_32BE, utf_32LE.
+// Terraform uses: UTF-8, UTF-16LE, UTF-32BE, UTF-32LE.
 func normalizeEncoding(apiEncoding string) string {
 	switch apiEncoding {
 	case "utf_8":
@@ -179,9 +179,9 @@ func normalizeEncoding(apiEncoding string) string {
 	}
 }
 
-// denormalizeEncoding converts Terraform encoding format to API format
-// Terraform uses: UTF-8, UTF-16LE, UTF-32BE, UTF-32LE
-// API expects: utf_8, utf_16LE, utf_32BE, utf_32LE
+// denormalizeEncoding converts Terraform encoding format to API format.
+// Terraform uses: UTF-8, UTF-16LE, UTF-32BE, UTF-32LE.
+// API expects: utf_8, utf_16LE, utf_32BE, utf_32LE.
 func denormalizeEncoding(terraformEncoding string) string {
 	switch terraformEncoding {
 	case "UTF-8":
@@ -282,7 +282,7 @@ func (sftpOutputOption *SftpOutputOption) ToInput(ctx context.Context) *outputOp
 		if diags.HasError() {
 			return nil
 		}
-		jsonlFormatterInput = jsonlFormatter.toInput(ctx)
+		jsonlFormatterInput = jsonlFormatter.toInput()
 	}
 
 	// Auto-detect formatter_type based on which formatter is provided
@@ -334,7 +334,7 @@ func (sftpOutputOption *SftpOutputOption) ToUpdateInput(ctx context.Context) *ou
 				return nil
 			}
 		}
-		jsonlFormatterInput = jsonlFormatter.toInput(ctx)
+		jsonlFormatterInput = jsonlFormatter.toInput()
 	}
 
 	// Auto-detect formatter_type based on which formatter is provided
@@ -399,7 +399,7 @@ func (csvFormatter *sftpOutputOptionCsvFormatter) toInput(ctx context.Context) *
 	}
 }
 
-func (jsonlFormatter *sftpOutputOptionJsonlFormatter) toInput(ctx context.Context) *outputOptionParameters.SftpOutputOptionJsonlFormatterInput {
+func (jsonlFormatter *sftpOutputOptionJsonlFormatter) toInput() *outputOptionParameters.SftpOutputOptionJsonlFormatterInput {
 	if jsonlFormatter == nil {
 		return nil
 	}
