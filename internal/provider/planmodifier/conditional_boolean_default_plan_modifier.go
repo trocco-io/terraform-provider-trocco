@@ -55,11 +55,9 @@ func (d *ConditionalBooleanDefaultPlanModifier) PlanModifyBool(ctx context.Conte
 		}
 	}
 
+	// Only set default value if connection type matches
 	if shouldApplyDefault {
 		resp.PlanValue = types.BoolValue(d.DefaultValue)
-	} else {
-		// For non-matching connections, set to null
-		resp.PlanValue = types.BoolNull()
 	}
 }
 
