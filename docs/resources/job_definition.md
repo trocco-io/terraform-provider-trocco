@@ -2923,18 +2923,18 @@ Optional:
 
 Required:
 
-- `batch_size` (Number) Batch size for data transfer.
 - `catalog_name` (String) Databricks catalog name
 - `databricks_connection_id` (Number) ID of Databricks connection
-- `default_time_zone` (String) Default time zone for timestamp without time zone
 - `mode` (String) Write mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`
 - `schema_name` (String) Databricks schema name
 - `table` (String) Table name
 
 Optional:
 
+- `batch_size` (Number) Batch size for data transfer.
 - `databricks_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--databricks_output_option--databricks_output_option_column_options))
 - `databricks_output_option_merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
+- `default_time_zone` (String) Default time zone for timestamp without time zone
 
 <a id="nestedatt--output_option--databricks_output_option--databricks_output_option_column_options"></a>
 ### Nested Schema for `output_option.databricks_output_option.databricks_output_option_column_options`
