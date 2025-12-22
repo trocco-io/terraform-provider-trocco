@@ -63,9 +63,7 @@ func (d *ConditionalBooleanDefaultPlanModifier) PlanModifyBool(ctx context.Conte
 	}
 }
 
-// Helper functions to create plan modifiers with specific default values
-
-// Creates a plan modifier that applies defaults for specific connection types
+// Creates a plan modifier that applies defaults for specific connection types.
 func ConditionalBooleanDefault(defaultValue bool, connectionTypes ...string) planmodifier.Bool {
 	return &ConditionalBooleanDefaultPlanModifier{
 		DefaultValue:      defaultValue,

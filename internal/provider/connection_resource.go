@@ -277,7 +277,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 	return input
 }
 
-// Helper functions for SFTP-specific fields
+// Helper functions for SFTP-specific fields.
 func getSftpStringValue(connectionType string, value types.String) types.String {
 	if connectionType == "sftp" {
 		return value
@@ -1251,7 +1251,7 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredString(plan.Host, "host", "SFTP", resp)
 		validateRequiredInt(plan.Port, "port", "SFTP", resp)
 		validateRequiredString(plan.UserName, "user_name", "SFTP", resp)
-		if !plan.AWSPrivatelinkEnabled.IsNull() && plan.AWSPrivatelinkEnabled.ValueBool() {
+		if plan.AWSPrivatelinkEnabled.ValueBool() {
 			validateRequiredInt(plan.SSHTunnelID, "ssh_tunnel_id", "SFTP", resp)
 		}
 	}
@@ -1289,15 +1289,6 @@ func validateRequiredString(field types.String, fieldName, connectionType string
 }
 
 func validateRequiredInt(field types.Int64, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {
-	if field.IsNull() {
-		resp.Diagnostics.AddError(
-			fieldName,
-			fmt.Sprintf("%s is required for %s connection.", fieldName, connectionType),
-		)
-	}
-}
-
-func validateRequiredBool(field types.Bool, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {
 	if field.IsNull() {
 		resp.Diagnostics.AddError(
 			fieldName,

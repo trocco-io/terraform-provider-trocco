@@ -139,6 +139,7 @@ type OutputOption struct {
 	SnowflakeOutputOption          *outputOptionEntities.SnowflakeOutputOption          `json:"snowflake_output_option"`
 	SalesforceOutputOption         *outputOptionEntities.SalesforceOutputOption         `json:"salesforce_output_option"`
 	GoogleSpreadsheetsOutputOption *outputOptionEntities.GoogleSpreadsheetsOutputOption `json:"google_spreadsheets_output_option"`
+	SftpOutputOption               *outputOptionEntities.SftpOutputOption               `json:"sftp_output_option"`
 }
 
 type OutputOptionInput struct {
@@ -146,6 +147,7 @@ type OutputOptionInput struct {
 	SnowflakeOutputOption          *parameter.NullableObject[outputOptionParameters.SnowflakeOutputOptionInput]          `json:"snowflake_output_option,omitempty"`
 	SalesforceOutputOption         *parameter.NullableObject[outputOptionParameters.SalesforceOutputOptionInput]         `json:"salesforce_output_option,omitempty"`
 	GoogleSpreadsheetsOutputOption *parameter.NullableObject[outputOptionParameters.GoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
+	SftpOutputOption               *parameter.NullableObject[outputOptionParameters.SftpOutputOptionInput]               `json:"sftp_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
@@ -153,6 +155,7 @@ type UpdateOutputOptionInput struct {
 	SnowflakeOutputOption          *parameter.NullableObject[outputOptionParameters.UpdateSnowflakeOutputOptionInput]          `json:"snowflake_output_option,omitempty"`
 	SalesforceOutputOption         *parameter.NullableObject[outputOptionParameters.UpdateSalesforceOutputOptionInput]         `json:"salesforce_output_option,omitempty"`
 	GoogleSpreadsheetsOutputOption *parameter.NullableObject[outputOptionParameters.UpdateGoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
+	SftpOutputOption               *parameter.NullableObject[outputOptionParameters.UpdateSftpOutputOptionInput]               `json:"sftp_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {

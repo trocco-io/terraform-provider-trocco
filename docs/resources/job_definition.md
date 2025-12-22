@@ -2976,6 +2976,7 @@ Optional:
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
 - `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
+- `sftp_output_option` (Attributes) attributes of destination SFTP settings (see [below for nested schema](#nestedatt--output_option--sftp_output_option))
 - `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
 
 <a id="nestedatt--output_option--bigquery_output_option"></a>
@@ -3102,6 +3103,84 @@ Optional:
 - `ignore_nulls` (Boolean) Update processing when NULL is included. Even if true, the record update process itself is performed.
 - `throw_if_failed` (Boolean) Status of records that could not be sent
 - `upsert_key` (String) Upsert key. If action_type is 'upsert', this field can be set.
+
+
+<a id="nestedatt--output_option--sftp_output_option"></a>
+### Nested Schema for `output_option.sftp_output_option`
+
+Required:
+
+- `encoder_type` (String) encoder type. Valid values: `` (no compression), `gzip`, `bzip2`, `zip`
+- `file_ext` (String) file extension
+- `is_minimum_output_tasks` (Boolean) output file mode. true = output file number suppression mode, false = parallel transfer
+- `path_prefix` (String) path prefix for output files. Can contain custom variables (e.g., $start_time$)
+- `sftp_connection_id` (Number) id of SFTP connection
+
+Optional:
+
+- `csv_formatter` (Attributes) CSV formatter configuration. Required when formatter_type is `csv` (see [below for nested schema](#nestedatt--output_option--sftp_output_option--csv_formatter))
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--sftp_output_option--custom_variable_settings))
+- `jsonl_formatter` (Attributes) JSONL formatter configuration. Required when formatter_type is `jsonl` (see [below for nested schema](#nestedatt--output_option--sftp_output_option--jsonl_formatter))
+
+<a id="nestedatt--output_option--sftp_output_option--csv_formatter"></a>
+### Nested Schema for `output_option.sftp_output_option.csv_formatter`
+
+Optional:
+
+- `charset` (String) character encoding
+- `csv_formatter_column_options_attributes` (Attributes List) column-specific options (see [below for nested schema](#nestedatt--output_option--sftp_output_option--csv_formatter--csv_formatter_column_options_attributes))
+- `default_time_zone` (String) default timezone
+- `delimiter` (String) delimiter character
+- `escape` (String) escape character
+- `header_line` (Boolean) whether to include header line
+- `newline` (String) newline character. Valid values: `CRLF`, `LF`, `CR`
+- `newline_in_field` (String) newline character in field. Valid values: `CRLF`, `LF`, `CR`
+- `null_string` (String) null string representation
+- `null_string_enabled` (Boolean) whether to enable null string representation
+- `quote_policy` (String) quote policy. Valid values: `ALL`, `MINIMAL`, `NONE`
+
+<a id="nestedatt--output_option--sftp_output_option--csv_formatter--csv_formatter_column_options_attributes"></a>
+### Nested Schema for `output_option.sftp_output_option.csv_formatter.csv_formatter_column_options_attributes`
+
+Required:
+
+- `name` (String) column name
+
+Optional:
+
+- `format` (String) date format
+- `timezone` (String) timezone
+
+
+
+<a id="nestedatt--output_option--sftp_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.sftp_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--output_option--sftp_output_option--jsonl_formatter"></a>
+### Nested Schema for `output_option.sftp_output_option.jsonl_formatter`
+
+Optional:
+
+- `date_format` (String) date format
+- `encoding` (String) character encoding. Valid values: `UTF-8`, `UTF-16LE`, `UTF-32BE`, `UTF-32LE`
+- `newline` (String) newline character. Valid values: `CRLF`, `LF`, `CR`, `NUL`, `NO`
+- `timezone` (String) timezone
+
 
 
 <a id="nestedatt--output_option--snowflake_output_option"></a>
