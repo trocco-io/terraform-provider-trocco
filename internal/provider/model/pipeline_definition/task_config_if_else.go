@@ -2,6 +2,7 @@ package pipeline_definition
 
 import (
 	"context"
+	"strconv"
 	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 
@@ -16,15 +17,15 @@ type IfElseTaskConfig struct {
 	Destinations    *Destinations    `tfsdk:"destinations"`
 }
 
-func NewIfElseTaskConfig(ctx context.Context, en *pipelineDefinitionEntities.IfElseTaskConfig) *IfElseTaskConfig {
+func NewIfElseTaskConfig(ctx context.Context, en *pipelineDefinitionEntities.IfElseTaskConfig, keys map[int64]types.String) *IfElseTaskConfig {
 	if en == nil {
 		return nil
 	}
 
 	return &IfElseTaskConfig{
 		Name:            types.StringValue(en.Name),
-		ConditionGroups: NewConditionGroups(en.ConditionGroups),
-		Destinations:    NewDestinations(en.Destinations),
+		ConditionGroups: NewConditionGroups(en.ConditionGroups, keys),
+		Destinations:    NewDestinations(en.Destinations, keys),
 	}
 }
 
@@ -45,7 +46,7 @@ type ConditionGroups struct {
 	Conditions []Condition  `tfsdk:"conditions"`
 }
 
-func NewConditionGroups(en *pipelineDefinitionEntities.ConditionGroups) *ConditionGroups {
+func NewConditionGroups(en *pipelineDefinitionEntities.ConditionGroups, keys map[int64]types.String) *ConditionGroups {
 	if en == nil {
 		return nil
 	}
@@ -53,7 +54,7 @@ func NewConditionGroups(en *pipelineDefinitionEntities.ConditionGroups) *Conditi
 	conditions := []Condition{}
 	for _, c := range en.Conditions {
 		if c != nil {
-			conditions = append(conditions, *NewCondition(c))
+			conditions = append(conditions, *NewCondition(c, keys))
 		}
 	}
 
@@ -86,14 +87,20 @@ type Condition struct {
 	Value    types.String `tfsdk:"value"`
 }
 
-func NewCondition(en *pipelineDefinitionEntities.Condition) *Condition {
+func NewCondition(en *pipelineDefinitionEntities.Condition, keys map[int64]types.String) *Condition {
 	if en == nil {
 		return nil
 	}
 
+	// API response returns task identifier as "identifier" field (string like "3")
+	// Convert it to task key using keys map
 	taskKey := types.StringNull()
-	if en.TaskKey != nil {
-		taskKey = types.StringValue(*en.TaskKey)
+	if en.Identifier != nil {
+		if id, err := strconv.ParseInt(*en.Identifier, 10, 64); err == nil {
+			if key, ok := keys[id]; ok {
+				taskKey = key
+			}
+		}
 	}
 
 	return &Condition{
@@ -123,16 +130,22 @@ type Destinations struct {
 	Else types.List `tfsdk:"else"`
 }
 
-func NewDestinations(en *pipelineDefinitionEntities.Destinations) *Destinations {
+func NewDestinations(en *pipelineDefinitionEntities.Destinations, keys map[int64]types.String) *Destinations {
 	if en == nil {
 		return nil
 	}
 
+	// API response returns task identifiers as strings (e.g., "3")
+	// Convert them to task keys using keys map
 	ifList := types.ListNull(types.StringType)
 	if en.If != nil {
 		ifValues := []attr.Value{}
 		for _, v := range en.If {
-			ifValues = append(ifValues, types.StringValue(v))
+			if id, err := strconv.ParseInt(v, 10, 64); err == nil {
+				if key, ok := keys[id]; ok {
+					ifValues = append(ifValues, key)
+				}
+			}
 		}
 		ifList, _ = types.ListValue(types.StringType, ifValues)
 	}
@@ -141,7 +154,11 @@ func NewDestinations(en *pipelineDefinitionEntities.Destinations) *Destinations 
 	if en.Else != nil {
 		elseValues := []attr.Value{}
 		for _, v := range en.Else {
-			elseValues = append(elseValues, types.StringValue(v))
+			if id, err := strconv.ParseInt(v, 10, 64); err == nil {
+				if key, ok := keys[id]; ok {
+					elseValues = append(elseValues, key)
+				}
+			}
 		}
 		elseList, _ = types.ListValue(types.StringType, elseValues)
 	}

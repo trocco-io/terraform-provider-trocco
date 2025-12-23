@@ -12,10 +12,11 @@ type ConditionGroups struct {
 }
 
 type Condition struct {
-	Variable string  `json:"variable"`
-	TaskKey  *string `json:"task_key,omitempty"`
-	Operator string  `json:"operator"`
-	Value    string  `json:"value"`
+	Identifier *string `json:"identifier,omitempty"`
+	Variable   string  `json:"variable"`
+	TaskKey    *string `json:"task_key,omitempty"`
+	Operator   string  `json:"operator"`
+	Value      string  `json:"value"`
 }
 
 type Destinations struct {

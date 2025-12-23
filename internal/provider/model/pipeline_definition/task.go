@@ -116,7 +116,7 @@ func NewTask(ctx context.Context, en *pipelineDefinitionEntities.Task, keys map[
 		SnowflakeDataCheckConfig:                  NewSnowflakeDataCheckTaskConfig(ctx, en.SnowflakeDataCheckConfig),
 		RedshiftDataCheckConfig:                   NewRedshiftDataCheckTaskConfig(ctx, en.RedshiftDataCheckConfig),
 		HTTPRequestConfig:                         NewHTTPRequestTaskConfig(ctx, en.HTTPRequestConfig, previousHTTPRequestConfig),
-		IfElseConfig:                              NewIfElseTaskConfig(ctx, en.IfElseConfig),
+		IfElseConfig:                              NewIfElseTaskConfig(ctx, en.IfElseConfig, keys),
 	}
 }
 
