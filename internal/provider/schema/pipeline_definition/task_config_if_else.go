@@ -4,6 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	pipelineDefinitionValidator "terraform-provider-trocco/internal/provider/validator/pipeline_definition"
 )
 
 func IfElseTaskConfigSchema() schema.Attribute {
@@ -29,7 +30,13 @@ func IfElseTaskConfigSchema() schema.Attribute {
 					"conditions": schema.ListNestedAttribute{
 						MarkdownDescription: "The list of conditions",
 						Required:            true,
+						Validators: []validator.List{
+							pipelineDefinitionValidator.ConditionsNotEmpty{},
+						},
 						NestedObject: schema.NestedAttributeObject{
+							Validators: []validator.Object{
+								pipelineDefinitionValidator.ConditionTaskKey{},
+							},
 							Attributes: map[string]schema.Attribute{
 								"variable": schema.StringAttribute{
 									MarkdownDescription: "The variable to check (e.g., current_time, environment, status, response_status_code, transfer_record_count, check_result)",
@@ -75,16 +82,19 @@ func IfElseTaskConfigSchema() schema.Attribute {
 			"destinations": schema.SingleNestedAttribute{
 				MarkdownDescription: "The destination tasks for the if and else branches",
 				Required:            true,
+				Validators: []validator.Object{
+					pipelineDefinitionValidator.DestinationsNotBothEmpty{},
+				},
 				Attributes: map[string]schema.Attribute{
 					"if": schema.ListAttribute{
-						MarkdownDescription: "The list of task keys to execute when the condition is true",
+						MarkdownDescription: "The list of task keys to execute when the condition is true. Specify an empty list `[]` if not needed.",
 						ElementType:         schema.StringAttribute{}.GetType(),
-						Optional:            true,
+						Required:            true,
 					},
 					"else": schema.ListAttribute{
-						MarkdownDescription: "The list of task keys to execute when the condition is false",
+						MarkdownDescription: "The list of task keys to execute when the condition is false. Specify an empty list `[]` if not needed.",
 						ElementType:         schema.StringAttribute{}.GetType(),
-						Optional:            true,
+						Required:            true,
 					},
 				},
 			},

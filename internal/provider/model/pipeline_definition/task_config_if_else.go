@@ -137,8 +137,11 @@ func NewDestinations(en *pipelineDefinitionEntities.Destinations, keys map[int64
 
 	// API response returns task identifiers as strings (e.g., "3")
 	// Convert them to task keys using keys map
-	ifList := types.ListNull(types.StringType)
-	if en.If != nil {
+	//
+	// When API response has values, convert them.
+	// When API response is nil/empty, return empty list (user must specify [] explicitly).
+	ifList := types.ListValueMust(types.StringType, []attr.Value{})
+	if en.If != nil && len(en.If) > 0 {
 		ifValues := []attr.Value{}
 		for _, v := range en.If {
 			if id, err := strconv.ParseInt(v, 10, 64); err == nil {
@@ -147,11 +150,11 @@ func NewDestinations(en *pipelineDefinitionEntities.Destinations, keys map[int64
 				}
 			}
 		}
-		ifList, _ = types.ListValue(types.StringType, ifValues)
+		ifList = types.ListValueMust(types.StringType, ifValues)
 	}
 
-	elseList := types.ListNull(types.StringType)
-	if en.Else != nil {
+	elseList := types.ListValueMust(types.StringType, []attr.Value{})
+	if en.Else != nil && len(en.Else) > 0 {
 		elseValues := []attr.Value{}
 		for _, v := range en.Else {
 			if id, err := strconv.ParseInt(v, 10, 64); err == nil {
@@ -160,7 +163,7 @@ func NewDestinations(en *pipelineDefinitionEntities.Destinations, keys map[int64
 				}
 			}
 		}
-		elseList, _ = types.ListValue(types.StringType, elseValues)
+		elseList = types.ListValueMust(types.StringType, elseValues)
 	}
 
 	return &Destinations{
@@ -174,14 +177,21 @@ func (d *Destinations) ToInput(ctx context.Context) *pipelineDefinitionParameter
 		return nil
 	}
 
+	// Only set non-empty slices; nil slices are omitted from JSON due to omitempty
 	var ifDest []string
 	if !d.If.IsNull() && !d.If.IsUnknown() {
 		d.If.ElementsAs(ctx, &ifDest, false)
+		if len(ifDest) == 0 {
+			ifDest = nil
+		}
 	}
 
 	var elseDest []string
 	if !d.Else.IsNull() && !d.Else.IsUnknown() {
 		d.Else.ElementsAs(ctx, &elseDest, false)
+		if len(elseDest) == 0 {
+			elseDest = nil
+		}
 	}
 
 	return &pipelineDefinitionParameters.Destinations{
