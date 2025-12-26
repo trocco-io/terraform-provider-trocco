@@ -247,3 +247,55 @@ func TestAccPipelineDefinitionResourceForBigQueryDatamartWithBigQueryLoop(t *tes
 		},
 	})
 }
+
+func TestAccPipelineDefinitionResourceForIfElse(t *testing.T) {
+	resourceName := "trocco_pipeline_definition.if_else_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:      providerConfig + LoadTextFile("testdata/pipeline_definition/if_else/create.tf"),
+				ExpectError: nil,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "if_else_test"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.#", "4"),
+					resource.TestCheckTypeSetElemNestedAttrs(resourceName, "tasks.*", map[string]string{
+						"key":                 "if_else",
+						"type":                "if_else",
+						"if_else_config.name": "Check transfer status",
+						"if_else_config.condition_groups.set_type": "and",
+					}),
+				),
+			},
+			// Import testing
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateVerifyIgnore: []string{
+					// The `key` attribute does not exist in the TROCCO API,
+					// therefore there is no value for it during import.
+					"tasks.0.key",
+					"tasks.1.key",
+					"tasks.2.key",
+					"tasks.3.key",
+					// task_dependencies use task keys which are not available during import
+					"task_dependencies.0.source",
+					"task_dependencies.0.destination",
+					"task_dependencies.1.source",
+					"task_dependencies.1.destination",
+					"task_dependencies.2.source",
+					"task_dependencies.2.destination",
+					// if_else_config references task keys which are not available during import
+					"tasks.0.if_else_config.condition_groups.conditions.0.task_key",
+					"tasks.0.if_else_config.destinations.if.0",
+					"tasks.0.if_else_config.destinations.else.0",
+				},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					pipelineDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
+					return pipelineDefinitionID, nil
+				},
+			},
+		},
+	})
+}
