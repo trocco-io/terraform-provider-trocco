@@ -43,6 +43,10 @@ func HubspotInputOptionSchema() schema.Attribute {
 				Optional:            true,
 				MarkdownDescription: "enable incremental loading (only valid when target is object)",
 			},
+			"last_record_time": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "last record time (used when incremental loading is enabled)",
+			},
 			"email_event_type": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "email event type (required when target is email_event)",

@@ -19,6 +19,7 @@ type HubspotInputOption struct {
 	ToObjectType              types.String `tfsdk:"to_object_type"`
 	ObjectType                types.String `tfsdk:"object_type"`
 	IncrementalLoadingEnabled types.Bool   `tfsdk:"incremental_loading_enabled"`
+	LastRecordTime            types.String `tfsdk:"last_record_time"`
 	EmailEventType            types.String `tfsdk:"email_event_type"`
 	StartTimestamp            types.String `tfsdk:"start_timestamp"`
 	EndTimestamp              types.String `tfsdk:"end_timestamp"`
@@ -52,6 +53,7 @@ func NewHubspotInputOption(ctx context.Context, hubspotInputOption *inputOptionE
 		ToObjectType:              types.StringPointerValue(hubspotInputOption.ToObjectType),
 		ObjectType:                types.StringPointerValue(hubspotInputOption.ObjectType),
 		IncrementalLoadingEnabled: types.BoolPointerValue(hubspotInputOption.IncrementalLoadingEnabled),
+		LastRecordTime:            types.StringPointerValue(hubspotInputOption.LastRecordTime),
 		EmailEventType:            types.StringPointerValue(hubspotInputOption.EmailEventType),
 		StartTimestamp:            types.StringPointerValue(hubspotInputOption.StartTimestamp),
 		EndTimestamp:              types.StringPointerValue(hubspotInputOption.EndTimestamp),
@@ -123,6 +125,7 @@ func (hubspotInputOption *HubspotInputOption) ToInput(ctx context.Context) *inpu
 		ToObjectType:              hubspotInputOption.ToObjectType.ValueStringPointer(),
 		ObjectType:                hubspotInputOption.ObjectType.ValueStringPointer(),
 		IncrementalLoadingEnabled: hubspotInputOption.IncrementalLoadingEnabled.ValueBoolPointer(),
+		LastRecordTime:            hubspotInputOption.LastRecordTime.ValueStringPointer(),
 		EmailEventType:            hubspotInputOption.EmailEventType.ValueStringPointer(),
 		StartTimestamp:            hubspotInputOption.StartTimestamp.ValueStringPointer(),
 		EndTimestamp:              hubspotInputOption.EndTimestamp.ValueStringPointer(),
@@ -159,6 +162,7 @@ func (hubspotInputOption *HubspotInputOption) ToUpdateInput(ctx context.Context)
 		ToObjectType:              hubspotInputOption.ToObjectType.ValueStringPointer(),
 		ObjectType:                hubspotInputOption.ObjectType.ValueStringPointer(),
 		IncrementalLoadingEnabled: hubspotInputOption.IncrementalLoadingEnabled.ValueBoolPointer(),
+		LastRecordTime:            hubspotInputOption.LastRecordTime.ValueStringPointer(),
 		EmailEventType:            hubspotInputOption.EmailEventType.ValueStringPointer(),
 		StartTimestamp:            hubspotInputOption.StartTimestamp.ValueStringPointer(),
 		EndTimestamp:              hubspotInputOption.EndTimestamp.ValueStringPointer(),

@@ -2197,6 +2197,7 @@ Optional:
 - `end_timestamp` (String) end timestamp (used when target is email_event)
 - `from_object_type` (String) source object type (required when target is association)
 - `incremental_loading_enabled` (Boolean) enable incremental loading (only valid when target is object)
+- `last_record_time` (String) last record time (used when incremental loading is enabled)
 - `object_type` (String) object type (required when target is object, pipeline, or pipeline_stage)
 - `start_timestamp` (String) start timestamp (used when target is email_event)
 - `to_object_type` (String) destination object type (required when target is association, engagement_association, pipeline, or pipeline_stage)

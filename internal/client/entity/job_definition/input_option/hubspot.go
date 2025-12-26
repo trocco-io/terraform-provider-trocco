@@ -11,6 +11,7 @@ type HubspotInputOption struct {
 	ToObjectType              *string                         `json:"to_object_type"`
 	ObjectType                *string                         `json:"object_type"`
 	IncrementalLoadingEnabled *bool                           `json:"incremental_loading_enabled"`
+	LastRecordTime            *string                         `json:"last_record_time"`
 	EmailEventType            *string                         `json:"email_event_type"`
 	StartTimestamp            *string                         `json:"start_timestamp"`
 	EndTimestamp              *string                         `json:"end_timestamp"`

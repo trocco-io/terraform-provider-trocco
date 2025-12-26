@@ -11,6 +11,7 @@ type HubspotInputOptionInput struct {
 	ToObjectType              *string                                 `json:"to_object_type,omitempty"`
 	ObjectType                *string                                 `json:"object_type,omitempty"`
 	IncrementalLoadingEnabled *bool                                   `json:"incremental_loading_enabled,omitempty"`
+	LastRecordTime            *string                                 `json:"last_record_time,omitempty"`
 	EmailEventType            *string                                 `json:"email_event_type,omitempty"`
 	StartTimestamp            *string                                 `json:"start_timestamp,omitempty"`
 	EndTimestamp              *string                                 `json:"end_timestamp,omitempty"`
@@ -25,6 +26,7 @@ type UpdateHubspotInputOptionInput struct {
 	ToObjectType              *string                                 `json:"to_object_type,omitempty"`
 	ObjectType                *string                                 `json:"object_type,omitempty"`
 	IncrementalLoadingEnabled *bool                                   `json:"incremental_loading_enabled,omitempty"`
+	LastRecordTime            *string                                 `json:"last_record_time,omitempty"`
 	EmailEventType            *string                                 `json:"email_event_type,omitempty"`
 	StartTimestamp            *string                                 `json:"start_timestamp,omitempty"`
 	EndTimestamp              *string                                 `json:"end_timestamp,omitempty"`
