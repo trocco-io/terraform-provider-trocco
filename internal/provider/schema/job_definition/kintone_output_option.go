@@ -4,9 +4,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -31,9 +28,7 @@ func KintoneOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Guest space ID",
 			},
 			"mode": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				Default:  stringdefault.StaticString("insert"),
+				Required: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("insert", "update", "upsert"),
 				},
@@ -44,9 +39,7 @@ func KintoneOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Update key (only applicable if mode is 'update' or 'upsert')",
 			},
 			"ignore_nulls": schema.BoolAttribute{
-				Optional:            true,
-				Computed:            true,
-				Default:             booldefault.StaticBool(false),
+				Required:            true,
 				MarkdownDescription: "Whether to ignore NULL values",
 			},
 			"reduce_key": schema.StringAttribute{
@@ -54,9 +47,7 @@ func KintoneOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Reduce key for deduplication",
 			},
 			"chunk_size": schema.Int64Attribute{
-				Optional: true,
-				Computed: true,
-				Default:  int64default.StaticInt64(100),
+				Required: true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
@@ -100,7 +91,7 @@ func KintoneOutputOptionSchema() schema.Attribute {
 						},
 						"timezone": schema.StringAttribute{
 							Optional:            true,
-							MarkdownDescription: "Timezone (only applicable if type is 'DATE' or 'TIME')",
+							MarkdownDescription: "Timezone (only applicable if type is 'DATE', 'TIME' or 'DATETIME')",
 						},
 						"sort_column": schema.StringAttribute{
 							Optional:            true,
