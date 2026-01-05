@@ -11,7 +11,7 @@ import (
 
 var _ validator.Object = ConditionTaskKey{}
 
-// taskScopedVariables are variables that require a task_key to be specified
+// taskScopedVariables are variables that require a task_key to be specified.
 var taskScopedVariables = []string{
 	"status",
 	"response_status_code",

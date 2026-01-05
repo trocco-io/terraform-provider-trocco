@@ -141,7 +141,7 @@ func NewDestinations(en *pipelineDefinitionEntities.Destinations, keys map[int64
 	// When API response has values, convert them.
 	// When API response is nil/empty, return empty list (user must specify [] explicitly).
 	ifList := types.ListValueMust(types.StringType, []attr.Value{})
-	if en.If != nil && len(en.If) > 0 {
+	if len(en.If) > 0 {
 		ifValues := []attr.Value{}
 		for _, v := range en.If {
 			if id, err := strconv.ParseInt(v, 10, 64); err == nil {
@@ -154,7 +154,7 @@ func NewDestinations(en *pipelineDefinitionEntities.Destinations, keys map[int64
 	}
 
 	elseList := types.ListValueMust(types.StringType, []attr.Value{})
-	if en.Else != nil && len(en.Else) > 0 {
+	if len(en.Else) > 0 {
 		elseValues := []attr.Value{}
 		for _, v := range en.Else {
 			if id, err := strconv.ParseInt(v, 10, 64); err == nil {
