@@ -262,7 +262,7 @@ func TestAccPipelineDefinitionResourceForIfElse(t *testing.T) {
 					resource.TestCheckTypeSetElemNestedAttrs(resourceName, "tasks.*", map[string]string{
 						"key":                 "if_else",
 						"type":                "if_else",
-						"if_else_config.name": "Check transfer status",
+						"if_else_config.name": "Check datamart status",
 						"if_else_config.condition_groups.set_type": "and",
 					}),
 				),
@@ -290,6 +290,15 @@ func TestAccPipelineDefinitionResourceForIfElse(t *testing.T) {
 					"tasks.0.if_else_config.condition_groups.conditions.0.task_key",
 					"tasks.0.if_else_config.destinations.if.0",
 					"tasks.0.if_else_config.destinations.else.0",
+					"tasks.1.if_else_config.condition_groups.conditions.0.task_key",
+					"tasks.1.if_else_config.destinations.if.0",
+					"tasks.1.if_else_config.destinations.else.0",
+					"tasks.2.if_else_config.condition_groups.conditions.0.task_key",
+					"tasks.2.if_else_config.destinations.if.0",
+					"tasks.2.if_else_config.destinations.else.0",
+					"tasks.3.if_else_config.condition_groups.conditions.0.task_key",
+					"tasks.3.if_else_config.destinations.if.0",
+					"tasks.3.if_else_config.destinations.else.0",
 				},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					pipelineDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
