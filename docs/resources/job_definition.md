@@ -2747,6 +2747,7 @@ Optional:
 
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
 - `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
+- `mysql_output_option` (Attributes) Attributes of destination MySQL settings (see [below for nested schema](#nestedatt--output_option--mysql_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
 
@@ -2856,6 +2857,60 @@ Required:
 
 - `column` (String) Column name
 - `order` (String) Data type
+
+
+
+<a id="nestedatt--output_option--mysql_output_option"></a>
+### Nested Schema for `output_option.mysql_output_option`
+
+Required:
+
+- `database` (String) Database name
+- `default_time_zone` (String) Default time zone
+- `max_retry_wait` (Number) Maximum retry wait time (milliseconds)
+- `mode` (String) Transfer mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`, `merge_direct`
+- `mysql_connection_id` (Number) ID of MySQL connection
+- `retry_limit` (Number) Maximum number of retries
+- `retry_wait` (Number) Retry wait time (milliseconds)
+- `table` (String) Table name
+
+Optional:
+
+- `after_load` (String) SQL statement to execute after data transfer
+- `before_load` (String) SQL statement to execute before data transfer
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--mysql_output_option--custom_variable_settings))
+- `mysql_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--mysql_output_option--mysql_output_option_column_options))
+
+<a id="nestedatt--output_option--mysql_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.mysql_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--output_option--mysql_output_option--mysql_output_option_column_options"></a>
+### Nested Schema for `output_option.mysql_output_option.mysql_output_option_column_options`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type. One of `TINYTEXT`, `TEXT`, `MEDIUMTEXT`, `LONGTEXT`, `DECIMAL`
+
+Optional:
+
+- `precision` (Number) Total number of digits for DECIMAL type (required when type is DECIMAL)
+- `scale` (Number) Number of decimal places for DECIMAL type (required when type is DECIMAL)
 
 
 
