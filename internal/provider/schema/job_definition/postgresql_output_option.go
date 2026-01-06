@@ -6,7 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -29,18 +28,14 @@ func PostgresqlOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Table name",
 			},
 			"mode": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				Default:  stringdefault.StaticString("insert"),
+				Required: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("insert", "insert_direct", "truncate_insert", "replace", "merge"),
 				},
 				MarkdownDescription: "Transfer mode",
 			},
 			"default_time_zone": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				Default:             stringdefault.StaticString("UTC"),
+				Required:            true,
 				MarkdownDescription: "Default time zone",
 			},
 			"postgresql_connection_id": schema.Int64Attribute{

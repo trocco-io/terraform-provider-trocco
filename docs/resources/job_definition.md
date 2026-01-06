@@ -3004,14 +3004,14 @@ Required:
 Required:
 
 - `database` (String) Database name
+- `default_time_zone` (String) Default time zone
+- `mode` (String) Transfer mode
 - `postgresql_connection_id` (Number) PostgreSQL connection ID
 - `schema` (String) Schema name
 - `table` (String) Table name
 
 Optional:
 
-- `default_time_zone` (String) Default time zone
-- `mode` (String) Transfer mode
 - `postgresql_output_option_merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
 
 
