@@ -2851,6 +2851,7 @@ Optional:
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
 - `databricks_output_option` (Attributes) Attributes of destination Databricks settings (see [below for nested schema](#nestedatt--output_option--databricks_output_option))
 - `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
+- `postgresql_output_option` (Attributes) Attributes of destination PostgreSQL settings (see [below for nested schema](#nestedatt--output_option--postgresql_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
 
@@ -2995,6 +2996,23 @@ Required:
 - `column` (String) Column name
 - `order` (String) Data type
 
+
+
+<a id="nestedatt--output_option--postgresql_output_option"></a>
+### Nested Schema for `output_option.postgresql_output_option`
+
+Required:
+
+- `database` (String) Database name
+- `postgresql_connection_id` (Number) PostgreSQL connection ID
+- `schema` (String) Schema name
+- `table` (String) Table name
+
+Optional:
+
+- `default_time_zone` (String) Default time zone
+- `mode` (String) Transfer mode
+- `postgresql_output_option_merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
 
 
 <a id="nestedatt--output_option--salesforce_output_option"></a>
