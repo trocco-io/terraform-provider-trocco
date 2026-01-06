@@ -1,23 +1,23 @@
-# resource "trocco_connection" "kintone" {
-#   connection_type     = "kintone"
-#   name                = "Kintone Example"
-#   description         = "This is a Kintone connection example"
-#   domain              = "test_domain"
-#   login_method        = "username_and_password"
-#   username            = "username"
-#   password            = "password"
-#   basic_auth_username = "basic_auth_username"
-#   basic_auth_password = "basic_auth_password"
-# }
+resource "trocco_connection" "kintone" {
+  connection_type     = "kintone"
+  name                = "Kintone Example"
+  description         = "This is a Kintone connection example"
+  domain              = "test_domain"
+  login_method        = "username_and_password"
+  username            = "username"
+  password            = "password"
+  basic_auth_username = "basic_auth_username"
+  basic_auth_password = "basic_auth_password"
+}
 
-# resource "trocco_connection" "mysql" {
-#   connection_type = "mysql"
-#   name            = "MySQL Example"
-#   host            = "db.example.com"
-#   port            = 3306
-#   user_name       = "root"
-#   password        = "password"
-# }
+resource "trocco_connection" "mysql" {
+  connection_type = "mysql"
+  name            = "MySQL Example"
+  host            = "db.example.com"
+  port            = 3306
+  user_name       = "root"
+  password        = "password"
+}
 
 resource "trocco_job_definition" "kintone_to_mysql" {
   name                     = "Kintone to Mysql Test"
@@ -55,7 +55,7 @@ resource "trocco_job_definition" "kintone_to_mysql" {
   input_option_type = "kintone"
   input_option = {
     kintone_input_option = {
-      kintone_connection_id = 2
+      kintone_connection_id = trocco_connection.kintone.id
       app_id                = "403"
       guest_space_id        = null
       query                 = null
@@ -87,7 +87,7 @@ resource "trocco_job_definition" "kintone_to_mysql" {
   output_option_type = "mysql"
   output_option = {
     mysql_output_option = {
-      mysql_connection_id = 2
+      mysql_connection_id = trocco_connection.mysql.id
       database            = "$db_name$"
       table               = "$table_name$"
       mode                = "insert"
