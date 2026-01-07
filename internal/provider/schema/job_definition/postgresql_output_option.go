@@ -42,7 +42,7 @@ func PostgresqlOutputOptionSchema() schema.Attribute {
 				Required:            true,
 				MarkdownDescription: "PostgreSQL connection ID",
 			},
-			"postgresql_output_option_merge_keys": schema.SetAttribute{
+			"merge_keys": schema.SetAttribute{
 				Optional:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Merge keys (only applicable if mode is 'merge')",

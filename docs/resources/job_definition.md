@@ -3012,7 +3012,7 @@ Required:
 
 Optional:
 
-- `postgresql_output_option_merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
+- `merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
 
 
 <a id="nestedatt--output_option--salesforce_output_option"></a>

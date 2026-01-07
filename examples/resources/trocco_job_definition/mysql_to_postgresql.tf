@@ -68,13 +68,12 @@ resource "trocco_job_definition" "mysql_to_postgresql_example" {
   output_option_type = "postgresql"
   output_option = {
     postgresql_output_option = {
-      postgresql_connection_id            = 1 // please set your postgresql connection id
-      database                            = "destination_database"
-      schema                              = "public"
-      table                               = "mysql_to_postgresql_example_table"
-      mode                                = "insert"
-      default_time_zone                   = "UTC"
-      postgresql_output_option_merge_keys = []
+      postgresql_connection_id = 1 // please set your postgresql connection id
+      database                 = "destination_database"
+      schema                   = "public"
+      table                    = "mysql_to_postgresql_example_table"
+      mode                     = "insert"
+      default_time_zone        = "UTC"
     }
   }
 }

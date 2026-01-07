@@ -20,13 +20,13 @@ resource "trocco_job_definition" "postgresql_output_merge_example" {
 
   output_option = {
     postgresql_output_option = {
-      postgresql_connection_id            = 1
-      database                            = "example_database"
-      schema                              = "public"
-      table                               = "example_table"
-      mode                                = "merge"
-      default_time_zone                   = "UTC"
-      postgresql_output_option_merge_keys = ["id", "user_id"]
+      postgresql_connection_id = 1
+      database                 = "example_database"
+      schema                   = "public"
+      table                    = "example_table"
+      mode                     = "merge"
+      default_time_zone        = "UTC"
+      merge_keys               = ["id", "user_id"]
     }
   }
 }

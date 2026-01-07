@@ -11,13 +11,13 @@ import (
 )
 
 type PostgresqlOutputOption struct {
-	Database                        types.String `tfsdk:"database"`
-	Schema                          types.String `tfsdk:"schema"`
-	Table                           types.String `tfsdk:"table"`
-	Mode                            types.String `tfsdk:"mode"`
-	DefaultTimeZone                 types.String `tfsdk:"default_time_zone"`
-	PostgresqlConnectionId          types.Int64  `tfsdk:"postgresql_connection_id"`
-	PostgresqlOutputOptionMergeKeys types.Set    `tfsdk:"postgresql_output_option_merge_keys"`
+	Database               types.String `tfsdk:"database"`
+	Schema                 types.String `tfsdk:"schema"`
+	Table                  types.String `tfsdk:"table"`
+	Mode                   types.String `tfsdk:"mode"`
+	DefaultTimeZone        types.String `tfsdk:"default_time_zone"`
+	PostgresqlConnectionId types.Int64  `tfsdk:"postgresql_connection_id"`
+	MergeKeys              types.Set    `tfsdk:"merge_keys"`
 }
 
 func NewPostgresqlOutputOption(ctx context.Context, postgresqlOutputOption *output_option.PostgresqlOutputOption) *PostgresqlOutputOption {
@@ -34,16 +34,16 @@ func NewPostgresqlOutputOption(ctx context.Context, postgresqlOutputOption *outp
 		PostgresqlConnectionId: types.Int64Value(postgresqlOutputOption.PostgresqlConnectionId),
 	}
 
-	PostgresqlOutputOptionMergeKeys, err := newPostgresqlOutputOptionMergeKeys(ctx, postgresqlOutputOption.PostgresqlOutputOptionMergeKeys)
+	mergeKeys, err := newMergeKeys(ctx, postgresqlOutputOption.MergeKeys)
 	if err != nil {
 		return nil
 	}
-	result.PostgresqlOutputOptionMergeKeys = PostgresqlOutputOptionMergeKeys
+	result.MergeKeys = mergeKeys
 
 	return result
 }
 
-func newPostgresqlOutputOptionMergeKeys(ctx context.Context, mergeKeys []string) (types.Set, error) {
+func newMergeKeys(ctx context.Context, mergeKeys []string) (types.Set, error) {
 	if len(mergeKeys) > 0 {
 		values := make([]types.String, len(mergeKeys))
 		for i, v := range mergeKeys {
@@ -64,29 +64,31 @@ func (postgresqlOutputOption *PostgresqlOutputOption) ToInput(ctx context.Contex
 	}
 
 	var mergeKeys *[]string
-	if !postgresqlOutputOption.PostgresqlOutputOptionMergeKeys.IsNull() && !postgresqlOutputOption.PostgresqlOutputOptionMergeKeys.IsUnknown() {
+	if !postgresqlOutputOption.MergeKeys.IsNull() && !postgresqlOutputOption.MergeKeys.IsUnknown() {
 		var mergeKeyValues []types.String
-		diags := postgresqlOutputOption.PostgresqlOutputOptionMergeKeys.ElementsAs(ctx, &mergeKeyValues, false)
+		diags := postgresqlOutputOption.MergeKeys.ElementsAs(ctx, &mergeKeyValues, false)
 		if diags.HasError() {
 			return nil
 		}
-		if len(mergeKeyValues) > 0 {
-			mk := make([]string, 0, len(mergeKeyValues))
-			for _, input := range mergeKeyValues {
-				mk = append(mk, input.ValueString())
-			}
-			mergeKeys = &mk
+		mk := make([]string, 0, len(mergeKeyValues))
+		for _, input := range mergeKeyValues {
+			mk = append(mk, input.ValueString())
 		}
+		mergeKeys = &mk
+	} else if !postgresqlOutputOption.Mode.IsNull() && postgresqlOutputOption.Mode.ValueString() == "merge" {
+		// When mode is "merge", merge_keys is required by the API (even if empty)
+		emptyKeys := make([]string, 0)
+		mergeKeys = &emptyKeys
 	}
 
 	return &outputOptionParameters.PostgresqlOutputOptionInput{
-		Database:                        postgresqlOutputOption.Database.ValueString(),
-		Schema:                          postgresqlOutputOption.Schema.ValueString(),
-		Table:                           postgresqlOutputOption.Table.ValueString(),
-		Mode:                            model.NewNullableString(postgresqlOutputOption.Mode),
-		DefaultTimeZone:                 model.NewNullableString(postgresqlOutputOption.DefaultTimeZone),
-		PostgresqlConnectionId:          postgresqlOutputOption.PostgresqlConnectionId.ValueInt64(),
-		PostgresqlOutputOptionMergeKeys: model.WrapObjectList(mergeKeys),
+		Database:               postgresqlOutputOption.Database.ValueString(),
+		Schema:                 postgresqlOutputOption.Schema.ValueString(),
+		Table:                  postgresqlOutputOption.Table.ValueString(),
+		Mode:                   model.NewNullableString(postgresqlOutputOption.Mode),
+		DefaultTimeZone:        model.NewNullableString(postgresqlOutputOption.DefaultTimeZone),
+		PostgresqlConnectionId: postgresqlOutputOption.PostgresqlConnectionId.ValueInt64(),
+		MergeKeys:              model.WrapObjectList(mergeKeys),
 	}
 }
 
@@ -96,29 +98,31 @@ func (postgresqlOutputOption *PostgresqlOutputOption) ToUpdateInput(ctx context.
 	}
 
 	var mergeKeys *[]string
-	if !postgresqlOutputOption.PostgresqlOutputOptionMergeKeys.IsNull() && !postgresqlOutputOption.PostgresqlOutputOptionMergeKeys.IsUnknown() {
+	if !postgresqlOutputOption.MergeKeys.IsNull() && !postgresqlOutputOption.MergeKeys.IsUnknown() {
 		var mergeKeyValues []types.String
-		diags := postgresqlOutputOption.PostgresqlOutputOptionMergeKeys.ElementsAs(ctx, &mergeKeyValues, false)
+		diags := postgresqlOutputOption.MergeKeys.ElementsAs(ctx, &mergeKeyValues, false)
 		if diags.HasError() {
 			return nil
 		}
 
-		if len(mergeKeyValues) > 0 {
-			mk := make([]string, 0, len(mergeKeyValues))
-			for _, input := range mergeKeyValues {
-				mk = append(mk, input.ValueString())
-			}
-			mergeKeys = &mk
+		mk := make([]string, 0, len(mergeKeyValues))
+		for _, input := range mergeKeyValues {
+			mk = append(mk, input.ValueString())
 		}
+		mergeKeys = &mk
+	} else if !postgresqlOutputOption.Mode.IsNull() && postgresqlOutputOption.Mode.ValueString() == "merge" {
+		// When mode is "merge", merge_keys is required by the API (even if empty)
+		emptyKeys := make([]string, 0)
+		mergeKeys = &emptyKeys
 	}
 
 	return &outputOptionParameters.UpdatePostgresqlOutputOptionInput{
-		Database:                        postgresqlOutputOption.Database.ValueStringPointer(),
-		Schema:                          postgresqlOutputOption.Schema.ValueStringPointer(),
-		Table:                           postgresqlOutputOption.Table.ValueStringPointer(),
-		Mode:                            model.NewNullableString(postgresqlOutputOption.Mode),
-		DefaultTimeZone:                 model.NewNullableString(postgresqlOutputOption.DefaultTimeZone),
-		PostgresqlConnectionId:          postgresqlOutputOption.PostgresqlConnectionId.ValueInt64Pointer(),
-		PostgresqlOutputOptionMergeKeys: model.WrapObjectList(mergeKeys),
+		Database:               postgresqlOutputOption.Database.ValueStringPointer(),
+		Schema:                 postgresqlOutputOption.Schema.ValueStringPointer(),
+		Table:                  postgresqlOutputOption.Table.ValueStringPointer(),
+		Mode:                   model.NewNullableString(postgresqlOutputOption.Mode),
+		DefaultTimeZone:        model.NewNullableString(postgresqlOutputOption.DefaultTimeZone),
+		PostgresqlConnectionId: postgresqlOutputOption.PostgresqlConnectionId.ValueInt64Pointer(),
+		MergeKeys:              model.WrapObjectList(mergeKeys),
 	}
 }

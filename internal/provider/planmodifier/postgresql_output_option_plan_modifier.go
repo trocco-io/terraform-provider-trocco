@@ -26,14 +26,14 @@ func (d *PostgresqlOutputOptionPlanModifier) PlanModifyObject(ctx context.Contex
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	var postgresqlOutputOptionMergeKeys types.Set
-	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("postgresql_output_option_merge_keys"), &postgresqlOutputOptionMergeKeys)...)
+	var mergeKeys types.Set
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("merge_keys"), &mergeKeys)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if mode.ValueString() != "merge" && len(postgresqlOutputOptionMergeKeys.Elements()) > 0 {
-		addPostgresqlOutputOptionAttributeError(req, resp, "postgresql_output_option_merge_keys can only be set when mode is 'merge'")
+	if mode.ValueString() != "merge" && len(mergeKeys.Elements()) > 0 {
+		addPostgresqlOutputOptionAttributeError(req, resp, "merge_keys can only be set when mode is 'merge'")
 	}
 }
 
