@@ -1192,6 +1192,33 @@ resource "trocco_job_definition" "yahoo_ads_api_yss_input_example" {
 }
 ```
 
+#### DatabricksInputOption
+
+```terraform
+resource "trocco_job_definition" "databricks_to_bigquery" {
+  input_option_type = "databricks"
+
+  input_option = {
+    databricks_input_option = {
+      databricks_connection_id = 1
+      catalog_name             = "catalog_example"
+      schema_name              = "schema_example"
+      query                    = "select * from example_table"
+      input_option_columns = [
+        {
+          name = "id"
+          type = "long"
+        },
+        {
+          name = "name"
+          type = "string"
+        }
+      ]
+    }
+  }
+}
+```
+
 ### OutputOptions
 
 #### BigqueryOutputOption
@@ -1259,6 +1286,37 @@ resource "trocco_job_definition" "salesforce_output_example" {
 }
 ```
 
+#### DatabricksOutputOption
+
+```terraform
+resource "trocco_job_definition" "databricks_output_example" {
+  output_option_type = "databricks"
+
+  output_option = {
+    databricks_output_option = {
+      databricks_connection_id = 1
+      catalog_name             = "catalog_example"
+      schema_name              = "schema_example"
+      table                    = "table_example"
+      batch_size               = 5000
+      mode                     = "insert"
+      default_time_zone        = "Etc/UTC"
+      databricks_output_option_column_options = [
+        {
+          name             = "timestamp_column"
+          type             = "TIMESTAMP"
+          value_type       = "timestamp"
+          timestamp_format = "%Y-%m-%d %H:%M:%S"
+          timezone         = "Asia/Tokyo"
+        }
+      ]
+      databricks_output_option_merge_keys = [
+        "id"
+      ]
+    }
+  }
+}
+```
 
 ### Label
 
@@ -1449,6 +1507,7 @@ Optional:
 Optional:
 
 - `bigquery_input_option` (Attributes) Attributes about source bigquery (see [below for nested schema](#nestedatt--input_option--bigquery_input_option))
+- `databricks_input_option` (Attributes) Attributes of source databricks (see [below for nested schema](#nestedatt--input_option--databricks_input_option))
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
 - `google_analytics4_input_option` (Attributes) Attributes about source Google Analytics 4 (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option))
 - `google_spreadsheets_input_option` (Attributes) Attributes about source Google Spreadsheets (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option))
@@ -1521,6 +1580,50 @@ Optional:
 Optional:
 
 - `match_name` (String) Relative path after decompression (regular expression). If not entered, all data in the compressed file will be transferred.
+
+
+
+<a id="nestedatt--input_option--databricks_input_option"></a>
+### Nested Schema for `input_option.databricks_input_option`
+
+Required:
+
+- `catalog_name` (String) Catalog name
+- `databricks_connection_id` (Number) ID of Databricks connection
+- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--databricks_input_option--input_option_columns))
+- `query` (String) SQL query to execute
+- `schema_name` (String) Schema name
+
+Optional:
+
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--databricks_input_option--custom_variable_settings))
+- `fetch_rows` (Number) Number of records processed by the cursor at one time
+
+<a id="nestedatt--input_option--databricks_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.databricks_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+
+<a id="nestedatt--input_option--databricks_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.databricks_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
 
 
 
@@ -2746,6 +2849,7 @@ Optional:
 Optional:
 
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
+- `databricks_output_option` (Attributes) Attributes of destination Databricks settings (see [below for nested schema](#nestedatt--output_option--databricks_output_option))
 - `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
 - `kintone_output_option` (Attributes) Attributes of destination Kintone settings (see [below for nested schema](#nestedatt--output_option--kintone_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
@@ -2812,6 +2916,40 @@ Optional:
 - `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--output_option--databricks_output_option"></a>
+### Nested Schema for `output_option.databricks_output_option`
+
+Required:
+
+- `catalog_name` (String) Databricks catalog name
+- `databricks_connection_id` (Number) ID of Databricks connection
+- `mode` (String) Write mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`
+- `schema_name` (String) Databricks schema name
+- `table` (String) Table name
+
+Optional:
+
+- `batch_size` (Number) Batch size for data transfer.
+- `databricks_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--databricks_output_option--databricks_output_option_column_options))
+- `databricks_output_option_merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
+- `default_time_zone` (String) Default time zone for timestamp without time zone
+
+<a id="nestedatt--output_option--databricks_output_option--databricks_output_option_column_options"></a>
+### Nested Schema for `output_option.databricks_output_option.databricks_output_option_column_options`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Data type
+
+Optional:
+
+- `timestamp_format` (String) Timestamp format
+- `timezone` (String) Time zone
+- `value_type` (String) Value type
 
 
 
