@@ -4,6 +4,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -28,10 +31,12 @@ func KintoneOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Guest space ID",
 			},
 			"mode": schema.StringAttribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("insert", "update", "upsert"),
 				},
+				Default:             stringdefault.StaticString("insert"),
 				MarkdownDescription: "Transfer mode. One of `insert`, `update`, `upsert`",
 			},
 			"update_key": schema.StringAttribute{
@@ -39,7 +44,9 @@ func KintoneOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Update key (only applicable if mode is 'update' or 'upsert')",
 			},
 			"ignore_nulls": schema.BoolAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(false),
 				MarkdownDescription: "Whether to ignore NULL values",
 			},
 			"reduce_key": schema.StringAttribute{
@@ -47,10 +54,12 @@ func KintoneOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Reduce key for deduplication",
 			},
 			"chunk_size": schema.Int64Attribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
+				Default:             int64default.StaticInt64(100),
 				MarkdownDescription: "Chunk size",
 			},
 			"kintone_output_option_column_options": schema.ListNestedAttribute{

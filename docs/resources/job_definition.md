@@ -2866,15 +2866,15 @@ Required:
 Required:
 
 - `app_id` (String) Kintone app ID
-- `chunk_size` (Number) Chunk size
-- `ignore_nulls` (Boolean) Whether to ignore NULL values
 - `kintone_connection_id` (Number) Kintone connection ID
-- `mode` (String) Transfer mode. One of `insert`, `update`, `upsert`
 
 Optional:
 
+- `chunk_size` (Number) Chunk size
 - `guest_space_id` (String) Guest space ID
+- `ignore_nulls` (Boolean) Whether to ignore NULL values
 - `kintone_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--kintone_output_option--kintone_output_option_column_options))
+- `mode` (String) Transfer mode. One of `insert`, `update`, `upsert`
 - `reduce_key` (String) Reduce key for deduplication
 - `update_key` (String) Update key (only applicable if mode is 'update' or 'upsert')
 

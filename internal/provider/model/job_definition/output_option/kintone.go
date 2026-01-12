@@ -36,12 +36,19 @@ func NewKintoneOutputOption(ctx context.Context, kintoneOutputOption *output_opt
 		return nil
 	}
 
+	var updateKey types.String
+	if kintoneOutputOption.Mode == "update" || kintoneOutputOption.Mode == "upsert" {
+		updateKey = types.StringPointerValue(kintoneOutputOption.UpdateKey)
+	} else {
+		updateKey = types.StringNull()
+	}
+
 	result := &KintoneOutputOption{
 		KintoneConnectionID: types.Int64Value(kintoneOutputOption.KintoneConnectionID),
 		AppID:               types.StringValue(kintoneOutputOption.AppID),
 		GuestSpaceID:        types.StringPointerValue(kintoneOutputOption.GuestSpaceID),
 		Mode:                types.StringValue(kintoneOutputOption.Mode),
-		UpdateKey:           types.StringPointerValue(kintoneOutputOption.UpdateKey),
+		UpdateKey:           updateKey,
 		IgnoreNulls:         types.BoolValue(kintoneOutputOption.IgnoreNulls),
 		ReduceKey:           types.StringPointerValue(kintoneOutputOption.ReduceKey),
 		ChunkSize:           types.Int64Value(kintoneOutputOption.ChunkSize),
