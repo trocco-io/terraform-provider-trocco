@@ -46,6 +46,9 @@ type Connection struct {
 	HttpPath                 *string `json:"http_path"`                            // databricks
 	AuthType                 *string `json:"auth_type"`                            // databricks
 	OAuth2ClientID           *string `json:"oauth2_client_id"`                     // databricks
+	ConnectionStringFormat   *string `json:"connection_string_format"`             // mongodb
+	ReadPreference           *string `json:"read_preference"`                      // mongodb
+	AuthSource               *string `json:"auth_source"`                          // mongodb
 }
 
 type GetConnectionsInput struct {
@@ -102,6 +105,9 @@ type CreateConnectionInput struct {
 	OAuth2ClientID         *parameter.NullableString `json:"oauth2_client_id,omitempty"`           // databricks
 	OAuth2ClientSecret     *parameter.NullableString `json:"oauth2_client_secret,omitempty"`       // databricks
 	ServerHostname         *string                   `json:"server_hostname,omitempty"`            // databricks
+	ConnectionStringFormat *parameter.NullableString `json:"connection_string_format,omitempty"`   // mongodb
+	ReadPreference         *parameter.NullableString `json:"read_preference,omitempty"`            // mongodb
+	AuthSource             *parameter.NullableString `json:"auth_source,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -153,6 +159,9 @@ type UpdateConnectionInput struct {
 	OAuth2ClientID         *parameter.NullableString `json:"oauth2_client_id,omitempty"`           // databricks
 	OAuth2ClientSecret     *parameter.NullableString `json:"oauth2_client_secret,omitempty"`       // databricks
 	ServerHostname         *string                   `json:"server_hostname,omitempty"`            // databricks
+	ConnectionStringFormat *parameter.NullableString `json:"connection_string_format,omitempty"`   // mongodb
+	ReadPreference         *parameter.NullableString `json:"read_preference,omitempty"`            // mongodb
+	AuthSource             *parameter.NullableString `json:"auth_source,omitempty"`                // mongodb
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {
