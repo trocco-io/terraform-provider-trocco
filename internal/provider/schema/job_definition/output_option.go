@@ -16,6 +16,7 @@ func OutputOptionSchema() schema.Attribute {
 			"salesforce_output_option":          SalesforceOutputOptionSchema(),
 			"google_spreadsheets_output_option": GoogleSpreadsheetsOutputOptionSchema(),
 			"databricks_output_option":          DatabricksOutputOptionSchema(),
+			"postgresql_output_option":          PostgresqlOutputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planModifier.OutputOptionPlanModifier{},
