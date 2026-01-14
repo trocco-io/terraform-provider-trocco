@@ -136,10 +136,10 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		// SFTP Fields
 		SecretKey:             m.SecretKey.ValueStringPointer(),
 		SecretKeyPassphrase:   m.SecretKeyPassphrase.ValueStringPointer(),
-		UserDirectoryIsRoot:   model.NewNullableBool(m.UserDirectoryIsRoot),
-		WindowsServer:         model.NewNullableBool(m.WindowsServer),
+		UserDirectoryIsRoot:   m.UserDirectoryIsRoot.ValueBoolPointer(),
+		WindowsServer:         m.WindowsServer.ValueBoolPointer(),
 		SSHTunnelID:           model.NewNullableInt64(m.SSHTunnelID),
-		AWSPrivatelinkEnabled: model.NewNullableBool(m.AWSPrivatelinkEnabled),
+		AWSPrivatelinkEnabled: m.AWSPrivatelinkEnabled.ValueBoolPointer(),
 	}
 
 	// SSL Fields
@@ -230,10 +230,10 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		// SFTP Fields
 		SecretKey:             m.SecretKey.ValueStringPointer(),
 		SecretKeyPassphrase:   m.SecretKeyPassphrase.ValueStringPointer(),
-		UserDirectoryIsRoot:   model.NewNullableBool(m.UserDirectoryIsRoot),
-		WindowsServer:         model.NewNullableBool(m.WindowsServer),
+		UserDirectoryIsRoot:   m.UserDirectoryIsRoot.ValueBoolPointer(),
+		WindowsServer:         m.WindowsServer.ValueBoolPointer(),
 		SSHTunnelID:           model.NewNullableInt64(m.SSHTunnelID),
-		AWSPrivatelinkEnabled: model.NewNullableBool(m.AWSPrivatelinkEnabled),
+		AWSPrivatelinkEnabled: m.AWSPrivatelinkEnabled.ValueBoolPointer(),
 	}
 
 	// SSL Fields
@@ -738,7 +738,7 @@ func (r *connectionResource) Schema(
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Bool{
-					planModifier.ConditionalBooleanDefault(true, "sftp"),
+					planModifier.ConditionalBooleanDefault(false, "sftp"),
 				},
 			},
 			"ssh_tunnel_id": schema.Int64Attribute{

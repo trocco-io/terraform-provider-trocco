@@ -179,8 +179,5 @@ func SftpOutputOptionSchema() schema.Attribute {
 			},
 			"custom_variable_settings": CustomVariableSettingsSchema(),
 		},
-		PlanModifiers: []planmodifier.Object{
-			&planModifier.SftpOutputOptionPlanModifier{},
-		},
 	}
 }

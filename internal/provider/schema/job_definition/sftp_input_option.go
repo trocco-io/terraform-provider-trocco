@@ -72,7 +72,6 @@ func SftpInputOptionSchema() schema.Attribute {
 			"xml_parser":               parser.XmlParserSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
-			&planModifier.SftpInputOptionPlanModifier{},
 			&planModifier.FileParserPlanModifier{},
 		},
 	}

@@ -99,10 +99,10 @@ type CreateConnectionInput struct {
 	BasicAuthPassword      *parameter.NullableString `json:"basic_auth_password,omitempty"`        // kintone
 	SecretKey              *string                   `json:"secret_key,omitempty"`                 // sftp
 	SecretKeyPassphrase    *string                   `json:"secret_key_passphrase,omitempty"`      // sftp
-	UserDirectoryIsRoot    *parameter.NullableBool   `json:"user_directory_is_root,omitempty"`     // sftp
-	WindowsServer          *parameter.NullableBool   `json:"windows_server,omitempty"`             // sftp
+	UserDirectoryIsRoot    *bool                     `json:"user_directory_is_root,omitempty"`     // sftp
+	WindowsServer          *bool                     `json:"windows_server,omitempty"`             // sftp
 	SSHTunnelID            *parameter.NullableInt64  `json:"ssh_tunnel_id,omitempty"`              // sftp
-	AWSPrivatelinkEnabled  *parameter.NullableBool   `json:"aws_privatelink_enabled,omitempty"`    // sftp
+	AWSPrivatelinkEnabled  *bool                     `json:"aws_privatelink_enabled,omitempty"`    // sftp
 }
 
 type UpdateConnectionInput struct {
@@ -150,10 +150,10 @@ type UpdateConnectionInput struct {
 	BasicAuthPassword      *parameter.NullableString `json:"basic_auth_password,omitempty"`        // kintone
 	SecretKey              *string                   `json:"secret_key,omitempty"`                 // sftp
 	SecretKeyPassphrase    *string                   `json:"secret_key_passphrase,omitempty"`      // sftp
-	UserDirectoryIsRoot    *parameter.NullableBool   `json:"user_directory_is_root,omitempty"`     // sftp
-	WindowsServer          *parameter.NullableBool   `json:"windows_server,omitempty"`             // sftp
+	UserDirectoryIsRoot    *bool                     `json:"user_directory_is_root,omitempty"`     // sftp
+	WindowsServer          *bool                     `json:"windows_server,omitempty"`             // sftp
 	SSHTunnelID            *parameter.NullableInt64  `json:"ssh_tunnel_id,omitempty"`              // sftp
-	AWSPrivatelinkEnabled  *parameter.NullableBool   `json:"aws_privatelink_enabled,omitempty"`    // sftp
+	AWSPrivatelinkEnabled  *bool                     `json:"aws_privatelink_enabled,omitempty"`    // sftp
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {
