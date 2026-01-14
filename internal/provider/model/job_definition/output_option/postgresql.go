@@ -75,18 +75,14 @@ func (postgresqlOutputOption *PostgresqlOutputOption) ToInput(ctx context.Contex
 			mk = append(mk, input.ValueString())
 		}
 		mergeKeys = &mk
-	} else if !postgresqlOutputOption.Mode.IsNull() && postgresqlOutputOption.Mode.ValueString() == "merge" {
-		// When mode is "merge", merge_keys is required by the API (even if empty)
-		emptyKeys := make([]string, 0)
-		mergeKeys = &emptyKeys
 	}
 
 	return &outputOptionParameters.PostgresqlOutputOptionInput{
 		Database:               postgresqlOutputOption.Database.ValueString(),
 		Schema:                 postgresqlOutputOption.Schema.ValueString(),
 		Table:                  postgresqlOutputOption.Table.ValueString(),
-		Mode:                   model.NewNullableString(postgresqlOutputOption.Mode),
-		DefaultTimeZone:        model.NewNullableString(postgresqlOutputOption.DefaultTimeZone),
+		Mode:                   postgresqlOutputOption.Mode.ValueString(),
+		DefaultTimeZone:        postgresqlOutputOption.DefaultTimeZone.ValueString(),
 		PostgresqlConnectionId: postgresqlOutputOption.PostgresqlConnectionId.ValueInt64(),
 		MergeKeys:              model.WrapObjectList(mergeKeys),
 	}
@@ -110,10 +106,6 @@ func (postgresqlOutputOption *PostgresqlOutputOption) ToUpdateInput(ctx context.
 			mk = append(mk, input.ValueString())
 		}
 		mergeKeys = &mk
-	} else if !postgresqlOutputOption.Mode.IsNull() && postgresqlOutputOption.Mode.ValueString() == "merge" {
-		// When mode is "merge", merge_keys is required by the API (even if empty)
-		emptyKeys := make([]string, 0)
-		mergeKeys = &emptyKeys
 	}
 
 	return &outputOptionParameters.UpdatePostgresqlOutputOptionInput{

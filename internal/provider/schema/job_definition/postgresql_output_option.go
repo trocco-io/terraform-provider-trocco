@@ -1,11 +1,8 @@
 package job_definition
 
 import (
-	planModifier "terraform-provider-trocco/internal/provider/planmodifier"
-
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -47,9 +44,6 @@ func PostgresqlOutputOptionSchema() schema.Attribute {
 				ElementType:         types.StringType,
 				MarkdownDescription: "Merge keys (only applicable if mode is 'merge')",
 			},
-		},
-		PlanModifiers: []planmodifier.Object{
-			&planModifier.PostgresqlOutputOptionPlanModifier{},
 		},
 	}
 }

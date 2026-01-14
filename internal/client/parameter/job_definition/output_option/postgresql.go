@@ -8,8 +8,8 @@ type PostgresqlOutputOptionInput struct {
 	Database               string                                `json:"database"`
 	Schema                 string                                `json:"schema"`
 	Table                  string                                `json:"table"`
-	Mode                   *parameter.NullableString             `json:"mode,omitempty"`
-	DefaultTimeZone        *parameter.NullableString             `json:"default_time_zone,omitempty"`
+	Mode                   string                                `json:"mode"`
+	DefaultTimeZone        string                                `json:"default_time_zone"`
 	PostgresqlConnectionId int64                                 `json:"postgresql_connection_id"`
 	MergeKeys              *parameter.NullableObjectList[string] `json:"merge_keys,omitempty"`
 }
