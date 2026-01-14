@@ -4,6 +4,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -34,38 +36,48 @@ func MysqlOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Table name",
 			},
 			"mode": schema.StringAttribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("insert", "insert_direct", "truncate_insert", "replace", "merge", "merge_direct"),
 				},
+				Default:             stringdefault.StaticString("insert"),
 				MarkdownDescription: "Transfer mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`, `merge_direct`",
 			},
 			"retry_limit": schema.Int64Attribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(0),
 				},
+				Default:             int64default.StaticInt64(12),
 				MarkdownDescription: "Maximum number of retries",
 			},
 			"retry_wait": schema.Int64Attribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(0),
 				},
+				Default:             int64default.StaticInt64(1000),
 				MarkdownDescription: "Retry wait time (milliseconds)",
 			},
 			"max_retry_wait": schema.Int64Attribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(0),
 				},
+				Default:             int64default.StaticInt64(1800000),
 				MarkdownDescription: "Maximum retry wait time (milliseconds)",
 			},
 			"default_time_zone": schema.StringAttribute{
-				Required: true,
+				Optional: true,
+				Computed: true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
+				Default:             stringdefault.StaticString("UTC"),
 				MarkdownDescription: "Default time zone",
 			},
 			"before_load": schema.StringAttribute{
@@ -93,6 +105,7 @@ func MysqlOutputOptionSchema() schema.Attribute {
 						},
 						"scale": schema.Int64Attribute{
 							Optional: true,
+							Computed: true,
 							Validators: []validator.Int64{
 								int64validator.AtLeast(0),
 							},
@@ -100,6 +113,7 @@ func MysqlOutputOptionSchema() schema.Attribute {
 						},
 						"precision": schema.Int64Attribute{
 							Optional: true,
+							Computed: true,
 							Validators: []validator.Int64{
 								int64validator.AtLeast(0),
 							},

@@ -3004,12 +3004,7 @@ Required:
 Required:
 
 - `database` (String) Database name
-- `default_time_zone` (String) Default time zone
-- `max_retry_wait` (Number) Maximum retry wait time (milliseconds)
-- `mode` (String) Transfer mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`, `merge_direct`
 - `mysql_connection_id` (Number) ID of MySQL connection
-- `retry_limit` (Number) Maximum number of retries
-- `retry_wait` (Number) Retry wait time (milliseconds)
 - `table` (String) Table name
 
 Optional:
@@ -3017,7 +3012,12 @@ Optional:
 - `after_load` (String) SQL statement to execute after data transfer
 - `before_load` (String) SQL statement to execute before data transfer
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--mysql_output_option--custom_variable_settings))
+- `default_time_zone` (String) Default time zone
+- `max_retry_wait` (Number) Maximum retry wait time (milliseconds)
+- `mode` (String) Transfer mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`, `merge_direct`
 - `mysql_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--mysql_output_option--mysql_output_option_column_options))
+- `retry_limit` (Number) Maximum number of retries
+- `retry_wait` (Number) Retry wait time (milliseconds)
 
 <a id="nestedatt--output_option--mysql_output_option--custom_variable_settings"></a>
 ### Nested Schema for `output_option.mysql_output_option.custom_variable_settings`
