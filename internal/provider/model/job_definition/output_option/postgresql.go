@@ -112,8 +112,8 @@ func (postgresqlOutputOption *PostgresqlOutputOption) ToUpdateInput(ctx context.
 		Database:               postgresqlOutputOption.Database.ValueStringPointer(),
 		Schema:                 postgresqlOutputOption.Schema.ValueStringPointer(),
 		Table:                  postgresqlOutputOption.Table.ValueStringPointer(),
-		Mode:                   model.NewNullableString(postgresqlOutputOption.Mode),
-		DefaultTimeZone:        model.NewNullableString(postgresqlOutputOption.DefaultTimeZone),
+		Mode:                   postgresqlOutputOption.Mode.ValueStringPointer(),
+		DefaultTimeZone:        postgresqlOutputOption.DefaultTimeZone.ValueStringPointer(),
 		PostgresqlConnectionId: postgresqlOutputOption.PostgresqlConnectionId.ValueInt64Pointer(),
 		MergeKeys:              model.WrapObjectList(mergeKeys),
 	}
