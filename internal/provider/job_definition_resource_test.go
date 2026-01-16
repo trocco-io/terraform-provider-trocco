@@ -718,6 +718,55 @@ func TestAccJobDefinitionResourceDatabricksToBigQuery(t *testing.T) {
 	})
 }
 
+func TestAccJobDefinitionResourceHubspotToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.hubspot_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/hubspot_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Hubspot to BigQuery Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from Hubspot to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "hubspot"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.hubspot_connection_id", "388"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.target", "object"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.object_type", "contact"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.incremental_loading_enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.input_option_columns.#", "3"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.input_option_columns.0.name", "id"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.input_option_columns.0.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.input_option_columns.1.name", "email"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.input_option_columns.1.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.input_option_columns.2.name", "created_at"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.input_option_columns.2.type", "timestamp"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "contact_id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.src", "id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "hubspot_to_bigquery_test_table"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
 // func TestAccJobDefinitionResourceMongoDBToBigQuery(t *testing.T) {
 // 	resourceName := "trocco_job_definition.mongodb_to_bigquery"
 // 	resource.Test(t, resource.TestCase{

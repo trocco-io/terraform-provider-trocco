@@ -1512,6 +1512,7 @@ Optional:
 - `google_analytics4_input_option` (Attributes) Attributes about source Google Analytics 4 (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option))
 - `google_spreadsheets_input_option` (Attributes) Attributes about source Google Spreadsheets (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option))
 - `http_input_option` (Attributes) Attributes about source HTTP (see [below for nested schema](#nestedatt--input_option--http_input_option))
+- `hubspot_input_option` (Attributes) attributes of source HubSpot (see [below for nested schema](#nestedatt--input_option--hubspot_input_option))
 - `kintone_input_option` (Attributes) Attributes of source kintone (see [below for nested schema](#nestedatt--input_option--kintone_input_option))
 - `mongodb_input_option` (Attributes) Attributes of source MongoDB (see [below for nested schema](#nestedatt--input_option--mongodb_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
@@ -2281,6 +2282,59 @@ Optional:
 - `format` (String) Format of the column.
 - `timezone` (String) time zone
 
+
+
+
+<a id="nestedatt--input_option--hubspot_input_option"></a>
+### Nested Schema for `input_option.hubspot_input_option`
+
+Required:
+
+- `hubspot_connection_id` (Number) id of HubSpot connection
+- `input_option_columns` (Attributes List) list of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--hubspot_input_option--input_option_columns))
+- `target` (String) type of data to retrieve from HubSpot
+
+Optional:
+
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--hubspot_input_option--custom_variable_settings))
+- `email_event_type` (String) email event type (required when target is email_event)
+- `end_timestamp` (String) end timestamp (used when target is email_event)
+- `from_object_type` (String) source object type (required when target is association)
+- `incremental_loading_enabled` (Boolean) enable incremental loading (only valid when target is object)
+- `last_record_time` (String) last record time (used when incremental loading is enabled)
+- `object_type` (String) object type (required when target is object, pipeline, or pipeline_stage)
+- `start_timestamp` (String) start timestamp (used when target is email_event)
+- `to_object_type` (String) destination object type (required when target is association, engagement_association, pipeline, or pipeline_stage)
+
+<a id="nestedatt--input_option--hubspot_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.hubspot_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) column name
+- `type` (String) column type
+
+Optional:
+
+- `format` (String) column format
+
+
+<a id="nestedatt--input_option--hubspot_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.hubspot_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
 
 
 
