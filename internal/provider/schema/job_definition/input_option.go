@@ -24,6 +24,8 @@ func InputOptionSchema() schema.Attribute {
 			"kintone_input_option":             KintoneInputOptionSchema(),
 			"yahoo_ads_api_yss_input_option":   YahooAdsApiYssInputOptionSchema(),
 			"sftp_input_option":                SftpInputOptionSchema(),
+			"hubspot_input_option":             HubspotInputOptionSchema(),
+			"databricks_input_option":          DatabricksInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planModifier.InputOptionPlanModifier{},

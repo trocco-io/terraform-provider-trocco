@@ -87,6 +87,13 @@ type connectionResourceModel struct {
 	WindowsServer         types.Bool   `tfsdk:"windows_server"`
 	SSHTunnelID           types.Int64  `tfsdk:"ssh_tunnel_id"`
 	AWSPrivatelinkEnabled types.Bool   `tfsdk:"aws_privatelink_enabled"`
+	// Databricks Fields
+	ServerHostname      types.String `tfsdk:"server_hostname"`
+	HttpPath            types.String `tfsdk:"http_path"`
+	AuthType            types.String `tfsdk:"auth_type"`
+	PersonalAccessToken types.String `tfsdk:"personal_access_token"`
+	OAuth2ClientID      types.String `tfsdk:"oauth2_client_id"`
+	OAuth2ClientSecret  types.String `tfsdk:"oauth2_client_secret"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -140,6 +147,13 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		WindowsServer:         m.WindowsServer.ValueBoolPointer(),
 		SSHTunnelID:           model.NewNullableInt64(m.SSHTunnelID),
 		AWSPrivatelinkEnabled: m.AWSPrivatelinkEnabled.ValueBoolPointer(),
+		// Databricks Fields
+		ServerHostname:      m.ServerHostname.ValueStringPointer(),
+		HttpPath:            m.HttpPath.ValueStringPointer(),
+		AuthType:            m.AuthType.ValueStringPointer(),
+		PersonalAccessToken: model.NewNullableString(m.PersonalAccessToken),
+		OAuth2ClientID:      model.NewNullableString(m.OAuth2ClientID),
+		OAuth2ClientSecret:  model.NewNullableString(m.OAuth2ClientSecret),
 	}
 
 	// SSL Fields
@@ -234,6 +248,13 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		WindowsServer:         m.WindowsServer.ValueBoolPointer(),
 		SSHTunnelID:           model.NewNullableInt64(m.SSHTunnelID),
 		AWSPrivatelinkEnabled: m.AWSPrivatelinkEnabled.ValueBoolPointer(),
+		// Databricks Fields
+		ServerHostname:      m.ServerHostname.ValueStringPointer(),
+		HttpPath:            m.HttpPath.ValueStringPointer(),
+		AuthType:            m.AuthType.ValueStringPointer(),
+		PersonalAccessToken: model.NewNullableString(m.PersonalAccessToken),
+		OAuth2ClientID:      model.NewNullableString(m.OAuth2ClientID),
+		OAuth2ClientSecret:  model.NewNullableString(m.OAuth2ClientSecret),
 	}
 
 	// SSL Fields
@@ -326,6 +347,7 @@ var supportedConnectionTypes = []string{
 	"google_analytics4",
 	"kintone",
 	"sftp",
+	"databricks",
 }
 
 func (r *connectionResource) Schema(
@@ -707,7 +729,51 @@ func (r *connectionResource) Schema(
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
-
+			// Databricks Fields
+			"server_hostname": schema.StringAttribute{
+				MarkdownDescription: "Databricks: The host of a (Databricks) account.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"http_path": schema.StringAttribute{
+				MarkdownDescription: "Databricks: The HTTP Path for the Databricks connection.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"auth_type": schema.StringAttribute{
+				MarkdownDescription: "Databricks: The Auth Type for the Databricks connection. It must be one of `pat` or `oauth-m2m`.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("pat", "oauth-m2m"),
+				},
+			},
+			"personal_access_token": schema.StringAttribute{
+				MarkdownDescription: "Databricks: The Personal Access Token for the Databricks connection.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"oauth2_client_id": schema.StringAttribute{
+				MarkdownDescription: "Databricks: The OAuth2 Client ID for the Databricks connection.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"oauth2_client_secret": schema.StringAttribute{
+				MarkdownDescription: "Databricks: The OAuth2 Client Secret for the Databricks connection.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
 			// SFTP Fields
 			"secret_key": schema.StringAttribute{
 				MarkdownDescription: "SFTP: RSA private key for authentication.",
@@ -843,6 +909,13 @@ func (r *connectionResource) Create(
 		WindowsServer:         types.BoolPointerValue(conn.WindowsServer),
 		SSHTunnelID:           types.Int64PointerValue(conn.SSHTunnelID),
 		AWSPrivatelinkEnabled: types.BoolPointerValue(conn.AWSPrivatelinkEnabled),
+		// Databricks Fields
+		ServerHostname:      types.StringPointerValue(conn.ServerHostname),
+		HttpPath:            types.StringPointerValue(conn.HttpPath),
+		AuthType:            types.StringPointerValue(conn.AuthType),
+		PersonalAccessToken: plan.PersonalAccessToken,
+		OAuth2ClientID:      plan.OAuth2ClientID,
+		OAuth2ClientSecret:  plan.OAuth2ClientSecret,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -947,6 +1020,13 @@ func (r *connectionResource) Update(
 		WindowsServer:         types.BoolPointerValue(connection.WindowsServer),
 		SSHTunnelID:           types.Int64PointerValue(connection.SSHTunnelID),
 		AWSPrivatelinkEnabled: types.BoolPointerValue(connection.AWSPrivatelinkEnabled),
+		// Databricks Fields
+		ServerHostname:      types.StringPointerValue(connection.ServerHostname),
+		HttpPath:            types.StringPointerValue(connection.HttpPath),
+		AuthType:            types.StringPointerValue(connection.AuthType),
+		PersonalAccessToken: plan.PersonalAccessToken,
+		OAuth2ClientID:      plan.OAuth2ClientID,
+		OAuth2ClientSecret:  plan.OAuth2ClientSecret,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1030,6 +1110,13 @@ func (r *connectionResource) Read(
 		WindowsServer:         types.BoolPointerValue(conn.WindowsServer),
 		SSHTunnelID:           types.Int64PointerValue(conn.SSHTunnelID),
 		AWSPrivatelinkEnabled: types.BoolPointerValue(conn.AWSPrivatelinkEnabled),
+		// Databricks Fields
+		ServerHostname:      types.StringPointerValue(conn.ServerHostname),
+		HttpPath:            types.StringPointerValue(conn.HttpPath),
+		AuthType:            types.StringPointerValue(conn.AuthType),
+		PersonalAccessToken: state.PersonalAccessToken,
+		OAuth2ClientID:      types.StringPointerValue(conn.OAuth2ClientID),
+		OAuth2ClientSecret:  state.OAuth2ClientSecret,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1231,6 +1318,33 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredString(plan.UserName, "user_name", "SFTP", resp)
 		if plan.AWSPrivatelinkEnabled.ValueBool() {
 			validateRequiredInt(plan.SSHTunnelID, "ssh_tunnel_id", "SFTP", resp)
+		}
+	case "databricks":
+		validateRequiredString(plan.ServerHostname, "server_hostname", "Databricks", resp)
+		validateRequiredString(plan.HttpPath, "http_path", "Databricks", resp)
+		validateRequiredString(plan.AuthType, "auth_type", "Databricks", resp)
+		validateStringAgainstPatterns(plan.AuthType, "auth_type", "Databricks", resp, "pat", "oauth-m2m")
+		switch plan.AuthType.ValueString() {
+		case "pat":
+			if plan.PersonalAccessToken.IsNull() {
+				resp.Diagnostics.AddError(
+					"personal_access_token",
+					"personal_access_token is required for Databricks connection with auth_type `pat`.",
+				)
+			}
+		case "oauth-m2m":
+			if plan.OAuth2ClientID.IsNull() {
+				resp.Diagnostics.AddError(
+					"oauth2_client_id",
+					"oauth2_client_id is required for Databricks connection with auth_type `oauth-m2m`.",
+				)
+			}
+			if plan.OAuth2ClientSecret.IsNull() {
+				resp.Diagnostics.AddError(
+					"oauth2_client_secret",
+					"oauth2_client_secret is required for Databricks connection with auth_type `oauth-m2m`.",
+				)
+			}
 		}
 	}
 }

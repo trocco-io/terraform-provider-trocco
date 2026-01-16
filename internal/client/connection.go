@@ -47,6 +47,10 @@ type Connection struct {
 	UserDirectoryIsRoot      *bool   `json:"user_directory_is_root"`               // sftp
 	WindowsServer            *bool   `json:"windows_server"`                       // sftp
 	SSHTunnelID              *int64  `json:"ssh_tunnel_id"`                        // sftp
+	ServerHostname           *string `json:"server_hostname"`                      // databricks
+	HttpPath                 *string `json:"http_path"`                            // databricks
+	AuthType                 *string `json:"auth_type"`                            // databricks
+	OAuth2ClientID           *string `json:"oauth2_client_id"`                     // databricks
 }
 
 type GetConnectionsInput struct {
@@ -103,6 +107,12 @@ type CreateConnectionInput struct {
 	WindowsServer          *bool                     `json:"windows_server,omitempty"`             // sftp
 	SSHTunnelID            *parameter.NullableInt64  `json:"ssh_tunnel_id,omitempty"`              // sftp
 	AWSPrivatelinkEnabled  *bool                     `json:"aws_privatelink_enabled,omitempty"`    // sftp
+	HttpPath               *string                   `json:"http_path,omitempty"`                  // databricks
+	AuthType               *string                   `json:"auth_type,omitempty"`                  // databricks
+	PersonalAccessToken    *parameter.NullableString `json:"personal_access_token,omitempty"`      // databricks
+	OAuth2ClientID         *parameter.NullableString `json:"oauth2_client_id,omitempty"`           // databricks
+	OAuth2ClientSecret     *parameter.NullableString `json:"oauth2_client_secret,omitempty"`       // databricks
+	ServerHostname         *string                   `json:"server_hostname,omitempty"`            // databricks
 }
 
 type UpdateConnectionInput struct {
@@ -154,6 +164,12 @@ type UpdateConnectionInput struct {
 	WindowsServer          *bool                     `json:"windows_server,omitempty"`             // sftp
 	SSHTunnelID            *parameter.NullableInt64  `json:"ssh_tunnel_id,omitempty"`              // sftp
 	AWSPrivatelinkEnabled  *bool                     `json:"aws_privatelink_enabled,omitempty"`    // sftp
+	HttpPath               *string                   `json:"http_path,omitempty"`                  // databricks
+	AuthType               *string                   `json:"auth_type,omitempty"`                  // databricks
+	PersonalAccessToken    *parameter.NullableString `json:"personal_access_token,omitempty"`      // databricks
+	OAuth2ClientID         *parameter.NullableString `json:"oauth2_client_id,omitempty"`           // databricks
+	OAuth2ClientSecret     *parameter.NullableString `json:"oauth2_client_secret,omitempty"`       // databricks
+	ServerHostname         *string                   `json:"server_hostname,omitempty"`            // databricks
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {
