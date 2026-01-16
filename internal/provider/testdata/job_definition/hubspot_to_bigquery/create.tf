@@ -55,7 +55,7 @@ resource "trocco_job_definition" "hubspot_to_bigquery" {
 
   input_option = {
     hubspot_input_option = {
-      hubspot_connection_id       = 1
+      hubspot_connection_id       = 388
       target                      = "object"
       object_type                 = "contact"
       incremental_loading_enabled = false
