@@ -734,7 +734,7 @@ func TestAccJobDefinitionResourceHubspotToBigQuery(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
 					resource.TestCheckResourceAttr(resourceName, "input_option_type", "hubspot"),
 					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.hubspot_connection_id", "1"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.hubspot_connection_id", "388"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.target", "object"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.object_type", "contact"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.hubspot_input_option.incremental_loading_enabled", "false"),
