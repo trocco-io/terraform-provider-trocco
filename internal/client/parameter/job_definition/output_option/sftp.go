@@ -12,6 +12,7 @@ type SftpOutputOptionInput struct {
 	IsMinimumOutputTasks   bool                                    `json:"is_minimum_output_tasks"`
 	FormatterType          string                                  `json:"formatter_type"`
 	EncoderType            string                                  `json:"encoder_type"`
+	SequenceFormat         *parameter.NullableString               `json:"sequence_format,omitempty"`
 	CsvFormatter           *SftpOutputOptionCsvFormatterInput      `json:"csv_formatter,omitempty"`
 	JsonlFormatter         *SftpOutputOptionJsonlFormatterInput    `json:"jsonl_formatter,omitempty"`
 }
@@ -24,6 +25,7 @@ type UpdateSftpOutputOptionInput struct {
 	IsMinimumOutputTasks   *bool                                   `json:"is_minimum_output_tasks,omitempty"`
 	FormatterType          *string                                 `json:"formatter_type,omitempty"`
 	EncoderType            *string                                 `json:"encoder_type,omitempty"`
+	SequenceFormat         *parameter.NullableString               `json:"sequence_format,omitempty"`
 	CsvFormatter           *SftpOutputOptionCsvFormatterInput      `json:"csv_formatter,omitempty"`
 	JsonlFormatter         *SftpOutputOptionJsonlFormatterInput    `json:"jsonl_formatter,omitempty"`
 }

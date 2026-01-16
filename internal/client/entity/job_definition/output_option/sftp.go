@@ -12,6 +12,7 @@ type SftpOutputOption struct {
 	IsMinimumOutputTasks   bool                            `json:"is_minimum_output_tasks"`
 	FormatterType          string                          `json:"formatter_type"`
 	EncoderType            string                          `json:"encoder_type"`
+	SequenceFormat         *string                         `json:"sequence_format"`
 	CsvFormatter           *SftpOutputOptionCsvFormatter   `json:"csv_formatter"`
 	JsonlFormatter         *SftpOutputOptionJsonlFormatter `json:"jsonl_formatter"`
 	Formatter              *SftpOutputOptionFormatter      `json:"formatter"`

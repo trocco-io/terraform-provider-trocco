@@ -49,6 +49,7 @@ resource "trocco_job_definition" "bigquery_to_sftp_jsonl" {
       file_ext                 = ".jsonl"
       is_minimum_output_tasks  = true
       encoder_type             = "gzip"
+      sequence_format          = "%03d.%02d"
 
       jsonl_formatter = {
         encoding    = "UTF-8"

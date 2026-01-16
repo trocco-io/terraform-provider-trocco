@@ -3121,6 +3121,7 @@ Optional:
 - `csv_formatter` (Attributes) CSV formatter configuration. Required when formatter_type is `csv` (see [below for nested schema](#nestedatt--output_option--sftp_output_option--csv_formatter))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--sftp_output_option--custom_variable_settings))
 - `jsonl_formatter` (Attributes) JSONL formatter configuration. Required when formatter_type is `jsonl` (see [below for nested schema](#nestedatt--output_option--sftp_output_option--jsonl_formatter))
+- `sequence_format` (String) sequence format for output files
 
 <a id="nestedatt--output_option--sftp_output_option--csv_formatter"></a>
 ### Nested Schema for `output_option.sftp_output_option.csv_formatter`

@@ -19,6 +19,7 @@ type SftpOutputOption struct {
 	FileExt                types.String `tfsdk:"file_ext"`
 	IsMinimumOutputTasks   types.Bool   `tfsdk:"is_minimum_output_tasks"`
 	EncoderType            types.String `tfsdk:"encoder_type"`
+	SequenceFormat         types.String `tfsdk:"sequence_format"`
 	CsvFormatter           types.Object `tfsdk:"csv_formatter"`
 	JsonlFormatter         types.Object `tfsdk:"jsonl_formatter"`
 	CustomVariableSettings types.List   `tfsdk:"custom_variable_settings"`
@@ -62,6 +63,7 @@ func NewSftpOutputOption(ctx context.Context, sftpOutputOption *output_option.Sf
 		FileExt:              types.StringValue(sftpOutputOption.FileExt),
 		IsMinimumOutputTasks: types.BoolValue(sftpOutputOption.IsMinimumOutputTasks),
 		EncoderType:          types.StringValue(sftpOutputOption.EncoderType),
+		SequenceFormat:       types.StringPointerValue(sftpOutputOption.SequenceFormat),
 	}
 
 	customVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, sftpOutputOption.CustomVariableSettings)
@@ -301,6 +303,7 @@ func (sftpOutputOption *SftpOutputOption) ToInput(ctx context.Context) *outputOp
 		IsMinimumOutputTasks:   sftpOutputOption.IsMinimumOutputTasks.ValueBool(),
 		FormatterType:          formatterType,
 		EncoderType:            sftpOutputOption.EncoderType.ValueString(),
+		SequenceFormat:         model.NewNullableString(sftpOutputOption.SequenceFormat),
 		CsvFormatter:           csvFormatterInput,
 		JsonlFormatter:         jsonlFormatterInput,
 	}
@@ -355,6 +358,7 @@ func (sftpOutputOption *SftpOutputOption) ToUpdateInput(ctx context.Context) *ou
 		IsMinimumOutputTasks:   sftpOutputOption.IsMinimumOutputTasks.ValueBoolPointer(),
 		FormatterType:          formatterType,
 		EncoderType:            sftpOutputOption.EncoderType.ValueStringPointer(),
+		SequenceFormat:         model.NewNullableString(sftpOutputOption.SequenceFormat),
 		CsvFormatter:           csvFormatterInput,
 		JsonlFormatter:         jsonlFormatterInput,
 	}

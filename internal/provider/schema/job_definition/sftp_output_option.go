@@ -46,6 +46,12 @@ func SftpOutputOptionSchema() schema.Attribute {
 				},
 				MarkdownDescription: "encoder type. Valid values: `` (no compression), `gzip`, `bzip2`, `zip`",
 			},
+			"sequence_format": schema.StringAttribute{
+				Optional:            true,
+				Computed:            true,
+				Default:             stringdefault.StaticString("%03d.%02d"),
+				MarkdownDescription: "sequence format for output files",
+			},
 			"csv_formatter": schema.SingleNestedAttribute{
 				Optional:            true,
 				MarkdownDescription: "CSV formatter configuration. Required when formatter_type is `csv`",
