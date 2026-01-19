@@ -767,7 +767,7 @@ func TestAccJobDefinitionResourceHubspotToBigQuery(t *testing.T) {
 	})
 }
 
-// TestAccJobDefinitionResourceSftpToBigQuery tests SFTP input option
+// TestAccJobDefinitionResourceSftpToBigQuery tests SFTP input option.
 func TestAccJobDefinitionResourceSftpToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.sftp_to_bigquery"
 	resource.Test(t, resource.TestCase{
@@ -813,7 +813,7 @@ func TestAccJobDefinitionResourceSftpToBigQuery(t *testing.T) {
 	})
 }
 
-// TestAccJobDefinitionResourceBigQueryToSftpCSV tests SFTP output option with CSV formatter
+// TestAccJobDefinitionResourceBigQueryToSftpCSV tests SFTP output option with CSV formatter.
 func TestAccJobDefinitionResourceBigQueryToSftpCSV(t *testing.T) {
 	resourceName := "trocco_job_definition.bigquery_to_sftp_csv"
 	resource.Test(t, resource.TestCase{
@@ -867,7 +867,7 @@ func TestAccJobDefinitionResourceBigQueryToSftpCSV(t *testing.T) {
 	})
 }
 
-// TestAccJobDefinitionResourceBigQueryToSftpJSONL tests SFTP output option with JSONL formatter
+// TestAccJobDefinitionResourceBigQueryToSftpJSONL tests SFTP output option with JSONL formatter.
 func TestAccJobDefinitionResourceBigQueryToSftpJSONL(t *testing.T) {
 	resourceName := "trocco_job_definition.bigquery_to_sftp_jsonl"
 	resource.Test(t, resource.TestCase{
