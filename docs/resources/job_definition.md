@@ -1514,6 +1514,7 @@ Optional:
 - `http_input_option` (Attributes) Attributes about source HTTP (see [below for nested schema](#nestedatt--input_option--http_input_option))
 - `hubspot_input_option` (Attributes) attributes of source HubSpot (see [below for nested schema](#nestedatt--input_option--hubspot_input_option))
 - `kintone_input_option` (Attributes) Attributes of source kintone (see [below for nested schema](#nestedatt--input_option--kintone_input_option))
+- `mongodb_input_option` (Attributes) Attributes of source MongoDB (see [below for nested schema](#nestedatt--input_option--mongodb_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
 - `postgresql_input_option` (Attributes) Attributes of source postgresql (see [below for nested schema](#nestedatt--input_option--postgresql_input_option))
 - `s3_input_option` (Attributes) Attributes about source S3 (see [below for nested schema](#nestedatt--input_option--s3_input_option))
@@ -2368,6 +2369,57 @@ Optional:
 
 <a id="nestedatt--input_option--kintone_input_option--custom_variable_settings"></a>
 ### Nested Schema for `input_option.kintone_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--input_option--mongodb_input_option"></a>
+### Nested Schema for `input_option.mongodb_input_option`
+
+Required:
+
+- `collection` (String) Collection name
+- `database` (String) Database name
+- `input_option_columns` (Attributes List) Column information (see [below for nested schema](#nestedatt--input_option--mongodb_input_option--input_option_columns))
+- `mongodb_connection_id` (Number) ID of MongoDB connection
+
+Optional:
+
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--mongodb_input_option--custom_variable_settings))
+- `incremental_columns` (String) Column to determine incremental data. The value of the column specified here is saved in 'Last Transferred Record' for each transfer. From the second transfer onwards, only records where the value of 'Column for Determining Incremental Data' is greater than the previous transfer value (= 'Last Transferred Record') will be transferred. To specify multiple columns, separate them with commas.
+- `incremental_loading_enabled` (Boolean) Transfer method. true: Differential transfer (only incremental data from the previous transfer), false: Transfer using query
+- `last_record` (String) Last record transferred. During differential updates, data newer than the value specified here will be transferred. If the form is blank, the transfer will start from the beginning. Unless there is a special reason, do not change this value. Duplicate data may occur.
+- `query` (String) Query. Required when incremental_loading_enabled is false.
+
+<a id="nestedatt--input_option--mongodb_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.mongodb_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format for timestamp columns
+- `timezone` (String) Timezone for timestamp columns
+
+
+<a id="nestedatt--input_option--mongodb_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.mongodb_input_option.custom_variable_settings`
 
 Required:
 

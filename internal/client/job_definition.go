@@ -101,6 +101,7 @@ type InputOption struct {
 	YahooAdsApiYssInputOption     *inputOptionEntities.YahooAdsApiYssInputOption     `json:"yahoo_ads_api_yss_input_option"`
 	HubspotInputOption            *inputOptionEntities.HubspotInputOption            `json:"hubspot_input_option"`
 	DatabricksInputOption         *inputOptionEntities.DatabricksInputOption         `json:"databricks_input_option"`
+	MongoDBInputOption            *inputOptionEntities.MongoDBInputOption            `json:"mongodb_input_option"`
 }
 
 type InputOptionInput struct {
@@ -118,6 +119,7 @@ type InputOptionInput struct {
 	YahooAdsApiYssInputOption     *parameter.NullableObject[inputOptionParameters.YahooAdsApiYssInputOptionInput]     `json:"yahoo_ads_api_yss_input_option,omitempty"`
 	HubspotInputOption            *parameter.NullableObject[inputOptionParameters.HubspotInputOptionInput]            `json:"hubspot_input_option,omitempty"`
 	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.DatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
+	MongoDBInputOption            *parameter.NullableObject[inputOptionParameters.MongoDBInputOptionInput]            `json:"mongodb_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
@@ -135,6 +137,7 @@ type UpdateInputOptionInput struct {
 	YahooAdsApiYssInputOption     *parameter.NullableObject[inputOptionParameters.UpdateYahooAdsApiYssInputOptionInput]     `json:"yahoo_ads_api_yss_input_option,omitempty"`
 	HubspotInputOption            *parameter.NullableObject[inputOptionParameters.UpdateHubspotInputOptionInput]            `json:"hubspot_input_option,omitempty"`
 	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.UpdateDatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
+	MongoDBInputOption            *parameter.NullableObject[inputOptionParameters.UpdateMongoDBInputOptionInput]            `json:"mongodb_input_option,omitempty"`
 }
 
 type OutputOption struct {

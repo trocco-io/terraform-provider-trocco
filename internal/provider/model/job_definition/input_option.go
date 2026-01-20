@@ -24,6 +24,7 @@ type InputOption struct {
 	YahooAdsApiYssInputOption     *inputOptionModel.YahooAdsApiYssInputOption     `tfsdk:"yahoo_ads_api_yss_input_option"`
 	HubspotInputOption            *inputOptionModel.HubspotInputOption            `tfsdk:"hubspot_input_option"`
 	DatabricksInputOption         *inputOptionModel.DatabricksInputOption         `tfsdk:"databricks_input_option"`
+	MongoDBInputOption            *inputOptionModel.MongoDBInputOption            `tfsdk:"mongodb_input_option"`
 }
 
 func NewInputOption(ctx context.Context, inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics) {
@@ -47,6 +48,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		YahooAdsApiYssInputOption:     inputOptionModel.NewYahooAdsApiYssInputOption(ctx, inputOption.YahooAdsApiYssInputOption),
 		HubspotInputOption:            inputOptionModel.NewHubspotInputOption(ctx, inputOption.HubspotInputOption),
 		DatabricksInputOption:         inputOptionModel.NewDatabricksInputOption(ctx, inputOption.DatabricksInputOption),
+		MongoDBInputOption:            inputOptionModel.NewMongodbInputOption(ctx, inputOption.MongoDBInputOption),
 	}, diags
 }
 
@@ -71,6 +73,7 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToInput(ctx)),
 		HubspotInputOption:            model.WrapObject(o.HubspotInputOption.ToInput(ctx)),
 		DatabricksInputOption:         model.WrapObject(o.DatabricksInputOption.ToInput(ctx)),
+		MongoDBInputOption:            model.WrapObject(o.MongoDBInputOption.ToInput(ctx)),
 	}, diags
 }
 
@@ -94,5 +97,6 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToUpdateInput(ctx)),
 		HubspotInputOption:            model.WrapObject(o.HubspotInputOption.ToUpdateInput(ctx)),
 		DatabricksInputOption:         model.WrapObject(o.DatabricksInputOption.ToUpdateInput(ctx)),
+		MongoDBInputOption:            model.WrapObject(o.MongoDBInputOption.ToUpdateInput(ctx)),
 	}, diags
 }
