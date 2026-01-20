@@ -25,6 +25,7 @@ func InputOptionSchema() schema.Attribute {
 			"yahoo_ads_api_yss_input_option":   YahooAdsApiYssInputOptionSchema(),
 			"hubspot_input_option":             HubspotInputOptionSchema(),
 			"databricks_input_option":          DatabricksInputOptionSchema(),
+			"google_ads_input_option":          GoogleAdsInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planModifier.InputOptionPlanModifier{},
