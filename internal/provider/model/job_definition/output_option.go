@@ -13,6 +13,7 @@ type OutputOption struct {
 	SalesforceOutputOption         *outputOptionModel.SalesforceOutputOption         `tfsdk:"salesforce_output_option"`
 	GoogleSpreadsheetsOutputOption *outputOptionModel.GoogleSpreadsheetsOutputOption `tfsdk:"google_spreadsheets_output_option"`
 	DatabricksOutputOption         *outputOptionModel.DatabricksOutputOption         `tfsdk:"databricks_output_option"`
+	MysqlOutputOption              *outputOptionModel.MysqlOutputOption              `tfsdk:"mysql_output_option"`
 }
 
 func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *OutputOption {
@@ -22,6 +23,7 @@ func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *Out
 		SalesforceOutputOption:         outputOptionModel.NewSalesforceOutputOption(outputOption.SalesforceOutputOption),
 		GoogleSpreadsheetsOutputOption: outputOptionModel.NewGoogleSpreadsheetsOutputOption(ctx, outputOption.GoogleSpreadsheetsOutputOption),
 		DatabricksOutputOption:         outputOptionModel.NewDatabricksOutputOption(ctx, outputOption.DatabricksOutputOption),
+		MysqlOutputOption:              outputOptionModel.NewMysqlOutputOption(ctx, outputOption.MysqlOutputOption),
 	}
 }
 
@@ -32,6 +34,7 @@ func (o OutputOption) ToInput(ctx context.Context) client.OutputOptionInput {
 		SalesforceOutputOption:         model.WrapObject(o.SalesforceOutputOption.ToInput()),
 		GoogleSpreadsheetsOutputOption: model.WrapObject(o.GoogleSpreadsheetsOutputOption.ToInput(ctx)),
 		DatabricksOutputOption:         model.WrapObject(o.DatabricksOutputOption.ToInput(ctx)),
+		MysqlOutputOption:              model.WrapObject(o.MysqlOutputOption.ToInput(ctx)),
 	}
 }
 
@@ -42,5 +45,6 @@ func (o OutputOption) ToUpdateInput(ctx context.Context) *client.UpdateOutputOpt
 		SalesforceOutputOption:         model.WrapObject(o.SalesforceOutputOption.ToUpdateInput()),
 		GoogleSpreadsheetsOutputOption: model.WrapObject(o.GoogleSpreadsheetsOutputOption.ToUpdateInput(ctx)),
 		DatabricksOutputOption:         model.WrapObject(o.DatabricksOutputOption.ToUpdateInput(ctx)),
+		MysqlOutputOption:              model.WrapObject(o.MysqlOutputOption.ToUpdateInput(ctx)),
 	}
 }
