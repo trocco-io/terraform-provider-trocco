@@ -1,19 +1,19 @@
-# resource "trocco_connection" "test_bq" {
-#   connection_type = "bigquery"
+resource "trocco_connection" "test_bq" {
+  connection_type = "bigquery"
 
-#   name        = "BigQuery Example"
-#   description = "This is a BigQuery connection example"
+  name        = "BigQuery Example"
+  description = "This is a BigQuery connection example"
 
-#   project_id               = "systemn-playground"
-#   service_account_json_key = <<JSON
-#   {
-#     "type": "service_account",
-#     "project_id": "example-project-id",
-#     "private_key_id": "example-private-key-id",
-#     "private_key":"-----BEGIN PRIVATE KEY-----\n..."
-#   }
-#   JSON
-# }
+  project_id               = "system-playground"
+  service_account_json_key = <<JSON
+  {
+    "type": "service_account",
+    "project_id": "example-project-id",
+    "private_key_id": "example-private-key-id",
+    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
+  }
+  JSON
+}
 
 resource "trocco_job_definition" "google_ads_to_bigquery" {
   name                     = "Google Ads to BigQuery Test"
@@ -108,7 +108,7 @@ resource "trocco_job_definition" "google_ads_to_bigquery" {
 
   output_option = {
     bigquery_output_option = {
-      bigquery_connection_id = 2
+      bigquery_connection_id = trocco_connection.test_bq.id
       dataset                = "test_dataset"
       table                  = "google_ads_campaign_test"
       location               = "US"
