@@ -3012,7 +3012,12 @@ Required:
 
 Optional:
 
+- `after_load` (String) SQL statement to execute after loading data.
+- `before_load` (String) SQL statement to execute before loading data (not available when mode is 'replace').
+- `max_retry_wait` (Number) Maximum wait time in milliseconds between retries. Default is 1800000.
 - `merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
+- `retry_limit` (Number) Maximum number of retries. Default is 12.
+- `retry_wait` (Number) Initial wait time in milliseconds between retries. Default is 1000.
 
 
 <a id="nestedatt--output_option--salesforce_output_option"></a>

@@ -12,6 +12,11 @@ type PostgresqlOutputOptionInput struct {
 	DefaultTimeZone        string                                `json:"default_time_zone"`
 	PostgresqlConnectionId int64                                 `json:"postgresql_connection_id"`
 	MergeKeys              *parameter.NullableObjectList[string] `json:"merge_keys,omitempty"`
+	RetryLimit             *int64                                `json:"retry_limit,omitempty"`
+	RetryWait              *int64                                `json:"retry_wait,omitempty"`
+	MaxRetryWait           *int64                                `json:"max_retry_wait,omitempty"`
+	BeforeLoad             *string                               `json:"before_load,omitempty"`
+	AfterLoad              *string                               `json:"after_load,omitempty"`
 }
 
 type UpdatePostgresqlOutputOptionInput struct {
@@ -22,4 +27,9 @@ type UpdatePostgresqlOutputOptionInput struct {
 	DefaultTimeZone        *string                               `json:"default_time_zone,omitempty"`
 	PostgresqlConnectionId *int64                                `json:"postgresql_connection_id,omitempty"`
 	MergeKeys              *parameter.NullableObjectList[string] `json:"merge_keys,omitempty"`
+	RetryLimit             *int64                                `json:"retry_limit,omitempty"`
+	RetryWait              *int64                                `json:"retry_wait,omitempty"`
+	MaxRetryWait           *int64                                `json:"max_retry_wait,omitempty"`
+	BeforeLoad             *string                               `json:"before_load,omitempty"`
+	AfterLoad              *string                               `json:"after_load,omitempty"`
 }
