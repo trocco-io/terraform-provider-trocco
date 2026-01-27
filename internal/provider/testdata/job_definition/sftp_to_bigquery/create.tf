@@ -24,7 +24,6 @@ resource "trocco_connection" "bigquery" {
 resource "trocco_job_definition" "sftp_to_bigquery" {
   name                     = "test job_definition"
   description              = "test description"
-  resource_group_id        = 2
   retry_limit              = 1
   is_runnable_concurrently = true
   filter_columns = [
