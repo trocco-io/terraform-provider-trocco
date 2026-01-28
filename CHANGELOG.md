@@ -1,3 +1,19 @@
+## 0.22.0
+FEATURES:
+- `trocco_job_definition` resource:
+  - Added support for `hubspot` input option
+
+CHORE:
+- Fixed goreleaser archives.format deprecation
+
+## 0.21.0
+FEATURES:
+- `trocco_connection` resource:
+  - Added support for `databricks` type
+- `trocco_job_definition` resource:
+  - Added support for `databricks` input option
+  - Added support for `databricks` output option
+
 ## 0.20.0
 - `trocco_user` resource:
   - Added support for `password_auto_generated` field for user invitations with auto-generated passwords

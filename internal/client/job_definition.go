@@ -99,6 +99,8 @@ type InputOption struct {
 	HttpInputOption               *inputOptionEntities.HttpInputOption               `json:"http_input_option"`
 	KintoneInputOption            *inputOptionEntities.KintoneInputOption            `json:"kintone_input_option"`
 	YahooAdsApiYssInputOption     *inputOptionEntities.YahooAdsApiYssInputOption     `json:"yahoo_ads_api_yss_input_option"`
+	HubspotInputOption            *inputOptionEntities.HubspotInputOption            `json:"hubspot_input_option"`
+	DatabricksInputOption         *inputOptionEntities.DatabricksInputOption         `json:"databricks_input_option"`
 }
 
 type InputOptionInput struct {
@@ -114,6 +116,8 @@ type InputOptionInput struct {
 	HttpInputOption               *parameter.NullableObject[inputOptionParameters.HttpInputOptionInput]               `json:"http_input_option,omitempty"`
 	KintoneInputOption            *parameter.NullableObject[inputOptionParameters.KintoneInputOptionInput]            `json:"kintone_input_option,omitempty"`
 	YahooAdsApiYssInputOption     *parameter.NullableObject[inputOptionParameters.YahooAdsApiYssInputOptionInput]     `json:"yahoo_ads_api_yss_input_option,omitempty"`
+	HubspotInputOption            *parameter.NullableObject[inputOptionParameters.HubspotInputOptionInput]            `json:"hubspot_input_option,omitempty"`
+	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.DatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
@@ -129,6 +133,8 @@ type UpdateInputOptionInput struct {
 	HttpInputOption               *parameter.NullableObject[inputOptionParameters.UpdateHttpInputOptionInput]               `json:"http_input_option,omitempty"`
 	KintoneInputOption            *parameter.NullableObject[inputOptionParameters.UpdateKintoneInputOptionInput]            `json:"kintone_input_option,omitempty"`
 	YahooAdsApiYssInputOption     *parameter.NullableObject[inputOptionParameters.UpdateYahooAdsApiYssInputOptionInput]     `json:"yahoo_ads_api_yss_input_option,omitempty"`
+	HubspotInputOption            *parameter.NullableObject[inputOptionParameters.UpdateHubspotInputOptionInput]            `json:"hubspot_input_option,omitempty"`
+	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.UpdateDatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
 }
 
 type OutputOption struct {
@@ -136,6 +142,7 @@ type OutputOption struct {
 	SnowflakeOutputOption          *outputOptionEntities.SnowflakeOutputOption          `json:"snowflake_output_option"`
 	SalesforceOutputOption         *outputOptionEntities.SalesforceOutputOption         `json:"salesforce_output_option"`
 	GoogleSpreadsheetsOutputOption *outputOptionEntities.GoogleSpreadsheetsOutputOption `json:"google_spreadsheets_output_option"`
+	DatabricksOutputOption         *outputOptionEntities.DatabricksOutputOption         `json:"databricks_output_option"`
 }
 
 type OutputOptionInput struct {
@@ -143,6 +150,7 @@ type OutputOptionInput struct {
 	SnowflakeOutputOption          *parameter.NullableObject[outputOptionParameters.SnowflakeOutputOptionInput]          `json:"snowflake_output_option,omitempty"`
 	SalesforceOutputOption         *parameter.NullableObject[outputOptionParameters.SalesforceOutputOptionInput]         `json:"salesforce_output_option,omitempty"`
 	GoogleSpreadsheetsOutputOption *parameter.NullableObject[outputOptionParameters.GoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
+	DatabricksOutputOption         *parameter.NullableObject[outputOptionParameters.DatabricksOutputOptionInput]         `json:"databricks_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
@@ -150,6 +158,7 @@ type UpdateOutputOptionInput struct {
 	SnowflakeOutputOption          *parameter.NullableObject[outputOptionParameters.UpdateSnowflakeOutputOptionInput]          `json:"snowflake_output_option,omitempty"`
 	SalesforceOutputOption         *parameter.NullableObject[outputOptionParameters.UpdateSalesforceOutputOptionInput]         `json:"salesforce_output_option,omitempty"`
 	GoogleSpreadsheetsOutputOption *parameter.NullableObject[outputOptionParameters.UpdateGoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
+	DatabricksOutputOption         *parameter.NullableObject[outputOptionParameters.UpdateDatabricksOutputOptionInput]         `json:"databricks_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {
