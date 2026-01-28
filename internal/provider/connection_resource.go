@@ -771,16 +771,20 @@ func (r *connectionResource) Schema(
 			"connection_string_format": schema.StringAttribute{
 				MarkdownDescription: "MongoDB: Connection string format. It must be one of `standard` or `dns_seed_list`.",
 				Optional:            true,
+				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("standard", "dns_seed_list"),
 				},
+				Default: stringdefault.StaticString("standard"),
 			},
 			"read_preference": schema.StringAttribute{
 				MarkdownDescription: "MongoDB: Read preference. It must be one of `primary`, `primaryPreferred`, `secondary`, `secondaryPreferred`, or `nearest`.",
 				Optional:            true,
+				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("primary", "primaryPreferred", "secondary", "secondaryPreferred", "nearest"),
 				},
+				Default: stringdefault.StaticString("primary"),
 			},
 			"auth_source": schema.StringAttribute{
 				MarkdownDescription: "MongoDB: Authentication database name.",
@@ -1303,7 +1307,6 @@ func (r *connectionResource) ValidateConfig(
 	case "mongodb":
 		validateRequiredString(plan.Host, "host", "MongoDB", resp)
 		validateRequiredInt(plan.Port, "port", "MongoDB", resp)
-		validateRequiredString(plan.UserName, "user_name", "MongoDB", resp)
 		if !plan.AuthMethod.IsNull() {
 			validateStringAgainstPatterns(plan.AuthMethod, "auth_method", "MongoDB", resp, "auto", "mongodb-cr", "scram-sha-1")
 		}
