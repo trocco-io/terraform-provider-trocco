@@ -3,9 +3,10 @@ package planmodifier
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"strconv"
 )
 
 var _ planmodifier.Object = &FileParserPlanModifier{}
@@ -56,9 +57,16 @@ func (d *FileParserPlanModifier) PlanModifyObject(ctx context.Context, req planm
 		return
 	}
 
-	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("parquet_parser"), &parquetParser)...)
-	if resp.Diagnostics.HasError() {
-		return
+	// parquet_parser is only available in some input option types (S3, GCS, HTTP)
+	// Check if the attribute exists in the schema before trying to access it
+	diags := req.Plan.GetAttribute(ctx, req.Path.AtName("parquet_parser"), &parquetParser)
+	if diags.HasError() {
+		// If the attribute doesn't exist, treat it as null/empty
+		parquetParser = types.ObjectNull(nil)
+		// Don't append the error diagnostics since missing attribute is expected for some input types
+	} else {
+		// Only append diagnostics if there were no errors (attribute exists)
+		resp.Diagnostics.Append(diags...)
 	}
 
 	nonNilParserCount := countNonNil(csvParser, jsonlParser, ltsvParser, excelParser, xmlParser, jsonpathParser, parquetParser)

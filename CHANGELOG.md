@@ -1,3 +1,11 @@
+## 0.22.0
+FEATURES:
+- `trocco_job_definition` resource:
+  - Added support for `hubspot` input option
+
+CHORE:
+- Fixed goreleaser archives.format deprecation
+
 ## 0.21.0
 FEATURES:
 - `trocco_connection` resource:
