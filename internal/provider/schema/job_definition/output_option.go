@@ -17,6 +17,7 @@ func OutputOptionSchema() schema.Attribute {
 			"google_spreadsheets_output_option": GoogleSpreadsheetsOutputOptionSchema(),
 			"sftp_output_option":                SftpOutputOptionSchema(),
 			"databricks_output_option":          DatabricksOutputOptionSchema(),
+			"kintone_output_option":             KintoneOutputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planModifier.OutputOptionPlanModifier{},
