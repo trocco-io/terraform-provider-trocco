@@ -12,9 +12,8 @@ type ConditionGroups struct {
 }
 
 type Condition struct {
-	Identifier *string `json:"identifier,omitempty"`
+	Identifier string `json:"identifier"`
 	Variable   string  `json:"variable"`
-	TaskKey    *string `json:"task_key,omitempty"`
 	Operator   string  `json:"operator"`
 	Value      string  `json:"value"`
 }

@@ -1,10 +1,13 @@
 package pipeline_definition
 
 import (
+	pipelineDefinitionValidator "terraform-provider-trocco/internal/provider/validator/pipeline_definition"
+
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	pipelineDefinitionValidator "terraform-provider-trocco/internal/provider/validator/pipeline_definition"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 func IfElseTaskConfigSchema() schema.Attribute {
@@ -31,7 +34,7 @@ func IfElseTaskConfigSchema() schema.Attribute {
 						MarkdownDescription: "The list of conditions",
 						Required:            true,
 						Validators: []validator.List{
-							pipelineDefinitionValidator.ConditionsNotEmpty{},
+							listvalidator.SizeAtLeast(1),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Validators: []validator.Object{
@@ -88,12 +91,12 @@ func IfElseTaskConfigSchema() schema.Attribute {
 				Attributes: map[string]schema.Attribute{
 					"if": schema.ListAttribute{
 						MarkdownDescription: "The list of task keys to execute when the condition is true. Specify an empty list `[]` if not needed.",
-						ElementType:         schema.StringAttribute{}.GetType(),
+						ElementType:         types.StringType,
 						Required:            true,
 					},
 					"else": schema.ListAttribute{
 						MarkdownDescription: "The list of task keys to execute when the condition is false. Specify an empty list `[]` if not needed.",
-						ElementType:         schema.StringAttribute{}.GetType(),
+						ElementType:         types.StringType,
 						Required:            true,
 					},
 				},

@@ -8,7 +8,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/samber/lo"
 )
 
 type IfElseTaskConfig struct {
@@ -95,8 +94,8 @@ func NewCondition(en *pipelineDefinitionEntities.Condition, keys map[int64]types
 	// API response returns task identifier as "identifier" field (string like "3")
 	// Convert it to task key using keys map
 	taskKey := types.StringNull()
-	if en.Identifier != nil {
-		if id, err := strconv.ParseInt(*en.Identifier, 10, 64); err == nil {
+	if en.Identifier != "" {
+		if id, err := strconv.ParseInt(en.Identifier, 10, 64); err == nil {
 			if key, ok := keys[id]; ok {
 				taskKey = key
 			}
@@ -112,9 +111,9 @@ func NewCondition(en *pipelineDefinitionEntities.Condition, keys map[int64]types
 }
 
 func (c *Condition) ToInput() *pipelineDefinitionParameters.Condition {
-	var taskKey *string
+	taskKey := ""
 	if !c.TaskKey.IsNull() {
-		taskKey = lo.ToPtr(c.TaskKey.ValueString())
+		taskKey = c.TaskKey.ValueString()
 	}
 
 	return &pipelineDefinitionParameters.Condition{

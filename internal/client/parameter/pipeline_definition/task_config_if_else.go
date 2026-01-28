@@ -13,7 +13,7 @@ type ConditionGroups struct {
 
 type Condition struct {
 	Variable string  `json:"variable"`
-	TaskKey  *string `json:"task_key,omitempty"`
+	TaskKey  string `json:"task_key"`
 	Operator string  `json:"operator"`
 	Value    string  `json:"value"`
 }
