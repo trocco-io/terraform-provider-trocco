@@ -328,7 +328,7 @@ resource "trocco_connection" "databricks_oauth2" {
 - `aws_iam_user` (Attributes) S3: IAM User configuration. (see [below for nested schema](#nestedatt--aws_iam_user))
 - `basic_auth_password` (String, Sensitive) Kintone: Basic Auth Password
 - `basic_auth_username` (String) Kintone: Basic Auth Username
-- `connection_string_format` (String) MongoDB: Connection string format. It must be one of `standard` or `dns_seed_list`.
+- `connection_string_format` (String) MongoDB: Connection string format. It must be one of `standard` or `dns_seed_list`. Default is `standard`.
 - `description` (String) The description of the connection.
 - `domain` (String) Kintone: Domain.
 - `driver` (String) Snowflake, MySQL, PostgreSQL: The name of a Database driver.
@@ -346,7 +346,7 @@ resource "trocco_connection" "databricks_oauth2" {
 - `port` (Number) MySQL, PostgreSQL, MongoDB: The port of the (MySQL, PostgreSQL, MongoDB) server.
 - `private_key` (String, Sensitive) Snowflake: A private key for the Snowflake user.
 - `project_id` (String) BigQuery, GCS: A GCP project ID.
-- `read_preference` (String) MongoDB: Read preference. It must be one of `primary`, `primaryPreferred`, `secondary`, `secondaryPreferred`, or `nearest`.
+- `read_preference` (String) MongoDB: Read preference. It must be one of `primary`, `primaryPreferred`, `secondary`, `secondaryPreferred`, or `nearest`. Default is `primary`.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
 - `role` (String) Snowflake: A role attached to the Snowflake user.
 - `security_token` (String, Sensitive) Salesforce: Security token.

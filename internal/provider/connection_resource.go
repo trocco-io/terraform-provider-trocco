@@ -769,7 +769,7 @@ func (r *connectionResource) Schema(
 
 			// MongoDB Fields
 			"connection_string_format": schema.StringAttribute{
-				MarkdownDescription: "MongoDB: Connection string format. It must be one of `standard` or `dns_seed_list`.",
+				MarkdownDescription: "MongoDB: Connection string format. It must be one of `standard` or `dns_seed_list`. Default is `standard`.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -778,7 +778,7 @@ func (r *connectionResource) Schema(
 				Default: stringdefault.StaticString("standard"),
 			},
 			"read_preference": schema.StringAttribute{
-				MarkdownDescription: "MongoDB: Read preference. It must be one of `primary`, `primaryPreferred`, `secondary`, `secondaryPreferred`, or `nearest`.",
+				MarkdownDescription: "MongoDB: Read preference. It must be one of `primary`, `primaryPreferred`, `secondary`, `secondaryPreferred`, or `nearest`. Default is `primary`.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.String{
@@ -1309,12 +1309,6 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredInt(plan.Port, "port", "MongoDB", resp)
 		if !plan.AuthMethod.IsNull() {
 			validateStringAgainstPatterns(plan.AuthMethod, "auth_method", "MongoDB", resp, "auto", "mongodb-cr", "scram-sha-1")
-		}
-		if !plan.ConnectionStringFormat.IsNull() {
-			validateStringAgainstPatterns(plan.ConnectionStringFormat, "connection_string_format", "MongoDB", resp, "standard", "dns_seed_list")
-		}
-		if !plan.ReadPreference.IsNull() {
-			validateStringAgainstPatterns(plan.ReadPreference, "read_preference", "MongoDB", resp, "primary", "primaryPreferred", "secondary", "secondaryPreferred", "nearest")
 		}
 		if plan.Gateway != nil {
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "MongoDB", resp)
