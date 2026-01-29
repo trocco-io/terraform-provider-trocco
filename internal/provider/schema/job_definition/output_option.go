@@ -18,6 +18,7 @@ func OutputOptionSchema() schema.Attribute {
 			"sftp_output_option":                SftpOutputOptionSchema(),
 			"databricks_output_option":          DatabricksOutputOptionSchema(),
 			"kintone_output_option":             KintoneOutputOptionSchema(),
+			"hubspot_output_option":             HubspotOutputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planModifier.OutputOptionPlanModifier{},
