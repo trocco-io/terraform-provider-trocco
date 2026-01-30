@@ -64,7 +64,7 @@ func HubspotOutputOptionSchema() schema.Attribute {
 				},
 				MarkdownDescription: "Number of parallel processes. Must be between 1 and 10",
 			},
-			"hubspot_output_associations": schema.ListNestedAttribute{
+			"associations": schema.ListNestedAttribute{
 				Optional: true,
 				Validators: []validator.List{
 					listvalidator.SizeAtLeast(0),

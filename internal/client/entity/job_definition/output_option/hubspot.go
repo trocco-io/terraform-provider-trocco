@@ -1,12 +1,12 @@
 package output_option
 
 type HubspotOutputOption struct {
-	HubspotConnectionID       int64                       `json:"hubspot_connection_id"`
-	ObjectType                string                      `json:"object_type"`
-	Mode                      string                      `json:"mode"`
-	UpsertKey                 *string                     `json:"upsert_key"`
-	NumberOfParallels         int64                       `json:"number_of_parallels"`
-	HubspotOutputAssociations *[]HubspotOutputAssociation `json:"hubspot_output_associations"`
+	HubspotConnectionID int64                       `json:"hubspot_connection_id"`
+	ObjectType          string                      `json:"object_type"`
+	Mode                string                      `json:"mode"`
+	UpsertKey           *string                     `json:"upsert_key"`
+	NumberOfParallels   int64                       `json:"number_of_parallels"`
+	Associations        *[]HubspotOutputAssociation `json:"associations"`
 }
 
 type HubspotOutputAssociation struct {

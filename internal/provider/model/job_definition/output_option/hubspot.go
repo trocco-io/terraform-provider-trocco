@@ -12,12 +12,12 @@ import (
 )
 
 type HubspotOutputOption struct {
-	HubspotConnectionID       types.Int64  `tfsdk:"hubspot_connection_id"`
-	ObjectType                types.String `tfsdk:"object_type"`
-	Mode                      types.String `tfsdk:"mode"`
-	UpsertKey                 types.String `tfsdk:"upsert_key"`
-	NumberOfParallels         types.Int64  `tfsdk:"number_of_parallels"`
-	HubspotOutputAssociations types.List   `tfsdk:"hubspot_output_associations"`
+	HubspotConnectionID types.Int64  `tfsdk:"hubspot_connection_id"`
+	ObjectType          types.String `tfsdk:"object_type"`
+	Mode                types.String `tfsdk:"mode"`
+	UpsertKey           types.String `tfsdk:"upsert_key"`
+	NumberOfParallels   types.Int64  `tfsdk:"number_of_parallels"`
+	Associations        types.List   `tfsdk:"associations"`
 }
 
 type hubspotOutputAssociation struct {
@@ -39,26 +39,19 @@ func NewHubspotOutputOption(ctx context.Context, hubspotOutputOption *output_opt
 		return nil
 	}
 
-	var upsertKey types.String
-	if hubspotOutputOption.Mode == "insert" || hubspotOutputOption.ObjectType == "subscription" {
-		upsertKey = types.StringNull()
-	} else {
-		upsertKey = types.StringPointerValue(hubspotOutputOption.UpsertKey)
-	}
-
 	result := &HubspotOutputOption{
 		HubspotConnectionID: types.Int64Value(hubspotOutputOption.HubspotConnectionID),
 		ObjectType:          types.StringValue(hubspotOutputOption.ObjectType),
 		Mode:                types.StringValue(hubspotOutputOption.Mode),
-		UpsertKey:           upsertKey,
+		UpsertKey:           types.StringPointerValue(hubspotOutputOption.UpsertKey),
 		NumberOfParallels:   types.Int64Value(hubspotOutputOption.NumberOfParallels),
 	}
 
-	hubspotOutputAssociations, err := newHubspotOutputAssociations(ctx, hubspotOutputOption.HubspotOutputAssociations)
+	hubspotOutputAssociations, err := newHubspotOutputAssociations(ctx, hubspotOutputOption.Associations)
 	if err != nil {
 		return nil
 	}
-	result.HubspotOutputAssociations = hubspotOutputAssociations
+	result.Associations = hubspotOutputAssociations
 
 	return result
 }
@@ -102,9 +95,9 @@ func (hubspotOutputOption *HubspotOutputOption) ToInput(ctx context.Context) *ou
 		NumberOfParallels:   hubspotOutputOption.NumberOfParallels.ValueInt64(),
 	}
 
-	if !hubspotOutputOption.HubspotOutputAssociations.IsNull() && !hubspotOutputOption.HubspotOutputAssociations.IsUnknown() {
+	if !hubspotOutputOption.Associations.IsNull() && !hubspotOutputOption.Associations.IsUnknown() {
 		var associations []hubspotOutputAssociation
-		hubspotOutputOption.HubspotOutputAssociations.ElementsAs(ctx, &associations, false)
+		hubspotOutputOption.Associations.ElementsAs(ctx, &associations, false)
 
 		if len(associations) > 0 {
 			associationInputs := make([]outputOptionParameters.HubspotOutputAssociationInput, len(associations))
@@ -115,7 +108,7 @@ func (hubspotOutputOption *HubspotOutputOption) ToInput(ctx context.Context) *ou
 					ToObjectKey:   assoc.ToObjectKey.ValueString(),
 				}
 			}
-			result.HubspotOutputAssociations = associationInputs
+			result.Associations = associationInputs
 		}
 	}
 
@@ -135,9 +128,9 @@ func (hubspotOutputOption *HubspotOutputOption) ToUpdateInput(ctx context.Contex
 		NumberOfParallels:   hubspotOutputOption.NumberOfParallels.ValueInt64Pointer(),
 	}
 
-	if !hubspotOutputOption.HubspotOutputAssociations.IsNull() && !hubspotOutputOption.HubspotOutputAssociations.IsUnknown() {
+	if !hubspotOutputOption.Associations.IsNull() && !hubspotOutputOption.Associations.IsUnknown() {
 		var associations []hubspotOutputAssociation
-		hubspotOutputOption.HubspotOutputAssociations.ElementsAs(ctx, &associations, false)
+		hubspotOutputOption.Associations.ElementsAs(ctx, &associations, false)
 
 		associationInputs := make([]outputOptionParameters.HubspotOutputAssociationInput, len(associations))
 		for i, assoc := range associations {
@@ -147,7 +140,7 @@ func (hubspotOutputOption *HubspotOutputOption) ToUpdateInput(ctx context.Contex
 				ToObjectKey:   assoc.ToObjectKey.ValueString(),
 			}
 		}
-		result.HubspotOutputAssociations = &associationInputs
+		result.Associations = &associationInputs
 	}
 
 	return result

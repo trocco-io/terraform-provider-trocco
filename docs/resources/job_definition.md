@@ -3133,6 +3133,7 @@ Optional:
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
 - `databricks_output_option` (Attributes) Attributes of destination Databricks settings (see [below for nested schema](#nestedatt--output_option--databricks_output_option))
 - `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
+- `hubspot_output_option` (Attributes) Attributes of destination HubSpot settings (see [below for nested schema](#nestedatt--output_option--hubspot_output_option))
 - `kintone_output_option` (Attributes) Attributes of destination Kintone settings (see [below for nested schema](#nestedatt--output_option--kintone_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `sftp_output_option` (Attributes) attributes of destination SFTP settings (see [below for nested schema](#nestedatt--output_option--sftp_output_option))
@@ -3278,6 +3279,32 @@ Required:
 
 - `column` (String) Column name
 - `order` (String) Data type
+
+
+
+<a id="nestedatt--output_option--hubspot_output_option"></a>
+### Nested Schema for `output_option.hubspot_output_option`
+
+Required:
+
+- `hubspot_connection_id` (Number) HubSpot connection ID
+- `object_type` (String) Object type. Standard objects: `contact`, `company`, `deal`, `product`, `ticket`, `line_item`, `quote`, `subscription`. Engagement objects: `call`, `email`, `meeting`, `note`, `postal_mail`, `task`
+
+Optional:
+
+- `associations` (Attributes List) Association settings. Only available for engagement objects (`call`, `email`, `meeting`, `note`, `postal_mail`, `task`). Supported associations by object type: `call/email/meeting/note/postal_mail`: contact, company, deal, ticket; `task`: contact, company, deal, ticket, quote (see [below for nested schema](#nestedatt--output_option--hubspot_output_option--associations))
+- `mode` (String) Transfer mode. `merge`: Upsert (update if exists, insert if not). `insert`: Insert only. Note: For `subscription` object type, mode is always `merge`
+- `number_of_parallels` (Number) Number of parallel processes. Must be between 1 and 10
+- `upsert_key` (String) Upsert key. Required when mode is `merge` and object_type is not `subscription`. Not used when mode is `insert` or object_type is `subscription` (will be set to null by API)
+
+<a id="nestedatt--output_option--hubspot_output_option--associations"></a>
+### Nested Schema for `output_option.hubspot_output_option.associations`
+
+Required:
+
+- `from_object_key` (String) Source key (column name in transfer data)
+- `to_object_key` (String) Target key (HubSpot property name)
+- `to_object_type` (String) Target object type for association
 
 
 
