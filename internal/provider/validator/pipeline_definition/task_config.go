@@ -26,6 +26,7 @@ var taskConfigKeys = map[string]string{
 	"snowflake_data_check":                    "snowflake_data_check_config",
 	"redshift_data_check":                     "redshift_data_check_config",
 	"http_request":                            "http_request_config",
+	"if_else":                                 "if_else_config",
 }
 
 type TaskConfig struct {
