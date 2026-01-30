@@ -9,6 +9,8 @@ import (
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/connection"
 
+	planModifier "terraform-provider-trocco/internal/provider/planmodifier"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -78,6 +80,13 @@ type connectionResourceModel struct {
 	BasicAuthUsername types.String `tfsdk:"basic_auth_username"`
 	BasicAuthPassword types.String `tfsdk:"basic_auth_password"`
 
+	// SFTP Fields
+	SecretKey             types.String `tfsdk:"secret_key"`
+	SecretKeyPassphrase   types.String `tfsdk:"secret_key_passphrase"`
+	UserDirectoryIsRoot   types.Bool   `tfsdk:"user_directory_is_root"`
+	WindowsServer         types.Bool   `tfsdk:"windows_server"`
+	SSHTunnelID           types.Int64  `tfsdk:"ssh_tunnel_id"`
+	AWSPrivatelinkEnabled types.Bool   `tfsdk:"aws_privatelink_enabled"`
 	// Databricks Fields
 	ServerHostname      types.String `tfsdk:"server_hostname"`
 	HttpPath            types.String `tfsdk:"http_path"`
@@ -131,6 +140,13 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		BasicAuthUsername: model.NewNullableString(m.BasicAuthUsername),
 		BasicAuthPassword: model.NewNullableString(m.BasicAuthPassword),
 
+		// SFTP Fields
+		SecretKey:             m.SecretKey.ValueStringPointer(),
+		SecretKeyPassphrase:   m.SecretKeyPassphrase.ValueStringPointer(),
+		UserDirectoryIsRoot:   m.UserDirectoryIsRoot.ValueBoolPointer(),
+		WindowsServer:         m.WindowsServer.ValueBoolPointer(),
+		SSHTunnelID:           model.NewNullableInt64(m.SSHTunnelID),
+		AWSPrivatelinkEnabled: m.AWSPrivatelinkEnabled.ValueBoolPointer(),
 		// Databricks Fields
 		ServerHostname:      m.ServerHostname.ValueStringPointer(),
 		HttpPath:            m.HttpPath.ValueStringPointer(),
@@ -225,6 +241,13 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		BasicAuthUsername: model.NewNullableString(m.BasicAuthUsername),
 		BasicAuthPassword: model.NewNullableString(m.BasicAuthPassword),
 
+		// SFTP Fields
+		SecretKey:             m.SecretKey.ValueStringPointer(),
+		SecretKeyPassphrase:   m.SecretKeyPassphrase.ValueStringPointer(),
+		UserDirectoryIsRoot:   m.UserDirectoryIsRoot.ValueBoolPointer(),
+		WindowsServer:         m.WindowsServer.ValueBoolPointer(),
+		SSHTunnelID:           model.NewNullableInt64(m.SSHTunnelID),
+		AWSPrivatelinkEnabled: m.AWSPrivatelinkEnabled.ValueBoolPointer(),
 		// Databricks Fields
 		ServerHostname:      m.ServerHostname.ValueStringPointer(),
 		HttpPath:            m.HttpPath.ValueStringPointer(),
@@ -323,6 +346,7 @@ var supportedConnectionTypes = []string{
 	"postgresql",
 	"google_analytics4",
 	"kintone",
+	"sftp",
 	"databricks",
 }
 
@@ -750,6 +774,54 @@ func (r *connectionResource) Schema(
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
+			// SFTP Fields
+			"secret_key": schema.StringAttribute{
+				MarkdownDescription: "SFTP: RSA private key for authentication.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"secret_key_passphrase": schema.StringAttribute{
+				MarkdownDescription: "SFTP: Passphrase for the RSA private key.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"user_directory_is_root": schema.BoolAttribute{
+				MarkdownDescription: "SFTP: Whether the user directory is root. Default is true.",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					planModifier.ConditionalBooleanDefault(true, "sftp"),
+				},
+			},
+			"windows_server": schema.BoolAttribute{
+				MarkdownDescription: "SFTP: Whether the server is a Windows server. Default is false.",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					planModifier.ConditionalBooleanDefault(false, "sftp"),
+				},
+			},
+			"ssh_tunnel_id": schema.Int64Attribute{
+				MarkdownDescription: "SFTP: SSH tunnel ID. Required when aws_privatelink_enabled is true.",
+				Optional:            true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
+				},
+			},
+			"aws_privatelink_enabled": schema.BoolAttribute{
+				MarkdownDescription: "SFTP: Whether AWS PrivateLink is enabled. Default is false.",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					planModifier.ConditionalBooleanDefault(false, "sftp"),
+				},
+			},
 		},
 	}
 }
@@ -830,6 +902,13 @@ func (r *connectionResource) Create(
 		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
 		BasicAuthPassword: plan.BasicAuthPassword,
 
+		// SFTP Fields
+		SecretKey:             plan.SecretKey,
+		SecretKeyPassphrase:   plan.SecretKeyPassphrase,
+		UserDirectoryIsRoot:   types.BoolPointerValue(conn.UserDirectoryIsRoot),
+		WindowsServer:         types.BoolPointerValue(conn.WindowsServer),
+		SSHTunnelID:           types.Int64PointerValue(conn.SSHTunnelID),
+		AWSPrivatelinkEnabled: types.BoolPointerValue(conn.AWSPrivatelinkEnabled),
 		// Databricks Fields
 		ServerHostname:      types.StringPointerValue(conn.ServerHostname),
 		HttpPath:            types.StringPointerValue(conn.HttpPath),
@@ -934,6 +1013,13 @@ func (r *connectionResource) Update(
 		BasicAuthUsername: types.StringPointerValue(connection.BasicAuthUsername),
 		BasicAuthPassword: plan.BasicAuthPassword,
 
+		// SFTP Fields
+		SecretKey:             plan.SecretKey,
+		SecretKeyPassphrase:   plan.SecretKeyPassphrase,
+		UserDirectoryIsRoot:   types.BoolPointerValue(connection.UserDirectoryIsRoot),
+		WindowsServer:         types.BoolPointerValue(connection.WindowsServer),
+		SSHTunnelID:           types.Int64PointerValue(connection.SSHTunnelID),
+		AWSPrivatelinkEnabled: types.BoolPointerValue(connection.AWSPrivatelinkEnabled),
 		// Databricks Fields
 		ServerHostname:      types.StringPointerValue(connection.ServerHostname),
 		HttpPath:            types.StringPointerValue(connection.HttpPath),
@@ -1017,6 +1103,13 @@ func (r *connectionResource) Read(
 		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
 		BasicAuthPassword: state.BasicAuthPassword,
 
+		// SFTP Fields
+		SecretKey:             state.SecretKey,
+		SecretKeyPassphrase:   state.SecretKeyPassphrase,
+		UserDirectoryIsRoot:   types.BoolPointerValue(conn.UserDirectoryIsRoot),
+		WindowsServer:         types.BoolPointerValue(conn.WindowsServer),
+		SSHTunnelID:           types.Int64PointerValue(conn.SSHTunnelID),
+		AWSPrivatelinkEnabled: types.BoolPointerValue(conn.AWSPrivatelinkEnabled),
 		// Databricks Fields
 		ServerHostname:      types.StringPointerValue(conn.ServerHostname),
 		HttpPath:            types.StringPointerValue(conn.HttpPath),
@@ -1218,6 +1311,13 @@ func (r *connectionResource) ValidateConfig(
 					"password should not be set when login_method is `token`.",
 				)
 			}
+		}
+	case "sftp":
+		validateRequiredString(plan.Host, "host", "SFTP", resp)
+		validateRequiredInt(plan.Port, "port", "SFTP", resp)
+		validateRequiredString(plan.UserName, "user_name", "SFTP", resp)
+		if plan.AWSPrivatelinkEnabled.ValueBool() {
+			validateRequiredInt(plan.SSHTunnelID, "ssh_tunnel_id", "SFTP", resp)
 		}
 	case "databricks":
 		validateRequiredString(plan.ServerHostname, "server_hostname", "Databricks", resp)
