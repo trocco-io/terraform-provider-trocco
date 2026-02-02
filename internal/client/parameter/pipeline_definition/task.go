@@ -19,4 +19,5 @@ type Task struct {
 	SnowflakeDataCheckConfig                  *SnowflakeDataCheckTaskConfigInput             `json:"snowflake_data_check_config,omitempty"`
 	RedshiftDataCheckConfig                   *RedshiftDataCheckTaskConfigInput              `json:"redshift_data_check_config,omitempty"`
 	HTTPRequestConfig                         *HTTPRequestTaskConfig                         `json:"http_request_config,omitempty"`
+	IfElseConfig                              *IfElseTaskConfig                              `json:"if_else_config,omitempty"`
 }
