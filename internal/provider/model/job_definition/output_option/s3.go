@@ -23,12 +23,12 @@ type S3OutputOption struct {
 	MultipartUploadEnabled types.Bool      `tfsdk:"multipart_upload_enabled"`
 	FormatterType          types.String    `tfsdk:"formatter_type"`
 	EncoderType            types.String    `tfsdk:"encoder_type"`
-	CsvFormatter           *CsvFormatter   `tfsdk:"csv_formatter"`
-	JsonlFormatter         *JsonlFormatter `tfsdk:"jsonl_formatter"`
+	CsvFormatter           *csvFormatter   `tfsdk:"csv_formatter"`
+	JsonlFormatter         *jsonlFormatter `tfsdk:"jsonl_formatter"`
 	CustomVariableSettings types.List      `tfsdk:"custom_variable_settings"`
 }
 
-type CsvFormatter struct {
+type csvFormatter struct {
 	Delimiter                           types.String `tfsdk:"delimiter"`
 	Escape                              types.String `tfsdk:"escape"`
 	HeaderLine                          types.Bool   `tfsdk:"header_line"`
@@ -42,13 +42,13 @@ type CsvFormatter struct {
 	CsvFormatterColumnOptionsAttributes types.List   `tfsdk:"csv_formatter_column_options_attributes"`
 }
 
-type CsvFormatterColumnOption struct {
+type csvFormatterColumnOption struct {
 	Name     types.String `tfsdk:"name"`
 	Format   types.String `tfsdk:"format"`
 	Timezone types.String `tfsdk:"timezone"`
 }
 
-type JsonlFormatter struct {
+type jsonlFormatter struct {
 	Encoding   types.String `tfsdk:"encoding"`
 	Newline    types.String `tfsdk:"newline"`
 	DateFormat types.String `tfsdk:"date_format"`
@@ -83,8 +83,8 @@ func NewS3OutputOption(ctx context.Context, s3OutputOption *output_option.S3Outp
 	// Handle formatter conversion: Entity has nested structure, Model has flat formatter_type
 	if s3OutputOption.Formatter != nil {
 		result.FormatterType = types.StringValue(s3OutputOption.Formatter.Type)
-		result.CsvFormatter = NewCsvFormatter(ctx, s3OutputOption.Formatter.CsvFormatter)
-		result.JsonlFormatter = NewJsonlFormatter(ctx, s3OutputOption.Formatter.JsonlFormatter)
+		result.CsvFormatter = newCsvFormatter(ctx, s3OutputOption.Formatter.CsvFormatter)
+		result.JsonlFormatter = newJsonlFormatter(s3OutputOption.Formatter.JsonlFormatter)
 	} else {
 		result.FormatterType = types.StringNull()
 		result.CsvFormatter = nil
@@ -92,66 +92,6 @@ func NewS3OutputOption(ctx context.Context, s3OutputOption *output_option.S3Outp
 	}
 
 	return result
-}
-
-func NewCsvFormatter(ctx context.Context, csvFormatter *output_option.CsvFormatter) *CsvFormatter {
-	if csvFormatter == nil {
-		return nil
-	}
-
-	columnElements := make([]CsvFormatterColumnOption, 0)
-	if csvFormatter.CsvFormatterColumnOptionsAttributes != nil {
-		for _, opt := range *csvFormatter.CsvFormatterColumnOptionsAttributes {
-			option := CsvFormatterColumnOption{
-				Name:     types.StringValue(opt.Name),
-				Format:   types.StringValue(opt.Format),
-				Timezone: types.StringPointerValue(opt.Timezone),
-			}
-			columnElements = append(columnElements, option)
-		}
-	}
-
-	columnOptions, diags := types.ListValueFrom(
-		ctx,
-		types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"name":     types.StringType,
-				"format":   types.StringType,
-				"timezone": types.StringType,
-			},
-		},
-		columnElements,
-	)
-	if diags.HasError() {
-		return nil
-	}
-
-	return &CsvFormatter{
-		Delimiter:                           types.StringValue(csvFormatter.Delimiter),
-		Escape:                              types.StringValue(csvFormatter.Escape),
-		HeaderLine:                          types.BoolValue(csvFormatter.HeaderLine),
-		Charset:                             types.StringValue(csvFormatter.Charset),
-		QuotePolicy:                         types.StringValue(csvFormatter.QuotePolicy),
-		Newline:                             types.StringValue(csvFormatter.Newline),
-		NewlineInField:                      types.StringValue(csvFormatter.NewlineInField),
-		NullStringEnabled:                   types.BoolValue(csvFormatter.NullStringEnabled),
-		NullString:                          types.StringPointerValue(csvFormatter.NullString),
-		DefaultTimeZone:                     types.StringValue(csvFormatter.DefaultTimeZone),
-		CsvFormatterColumnOptionsAttributes: columnOptions,
-	}
-}
-
-func NewJsonlFormatter(ctx context.Context, jsonlFormatter *output_option.JsonlFormatter) *JsonlFormatter {
-	if jsonlFormatter == nil {
-		return nil
-	}
-
-	return &JsonlFormatter{
-		Encoding:   types.StringValue(jsonlFormatter.Encoding),
-		Newline:    types.StringValue(jsonlFormatter.Newline),
-		DateFormat: types.StringPointerValue(jsonlFormatter.DateFormat),
-		Timezone:   types.StringPointerValue(jsonlFormatter.Timezone),
-	}
 }
 
 func (s3OutputOption *S3OutputOption) ToInput(ctx context.Context) *outputOptionParameters.S3OutputOptionInput {
@@ -173,8 +113,8 @@ func (s3OutputOption *S3OutputOption) ToInput(ctx context.Context) *outputOption
 		MultipartUploadEnabled: s3OutputOption.MultipartUploadEnabled.ValueBool(),
 		FormatterType:          s3OutputOption.FormatterType.ValueString(),
 		EncoderType:            s3OutputOption.EncoderType.ValueString(),
-		CsvFormatter:           s3OutputOption.CsvFormatter.ToCsvFormatterInput(ctx),
-		JsonlFormatter:         s3OutputOption.JsonlFormatter.ToJsonlFormatterInput(ctx),
+		CsvFormatter:           s3OutputOption.CsvFormatter.toCsvFormatterInput(ctx),
+		JsonlFormatter:         s3OutputOption.JsonlFormatter.toJsonlFormatterInput(),
 		CustomVariableSettings: model.ToCustomVariableSettingInputs(customVarSettings),
 	}
 }
@@ -198,13 +138,73 @@ func (s3OutputOption *S3OutputOption) ToUpdateInput(ctx context.Context) *output
 		MultipartUploadEnabled: s3OutputOption.MultipartUploadEnabled.ValueBoolPointer(),
 		FormatterType:          s3OutputOption.FormatterType.ValueStringPointer(),
 		EncoderType:            s3OutputOption.EncoderType.ValueStringPointer(),
-		CsvFormatter:           s3OutputOption.CsvFormatter.ToCsvFormatterInput(ctx),
-		JsonlFormatter:         s3OutputOption.JsonlFormatter.ToJsonlFormatterInput(ctx),
+		CsvFormatter:           s3OutputOption.CsvFormatter.toCsvFormatterInput(ctx),
+		JsonlFormatter:         s3OutputOption.JsonlFormatter.toJsonlFormatterInput(),
 		CustomVariableSettings: model.ToCustomVariableSettingInputs(customVarSettings),
 	}
 }
 
-func (csvFormatter *CsvFormatter) ToCsvFormatterInput(ctx context.Context) *outputOptionParameters.CsvFormatterInput {
+func newCsvFormatter(ctx context.Context, apiCsvFormatter *output_option.CsvFormatter) *csvFormatter {
+	if apiCsvFormatter == nil {
+		return nil
+	}
+
+	columnElements := make([]csvFormatterColumnOption, 0)
+	if apiCsvFormatter.CsvFormatterColumnOptionsAttributes != nil {
+		for _, opt := range *apiCsvFormatter.CsvFormatterColumnOptionsAttributes {
+			option := csvFormatterColumnOption{
+				Name:     types.StringValue(opt.Name),
+				Format:   types.StringValue(opt.Format),
+				Timezone: types.StringPointerValue(opt.Timezone),
+			}
+			columnElements = append(columnElements, option)
+		}
+	}
+
+	columnOptions, diags := types.ListValueFrom(
+		ctx,
+		types.ObjectType{
+			AttrTypes: map[string]attr.Type{
+				"name":     types.StringType,
+				"format":   types.StringType,
+				"timezone": types.StringType,
+			},
+		},
+		columnElements,
+	)
+	if diags.HasError() {
+		return nil
+	}
+
+	return &csvFormatter{
+		Delimiter:                           types.StringValue(apiCsvFormatter.Delimiter),
+		Escape:                              types.StringValue(apiCsvFormatter.Escape),
+		HeaderLine:                          types.BoolValue(apiCsvFormatter.HeaderLine),
+		Charset:                             types.StringValue(apiCsvFormatter.Charset),
+		QuotePolicy:                         types.StringValue(apiCsvFormatter.QuotePolicy),
+		Newline:                             types.StringValue(apiCsvFormatter.Newline),
+		NewlineInField:                      types.StringValue(apiCsvFormatter.NewlineInField),
+		NullStringEnabled:                   types.BoolValue(apiCsvFormatter.NullStringEnabled),
+		NullString:                          types.StringPointerValue(apiCsvFormatter.NullString),
+		DefaultTimeZone:                     types.StringValue(apiCsvFormatter.DefaultTimeZone),
+		CsvFormatterColumnOptionsAttributes: columnOptions,
+	}
+}
+
+func newJsonlFormatter(apiJsonlFormatter *output_option.JsonlFormatter) *jsonlFormatter {
+	if apiJsonlFormatter == nil {
+		return nil
+	}
+
+	return &jsonlFormatter{
+		Encoding:   types.StringValue(common.NormalizeEncoding(apiJsonlFormatter.Encoding)),
+		Newline:    types.StringValue(apiJsonlFormatter.Newline),
+		DateFormat: types.StringPointerValue(apiJsonlFormatter.DateFormat),
+		Timezone:   types.StringPointerValue(apiJsonlFormatter.Timezone),
+	}
+}
+
+func (csvFormatter *csvFormatter) toCsvFormatterInput(ctx context.Context) *outputOptionParameters.CsvFormatterInput {
 	if csvFormatter == nil {
 		return nil
 	}
@@ -224,7 +224,7 @@ func (csvFormatter *CsvFormatter) ToCsvFormatterInput(ctx context.Context) *outp
 
 	// Convert column options
 	if !csvFormatter.CsvFormatterColumnOptionsAttributes.IsNull() && !csvFormatter.CsvFormatterColumnOptionsAttributes.IsUnknown() {
-		var columnOptions []CsvFormatterColumnOption
+		var columnOptions []csvFormatterColumnOption
 		diags := csvFormatter.CsvFormatterColumnOptionsAttributes.ElementsAs(ctx, &columnOptions, false)
 		if diags.HasError() {
 			return input
@@ -244,13 +244,13 @@ func (csvFormatter *CsvFormatter) ToCsvFormatterInput(ctx context.Context) *outp
 	return input
 }
 
-func (jsonlFormatter *JsonlFormatter) ToJsonlFormatterInput(ctx context.Context) *outputOptionParameters.JsonlFormatterInput {
+func (jsonlFormatter *jsonlFormatter) toJsonlFormatterInput() *outputOptionParameters.JsonlFormatterInput {
 	if jsonlFormatter == nil {
 		return nil
 	}
 
 	return &outputOptionParameters.JsonlFormatterInput{
-		Encoding:   jsonlFormatter.Encoding.ValueString(),
+		Encoding:   common.DenormalizeEncoding(jsonlFormatter.Encoding.ValueString()),
 		Newline:    jsonlFormatter.Newline.ValueString(),
 		DateFormat: jsonlFormatter.DateFormat.ValueStringPointer(),
 		Timezone:   jsonlFormatter.Timezone.ValueStringPointer(),
