@@ -52,8 +52,7 @@ func HubspotOutputOptionSchema() schema.Attribute {
 			},
 			"upsert_key": schema.StringAttribute{
 				Optional:            true,
-				Computed:            true,
-				MarkdownDescription: "Upsert key. Required when mode is `merge` and object_type is not `subscription`. Not used when mode is `insert` or object_type is `subscription` (will be set to null by API)",
+				MarkdownDescription: "Upsert key. Required when mode is `merge` and object_type is not `subscription`. Not used when mode is `insert` or object_type is `subscription`",
 			},
 			"number_of_parallels": schema.Int64Attribute{
 				Optional: true,
