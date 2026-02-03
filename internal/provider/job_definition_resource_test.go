@@ -1080,7 +1080,7 @@ func TestAccJobDefinitionResourceMysqlToS3JSONL(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.formatter_type", "jsonl"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.encoder_type", "gzip"),
 					// JSONL formatter attributes
-					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.jsonl_formatter.encoding", "utf_8"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.jsonl_formatter.encoding", "UTF-8"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.jsonl_formatter.newline", "LF"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.jsonl_formatter.date_format", "%Y-%m-%d"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.jsonl_formatter.timezone", "UTC"),

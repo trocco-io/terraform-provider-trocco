@@ -95,7 +95,7 @@ resource "trocco_job_definition" "mysql_to_s3_jsonl" {
       formatter_type           = "jsonl"
       encoder_type             = "gzip"
       jsonl_formatter = {
-        encoding    = "utf_8"
+        encoding    = "UTF-8"
         newline     = "LF"
         date_format = "%Y-%m-%d"
         timezone    = "UTC"
