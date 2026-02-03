@@ -780,6 +780,7 @@ Optional:
 
 - `bigquery_data_check_config` (Attributes) The datacheck task config of the pipeline definition (see [below for nested schema](#nestedatt--tasks--bigquery_data_check_config))
 - `http_request_config` (Attributes) The task configuration for the HTTP request task. (see [below for nested schema](#nestedatt--tasks--http_request_config))
+- `if_else_config` (Attributes) The task configuration for the if-else task. (see [below for nested schema](#nestedatt--tasks--if_else_config))
 - `redshift_data_check_config` (Attributes) The task configuration for the datacheck task. (see [below for nested schema](#nestedatt--tasks--redshift_data_check_config))
 - `slack_notification_config` (Attributes) The task configuration for the slack notification task. (see [below for nested schema](#nestedatt--tasks--slack_notification_config))
 - `snowflake_data_check_config` (Attributes) The task configuration for the datacheck task. (see [below for nested schema](#nestedatt--tasks--snowflake_data_check_config))
@@ -891,6 +892,48 @@ Required:
 Optional:
 
 - `masking` (Boolean) Whether to mask the value of the parameter
+
+
+
+<a id="nestedatt--tasks--if_else_config"></a>
+### Nested Schema for `tasks.if_else_config`
+
+Required:
+
+- `condition_groups` (Attributes) The condition groups for the if-else task (see [below for nested schema](#nestedatt--tasks--if_else_config--condition_groups))
+- `destinations` (Attributes) The destination tasks for the if and else branches (see [below for nested schema](#nestedatt--tasks--if_else_config--destinations))
+- `name` (String) The name of the task
+
+<a id="nestedatt--tasks--if_else_config--condition_groups"></a>
+### Nested Schema for `tasks.if_else_config.condition_groups`
+
+Required:
+
+- `conditions` (Attributes List) The list of conditions (see [below for nested schema](#nestedatt--tasks--if_else_config--condition_groups--conditions))
+- `set_type` (String) The type of condition set (and, or)
+
+<a id="nestedatt--tasks--if_else_config--condition_groups--conditions"></a>
+### Nested Schema for `tasks.if_else_config.condition_groups.conditions`
+
+Required:
+
+- `operator` (String) The operator for comparison
+- `value` (String) The value to compare against
+- `variable` (String) The variable to check (e.g., current_time, environment, status, response_status_code, transfer_record_count, check_result)
+
+Optional:
+
+- `task_key` (String) The task key (required for task-scoped variables like status, response_status_code, transfer_record_count, check_result)
+
+
+
+<a id="nestedatt--tasks--if_else_config--destinations"></a>
+### Nested Schema for `tasks.if_else_config.destinations`
+
+Required:
+
+- `else` (List of String) The list of task keys to execute when the condition is false. Specify an empty list `[]` if not needed.
+- `if` (List of String) The list of task keys to execute when the condition is true. Specify an empty list `[]` if not needed.
 
 
 

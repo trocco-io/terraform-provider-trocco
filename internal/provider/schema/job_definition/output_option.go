@@ -15,7 +15,9 @@ func OutputOptionSchema() schema.Attribute {
 			"snowflake_output_option":           SnowflakeOutputOptionSchema(),
 			"salesforce_output_option":          SalesforceOutputOptionSchema(),
 			"google_spreadsheets_output_option": GoogleSpreadsheetsOutputOptionSchema(),
+			"sftp_output_option":                SftpOutputOptionSchema(),
 			"databricks_output_option":          DatabricksOutputOptionSchema(),
+			"kintone_output_option":             KintoneOutputOptionSchema(),
 			"mysql_output_option":               MysqlOutputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{

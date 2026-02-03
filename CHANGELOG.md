@@ -1,3 +1,20 @@
+## 0.23.0
+FEATURES:
+- `trocco_connection` resource:
+  - Added support for `sftp` type
+- `trocco_job_definition` resource:
+  - Added support for `sftp` input option with CSV parser
+  - Added support for `sftp` output option with CSV and JSONL formatters
+  - Added support for `kintone` output option
+
+## 0.22.0
+FEATURES:
+- `trocco_job_definition` resource:
+  - Added support for `hubspot` input option
+
+CHORE:
+- Fixed goreleaser archives.format deprecation
+
 ## 0.21.0
 FEATURES:
 - `trocco_connection` resource:
