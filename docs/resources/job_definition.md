@@ -3134,6 +3134,7 @@ Optional:
 - `databricks_output_option` (Attributes) Attributes of destination Databricks settings (see [below for nested schema](#nestedatt--output_option--databricks_output_option))
 - `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
 - `kintone_output_option` (Attributes) Attributes of destination Kintone settings (see [below for nested schema](#nestedatt--output_option--kintone_output_option))
+- `s3_output_option` (Attributes) Attributes of destination Amazon S3 settings (see [below for nested schema](#nestedatt--output_option--s3_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `sftp_output_option` (Attributes) attributes of destination SFTP settings (see [below for nested schema](#nestedatt--output_option--sftp_output_option))
 - `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
@@ -3312,6 +3313,90 @@ Optional:
 
 - `sort_column` (String) Sort column (only applicable if type is 'SUBTABLE')
 - `timezone` (String) Timezone (only applicable if type is 'DATE', 'TIME' or 'DATETIME')
+
+
+
+<a id="nestedatt--output_option--s3_output_option"></a>
+### Nested Schema for `output_option.s3_output_option`
+
+Required:
+
+- `bucket` (String) S3 bucket name
+- `path_prefix` (String) File path prefix
+- `s3_connection_id` (Number) Id of S3 connection
+
+Optional:
+
+- `canned_acl` (String) S3 object ACL
+- `csv_formatter` (Attributes) CSV formatter settings. Required when formatter_type is csv (see [below for nested schema](#nestedatt--output_option--s3_output_option--csv_formatter))
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--s3_output_option--custom_variable_settings))
+- `encoder_type` (String) Encoder type
+- `file_ext` (String) File extension
+- `formatter_type` (String) Formatter type
+- `is_minimum_output_tasks` (Boolean) Minimum output tasks setting
+- `jsonl_formatter` (Attributes) JSONL formatter settings. Required when formatter_type is jsonl (see [below for nested schema](#nestedatt--output_option--s3_output_option--jsonl_formatter))
+- `multipart_upload_enabled` (Boolean) Enable multipart upload
+- `region` (String) AWS region
+- `sequence_format` (String) Sequence format
+
+<a id="nestedatt--output_option--s3_output_option--csv_formatter"></a>
+### Nested Schema for `output_option.s3_output_option.csv_formatter`
+
+Optional:
+
+- `charset` (String) Character encoding (e.g., UTF-8, Shift_JIS)
+- `csv_formatter_column_options_attributes` (Attributes List) Column options for formatting (see [below for nested schema](#nestedatt--output_option--s3_output_option--csv_formatter--csv_formatter_column_options_attributes))
+- `default_time_zone` (String) Default time zone
+- `delimiter` (String) Delimiter character. Use \t for tab
+- `escape` (String) Escape character
+- `header_line` (Boolean) Output header line
+- `newline` (String) Newline code (e.g., LF, CRLF)
+- `newline_in_field` (String) Newline processing in field
+- `null_string` (String) String to represent null values
+- `null_string_enabled` (Boolean) Enable null string
+- `quote_policy` (String) Quote policy
+
+<a id="nestedatt--output_option--s3_output_option--csv_formatter--csv_formatter_column_options_attributes"></a>
+### Nested Schema for `output_option.s3_output_option.csv_formatter.csv_formatter_column_options_attributes`
+
+Required:
+
+- `name` (String) Column name
+
+Optional:
+
+- `format` (String) Format specification (e.g., date/time format)
+- `timezone` (String) Time zone for this column
+
+
+
+<a id="nestedatt--output_option--s3_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.s3_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--output_option--s3_output_option--jsonl_formatter"></a>
+### Nested Schema for `output_option.s3_output_option.jsonl_formatter`
+
+Optional:
+
+- `date_format` (String) Date format
+- `encoding` (String) Character encoding (e.g., UTF-8)
+- `newline` (String) Newline code (e.g., LF, CRLF)
+- `timezone` (String) Time zone
 
 
 

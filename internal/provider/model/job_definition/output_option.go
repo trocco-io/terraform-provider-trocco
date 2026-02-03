@@ -14,6 +14,7 @@ type OutputOption struct {
 	GoogleSpreadsheetsOutputOption *outputOptionModel.GoogleSpreadsheetsOutputOption `tfsdk:"google_spreadsheets_output_option"`
 	SftpOutputOption               *outputOptionModel.SftpOutputOption               `tfsdk:"sftp_output_option"`
 	DatabricksOutputOption         *outputOptionModel.DatabricksOutputOption         `tfsdk:"databricks_output_option"`
+	S3OutputOption                 *outputOptionModel.S3OutputOption                 `tfsdk:"s3_output_option"`
 	KintoneOutputOption            *outputOptionModel.KintoneOutputOption            `tfsdk:"kintone_output_option"`
 }
 
@@ -25,6 +26,7 @@ func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *Out
 		GoogleSpreadsheetsOutputOption: outputOptionModel.NewGoogleSpreadsheetsOutputOption(ctx, outputOption.GoogleSpreadsheetsOutputOption),
 		SftpOutputOption:               outputOptionModel.NewSftpOutputOption(ctx, outputOption.SftpOutputOption),
 		DatabricksOutputOption:         outputOptionModel.NewDatabricksOutputOption(ctx, outputOption.DatabricksOutputOption),
+		S3OutputOption:                 outputOptionModel.NewS3OutputOption(ctx, outputOption.S3OutputOption),
 		KintoneOutputOption:            outputOptionModel.NewKintoneOutputOption(ctx, outputOption.KintoneOutputOption),
 	}
 }
@@ -37,6 +39,7 @@ func (o OutputOption) ToInput(ctx context.Context) client.OutputOptionInput {
 		GoogleSpreadsheetsOutputOption: model.WrapObject(o.GoogleSpreadsheetsOutputOption.ToInput(ctx)),
 		SftpOutputOption:               model.WrapObject(o.SftpOutputOption.ToInput(ctx)),
 		DatabricksOutputOption:         model.WrapObject(o.DatabricksOutputOption.ToInput(ctx)),
+		S3OutputOption:                 model.WrapObject(o.S3OutputOption.ToInput(ctx)),
 		KintoneOutputOption:            model.WrapObject(o.KintoneOutputOption.ToInput(ctx)),
 	}
 }
@@ -49,6 +52,7 @@ func (o OutputOption) ToUpdateInput(ctx context.Context) *client.UpdateOutputOpt
 		GoogleSpreadsheetsOutputOption: model.WrapObject(o.GoogleSpreadsheetsOutputOption.ToUpdateInput(ctx)),
 		SftpOutputOption:               model.WrapObject(o.SftpOutputOption.ToUpdateInput(ctx)),
 		DatabricksOutputOption:         model.WrapObject(o.DatabricksOutputOption.ToUpdateInput(ctx)),
+		S3OutputOption:                 model.WrapObject(o.S3OutputOption.ToUpdateInput(ctx)),
 		KintoneOutputOption:            model.WrapObject(o.KintoneOutputOption.ToUpdateInput(ctx)),
 	}
 }
