@@ -148,6 +148,7 @@ type OutputOption struct {
 	SftpOutputOption               *outputOptionEntities.SftpOutputOption               `json:"sftp_output_option"`
 	DatabricksOutputOption         *outputOptionEntities.DatabricksOutputOption         `json:"databricks_output_option"`
 	KintoneOutputOption            *outputOptionEntities.KintoneOutputOption            `json:"kintone_output_option"`
+	MysqlOutputOption              *outputOptionEntities.MysqlOutputOption              `json:"mysql_output_option"`
 }
 
 type OutputOptionInput struct {
@@ -158,6 +159,7 @@ type OutputOptionInput struct {
 	SftpOutputOption               *parameter.NullableObject[outputOptionParameters.SftpOutputOptionInput]               `json:"sftp_output_option,omitempty"`
 	DatabricksOutputOption         *parameter.NullableObject[outputOptionParameters.DatabricksOutputOptionInput]         `json:"databricks_output_option,omitempty"`
 	KintoneOutputOption            *parameter.NullableObject[outputOptionParameters.KintoneOutputOptionInput]            `json:"kintone_output_option,omitempty"`
+	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.MysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
@@ -168,6 +170,7 @@ type UpdateOutputOptionInput struct {
 	SftpOutputOption               *parameter.NullableObject[outputOptionParameters.UpdateSftpOutputOptionInput]               `json:"sftp_output_option,omitempty"`
 	DatabricksOutputOption         *parameter.NullableObject[outputOptionParameters.UpdateDatabricksOutputOptionInput]         `json:"databricks_output_option,omitempty"`
 	KintoneOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateKintoneOutputOptionInput]            `json:"kintone_output_option,omitempty"`
+	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.UpdateMysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {
