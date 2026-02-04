@@ -18,6 +18,11 @@ type PostgresqlOutputOption struct {
 	DefaultTimeZone        types.String `tfsdk:"default_time_zone"`
 	PostgresqlConnectionId types.Int64  `tfsdk:"postgresql_connection_id"`
 	MergeKeys              types.Set    `tfsdk:"merge_keys"`
+	RetryLimit             types.Int64  `tfsdk:"retry_limit"`
+	RetryWait              types.Int64  `tfsdk:"retry_wait"`
+	MaxRetryWait           types.Int64  `tfsdk:"max_retry_wait"`
+	BeforeLoad             types.String `tfsdk:"before_load"`
+	AfterLoad              types.String `tfsdk:"after_load"`
 }
 
 func NewPostgresqlOutputOption(ctx context.Context, postgresqlOutputOption *output_option.PostgresqlOutputOption) *PostgresqlOutputOption {
@@ -32,6 +37,11 @@ func NewPostgresqlOutputOption(ctx context.Context, postgresqlOutputOption *outp
 		Mode:                   types.StringPointerValue(postgresqlOutputOption.Mode),
 		DefaultTimeZone:        types.StringPointerValue(postgresqlOutputOption.DefaultTimeZone),
 		PostgresqlConnectionId: types.Int64Value(postgresqlOutputOption.PostgresqlConnectionId),
+		RetryLimit:             types.Int64PointerValue(postgresqlOutputOption.RetryLimit),
+		RetryWait:              types.Int64PointerValue(postgresqlOutputOption.RetryWait),
+		MaxRetryWait:           types.Int64PointerValue(postgresqlOutputOption.MaxRetryWait),
+		BeforeLoad:             types.StringPointerValue(postgresqlOutputOption.BeforeLoad),
+		AfterLoad:              types.StringPointerValue(postgresqlOutputOption.AfterLoad),
 	}
 
 	mergeKeys, err := newMergeKeys(ctx, postgresqlOutputOption.MergeKeys)
@@ -85,6 +95,11 @@ func (postgresqlOutputOption *PostgresqlOutputOption) ToInput(ctx context.Contex
 		DefaultTimeZone:        postgresqlOutputOption.DefaultTimeZone.ValueString(),
 		PostgresqlConnectionId: postgresqlOutputOption.PostgresqlConnectionId.ValueInt64(),
 		MergeKeys:              model.WrapObjectList(mergeKeys),
+		RetryLimit:             postgresqlOutputOption.RetryLimit.ValueInt64Pointer(),
+		RetryWait:              postgresqlOutputOption.RetryWait.ValueInt64Pointer(),
+		MaxRetryWait:           postgresqlOutputOption.MaxRetryWait.ValueInt64Pointer(),
+		BeforeLoad:             postgresqlOutputOption.BeforeLoad.ValueStringPointer(),
+		AfterLoad:              postgresqlOutputOption.AfterLoad.ValueStringPointer(),
 	}
 }
 
@@ -116,5 +131,10 @@ func (postgresqlOutputOption *PostgresqlOutputOption) ToUpdateInput(ctx context.
 		DefaultTimeZone:        postgresqlOutputOption.DefaultTimeZone.ValueStringPointer(),
 		PostgresqlConnectionId: postgresqlOutputOption.PostgresqlConnectionId.ValueInt64Pointer(),
 		MergeKeys:              model.WrapObjectList(mergeKeys),
+		RetryLimit:             postgresqlOutputOption.RetryLimit.ValueInt64Pointer(),
+		RetryWait:              postgresqlOutputOption.RetryWait.ValueInt64Pointer(),
+		MaxRetryWait:           postgresqlOutputOption.MaxRetryWait.ValueInt64Pointer(),
+		BeforeLoad:             postgresqlOutputOption.BeforeLoad.ValueStringPointer(),
+		AfterLoad:              postgresqlOutputOption.AfterLoad.ValueStringPointer(),
 	}
 }
