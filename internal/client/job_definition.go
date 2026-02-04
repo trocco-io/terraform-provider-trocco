@@ -147,6 +147,7 @@ type OutputOption struct {
 	GoogleSpreadsheetsOutputOption *outputOptionEntities.GoogleSpreadsheetsOutputOption `json:"google_spreadsheets_output_option"`
 	SftpOutputOption               *outputOptionEntities.SftpOutputOption               `json:"sftp_output_option"`
 	DatabricksOutputOption         *outputOptionEntities.DatabricksOutputOption         `json:"databricks_output_option"`
+	PostgresqlOutputOption         *outputOptionEntities.PostgresqlOutputOption         `json:"postgresql_output_option"`
 	KintoneOutputOption            *outputOptionEntities.KintoneOutputOption            `json:"kintone_output_option"`
 	MysqlOutputOption              *outputOptionEntities.MysqlOutputOption              `json:"mysql_output_option"`
 }
@@ -158,6 +159,7 @@ type OutputOptionInput struct {
 	GoogleSpreadsheetsOutputOption *parameter.NullableObject[outputOptionParameters.GoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
 	SftpOutputOption               *parameter.NullableObject[outputOptionParameters.SftpOutputOptionInput]               `json:"sftp_output_option,omitempty"`
 	DatabricksOutputOption         *parameter.NullableObject[outputOptionParameters.DatabricksOutputOptionInput]         `json:"databricks_output_option,omitempty"`
+	PostgresqlOutputOption         *parameter.NullableObject[outputOptionParameters.PostgresqlOutputOptionInput]         `json:"postgresql_output_option,omitempty"`
 	KintoneOutputOption            *parameter.NullableObject[outputOptionParameters.KintoneOutputOptionInput]            `json:"kintone_output_option,omitempty"`
 	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.MysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
 }
@@ -169,6 +171,7 @@ type UpdateOutputOptionInput struct {
 	GoogleSpreadsheetsOutputOption *parameter.NullableObject[outputOptionParameters.UpdateGoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
 	SftpOutputOption               *parameter.NullableObject[outputOptionParameters.UpdateSftpOutputOptionInput]               `json:"sftp_output_option,omitempty"`
 	DatabricksOutputOption         *parameter.NullableObject[outputOptionParameters.UpdateDatabricksOutputOptionInput]         `json:"databricks_output_option,omitempty"`
+	PostgresqlOutputOption         *parameter.NullableObject[outputOptionParameters.UpdatePostgresqlOutputOptionInput]         `json:"postgresql_output_option,omitempty"`
 	KintoneOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateKintoneOutputOptionInput]            `json:"kintone_output_option,omitempty"`
 	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.UpdateMysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
 }

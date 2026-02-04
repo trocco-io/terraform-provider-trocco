@@ -3135,6 +3135,7 @@ Optional:
 - `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
 - `kintone_output_option` (Attributes) Attributes of destination Kintone settings (see [below for nested schema](#nestedatt--output_option--kintone_output_option))
 - `mysql_output_option` (Attributes) Attributes of destination MySQL settings (see [below for nested schema](#nestedatt--output_option--mysql_output_option))
+- `postgresql_output_option` (Attributes) Attributes of destination PostgreSQL settings (see [below for nested schema](#nestedatt--output_option--postgresql_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `sftp_output_option` (Attributes) attributes of destination SFTP settings (see [below for nested schema](#nestedatt--output_option--sftp_output_option))
 - `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
@@ -3368,6 +3369,28 @@ Optional:
 - `precision` (Number) Total number of digits for DECIMAL type (required when type is DECIMAL)
 - `scale` (Number) Number of decimal places for DECIMAL type (required when type is DECIMAL)
 
+
+
+<a id="nestedatt--output_option--postgresql_output_option"></a>
+### Nested Schema for `output_option.postgresql_output_option`
+
+Required:
+
+- `database` (String) Database name
+- `default_time_zone` (String) Default time zone
+- `mode` (String) Transfer mode
+- `postgresql_connection_id` (Number) PostgreSQL connection ID
+- `schema` (String) Schema name
+- `table` (String) Table name
+
+Optional:
+
+- `after_load` (String) SQL statement to execute after loading data.
+- `before_load` (String) SQL statement to execute before loading data (not available when mode is 'replace').
+- `max_retry_wait` (Number) Maximum wait time in milliseconds between retries. Default is 1800000.
+- `merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
+- `retry_limit` (Number) Maximum number of retries. Default is 12.
+- `retry_wait` (Number) Initial wait time in milliseconds between retries. Default is 1000.
 
 
 <a id="nestedatt--output_option--salesforce_output_option"></a>

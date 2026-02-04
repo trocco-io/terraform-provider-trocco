@@ -13,9 +13,9 @@ type ConditionGroups struct {
 
 type Condition struct {
 	Identifier string `json:"identifier"`
-	Variable   string  `json:"variable"`
-	Operator   string  `json:"operator"`
-	Value      string  `json:"value"`
+	Variable   string `json:"variable"`
+	Operator   string `json:"operator"`
+	Value      string `json:"value"`
 }
 
 type Destinations struct {

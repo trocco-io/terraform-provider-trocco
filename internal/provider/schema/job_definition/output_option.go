@@ -17,6 +17,7 @@ func OutputOptionSchema() schema.Attribute {
 			"google_spreadsheets_output_option": GoogleSpreadsheetsOutputOptionSchema(),
 			"sftp_output_option":                SftpOutputOptionSchema(),
 			"databricks_output_option":          DatabricksOutputOptionSchema(),
+			"postgresql_output_option":          PostgresqlOutputOptionSchema(),
 			"kintone_output_option":             KintoneOutputOptionSchema(),
 			"mysql_output_option":               MysqlOutputOptionSchema(),
 		},
