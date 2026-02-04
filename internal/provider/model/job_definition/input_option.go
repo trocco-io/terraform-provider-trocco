@@ -22,6 +22,8 @@ type InputOption struct {
 	HttpInputOption               *inputOptionModel.HttpInputOption               `tfsdk:"http_input_option"`
 	KintoneInputOption            *inputOptionModel.KintoneInputOption            `tfsdk:"kintone_input_option"`
 	YahooAdsApiYssInputOption     *inputOptionModel.YahooAdsApiYssInputOption     `tfsdk:"yahoo_ads_api_yss_input_option"`
+	SftpInputOption               *inputOptionModel.SftpInputOption               `tfsdk:"sftp_input_option"`
+	HubspotInputOption            *inputOptionModel.HubspotInputOption            `tfsdk:"hubspot_input_option"`
 	DatabricksInputOption         *inputOptionModel.DatabricksInputOption         `tfsdk:"databricks_input_option"`
 }
 
@@ -44,6 +46,8 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		HttpInputOption:               httpInputOption,
 		KintoneInputOption:            inputOptionModel.NewKintoneInputOption(ctx, inputOption.KintoneInputOption),
 		YahooAdsApiYssInputOption:     inputOptionModel.NewYahooAdsApiYssInputOption(ctx, inputOption.YahooAdsApiYssInputOption),
+		SftpInputOption:               inputOptionModel.NewSftpInputOption(ctx, inputOption.SftpInputOption),
+		HubspotInputOption:            inputOptionModel.NewHubspotInputOption(ctx, inputOption.HubspotInputOption),
 		DatabricksInputOption:         inputOptionModel.NewDatabricksInputOption(ctx, inputOption.DatabricksInputOption),
 	}, diags
 }
@@ -67,6 +71,8 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 		HttpInputOption:               model.WrapObject(httpInput),
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToInput(ctx)),
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToInput(ctx)),
+		SftpInputOption:               model.WrapObject(o.SftpInputOption.ToInput(ctx)),
+		HubspotInputOption:            model.WrapObject(o.HubspotInputOption.ToInput(ctx)),
 		DatabricksInputOption:         model.WrapObject(o.DatabricksInputOption.ToInput(ctx)),
 	}, diags
 }
@@ -89,6 +95,8 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 		HttpInputOption:               model.WrapObject(httpInput),
 		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToUpdateInput(ctx)),
 		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToUpdateInput(ctx)),
+		SftpInputOption:               model.WrapObject(o.SftpInputOption.ToUpdateInput(ctx)),
+		HubspotInputOption:            model.WrapObject(o.HubspotInputOption.ToUpdateInput(ctx)),
 		DatabricksInputOption:         model.WrapObject(o.DatabricksInputOption.ToUpdateInput(ctx)),
 	}, diags
 }
