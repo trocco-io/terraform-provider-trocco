@@ -73,7 +73,7 @@ resource "trocco_job_definition" "google_ads_to_bigquery" {
       resource_type            = "campaign"
       start_date               = "2024-01-01"
       end_date                 = "2024-01-31"
-      google_ads_connection_id = 1
+      google_ads_connection_id = 794
       input_option_columns = [
         {
           name = "campaign.name"
