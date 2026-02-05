@@ -102,6 +102,7 @@ type InputOption struct {
 	SftpInputOption               *inputOptionEntities.SftpInputOption               `json:"sftp_input_option"`
 	HubspotInputOption            *inputOptionEntities.HubspotInputOption            `json:"hubspot_input_option"`
 	DatabricksInputOption         *inputOptionEntities.DatabricksInputOption         `json:"databricks_input_option"`
+	GoogleAdsInputOption          *inputOptionEntities.GoogleAdsInputOption          `json:"google_ads_input_option"`
 }
 
 type InputOptionInput struct {
@@ -120,6 +121,7 @@ type InputOptionInput struct {
 	SftpInputOption               *parameter.NullableObject[inputOptionParameters.SftpInputOptionInput]               `json:"sftp_input_option,omitempty"`
 	HubspotInputOption            *parameter.NullableObject[inputOptionParameters.HubspotInputOptionInput]            `json:"hubspot_input_option,omitempty"`
 	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.DatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
+	GoogleAdsInputOption          *parameter.NullableObject[inputOptionParameters.GoogleAdsInputOptionInput]          `json:"google_ads_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
@@ -138,6 +140,7 @@ type UpdateInputOptionInput struct {
 	SftpInputOption               *parameter.NullableObject[inputOptionParameters.UpdateSftpInputOptionInput]               `json:"sftp_input_option,omitempty"`
 	HubspotInputOption            *parameter.NullableObject[inputOptionParameters.UpdateHubspotInputOptionInput]            `json:"hubspot_input_option,omitempty"`
 	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.UpdateDatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
+	GoogleAdsInputOption          *parameter.NullableObject[inputOptionParameters.UpdateGoogleAdsInputOptionInput]          `json:"google_ads_input_option,omitempty"`
 }
 
 type OutputOption struct {

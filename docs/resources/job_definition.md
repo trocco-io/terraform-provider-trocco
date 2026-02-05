@@ -1509,6 +1509,7 @@ Optional:
 - `bigquery_input_option` (Attributes) Attributes about source bigquery (see [below for nested schema](#nestedatt--input_option--bigquery_input_option))
 - `databricks_input_option` (Attributes) Attributes of source databricks (see [below for nested schema](#nestedatt--input_option--databricks_input_option))
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
+- `google_ads_input_option` (Attributes) Attributes about source Google Ads (see [below for nested schema](#nestedatt--input_option--google_ads_input_option))
 - `google_analytics4_input_option` (Attributes) Attributes about source Google Analytics 4 (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option))
 - `google_spreadsheets_input_option` (Attributes) Attributes about source Google Spreadsheets (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option))
 - `http_input_option` (Attributes) Attributes about source HTTP (see [below for nested schema](#nestedatt--input_option--http_input_option))
@@ -1875,6 +1876,55 @@ Optional:
 - `format` (String) Format of the column.
 - `timezone` (String) time zone
 
+
+
+
+<a id="nestedatt--input_option--google_ads_input_option"></a>
+### Nested Schema for `input_option.google_ads_input_option`
+
+Required:
+
+- `customer_id` (String) Google Ads Customer ID (10-digit number)
+- `google_ads_connection_id` (Number) Id of Google Ads connection
+- `input_option_columns` (Attributes List) List of fields to be retrieved (see [below for nested schema](#nestedatt--input_option--google_ads_input_option--input_option_columns))
+- `resource_type` (String) Resource type to retrieve (e.g., customer, campaign, ad_group, ad_group_ad)
+
+Optional:
+
+- `conditions` (List of String) List of WHERE clause conditions
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_ads_input_option--custom_variable_settings))
+- `end_date` (String) Data retrieval end date (YYYY-MM-DD format). May not be specified for some resource types.
+- `start_date` (String) Data retrieval start date (YYYY-MM-DD format). May not be specified for some resource types.
+
+<a id="nestedatt--input_option--google_ads_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.google_ads_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Field name
+- `type` (String) Data type
+
+Optional:
+
+- `format` (String) Format for timestamp type
+
+
+<a id="nestedatt--input_option--google_ads_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.google_ads_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
 
 
 

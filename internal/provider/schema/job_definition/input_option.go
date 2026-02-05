@@ -26,6 +26,7 @@ func InputOptionSchema() schema.Attribute {
 			"sftp_input_option":                SftpInputOptionSchema(),
 			"hubspot_input_option":             HubspotInputOptionSchema(),
 			"databricks_input_option":          DatabricksInputOptionSchema(),
+			"google_ads_input_option":          GoogleAdsInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planModifier.InputOptionPlanModifier{},
