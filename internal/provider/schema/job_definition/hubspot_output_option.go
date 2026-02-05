@@ -20,26 +20,8 @@ func HubspotOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "HubSpot connection ID",
 			},
 			"object_type": schema.StringAttribute{
-				Required: true,
-				Validators: []validator.String{
-					stringvalidator.OneOf(
-						"contact",
-						"company",
-						"deal",
-						"product",
-						"ticket",
-						"line_item",
-						"quote",
-						"subscription",
-						"call",
-						"email",
-						"meeting",
-						"note",
-						"postal_mail",
-						"task",
-					),
-				},
-				MarkdownDescription: "Object type. Standard objects: `contact`, `company`, `deal`, `product`, `ticket`, `line_item`, `quote`, `subscription`. Engagement objects: `call`, `email`, `meeting`, `note`, `postal_mail`, `task`",
+				Required:            true,
+				MarkdownDescription: "Object type. Standard objects: `contact`, `company`, `deal`, `product`, `ticket`, `line_item`, `quote`, `subscription`. Engagement objects: `call`, `email`, `meeting`, `note`, `postal_mail`, `task`. Custom objects are also supported",
 			},
 			"mode": schema.StringAttribute{
 				Optional: true,

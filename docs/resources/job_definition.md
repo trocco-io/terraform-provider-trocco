@@ -3288,7 +3288,7 @@ Required:
 Required:
 
 - `hubspot_connection_id` (Number) HubSpot connection ID
-- `object_type` (String) Object type. Standard objects: `contact`, `company`, `deal`, `product`, `ticket`, `line_item`, `quote`, `subscription`. Engagement objects: `call`, `email`, `meeting`, `note`, `postal_mail`, `task`
+- `object_type` (String) Object type. Standard objects: `contact`, `company`, `deal`, `product`, `ticket`, `line_item`, `quote`, `subscription`. Engagement objects: `call`, `email`, `meeting`, `note`, `postal_mail`, `task`. Custom objects are also supported
 
 Optional:
 

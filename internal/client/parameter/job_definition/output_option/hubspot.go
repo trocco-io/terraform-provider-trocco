@@ -5,21 +5,21 @@ import (
 )
 
 type HubspotOutputOptionInput struct {
-	HubspotConnectionID int64                           `json:"hubspot_connection_id"`
-	ObjectType          string                          `json:"object_type"`
-	Mode                string                          `json:"mode"`
-	UpsertKey           *parameter.NullableString       `json:"upsert_key,omitempty"`
-	NumberOfParallels   int64                           `json:"number_of_parallels"`
-	Associations        []HubspotOutputAssociationInput `json:"associations,omitempty"`
+	HubspotConnectionID int64                                                        `json:"hubspot_connection_id"`
+	ObjectType          string                                                       `json:"object_type"`
+	Mode                string                                                       `json:"mode"`
+	UpsertKey           *parameter.NullableString                                    `json:"upsert_key,omitempty"`
+	NumberOfParallels   int64                                                        `json:"number_of_parallels"`
+	Associations        *parameter.NullableObjectList[HubspotOutputAssociationInput] `json:"associations,omitempty"`
 }
 
 type UpdateHubspotOutputOptionInput struct {
-	HubspotConnectionID *int64                           `json:"hubspot_connection_id,omitempty"`
-	ObjectType          *string                          `json:"object_type,omitempty"`
-	Mode                *string                          `json:"mode,omitempty"`
-	UpsertKey           *parameter.NullableString        `json:"upsert_key,omitempty"`
-	NumberOfParallels   *int64                           `json:"number_of_parallels,omitempty"`
-	Associations        *[]HubspotOutputAssociationInput `json:"associations,omitempty"`
+	HubspotConnectionID *int64                                                       `json:"hubspot_connection_id,omitempty"`
+	ObjectType          *string                                                      `json:"object_type,omitempty"`
+	Mode                *string                                                      `json:"mode,omitempty"`
+	UpsertKey           *parameter.NullableString                                    `json:"upsert_key,omitempty"`
+	NumberOfParallels   *int64                                                       `json:"number_of_parallels,omitempty"`
+	Associations        *parameter.NullableObjectList[HubspotOutputAssociationInput] `json:"associations,omitempty"`
 }
 
 type HubspotOutputAssociationInput struct {

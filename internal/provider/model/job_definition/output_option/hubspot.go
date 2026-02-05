@@ -61,7 +61,7 @@ func newHubspotOutputAssociations(ctx context.Context, inputAssociations *[]outp
 		AttrTypes: hubspotOutputAssociation{}.attrTypes(),
 	}
 
-	if inputAssociations == nil {
+	if inputAssociations == nil || len(*inputAssociations) == 0 {
 		return types.ListNull(objectType), nil
 	}
 
@@ -87,32 +87,33 @@ func (hubspotOutputOption *HubspotOutputOption) ToInput(ctx context.Context) *ou
 		return nil
 	}
 
-	result := &outputOptionParameters.HubspotOutputOptionInput{
+	var associations *[]outputOptionParameters.HubspotOutputAssociationInput
+	if !hubspotOutputOption.Associations.IsNull() && !hubspotOutputOption.Associations.IsUnknown() {
+		var associationValues []hubspotOutputAssociation
+		diags := hubspotOutputOption.Associations.ElementsAs(ctx, &associationValues, false)
+		if diags.HasError() {
+			return nil
+		}
+
+		outputs := make([]outputOptionParameters.HubspotOutputAssociationInput, 0, len(associationValues))
+		for _, assoc := range associationValues {
+			outputs = append(outputs, outputOptionParameters.HubspotOutputAssociationInput{
+				ToObjectType:  assoc.ToObjectType.ValueString(),
+				FromObjectKey: assoc.FromObjectKey.ValueString(),
+				ToObjectKey:   assoc.ToObjectKey.ValueString(),
+			})
+		}
+		associations = &outputs
+	}
+
+	return &outputOptionParameters.HubspotOutputOptionInput{
 		HubspotConnectionID: hubspotOutputOption.HubspotConnectionID.ValueInt64(),
 		ObjectType:          hubspotOutputOption.ObjectType.ValueString(),
 		Mode:                hubspotOutputOption.Mode.ValueString(),
 		UpsertKey:           model.NewNullableString(hubspotOutputOption.UpsertKey),
 		NumberOfParallels:   hubspotOutputOption.NumberOfParallels.ValueInt64(),
+		Associations:        model.WrapObjectList(associations),
 	}
-
-	if !hubspotOutputOption.Associations.IsNull() && !hubspotOutputOption.Associations.IsUnknown() {
-		var associations []hubspotOutputAssociation
-		hubspotOutputOption.Associations.ElementsAs(ctx, &associations, false)
-
-		if len(associations) > 0 {
-			associationInputs := make([]outputOptionParameters.HubspotOutputAssociationInput, len(associations))
-			for i, assoc := range associations {
-				associationInputs[i] = outputOptionParameters.HubspotOutputAssociationInput{
-					ToObjectType:  assoc.ToObjectType.ValueString(),
-					FromObjectKey: assoc.FromObjectKey.ValueString(),
-					ToObjectKey:   assoc.ToObjectKey.ValueString(),
-				}
-			}
-			result.Associations = associationInputs
-		}
-	}
-
-	return result
 }
 
 func (hubspotOutputOption *HubspotOutputOption) ToUpdateInput(ctx context.Context) *outputOptionParameters.UpdateHubspotOutputOptionInput {
@@ -120,28 +121,31 @@ func (hubspotOutputOption *HubspotOutputOption) ToUpdateInput(ctx context.Contex
 		return nil
 	}
 
-	result := &outputOptionParameters.UpdateHubspotOutputOptionInput{
+	var associations *[]outputOptionParameters.HubspotOutputAssociationInput
+	if !hubspotOutputOption.Associations.IsNull() && !hubspotOutputOption.Associations.IsUnknown() {
+		var associationValues []hubspotOutputAssociation
+		diags := hubspotOutputOption.Associations.ElementsAs(ctx, &associationValues, false)
+		if diags.HasError() {
+			return nil
+		}
+
+		outputs := make([]outputOptionParameters.HubspotOutputAssociationInput, 0, len(associationValues))
+		for _, assoc := range associationValues {
+			outputs = append(outputs, outputOptionParameters.HubspotOutputAssociationInput{
+				ToObjectType:  assoc.ToObjectType.ValueString(),
+				FromObjectKey: assoc.FromObjectKey.ValueString(),
+				ToObjectKey:   assoc.ToObjectKey.ValueString(),
+			})
+		}
+		associations = &outputs
+	}
+
+	return &outputOptionParameters.UpdateHubspotOutputOptionInput{
 		HubspotConnectionID: hubspotOutputOption.HubspotConnectionID.ValueInt64Pointer(),
 		ObjectType:          hubspotOutputOption.ObjectType.ValueStringPointer(),
 		Mode:                hubspotOutputOption.Mode.ValueStringPointer(),
 		UpsertKey:           model.NewNullableString(hubspotOutputOption.UpsertKey),
 		NumberOfParallels:   hubspotOutputOption.NumberOfParallels.ValueInt64Pointer(),
+		Associations:        model.WrapObjectList(associations),
 	}
-
-	if !hubspotOutputOption.Associations.IsNull() && !hubspotOutputOption.Associations.IsUnknown() {
-		var associations []hubspotOutputAssociation
-		hubspotOutputOption.Associations.ElementsAs(ctx, &associations, false)
-
-		associationInputs := make([]outputOptionParameters.HubspotOutputAssociationInput, len(associations))
-		for i, assoc := range associations {
-			associationInputs[i] = outputOptionParameters.HubspotOutputAssociationInput{
-				ToObjectType:  assoc.ToObjectType.ValueString(),
-				FromObjectKey: assoc.FromObjectKey.ValueString(),
-				ToObjectKey:   assoc.ToObjectKey.ValueString(),
-			}
-		}
-		result.Associations = &associationInputs
-	}
-
-	return result
 }
