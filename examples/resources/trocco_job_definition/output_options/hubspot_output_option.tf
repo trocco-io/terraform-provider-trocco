@@ -8,7 +8,7 @@ resource "trocco_job_definition" "hubspot_output_example" {
       mode                  = "merge"
       upsert_key            = "id"
       number_of_parallels   = 2
-      hubspot_output_associations = [
+      associations = [
         {
           to_object_type  = "contact"
           from_object_key = "contact_email"
