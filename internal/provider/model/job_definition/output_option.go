@@ -15,7 +15,9 @@ type OutputOption struct {
 	SftpOutputOption               *outputOptionModel.SftpOutputOption               `tfsdk:"sftp_output_option"`
 	DatabricksOutputOption         *outputOptionModel.DatabricksOutputOption         `tfsdk:"databricks_output_option"`
 	S3OutputOption                 *outputOptionModel.S3OutputOption                 `tfsdk:"s3_output_option"`
+	PostgresqlOutputOption         *outputOptionModel.PostgresqlOutputOption         `tfsdk:"postgresql_output_option"`
 	KintoneOutputOption            *outputOptionModel.KintoneOutputOption            `tfsdk:"kintone_output_option"`
+	MysqlOutputOption              *outputOptionModel.MysqlOutputOption              `tfsdk:"mysql_output_option"`
 }
 
 func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *OutputOption {
@@ -27,7 +29,9 @@ func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *Out
 		SftpOutputOption:               outputOptionModel.NewSftpOutputOption(ctx, outputOption.SftpOutputOption),
 		DatabricksOutputOption:         outputOptionModel.NewDatabricksOutputOption(ctx, outputOption.DatabricksOutputOption),
 		S3OutputOption:                 outputOptionModel.NewS3OutputOption(ctx, outputOption.S3OutputOption),
+		PostgresqlOutputOption:         outputOptionModel.NewPostgresqlOutputOption(ctx, outputOption.PostgresqlOutputOption),
 		KintoneOutputOption:            outputOptionModel.NewKintoneOutputOption(ctx, outputOption.KintoneOutputOption),
+		MysqlOutputOption:              outputOptionModel.NewMysqlOutputOption(ctx, outputOption.MysqlOutputOption),
 	}
 }
 
@@ -40,7 +44,9 @@ func (o OutputOption) ToInput(ctx context.Context) client.OutputOptionInput {
 		SftpOutputOption:               model.WrapObject(o.SftpOutputOption.ToInput(ctx)),
 		DatabricksOutputOption:         model.WrapObject(o.DatabricksOutputOption.ToInput(ctx)),
 		S3OutputOption:                 model.WrapObject(o.S3OutputOption.ToInput(ctx)),
+		PostgresqlOutputOption:         model.WrapObject(o.PostgresqlOutputOption.ToInput(ctx)),
 		KintoneOutputOption:            model.WrapObject(o.KintoneOutputOption.ToInput(ctx)),
+		MysqlOutputOption:              model.WrapObject(o.MysqlOutputOption.ToInput(ctx)),
 	}
 }
 
@@ -53,6 +59,8 @@ func (o OutputOption) ToUpdateInput(ctx context.Context) *client.UpdateOutputOpt
 		SftpOutputOption:               model.WrapObject(o.SftpOutputOption.ToUpdateInput(ctx)),
 		DatabricksOutputOption:         model.WrapObject(o.DatabricksOutputOption.ToUpdateInput(ctx)),
 		S3OutputOption:                 model.WrapObject(o.S3OutputOption.ToUpdateInput(ctx)),
+		PostgresqlOutputOption:         model.WrapObject(o.PostgresqlOutputOption.ToUpdateInput(ctx)),
 		KintoneOutputOption:            model.WrapObject(o.KintoneOutputOption.ToUpdateInput(ctx)),
+		MysqlOutputOption:              model.WrapObject(o.MysqlOutputOption.ToUpdateInput(ctx)),
 	}
 }
