@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -38,11 +39,11 @@ func S3OutputOptionSchema() schema.Attribute {
 			},
 			"region": schema.StringAttribute{
 				Optional: true,
-				Computed: true,
+				Default:  stringdefault.StaticString("ap-northeast-1"),
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
-				MarkdownDescription: "AWS region",
+				MarkdownDescription: "Region",
 			},
 			"file_ext": schema.StringAttribute{
 				Optional:            true,
@@ -55,8 +56,13 @@ func S3OutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Sequence format",
 			},
 			"canned_acl": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
+				Optional: true,
+				Computed: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf(
+						"NOT_SET", "Private", "PublicRead", "PublicReadWrite", "AwsExecRead", "AuthenticatedRead", "BucketOwnerRead", "BucketOwnerFullControl", "LogDeliveryWrite",
+					),
+				},
 				MarkdownDescription: "S3 object ACL",
 			},
 			"is_minimum_output_tasks": schema.BoolAttribute{
