@@ -148,6 +148,7 @@ type OutputOption struct {
 	SnowflakeOutputOption          *outputOptionEntities.SnowflakeOutputOption          `json:"snowflake_output_option"`
 	SalesforceOutputOption         *outputOptionEntities.SalesforceOutputOption         `json:"salesforce_output_option"`
 	GoogleSpreadsheetsOutputOption *outputOptionEntities.GoogleSpreadsheetsOutputOption `json:"google_spreadsheets_output_option"`
+	S3OutputOption                 *outputOptionEntities.S3OutputOption                 `json:"s3_output_option"`
 	SftpOutputOption               *outputOptionEntities.SftpOutputOption               `json:"sftp_output_option"`
 	DatabricksOutputOption         *outputOptionEntities.DatabricksOutputOption         `json:"databricks_output_option"`
 	PostgresqlOutputOption         *outputOptionEntities.PostgresqlOutputOption         `json:"postgresql_output_option"`
@@ -160,6 +161,7 @@ type OutputOptionInput struct {
 	SnowflakeOutputOption          *parameter.NullableObject[outputOptionParameters.SnowflakeOutputOptionInput]          `json:"snowflake_output_option,omitempty"`
 	SalesforceOutputOption         *parameter.NullableObject[outputOptionParameters.SalesforceOutputOptionInput]         `json:"salesforce_output_option,omitempty"`
 	GoogleSpreadsheetsOutputOption *parameter.NullableObject[outputOptionParameters.GoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
+	S3OutputOption                 *parameter.NullableObject[outputOptionParameters.S3OutputOptionInput]                 `json:"s3_output_option,omitempty"`
 	SftpOutputOption               *parameter.NullableObject[outputOptionParameters.SftpOutputOptionInput]               `json:"sftp_output_option,omitempty"`
 	DatabricksOutputOption         *parameter.NullableObject[outputOptionParameters.DatabricksOutputOptionInput]         `json:"databricks_output_option,omitempty"`
 	PostgresqlOutputOption         *parameter.NullableObject[outputOptionParameters.PostgresqlOutputOptionInput]         `json:"postgresql_output_option,omitempty"`
@@ -172,6 +174,7 @@ type UpdateOutputOptionInput struct {
 	SnowflakeOutputOption          *parameter.NullableObject[outputOptionParameters.UpdateSnowflakeOutputOptionInput]          `json:"snowflake_output_option,omitempty"`
 	SalesforceOutputOption         *parameter.NullableObject[outputOptionParameters.UpdateSalesforceOutputOptionInput]         `json:"salesforce_output_option,omitempty"`
 	GoogleSpreadsheetsOutputOption *parameter.NullableObject[outputOptionParameters.UpdateGoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
+	S3OutputOption                 *parameter.NullableObject[outputOptionParameters.UpdateS3OutputOptionInput]                 `json:"s3_output_option,omitempty"`
 	SftpOutputOption               *parameter.NullableObject[outputOptionParameters.UpdateSftpOutputOptionInput]               `json:"sftp_output_option,omitempty"`
 	DatabricksOutputOption         *parameter.NullableObject[outputOptionParameters.UpdateDatabricksOutputOptionInput]         `json:"databricks_output_option,omitempty"`
 	PostgresqlOutputOption         *parameter.NullableObject[outputOptionParameters.UpdatePostgresqlOutputOptionInput]         `json:"postgresql_output_option,omitempty"`
