@@ -39,6 +39,7 @@ func S3OutputOptionSchema() schema.Attribute {
 			},
 			"region": schema.StringAttribute{
 				Optional: true,
+				Computed: true,
 				Default:  stringdefault.StaticString("ap-northeast-1"),
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
