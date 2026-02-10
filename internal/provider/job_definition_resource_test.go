@@ -767,6 +767,50 @@ func TestAccJobDefinitionResourceHubspotToBigQuery(t *testing.T) {
 	})
 }
 
+func TestAccJobDefinitionResourceMysqlToPostgresql(t *testing.T) {
+	resourceName := "trocco_job_definition.mysql_to_postgresql"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/mysql_to_postgresql/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "test job_definition"),
+					resource.TestCheckResourceAttr(resourceName, "description", "test description"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "1"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "mysql"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "postgresql"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.database", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.table", "test_table"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.connect_timeout", "300"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.socket_timeout", "1801"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.default_time_zone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.postgresql_output_option.database", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.postgresql_output_option.schema", "public"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.postgresql_output_option.table", "test_table"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.postgresql_output_option.mode", "merge"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.postgresql_output_option.default_time_zone", "UTC"),
+					resource.TestCheckResourceAttrSet(resourceName, "output_option.postgresql_output_option.postgresql_connection_id"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.postgresql_output_option.merge_keys.#", "1"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
 func TestAccJobDefinitionResourceMysqlToKintone(t *testing.T) {
 	resourceName := "trocco_job_definition.mysql_to_kintone"
 	resource.Test(t, resource.TestCase{
@@ -970,6 +1014,129 @@ func TestAccJobDefinitionResourceBigQueryToSftpJSONL(t *testing.T) {
 					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
 					return jobDefinitionId, nil
 				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceKintoneToMysql(t *testing.T) {
+	resourceName := "trocco_job_definition.kintone_to_mysql"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/kintone_to_mysql/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Kintone to Mysql Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for Kintone to Mysql transfer"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "0"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
+
+					// Input option checks
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "kintone"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.app_id", "403"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.expand_subtable", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.input_option_columns.#", "3"),
+
+					// Output option checks - Mysql specific
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "mysql"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.database", "$db_name$"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.table", "$table_name$"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mode", "insert"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.retry_limit", "12"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.retry_wait", "1000"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.max_retry_wait", "1800000"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.default_time_zone", "UTC"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.before_load", "DELETE FROM test_table WHERE status = 'pending';"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.after_load", "UPDATE test_table SET updated_at = NOW();"),
+
+					// Column options checks
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.#", "3"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.0.name", "description"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.0.type", "TEXT"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.1.name", "price"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.1.type", "DECIMAL"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.1.scale", "2"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.1.precision", "10"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.2.name", "notes"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.2.type", "LONGTEXT"),
+
+					// Custom variable settings checks
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.0.name", "$db_name$"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.0.value", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.1.name", "$table_name$"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.1.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.1.value", "test_table"),
+				),
+			},
+			// ImportState testing
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceGoogleAdsToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.google_ads_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/google_ads_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Google Ads to BigQuery Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from Google Ads to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "google_ads"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					// Google Ads input option checks
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.customer_id", "1234567890"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.resource_type", "campaign"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.start_date", "2024-01-01"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.end_date", "2024-01-31"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.#", "5"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.0.name", "campaign.name"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.1.name", "campaign.id"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.1.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.2.name", "campaign.create_time"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.2.type", "timestamp"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.2.format", "%Y-%m-%d %H:%M:%S"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.3.name", "metrics.ctr"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.3.type", "double"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.4.name", "campaign.experiment_type"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.4.type", "boolean"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.conditions.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.conditions.0", "campaign.status = 'ENABLED'"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.conditions.1", "metrics.impressions > 0"),
+					// Filter columns checks
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "campaign_name"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.src", "campaign_name"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.name", "campaign_id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.2.type", "timestamp"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.3.type", "double"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.4.type", "boolean"),
+					// Output option checks
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "google_ads_campaign_test"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
+				),
 			},
 		},
 	})

@@ -102,6 +102,7 @@ type InputOption struct {
 	SftpInputOption               *inputOptionEntities.SftpInputOption               `json:"sftp_input_option"`
 	HubspotInputOption            *inputOptionEntities.HubspotInputOption            `json:"hubspot_input_option"`
 	DatabricksInputOption         *inputOptionEntities.DatabricksInputOption         `json:"databricks_input_option"`
+	GoogleAdsInputOption          *inputOptionEntities.GoogleAdsInputOption          `json:"google_ads_input_option"`
 }
 
 type InputOptionInput struct {
@@ -120,6 +121,7 @@ type InputOptionInput struct {
 	SftpInputOption               *parameter.NullableObject[inputOptionParameters.SftpInputOptionInput]               `json:"sftp_input_option,omitempty"`
 	HubspotInputOption            *parameter.NullableObject[inputOptionParameters.HubspotInputOptionInput]            `json:"hubspot_input_option,omitempty"`
 	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.DatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
+	GoogleAdsInputOption          *parameter.NullableObject[inputOptionParameters.GoogleAdsInputOptionInput]          `json:"google_ads_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
@@ -138,6 +140,7 @@ type UpdateInputOptionInput struct {
 	SftpInputOption               *parameter.NullableObject[inputOptionParameters.UpdateSftpInputOptionInput]               `json:"sftp_input_option,omitempty"`
 	HubspotInputOption            *parameter.NullableObject[inputOptionParameters.UpdateHubspotInputOptionInput]            `json:"hubspot_input_option,omitempty"`
 	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.UpdateDatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
+	GoogleAdsInputOption          *parameter.NullableObject[inputOptionParameters.UpdateGoogleAdsInputOptionInput]          `json:"google_ads_input_option,omitempty"`
 }
 
 type OutputOption struct {
@@ -147,7 +150,9 @@ type OutputOption struct {
 	GoogleSpreadsheetsOutputOption *outputOptionEntities.GoogleSpreadsheetsOutputOption `json:"google_spreadsheets_output_option"`
 	SftpOutputOption               *outputOptionEntities.SftpOutputOption               `json:"sftp_output_option"`
 	DatabricksOutputOption         *outputOptionEntities.DatabricksOutputOption         `json:"databricks_output_option"`
+	PostgresqlOutputOption         *outputOptionEntities.PostgresqlOutputOption         `json:"postgresql_output_option"`
 	KintoneOutputOption            *outputOptionEntities.KintoneOutputOption            `json:"kintone_output_option"`
+	MysqlOutputOption              *outputOptionEntities.MysqlOutputOption              `json:"mysql_output_option"`
 	HubspotOutputOption            *outputOptionEntities.HubspotOutputOption            `json:"hubspot_output_option"`
 }
 
@@ -158,7 +163,9 @@ type OutputOptionInput struct {
 	GoogleSpreadsheetsOutputOption *parameter.NullableObject[outputOptionParameters.GoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
 	SftpOutputOption               *parameter.NullableObject[outputOptionParameters.SftpOutputOptionInput]               `json:"sftp_output_option,omitempty"`
 	DatabricksOutputOption         *parameter.NullableObject[outputOptionParameters.DatabricksOutputOptionInput]         `json:"databricks_output_option,omitempty"`
+	PostgresqlOutputOption         *parameter.NullableObject[outputOptionParameters.PostgresqlOutputOptionInput]         `json:"postgresql_output_option,omitempty"`
 	KintoneOutputOption            *parameter.NullableObject[outputOptionParameters.KintoneOutputOptionInput]            `json:"kintone_output_option,omitempty"`
+	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.MysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
 	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.HubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
 }
 
@@ -169,7 +176,9 @@ type UpdateOutputOptionInput struct {
 	GoogleSpreadsheetsOutputOption *parameter.NullableObject[outputOptionParameters.UpdateGoogleSpreadsheetsOutputOptionInput] `json:"google_spreadsheets_output_option,omitempty"`
 	SftpOutputOption               *parameter.NullableObject[outputOptionParameters.UpdateSftpOutputOptionInput]               `json:"sftp_output_option,omitempty"`
 	DatabricksOutputOption         *parameter.NullableObject[outputOptionParameters.UpdateDatabricksOutputOptionInput]         `json:"databricks_output_option,omitempty"`
+	PostgresqlOutputOption         *parameter.NullableObject[outputOptionParameters.UpdatePostgresqlOutputOptionInput]         `json:"postgresql_output_option,omitempty"`
 	KintoneOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateKintoneOutputOptionInput]            `json:"kintone_output_option,omitempty"`
+	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.UpdateMysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
 	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateHubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
 }
 

@@ -1509,6 +1509,7 @@ Optional:
 - `bigquery_input_option` (Attributes) Attributes about source bigquery (see [below for nested schema](#nestedatt--input_option--bigquery_input_option))
 - `databricks_input_option` (Attributes) Attributes of source databricks (see [below for nested schema](#nestedatt--input_option--databricks_input_option))
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
+- `google_ads_input_option` (Attributes) Attributes about source Google Ads (see [below for nested schema](#nestedatt--input_option--google_ads_input_option))
 - `google_analytics4_input_option` (Attributes) Attributes about source Google Analytics 4 (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option))
 - `google_spreadsheets_input_option` (Attributes) Attributes about source Google Spreadsheets (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option))
 - `http_input_option` (Attributes) Attributes about source HTTP (see [below for nested schema](#nestedatt--input_option--http_input_option))
@@ -1875,6 +1876,55 @@ Optional:
 - `format` (String) Format of the column.
 - `timezone` (String) time zone
 
+
+
+
+<a id="nestedatt--input_option--google_ads_input_option"></a>
+### Nested Schema for `input_option.google_ads_input_option`
+
+Required:
+
+- `customer_id` (String) Google Ads Customer ID (10-digit number)
+- `google_ads_connection_id` (Number) Id of Google Ads connection
+- `input_option_columns` (Attributes List) List of fields to be retrieved (see [below for nested schema](#nestedatt--input_option--google_ads_input_option--input_option_columns))
+- `resource_type` (String) Resource type to retrieve (e.g., customer, campaign, ad_group, ad_group_ad)
+
+Optional:
+
+- `conditions` (List of String) List of WHERE clause conditions
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_ads_input_option--custom_variable_settings))
+- `end_date` (String) Data retrieval end date (YYYY-MM-DD format). May not be specified for some resource types.
+- `start_date` (String) Data retrieval start date (YYYY-MM-DD format). May not be specified for some resource types.
+
+<a id="nestedatt--input_option--google_ads_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.google_ads_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Field name
+- `type` (String) Data type
+
+Optional:
+
+- `format` (String) Format for timestamp type
+
+
+<a id="nestedatt--input_option--google_ads_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.google_ads_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
 
 
 
@@ -3135,6 +3185,8 @@ Optional:
 - `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
 - `hubspot_output_option` (Attributes) Attributes of destination HubSpot settings (see [below for nested schema](#nestedatt--output_option--hubspot_output_option))
 - `kintone_output_option` (Attributes) Attributes of destination Kintone settings (see [below for nested schema](#nestedatt--output_option--kintone_output_option))
+- `mysql_output_option` (Attributes) Attributes of destination MySQL settings (see [below for nested schema](#nestedatt--output_option--mysql_output_option))
+- `postgresql_output_option` (Attributes) Attributes of destination PostgreSQL settings (see [below for nested schema](#nestedatt--output_option--postgresql_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `sftp_output_option` (Attributes) attributes of destination SFTP settings (see [below for nested schema](#nestedatt--output_option--sftp_output_option))
 - `snowflake_output_option` (Attributes) Attributes of destination Snowflake settings (see [below for nested schema](#nestedatt--output_option--snowflake_output_option))
@@ -3340,6 +3392,82 @@ Optional:
 - `sort_column` (String) Sort column (only applicable if type is 'SUBTABLE')
 - `timezone` (String) Timezone (only applicable if type is 'DATE', 'TIME' or 'DATETIME')
 
+
+
+<a id="nestedatt--output_option--mysql_output_option"></a>
+### Nested Schema for `output_option.mysql_output_option`
+
+Required:
+
+- `database` (String) Database name
+- `mysql_connection_id` (Number) ID of MySQL connection
+- `table` (String) Table name
+
+Optional:
+
+- `after_load` (String) SQL statement to execute after data transfer
+- `before_load` (String) SQL statement to execute before data transfer
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--mysql_output_option--custom_variable_settings))
+- `default_time_zone` (String) Default time zone
+- `max_retry_wait` (Number) Maximum retry wait time (milliseconds)
+- `mode` (String) Transfer mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`, `merge_direct`
+- `mysql_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--mysql_output_option--mysql_output_option_column_options))
+- `retry_limit` (Number) Maximum number of retries
+- `retry_wait` (Number) Retry wait time (milliseconds)
+
+<a id="nestedatt--output_option--mysql_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.mysql_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--output_option--mysql_output_option--mysql_output_option_column_options"></a>
+### Nested Schema for `output_option.mysql_output_option.mysql_output_option_column_options`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type. One of `TINYTEXT`, `TEXT`, `MEDIUMTEXT`, `LONGTEXT`, `DECIMAL`
+
+Optional:
+
+- `precision` (Number) Total number of digits for DECIMAL type (required when type is DECIMAL)
+- `scale` (Number) Number of decimal places for DECIMAL type (required when type is DECIMAL)
+
+
+
+<a id="nestedatt--output_option--postgresql_output_option"></a>
+### Nested Schema for `output_option.postgresql_output_option`
+
+Required:
+
+- `database` (String) Database name
+- `default_time_zone` (String) Default time zone
+- `mode` (String) Transfer mode
+- `postgresql_connection_id` (Number) PostgreSQL connection ID
+- `schema` (String) Schema name
+- `table` (String) Table name
+
+Optional:
+
+- `after_load` (String) SQL statement to execute after loading data.
+- `before_load` (String) SQL statement to execute before loading data (not available when mode is 'replace').
+- `max_retry_wait` (Number) Maximum wait time in milliseconds between retries. Default is 1800000.
+- `merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
+- `retry_limit` (Number) Maximum number of retries. Default is 12.
+- `retry_wait` (Number) Initial wait time in milliseconds between retries. Default is 1000.
 
 
 <a id="nestedatt--output_option--salesforce_output_option"></a>
