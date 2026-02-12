@@ -67,7 +67,7 @@ resource "trocco_job_definition" "mysql_to_hubspot" {
   output_option_type = "hubspot"
   output_option = {
     hubspot_output_option = {
-      hubspot_connection_id = 1
+      hubspot_connection_id = 388
       object_type           = "task"
       mode                  = "merge"
       upsert_key            = "id"
