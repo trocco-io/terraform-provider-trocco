@@ -21,6 +21,7 @@ func OutputOptionSchema() schema.Attribute {
 			"postgresql_output_option":          PostgresqlOutputOptionSchema(),
 			"kintone_output_option":             KintoneOutputOptionSchema(),
 			"mysql_output_option":               MysqlOutputOptionSchema(),
+			"hubspot_output_option":             HubspotOutputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planModifier.OutputOptionPlanModifier{},

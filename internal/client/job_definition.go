@@ -154,6 +154,7 @@ type OutputOption struct {
 	PostgresqlOutputOption         *outputOptionEntities.PostgresqlOutputOption         `json:"postgresql_output_option"`
 	KintoneOutputOption            *outputOptionEntities.KintoneOutputOption            `json:"kintone_output_option"`
 	MysqlOutputOption              *outputOptionEntities.MysqlOutputOption              `json:"mysql_output_option"`
+	HubspotOutputOption            *outputOptionEntities.HubspotOutputOption            `json:"hubspot_output_option"`
 }
 
 type OutputOptionInput struct {
@@ -167,6 +168,7 @@ type OutputOptionInput struct {
 	PostgresqlOutputOption         *parameter.NullableObject[outputOptionParameters.PostgresqlOutputOptionInput]         `json:"postgresql_output_option,omitempty"`
 	KintoneOutputOption            *parameter.NullableObject[outputOptionParameters.KintoneOutputOptionInput]            `json:"kintone_output_option,omitempty"`
 	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.MysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
+	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.HubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
@@ -180,6 +182,7 @@ type UpdateOutputOptionInput struct {
 	PostgresqlOutputOption         *parameter.NullableObject[outputOptionParameters.UpdatePostgresqlOutputOptionInput]         `json:"postgresql_output_option,omitempty"`
 	KintoneOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateKintoneOutputOptionInput]            `json:"kintone_output_option,omitempty"`
 	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.UpdateMysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
+	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateHubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {

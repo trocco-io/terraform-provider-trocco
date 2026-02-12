@@ -18,6 +18,7 @@ type OutputOption struct {
 	PostgresqlOutputOption         *outputOptionModel.PostgresqlOutputOption         `tfsdk:"postgresql_output_option"`
 	KintoneOutputOption            *outputOptionModel.KintoneOutputOption            `tfsdk:"kintone_output_option"`
 	MysqlOutputOption              *outputOptionModel.MysqlOutputOption              `tfsdk:"mysql_output_option"`
+	HubspotOutputOption            *outputOptionModel.HubspotOutputOption            `tfsdk:"hubspot_output_option"`
 }
 
 func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *OutputOption {
@@ -32,6 +33,7 @@ func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *Out
 		PostgresqlOutputOption:         outputOptionModel.NewPostgresqlOutputOption(ctx, outputOption.PostgresqlOutputOption),
 		KintoneOutputOption:            outputOptionModel.NewKintoneOutputOption(ctx, outputOption.KintoneOutputOption),
 		MysqlOutputOption:              outputOptionModel.NewMysqlOutputOption(ctx, outputOption.MysqlOutputOption),
+		HubspotOutputOption:            outputOptionModel.NewHubspotOutputOption(ctx, outputOption.HubspotOutputOption),
 	}
 }
 
@@ -47,6 +49,7 @@ func (o OutputOption) ToInput(ctx context.Context) client.OutputOptionInput {
 		PostgresqlOutputOption:         model.WrapObject(o.PostgresqlOutputOption.ToInput(ctx)),
 		KintoneOutputOption:            model.WrapObject(o.KintoneOutputOption.ToInput(ctx)),
 		MysqlOutputOption:              model.WrapObject(o.MysqlOutputOption.ToInput(ctx)),
+		HubspotOutputOption:            model.WrapObject(o.HubspotOutputOption.ToInput(ctx)),
 	}
 }
 
@@ -62,5 +65,6 @@ func (o OutputOption) ToUpdateInput(ctx context.Context) *client.UpdateOutputOpt
 		PostgresqlOutputOption:         model.WrapObject(o.PostgresqlOutputOption.ToUpdateInput(ctx)),
 		KintoneOutputOption:            model.WrapObject(o.KintoneOutputOption.ToUpdateInput(ctx)),
 		MysqlOutputOption:              model.WrapObject(o.MysqlOutputOption.ToUpdateInput(ctx)),
+		HubspotOutputOption:            model.WrapObject(o.HubspotOutputOption.ToUpdateInput(ctx)),
 	}
 }
