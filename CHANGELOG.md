@@ -1,3 +1,10 @@
+## 0.25.0
+FEATURES:
+- `trocco_job_definition` resource:
+  - Added support for `google_ads` input option
+  - Added support for `hubspot` output option
+  - Added support for `s3` output option
+
 ## 0.24.0
 FEATURES:
 - `trocco_job_definition` resource:
