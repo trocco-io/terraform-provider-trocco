@@ -799,7 +799,9 @@ func (r *connectionResource) Schema(
 				Validators: []validator.String{
 					stringvalidator.OneOf("standard", "dns_seed_list"),
 				},
-				Default: stringdefault.StaticString("standard"),
+				PlanModifiers: []planmodifier.String{
+					planModifier.ConditionalStringDefault("standard", "mongodb"),
+				},
 			},
 			"read_preference": schema.StringAttribute{
 				MarkdownDescription: "MongoDB: Read preference. It must be one of `primary`, `primaryPreferred`, `secondary`, `secondaryPreferred`, or `nearest`. Default is `primary`.",
@@ -808,7 +810,9 @@ func (r *connectionResource) Schema(
 				Validators: []validator.String{
 					stringvalidator.OneOf("primary", "primaryPreferred", "secondary", "secondaryPreferred", "nearest"),
 				},
-				Default: stringdefault.StaticString("primary"),
+				PlanModifiers: []planmodifier.String{
+					planModifier.ConditionalStringDefault("primary", "mongodb"),
+				},
 			},
 			"auth_source": schema.StringAttribute{
 				MarkdownDescription: "MongoDB: Authentication database name.",
