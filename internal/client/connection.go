@@ -21,15 +21,15 @@ type Connection struct {
 	IsOAuth                  *bool   `json:"is_oauth"`                             // bigquery, gcs, google_spreadsheets, google_analytics4 (read-only)
 	HasServiceAccountJSONKey *bool   `json:"has_service_account_json_key"`         // bigquery, gcs, google_spreadsheets, google_analytics4 (read-only)
 	GoogleOAuth2CredentialID *int64  `json:"google_oauth2_credential_id"`          // bigquery, gcs, google_spreadsheets, google_analytics4 (read-only)
-	Host                     *string `json:"host"`                                 // snowflake, mysql, postgresql, mongodb
-	UserName                 *string `json:"user_name"`                            // snowflake, mysql, postgresql, salesforce, mongodb
+	Host                     *string `json:"host"`                                 // snowflake, mysql, postgresql, sftp, mongodb
+	UserName                 *string `json:"user_name"`                            // snowflake, mysql, postgresql, salesforce, sftp, mongodb
 	Role                     *string `json:"role"`                                 // snowflake
 	AuthMethod               *string `json:"auth_method"`                          // snowflake, mongodb
-	AWSPrivateLinkEnabled    *bool   `json:"aws_privatelink_enabled"`              // snowflake (read-only)
+	AWSPrivatelinkEnabled    *bool   `json:"aws_privatelink_enabled"`              // snowflake, sftp (read-only)
 	Driver                   *string `json:"driver"`                               // mysql, postgresql, snowflake
 	ApplicationName          *string `json:"application_name"`                     // gcs
 	ServiceAccountEmail      *string `json:"service_account_email"`                // gcs
-	Port                     *int64  `json:"port"`                                 // mysql, postgresql, mongodb
+	Port                     *int64  `json:"port"`                                 // mysql, postgresql, sftp, mongodb
 	SSL                      *bool   `json:"ssl"`                                  // mysql, postgresql
 	GatewayEnabled           *bool   `json:"gateway_enabled"`                      // mysql, postgresql, mongodb
 	AuthEndPoint             *string `json:"auth_end_point"`                       // salesforce
@@ -42,6 +42,11 @@ type Connection struct {
 	LoginMethod              *string `json:"login_method"`                         // kintone
 	Username                 *string `json:"username"`                             // kintone
 	BasicAuthUsername        *string `json:"basic_auth_username"`                  // kintone
+	SecretKey                *string `json:"secret_key"`                           // sftp
+	SecretKeyPassphrase      *string `json:"secret_key_passphrase"`                // sftp
+	UserDirectoryIsRoot      *bool   `json:"user_directory_is_root"`               // sftp
+	WindowsServer            *bool   `json:"windows_server"`                       // sftp
+	SSHTunnelID              *int64  `json:"ssh_tunnel_id"`                        // sftp
 	ServerHostname           *string `json:"server_hostname"`                      // databricks
 	HttpPath                 *string `json:"http_path"`                            // databricks
 	AuthType                 *string `json:"auth_type"`                            // databricks
@@ -57,20 +62,20 @@ type GetConnectionsInput struct {
 }
 
 type CreateConnectionInput struct {
-	Name                   string                    `json:"name"`                                 // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb
-	Description            *string                   `json:"description,omitempty"`                // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb
-	ResourceGroupID        *parameter.NullableInt64  `json:"resource_group_id,omitempty"`          // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb
+	Name                   string                    `json:"name"`                                 // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb
+	Description            *string                   `json:"description,omitempty"`                // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb
+	ResourceGroupID        *parameter.NullableInt64  `json:"resource_group_id,omitempty"`          // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb
 	ProjectID              *string                   `json:"project_id,omitempty"`                 // bigquery, gcs
 	ServiceAccountJSONKey  *string                   `json:"service_account_json_key,omitempty"`   // bigquery, gcs, google_spreadsheets, google_analytics4
-	Host                   *string                   `json:"host,omitempty"`                       // snowflake, mysql, postgresql, mongodb
-	UserName               *string                   `json:"user_name,omitempty"`                  // snowflake, mysql, postgresql, salesforce, mongodb
+	Host                   *string                   `json:"host,omitempty"`                       // snowflake, mysql, postgresql, sftp, mongodb
+	UserName               *string                   `json:"user_name,omitempty"`                  // snowflake, mysql, postgresql, salesforce, sftp, mongodb
 	Role                   *string                   `json:"role,omitempty"`                       // snowflake
 	AuthMethod             *string                   `json:"auth_method,omitempty"`                // snowflake, mongodb
-	Password               *string                   `json:"password,omitempty"`                   // snowflake, mysql, postgresql, salesforce, kintone, mongodb
+	Password               *string                   `json:"password,omitempty"`                   // snowflake, mysql, postgresql, salesforce, kintone, sftp, mongodb
 	PrivateKey             *string                   `json:"private_key,omitempty"`                // snowflake
 	ApplicationName        *string                   `json:"application_name,omitempty"`           // gcs
 	ServiceAccountEmail    *string                   `json:"service_account_email,omitempty"`      // gcs
-	Port                   *parameter.NullableInt64  `json:"port,omitempty"`                       // mysql, postgresql, mongodb
+	Port                   *parameter.NullableInt64  `json:"port,omitempty"`                       // mysql, postgresql, sftp, mongodb
 	SSL                    *parameter.NullableBool   `json:"ssl,omitempty"`                        // mysql, postgresql
 	SSLCA                  *string                   `json:"ssl_ca,omitempty"`                     // mysql, postgresql
 	SSLCert                *string                   `json:"ssl_cert,omitempty"`                   // mysql, postgresql
@@ -99,6 +104,12 @@ type CreateConnectionInput struct {
 	Username               *parameter.NullableString `json:"username,omitempty"`                   // kintone
 	BasicAuthUsername      *parameter.NullableString `json:"basic_auth_username,omitempty"`        // kintone
 	BasicAuthPassword      *parameter.NullableString `json:"basic_auth_password,omitempty"`        // kintone
+	SecretKey              *string                   `json:"secret_key,omitempty"`                 // sftp
+	SecretKeyPassphrase    *string                   `json:"secret_key_passphrase,omitempty"`      // sftp
+	UserDirectoryIsRoot    *bool                     `json:"user_directory_is_root,omitempty"`     // sftp
+	WindowsServer          *bool                     `json:"windows_server,omitempty"`             // sftp
+	SSHTunnelID            *parameter.NullableInt64  `json:"ssh_tunnel_id,omitempty"`              // sftp
+	AWSPrivatelinkEnabled  *bool                     `json:"aws_privatelink_enabled,omitempty"`    // sftp
 	HttpPath               *string                   `json:"http_path,omitempty"`                  // databricks
 	AuthType               *string                   `json:"auth_type,omitempty"`                  // databricks
 	PersonalAccessToken    *parameter.NullableString `json:"personal_access_token,omitempty"`      // databricks
@@ -111,20 +122,20 @@ type CreateConnectionInput struct {
 }
 
 type UpdateConnectionInput struct {
-	Name                   *string                   `json:"name,omitempty"`                       // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb
-	Description            *string                   `json:"description,omitempty"`                // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb
-	ResourceGroupID        *parameter.NullableInt64  `json:"resource_group_id,omitempty"`          // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb
+	Name                   *string                   `json:"name,omitempty"`                       // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb
+	Description            *string                   `json:"description,omitempty"`                // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb
+	ResourceGroupID        *parameter.NullableInt64  `json:"resource_group_id,omitempty"`          // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb
 	ProjectID              *string                   `json:"project_id,omitempty"`                 // bigquery, gcs
 	ServiceAccountJSONKey  *string                   `json:"service_account_json_key"`             // bigquery, gcs, google_spreadsheets, google_analytics4
-	Host                   *string                   `json:"host,omitempty"`                       // snowflake, mysql, postgresql, mongodb
-	UserName               *string                   `json:"user_name,omitempty"`                  // snowflake, mysql, postgresql, salesforce, mongodb
+	Host                   *string                   `json:"host,omitempty"`                       // snowflake, mysql, postgresql, sftp, mongodb
+	UserName               *string                   `json:"user_name,omitempty"`                  // snowflake, mysql, postgresql, salesforce, sftp, mongodb
 	Role                   *string                   `json:"role,omitempty"`                       // snowflake
 	AuthMethod             *string                   `json:"auth_method,omitempty"`                // snowflake, mongodb
-	Password               *string                   `json:"password,omitempty"`                   // snowflake, mysql, postgresql, salesforce, kintone, mongodb
+	Password               *string                   `json:"password,omitempty"`                   // snowflake, mysql, postgresql, salesforce, kintone, sftp, mongodb
 	PrivateKey             *string                   `json:"private_key,omitempty"`                // snowflake
 	ApplicationName        *string                   `json:"application_name,omitempty"`           // gcs
 	ServiceAccountEmail    *string                   `json:"service_account_email,omitempty"`      // gcs
-	Port                   *parameter.NullableInt64  `json:"port,omitempty"`                       // mysql, postgresql, mongodb
+	Port                   *parameter.NullableInt64  `json:"port,omitempty"`                       // mysql, postgresql, sftp, mongodb
 	SSL                    *parameter.NullableBool   `json:"ssl,omitempty"`                        // mysql, postgresql
 	SSLCA                  *string                   `json:"ssl_ca,omitempty"`                     // mysql, postgresql
 	SSLCert                *string                   `json:"ssl_cert,omitempty"`                   // mysql, postgresql
@@ -153,6 +164,12 @@ type UpdateConnectionInput struct {
 	Username               *parameter.NullableString `json:"username,omitempty"`                   // kintone
 	BasicAuthUsername      *parameter.NullableString `json:"basic_auth_username,omitempty"`        // kintone
 	BasicAuthPassword      *parameter.NullableString `json:"basic_auth_password,omitempty"`        // kintone
+	SecretKey              *string                   `json:"secret_key,omitempty"`                 // sftp
+	SecretKeyPassphrase    *string                   `json:"secret_key_passphrase,omitempty"`      // sftp
+	UserDirectoryIsRoot    *bool                     `json:"user_directory_is_root,omitempty"`     // sftp
+	WindowsServer          *bool                     `json:"windows_server,omitempty"`             // sftp
+	SSHTunnelID            *parameter.NullableInt64  `json:"ssh_tunnel_id,omitempty"`              // sftp
+	AWSPrivatelinkEnabled  *bool                     `json:"aws_privatelink_enabled,omitempty"`    // sftp
 	HttpPath               *string                   `json:"http_path,omitempty"`                  // databricks
 	AuthType               *string                   `json:"auth_type,omitempty"`                  // databricks
 	PersonalAccessToken    *parameter.NullableString `json:"personal_access_token,omitempty"`      // databricks

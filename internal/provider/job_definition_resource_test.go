@@ -767,50 +767,611 @@ func TestAccJobDefinitionResourceHubspotToBigQuery(t *testing.T) {
 	})
 }
 
-// func TestAccJobDefinitionResourceMongoDBToBigQuery(t *testing.T) {
-// 	resourceName := "trocco_job_definition.mongodb_to_bigquery"
-// 	resource.Test(t, resource.TestCase{
-// 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-// 		Steps: []resource.TestStep{
-// 			{
-// 				ResourceName: resourceName,
-// 				Config:       providerConfig + LoadTextFile("testdata/job_definition/mongodb_to_bigquery/create.tf"),
-// 				Check: resource.ComposeAggregateTestCheckFunc(
-// 					resource.TestCheckResourceAttr(resourceName, "name", "MongoDB to BigQuery Test"),
-// 					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from MongoDB to BigQuery"),
-// 					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
-// 					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
-// 					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option_type", "mongodb"),
-// 					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.database", "test_database"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.collection", "test_collection"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.query", "{\"status\": \"active\"}"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.incremental_loading_enabled", "true"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.incremental_columns", "created_at"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.last_record", "{\"created_at\":\"2024-01-01 00:00:00\"}"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.#", "2"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.0.name", "_id"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.0.type", "long"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.1.name", "created_at"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.1.type", "timestamp"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.1.format", "%Y-%m-%d %H:%M:%S"),
-// 					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.1.timezone", "UTC"),
-// 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
-// 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "mongodb_test_table"),
-// 				),
-// 			},
-// 			// ImportState testing
-// 			{
-// 				ResourceName:            resourceName,
-// 				ImportState:             true,
-// 				ImportStateVerify:       true,
-// 				ImportStateVerifyIgnore: []string{},
-// 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
-// 					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
-// 					return jobDefinitionId, nil
-// 				},
-// 			},
-// 		},
-// 	})
-// }
+func TestAccJobDefinitionResourceMongoDBToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.mongodb_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/mongodb_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "MongoDB to BigQuery Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from MongoDB to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "mongodb"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.database", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.collection", "test_collection"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.query", "{\"status\": \"active\"}"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.incremental_loading_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.incremental_columns", "created_at"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.last_record", "{\"created_at\":\"2024-01-01 00:00:00\"}"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.0.name", "_id"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.0.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.1.name", "created_at"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.1.type", "timestamp"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.1.format", "%Y-%m-%d %H:%M:%S"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mongodb_input_option.input_option_columns.1.timezone", "UTC"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "mongodb_test_table"),
+				),
+			},
+			// ImportState testing
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceMysqlToPostgresql(t *testing.T) {
+	resourceName := "trocco_job_definition.mysql_to_postgresql"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/mysql_to_postgresql/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "test job_definition"),
+					resource.TestCheckResourceAttr(resourceName, "description", "test description"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "1"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "mysql"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "postgresql"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.database", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.table", "test_table"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.connect_timeout", "300"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.socket_timeout", "1801"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.default_time_zone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.postgresql_output_option.database", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.postgresql_output_option.schema", "public"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.postgresql_output_option.table", "test_table"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.postgresql_output_option.mode", "merge"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.postgresql_output_option.default_time_zone", "UTC"),
+					resource.TestCheckResourceAttrSet(resourceName, "output_option.postgresql_output_option.postgresql_connection_id"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.postgresql_output_option.merge_keys.#", "1"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceMysqlToKintone(t *testing.T) {
+	resourceName := "trocco_job_definition.mysql_to_kintone"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/mysql_to_kintone/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "MySQL to Kintone Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from MySQL to Kintone"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "mysql"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "kintone"),
+					// MySQL input option attributes
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.database", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.table", "test_table"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.connect_timeout", "300"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.socket_timeout", "1800"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.default_time_zone", "Asia/Tokyo"),
+					// Kintone output option attributes
+					resource.TestCheckResourceAttrSet(resourceName, "output_option.kintone_output_option.kintone_connection_id"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.app_id", "123"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.guest_space_id", "1"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.mode", "upsert"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.update_key", "id"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.ignore_nulls", "true"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.reduce_key", "email"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.chunk_size", "150"),
+					// Kintone output option column options
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.#", "4"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.0.name", "id"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.0.field_code", "record_id"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.0.type", "NUMBER"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.1.name", "created_date"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.1.field_code", "created_at"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.1.type", "DATE"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.1.timezone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.2.name", "updated_time"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.2.field_code", "updated_at"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.2.type", "TIME"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.2.timezone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.3.name", "sub_items"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.3.field_code", "items_table"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.3.type", "SUBTABLE"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.kintone_output_option.kintone_output_option_column_options.3.sort_column", "item_order"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+// TestAccJobDefinitionResourceSftpToBigQuery tests SFTP input option.
+func TestAccJobDefinitionResourceSftpToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.sftp_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Step 1: Create with SFTP CSV parser
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/sftp_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "test job_definition"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "sftp"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+
+					// Check SFTP input option fields
+					resource.TestCheckResourceAttrSet(resourceName, "input_option.sftp_input_option.sftp_connection_id"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.sftp_input_option.path_prefix", "/data/files/"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.sftp_input_option.path_match_pattern", ".*\\.csv$"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.sftp_input_option.incremental_loading_enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.sftp_input_option.stop_when_file_not_found", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.sftp_input_option.decompression_type", "guess"),
+
+					// Check CSV parser
+					resource.TestCheckResourceAttr(resourceName, "input_option.sftp_input_option.csv_parser.delimiter", ","),
+					resource.TestCheckResourceAttr(resourceName, "input_option.sftp_input_option.csv_parser.escape", "\\"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.sftp_input_option.csv_parser.quote", "\""),
+					resource.TestCheckResourceAttr(resourceName, "input_option.sftp_input_option.csv_parser.columns.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.sftp_input_option.csv_parser.columns.0.name", "id"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.sftp_input_option.csv_parser.columns.0.type", "long"),
+				),
+			},
+			// Step 2: Import state
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+// TestAccJobDefinitionResourceBigQueryToSftpCSV tests SFTP output option with CSV formatter.
+func TestAccJobDefinitionResourceBigQueryToSftpCSV(t *testing.T) {
+	resourceName := "trocco_job_definition.bigquery_to_sftp_csv"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Step 1: Create with CSV formatter
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/bigquery_to_sftp/create_csv.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "BigQuery to SFTP CSV Export"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "bigquery"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "sftp"),
+
+					// Check SFTP output option fields
+					resource.TestCheckResourceAttrSet(resourceName, "output_option.sftp_output_option.sftp_connection_id"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.path_prefix", "/exports/users/users_$export_date$"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.file_ext", ".csv"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.is_minimum_output_tasks", "false"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.encoder_type", "gzip"),
+
+					// Check CSV formatter
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.csv_formatter.delimiter", ","),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.csv_formatter.newline", "CRLF"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.csv_formatter.charset", "UTF-8"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.csv_formatter.header_line", "true"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.csv_formatter.null_string_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.csv_formatter.null_string", "NULL"),
+
+					// Check CSV column options
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.csv_formatter.csv_formatter_column_options_attributes.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.csv_formatter.csv_formatter_column_options_attributes.0.name", "created_at"),
+
+					// Check custom variables
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.custom_variable_settings.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.custom_variable_settings.0.name", "$export_date$"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.custom_variable_settings.0.type", "timestamp"),
+				),
+			},
+			// Step 2: Import state
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+// TestAccJobDefinitionResourceBigQueryToSftpJSONL tests SFTP output option with JSONL formatter.
+func TestAccJobDefinitionResourceBigQueryToSftpJSONL(t *testing.T) {
+	resourceName := "trocco_job_definition.bigquery_to_sftp_jsonl"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Step 1: Create with JSONL formatter
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/bigquery_to_sftp/create_jsonl.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "BigQuery to SFTP JSONL Export"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "bigquery"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "sftp"),
+
+					// Check SFTP output option fields
+					resource.TestCheckResourceAttrSet(resourceName, "output_option.sftp_output_option.sftp_connection_id"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.path_prefix", "/analytics/events/$date$/events"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.file_ext", ".jsonl"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.is_minimum_output_tasks", "true"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.encoder_type", "gzip"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.sequence_format", "%03d.%02d"),
+
+					// Check JSONL formatter
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.jsonl_formatter.encoding", "UTF-8"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.jsonl_formatter.newline", "LF"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.jsonl_formatter.date_format", "%Y-%m-%d %H:%M:%S"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.sftp_output_option.jsonl_formatter.timezone", "UTC"),
+				),
+			},
+			// Step 2: Import state
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceKintoneToMysql(t *testing.T) {
+	resourceName := "trocco_job_definition.kintone_to_mysql"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/kintone_to_mysql/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Kintone to Mysql Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for Kintone to Mysql transfer"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "0"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
+
+					// Input option checks
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "kintone"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.app_id", "403"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.expand_subtable", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.kintone_input_option.input_option_columns.#", "3"),
+
+					// Output option checks - Mysql specific
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "mysql"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.database", "$db_name$"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.table", "$table_name$"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mode", "insert"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.retry_limit", "12"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.retry_wait", "1000"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.max_retry_wait", "1800000"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.default_time_zone", "UTC"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.before_load", "DELETE FROM test_table WHERE status = 'pending';"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.after_load", "UPDATE test_table SET updated_at = NOW();"),
+
+					// Column options checks
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.#", "3"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.0.name", "description"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.0.type", "TEXT"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.1.name", "price"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.1.type", "DECIMAL"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.1.scale", "2"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.1.precision", "10"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.2.name", "notes"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.mysql_output_option_column_options.2.type", "LONGTEXT"),
+
+					// Custom variable settings checks
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.0.name", "$db_name$"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.0.value", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.1.name", "$table_name$"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.1.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.mysql_output_option.custom_variable_settings.1.value", "test_table"),
+				),
+			},
+			// ImportState testing
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceGoogleAdsToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.google_ads_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/google_ads_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Google Ads to BigQuery Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from Google Ads to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "google_ads"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					// Google Ads input option checks
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.customer_id", "1234567890"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.resource_type", "campaign"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.start_date", "2024-01-01"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.end_date", "2024-01-31"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.#", "5"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.0.name", "campaign.name"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.1.name", "campaign.id"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.1.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.2.name", "campaign.create_time"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.2.type", "timestamp"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.2.format", "%Y-%m-%d %H:%M:%S"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.3.name", "metrics.ctr"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.3.type", "double"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.4.name", "campaign.experiment_type"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.input_option_columns.4.type", "boolean"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.conditions.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.conditions.0", "campaign.status = 'ENABLED'"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_ads_input_option.conditions.1", "metrics.impressions > 0"),
+					// Filter columns checks
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "campaign_name"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.src", "campaign_name"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.name", "campaign_id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.2.type", "timestamp"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.3.type", "double"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.4.type", "boolean"),
+					// Output option checks
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "google_ads_campaign_test"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceMysqlToS3CSV(t *testing.T) {
+	resourceName := "trocco_job_definition.mysql_to_s3_csv"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/mysql_to_s3/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "MySQL to S3 CSV Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from MySQL to S3 with CSV formatter"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "mysql"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "s3"),
+					// MySQL input option attributes
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.database", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.table", "test_table"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.connect_timeout", "300"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.socket_timeout", "1800"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.default_time_zone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.fetch_rows", "1000"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.incremental_loading_enabled", "false"),
+					// S3 output option attributes
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.bucket", "test-bucket"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.path_prefix", "output/data"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.region", "ap-northeast-1"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.file_ext", "csv.gz"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.sequence_format", ".%03d"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.canned_acl", "Private"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.is_minimum_output_tasks", "false"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.multipart_upload_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.formatter_type", "csv"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.encoder_type", "gzip"),
+					// CSV formatter attributes
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.delimiter", ","),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.escape", "\\"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.header_line", "true"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.charset", "UTF-8"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.quote_policy", "ALL"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.newline", "LF"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.newline_in_field", "LF"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.null_string_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.null_string", "NULL"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.default_time_zone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.csv_formatter_column_options_attributes.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.csv_formatter_column_options_attributes.0.name", "created_at"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.csv_formatter_column_options_attributes.0.format", "%Y-%m-%d %H:%M:%S"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.csv_formatter.csv_formatter_column_options_attributes.0.timezone", "Asia/Tokyo"),
+					// Filter columns
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.#", "4"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.src", "id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.type", "long"),
+				),
+			},
+			// Import testing
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceMysqlToS3JSONL(t *testing.T) {
+	resourceName := "trocco_job_definition.mysql_to_s3_jsonl"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/mysql_to_s3/create_jsonl.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "MySQL to S3 JSONL Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from MySQL to S3 with JSONL formatter"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "mysql"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "s3"),
+					// MySQL input option attributes
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.database", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.table", "test_table"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.connect_timeout", "300"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.socket_timeout", "1800"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.default_time_zone", "Asia/Tokyo"),
+					// S3 output option attributes
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.bucket", "test-bucket"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.path_prefix", "output/json"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.region", "us-west-2"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.file_ext", "jsonl.gz"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.sequence_format", ".%03d"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.is_minimum_output_tasks", "false"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.multipart_upload_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.formatter_type", "jsonl"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.encoder_type", "gzip"),
+					// JSONL formatter attributes
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.jsonl_formatter.encoding", "UTF-8"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.jsonl_formatter.newline", "LF"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.jsonl_formatter.date_format", "%Y-%m-%d"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.s3_output_option.jsonl_formatter.timezone", "UTC"),
+					// Filter columns
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.#", "4"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.src", "id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.type", "long"),
+				),
+			},
+			// Import testing
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceMysqlToHubspot(t *testing.T) {
+	resourceName := "trocco_job_definition.mysql_to_hubspot"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/mysql_to_hubspot/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "MySQL to HubSpot Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from MySQL to HubSpot"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "mysql"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "hubspot"),
+
+					// Check MySQL input option
+					resource.TestCheckResourceAttrSet(resourceName, "input_option.mysql_input_option.mysql_connection_id"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.database", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.table", "test_table"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.incremental_loading_enabled", "false"),
+
+					// Check HubSpot output option
+					resource.TestCheckResourceAttrSet(resourceName, "output_option.hubspot_output_option.hubspot_connection_id"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.hubspot_output_option.object_type", "task"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.hubspot_output_option.mode", "merge"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.hubspot_output_option.upsert_key", "id"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.hubspot_output_option.number_of_parallels", "2"),
+
+					// Check associations
+					resource.TestCheckResourceAttr(resourceName, "output_option.hubspot_output_option.associations.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.hubspot_output_option.associations.0.to_object_type", "contact"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.hubspot_output_option.associations.0.from_object_key", "contact_email"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.hubspot_output_option.associations.0.to_object_key", "email"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.hubspot_output_option.associations.1.to_object_type", "deal"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.hubspot_output_option.associations.1.from_object_key", "deal_task"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.hubspot_output_option.associations.1.to_object_key", "task"),
+				),
+			},
+			// ImportState testing
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}

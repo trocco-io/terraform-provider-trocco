@@ -51,6 +51,7 @@ func TasksSchema() schema.Attribute {
 							"snowflake_data_check",
 							"redshift_data_check",
 							"http_request",
+							"if_else",
 						),
 					},
 				},
@@ -68,6 +69,7 @@ func TasksSchema() schema.Attribute {
 				"bigquery_data_check_config":                     BigqueryDatacheckTaskConfigSchema(),
 				"snowflake_data_check_config":                    SnowflakeDatacheckTaskConfigSchema(),
 				"redshift_data_check_config":                     RedshiftDatacheckTaskConfigSchema(),
+				"if_else_config":                                 IfElseTaskConfigSchema(),
 			},
 		},
 	}

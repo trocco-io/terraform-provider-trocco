@@ -1,3 +1,39 @@
+## 0.25.0
+FEATURES:
+- `trocco_job_definition` resource:
+  - Added support for `google_ads` input option
+  - Added support for `hubspot` output option
+  - Added support for `s3` output option
+
+## 0.24.0
+FEATURES:
+- `trocco_job_definition` resource:
+  - Added support for `postgresql` output option
+  - Added support for `mysql` output option
+- `trocco_pipeline_definition` resource:
+  - Added support for if-else task type
+
+CHORE:
+- Added `generate-tf-provider-requirements` Claude code command for automating Terraform provider requirements documentation generation
+- Removed unused issue-comment-triage and lock workflow
+
+## 0.23.0
+FEATURES:
+- `trocco_connection` resource:
+  - Added support for `sftp` type
+- `trocco_job_definition` resource:
+  - Added support for `sftp` input option with CSV parser
+  - Added support for `sftp` output option with CSV and JSONL formatters
+  - Added support for `kintone` output option
+
+## 0.22.0
+FEATURES:
+- `trocco_job_definition` resource:
+  - Added support for `hubspot` input option
+
+CHORE:
+- Fixed goreleaser archives.format deprecation
+
 ## 0.21.0
 FEATURES:
 - `trocco_connection` resource:
