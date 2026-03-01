@@ -1558,14 +1558,26 @@ func readPreferenceTagsFromList(list types.List) [][]client.ReadPreferenceTag {
 	outerElements := list.Elements()
 	result := make([][]client.ReadPreferenceTag, len(outerElements))
 	for i, outerElem := range outerElements {
-		innerList := outerElem.(types.List)
+		innerList, ok := outerElem.(types.List)
+		if !ok {
+			panic("unexpected type for read_preference_tags outer element")
+		}
 		innerElements := innerList.Elements()
 		result[i] = make([]client.ReadPreferenceTag, len(innerElements))
 		for j, innerElem := range innerElements {
-			obj := innerElem.(types.Object)
+			obj, ok := innerElem.(types.Object)
+			if !ok {
+				panic("unexpected type for read_preference_tags inner element")
+			}
 			attrs := obj.Attributes()
-			key := attrs["key"].(types.String)
-			value := attrs["value"].(types.String)
+			key, ok := attrs["key"].(types.String)
+			if !ok {
+				panic("unexpected type for read_preference_tags key")
+			}
+			value, ok := attrs["value"].(types.String)
+			if !ok {
+				panic("unexpected type for read_preference_tags value")
+			}
 			result[i][j] = client.ReadPreferenceTag{
 				Key:   key.ValueString(),
 				Value: value.ValueString(),
