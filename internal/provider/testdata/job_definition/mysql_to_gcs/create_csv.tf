@@ -1,30 +1,30 @@
-# resource "trocco_connection" "test_mysql" {
-#   connection_type = "mysql"
-#   name            = "MySQL Example"
-#   host            = "db.example.com"
-#   port            = 3306
-#   user_name       = "root"
-#   password        = "password"
-# }
+resource "trocco_connection" "test_mysql" {
+  connection_type = "mysql"
+  name            = "MySQL Example"
+  host            = "db.example.com"
+  port            = 3306
+  user_name       = "root"
+  password        = "password"
+}
 
-# resource "trocco_connection" "test_gcs" {
-#   connection_type = "gcs"
+resource "trocco_connection" "test_gcs" {
+  connection_type = "gcs"
 
-#   name        = "GCS Example"
-#   description = "This is a Google Cloud Storage(GCS) connection example"
+  name        = "GCS Example"
+  description = "This is a Google Cloud Storage(GCS) connection example"
 
-#   project_id               = "example-project-id"
-#   service_account_json_key = <<JSON
-#   {
-#     "type": "service_account",
-#     "project_id": "example-project-id",
-#     "private_key_id": "example-private-key-id",
-#     "private_key":"-----BEGIN PRIVATE KEY-----\n..."
-#   }
-#   JSON
-#   service_account_email    = "joe@example-project.iam.gserviceaccount.com"
-#   application_name         = "example-application-name"
-# }
+  project_id               = "example-project-id"
+  service_account_json_key = <<JSON
+  {
+    "type": "service_account",
+    "project_id": "example-project-id",
+    "private_key_id": "example-private-key-id",
+    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
+  }
+  JSON
+  service_account_email    = "joe@example-project.iam.gserviceaccount.com"
+  application_name         = "example-application-name"
+}
 
 resource "trocco_job_definition" "mysql_to_gcs" {
   name                     = "MySQL to GCS Test (csv)"
@@ -57,7 +57,7 @@ resource "trocco_job_definition" "mysql_to_gcs" {
   input_option_type = "mysql"
   input_option = {
     mysql_input_option = {
-      mysql_connection_id         = 2
+      mysql_connection_id         = trocco_connection.test_mysql.id
       database                    = "test_database"
       table                       = "test_table"
       connect_timeout             = 300
@@ -86,7 +86,7 @@ resource "trocco_job_definition" "mysql_to_gcs" {
   output_option_type = "gcs"
   output_option = {
     gcs_output_option = {
-      gcs_connection_id       = 1
+      gcs_connection_id       = trocco_connection.test_gcs.id
       bucket                  = "my-test-bucket"
       path_prefix             = "output/test/"
       file_ext                = ".csv"
