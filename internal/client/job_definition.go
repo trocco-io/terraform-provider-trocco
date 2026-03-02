@@ -155,6 +155,7 @@ type OutputOption struct {
 	KintoneOutputOption            *outputOptionEntities.KintoneOutputOption            `json:"kintone_output_option"`
 	MysqlOutputOption              *outputOptionEntities.MysqlOutputOption              `json:"mysql_output_option"`
 	HubspotOutputOption            *outputOptionEntities.HubspotOutputOption            `json:"hubspot_output_option"`
+	GcsOutputOption                *outputOptionEntities.GcsOutputOption                `json:"gcs_output_option"`
 }
 
 type OutputOptionInput struct {
@@ -169,6 +170,7 @@ type OutputOptionInput struct {
 	KintoneOutputOption            *parameter.NullableObject[outputOptionParameters.KintoneOutputOptionInput]            `json:"kintone_output_option,omitempty"`
 	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.MysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
 	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.HubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
+	GcsOutputOption                *parameter.NullableObject[outputOptionParameters.GcsOutputOptionInput]                `json:"gcs_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
@@ -183,6 +185,7 @@ type UpdateOutputOptionInput struct {
 	KintoneOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateKintoneOutputOptionInput]            `json:"kintone_output_option,omitempty"`
 	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.UpdateMysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
 	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateHubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
+	GcsOutputOption                *parameter.NullableObject[outputOptionParameters.UpdateGcsOutputOptionInput]                `json:"gcs_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {
