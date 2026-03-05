@@ -348,6 +348,8 @@ resource "trocco_connection" "databricks_oauth2" {
 - `private_key` (String, Sensitive) Snowflake: A private key for the Snowflake user.
 - `project_id` (String) BigQuery, GCS: A GCP project ID.
 - `read_preference` (String) MongoDB: Read preference. It must be one of `primary`, `primaryPreferred`, `secondary`, `secondaryPreferred`, or `nearest`. Default is `primary`.
+- `read_preference_tags` (List of List of Object) MongoDB: Read preference tag sets. A two-dimensional array where each element is a list of objects with `key` and `value` attributes.
+- `replica_set` (String) MongoDB: Replica set name. Recommended when `read_preference` is not `primary`.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
 - `role` (String) Snowflake: A role attached to the Snowflake user.
 - `secret_key` (String, Sensitive) SFTP: RSA private key for authentication.
@@ -358,6 +360,7 @@ resource "trocco_connection" "databricks_oauth2" {
 - `service_account_json_key` (String, Sensitive) BigQuery, Google Sheets, Google Analytics4: A GCP service account key.
 - `ssh_tunnel_id` (Number) SFTP: SSH tunnel ID. Required when aws_privatelink_enabled is true.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
+- `strict_read_preference_tags` (Boolean) MongoDB: Whether to enable strict mode for read preference tag matching. Default is `false`.
 - `token` (String, Sensitive) Kintone: Token.
 - `user_directory_is_root` (Boolean) SFTP: Whether the user directory is root. Default is true.
 - `user_name` (String) Snowflake, PostgreSQL, MongoDB: The name of a (Snowflake, PostgreSQL, MongoDB) user.

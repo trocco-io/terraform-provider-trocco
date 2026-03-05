@@ -1,15 +1,18 @@
 resource "trocco_connection" "mongodb" {
-  connection_type          = "mongodb"
-  name                     = "MongoDB Example"
-  description              = "This is a MongoDB connection example"
-  host                     = "mongodb.example.com"
-  port                     = 27017
-  user_name                = "admin"
-  password                 = "password"
-  connection_string_format = "standard"
-  auth_method              = "scram-sha-1"
-  auth_source              = "admin"
-  read_preference          = "primary"
+  connection_type             = "mongodb"
+  name                        = "MongoDB Example"
+  description                 = "This is a MongoDB connection example"
+  host                        = "mongodb.example.com"
+  port                        = 27017
+  user_name                   = "admin"
+  password                    = "password"
+  connection_string_format    = "standard"
+  auth_method                 = "scram-sha-1"
+  auth_source                 = "admin"
+  read_preference             = "secondary"
+  replica_set                 = "rs0"
+  read_preference_tags        = [[{ key = "dc", value = "east" }, { key = "rack", value = "r1" }]]
+  strict_read_preference_tags = true
   gateway = {
     host      = "gateway.example.com"
     port      = 22

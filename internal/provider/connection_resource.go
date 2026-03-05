@@ -13,6 +13,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -96,9 +97,12 @@ type connectionResourceModel struct {
 	OAuth2ClientSecret  types.String `tfsdk:"oauth2_client_secret"`
 
 	// MongoDB Fields
-	ConnectionStringFormat types.String `tfsdk:"connection_string_format"`
-	ReadPreference         types.String `tfsdk:"read_preference"`
-	AuthSource             types.String `tfsdk:"auth_source"`
+	ConnectionStringFormat   types.String `tfsdk:"connection_string_format"`
+	ReadPreference           types.String `tfsdk:"read_preference"`
+	AuthSource               types.String `tfsdk:"auth_source"`
+	ReplicaSet               types.String `tfsdk:"replica_set"`
+	ReadPreferenceTags       types.List   `tfsdk:"read_preference_tags"`
+	StrictReadPreferenceTags types.Bool   `tfsdk:"strict_read_preference_tags"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -161,9 +165,17 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		OAuth2ClientSecret:  model.NewNullableString(m.OAuth2ClientSecret),
 
 		// MongoDB Fields
-		ConnectionStringFormat: model.NewNullableString(m.ConnectionStringFormat),
-		ReadPreference:         model.NewNullableString(m.ReadPreference),
-		AuthSource:             model.NewNullableString(m.AuthSource),
+		ConnectionStringFormat:   model.NewNullableString(m.ConnectionStringFormat),
+		ReadPreference:           model.NewNullableString(m.ReadPreference),
+		AuthSource:               model.NewNullableString(m.AuthSource),
+		ReplicaSet:               model.NewNullableString(m.ReplicaSet),
+		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
+	}
+
+	// ReadPreferenceTags
+	if !m.ReadPreferenceTags.IsNull() && !m.ReadPreferenceTags.IsUnknown() {
+		tags := readPreferenceTagsFromList(m.ReadPreferenceTags)
+		input.ReadPreferenceTags = &tags
 	}
 
 	// SSL Fields
@@ -267,9 +279,17 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		OAuth2ClientSecret:  model.NewNullableString(m.OAuth2ClientSecret),
 
 		// MongoDB Fields
-		ConnectionStringFormat: model.NewNullableString(m.ConnectionStringFormat),
-		ReadPreference:         model.NewNullableString(m.ReadPreference),
-		AuthSource:             model.NewNullableString(m.AuthSource),
+		ConnectionStringFormat:   model.NewNullableString(m.ConnectionStringFormat),
+		ReadPreference:           model.NewNullableString(m.ReadPreference),
+		AuthSource:               model.NewNullableString(m.AuthSource),
+		ReplicaSet:               model.NewNullableString(m.ReplicaSet),
+		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
+	}
+
+	// ReadPreferenceTags
+	if !m.ReadPreferenceTags.IsNull() && !m.ReadPreferenceTags.IsUnknown() {
+		tags := readPreferenceTagsFromList(m.ReadPreferenceTags)
+		input.ReadPreferenceTags = &tags
 	}
 
 	// SSL Fields
@@ -821,6 +841,37 @@ func (r *connectionResource) Schema(
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
+			"replica_set": schema.StringAttribute{
+				MarkdownDescription: "MongoDB: Replica set name. Recommended when `read_preference` is not `primary`.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"read_preference_tags": schema.ListAttribute{
+				MarkdownDescription: "MongoDB: Read preference tag sets. A two-dimensional array where each element is a list of objects with `key` and `value` attributes.",
+				Optional:            true,
+				Computed:            true,
+				ElementType: types.ListType{
+					ElemType: types.ObjectType{
+						AttrTypes: map[string]attr.Type{
+							"key":   types.StringType,
+							"value": types.StringType,
+						},
+					},
+				},
+				PlanModifiers: []planmodifier.List{
+					planModifier.ConditionalEmptyListDefault("mongodb"),
+				},
+			},
+			"strict_read_preference_tags": schema.BoolAttribute{
+				MarkdownDescription: "MongoDB: Whether to enable strict mode for read preference tag matching. Default is `false`.",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					planModifier.ConditionalBooleanDefault(false, "mongodb"),
+				},
+			},
 			// SFTP Fields
 			"secret_key": schema.StringAttribute{
 				MarkdownDescription: "SFTP: RSA private key for authentication.",
@@ -965,9 +1016,12 @@ func (r *connectionResource) Create(
 		OAuth2ClientSecret:  plan.OAuth2ClientSecret,
 
 		// MongoDB Fields
-		ConnectionStringFormat: types.StringPointerValue(conn.ConnectionStringFormat),
-		ReadPreference:         types.StringPointerValue(conn.ReadPreference),
-		AuthSource:             types.StringPointerValue(conn.AuthSource),
+		ConnectionStringFormat:   types.StringPointerValue(conn.ConnectionStringFormat),
+		ReadPreference:           types.StringPointerValue(conn.ReadPreference),
+		AuthSource:               types.StringPointerValue(conn.AuthSource),
+		ReplicaSet:               types.StringPointerValue(conn.ReplicaSet),
+		ReadPreferenceTags:       readPreferenceTagsToList(conn.ReadPreferenceTags),
+		StrictReadPreferenceTags: types.BoolPointerValue(conn.StrictReadPreferenceTags),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1081,9 +1135,12 @@ func (r *connectionResource) Update(
 		OAuth2ClientSecret:  plan.OAuth2ClientSecret,
 
 		// MongoDB Fields
-		ConnectionStringFormat: types.StringPointerValue(connection.ConnectionStringFormat),
-		ReadPreference:         types.StringPointerValue(connection.ReadPreference),
-		AuthSource:             types.StringPointerValue(connection.AuthSource),
+		ConnectionStringFormat:   types.StringPointerValue(connection.ConnectionStringFormat),
+		ReadPreference:           types.StringPointerValue(connection.ReadPreference),
+		AuthSource:               types.StringPointerValue(connection.AuthSource),
+		ReplicaSet:               types.StringPointerValue(connection.ReplicaSet),
+		ReadPreferenceTags:       readPreferenceTagsToList(connection.ReadPreferenceTags),
+		StrictReadPreferenceTags: types.BoolPointerValue(connection.StrictReadPreferenceTags),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1176,9 +1233,12 @@ func (r *connectionResource) Read(
 		OAuth2ClientSecret:  state.OAuth2ClientSecret,
 
 		// MongoDB Fields
-		ConnectionStringFormat: types.StringPointerValue(conn.ConnectionStringFormat),
-		ReadPreference:         types.StringPointerValue(conn.ReadPreference),
-		AuthSource:             types.StringPointerValue(conn.AuthSource),
+		ConnectionStringFormat:   types.StringPointerValue(conn.ConnectionStringFormat),
+		ReadPreference:           types.StringPointerValue(conn.ReadPreference),
+		AuthSource:               types.StringPointerValue(conn.AuthSource),
+		ReplicaSet:               types.StringPointerValue(conn.ReplicaSet),
+		ReadPreferenceTags:       readPreferenceTagsToList(conn.ReadPreferenceTags),
+		StrictReadPreferenceTags: types.BoolPointerValue(conn.StrictReadPreferenceTags),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1460,4 +1520,73 @@ func validateRequiredInt(field types.Int64, fieldName, connectionType string, re
 			fmt.Sprintf("%s is required for %s connection.", fieldName, connectionType),
 		)
 	}
+}
+
+var readPreferenceTagObjectType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
+var readPreferenceTagsListType = types.ListType{
+	ElemType: readPreferenceTagObjectType,
+}
+
+func readPreferenceTagsToList(tags *[][]client.ReadPreferenceTag) types.List {
+	if tags == nil {
+		return types.ListNull(readPreferenceTagsListType)
+	}
+
+	outerElements := make([]attr.Value, len(*tags))
+	for i, innerTags := range *tags {
+		innerElements := make([]attr.Value, len(innerTags))
+		for j, tag := range innerTags {
+			obj, _ := types.ObjectValue(
+				readPreferenceTagObjectType.AttrTypes,
+				map[string]attr.Value{
+					"key":   types.StringValue(tag.Key),
+					"value": types.StringValue(tag.Value),
+				},
+			)
+			innerElements[j] = obj
+		}
+		innerList, _ := types.ListValue(readPreferenceTagObjectType, innerElements)
+		outerElements[i] = innerList
+	}
+	result, _ := types.ListValue(readPreferenceTagsListType, outerElements)
+	return result
+}
+
+func readPreferenceTagsFromList(list types.List) [][]client.ReadPreferenceTag {
+	outerElements := list.Elements()
+	result := make([][]client.ReadPreferenceTag, len(outerElements))
+	for i, outerElem := range outerElements {
+		innerList, ok := outerElem.(types.List)
+		if !ok {
+			panic("unexpected type for read_preference_tags outer element")
+		}
+		innerElements := innerList.Elements()
+		result[i] = make([]client.ReadPreferenceTag, len(innerElements))
+		for j, innerElem := range innerElements {
+			obj, ok := innerElem.(types.Object)
+			if !ok {
+				panic("unexpected type for read_preference_tags inner element")
+			}
+			attrs := obj.Attributes()
+			key, ok := attrs["key"].(types.String)
+			if !ok {
+				panic("unexpected type for read_preference_tags key")
+			}
+			value, ok := attrs["value"].(types.String)
+			if !ok {
+				panic("unexpected type for read_preference_tags value")
+			}
+			result[i][j] = client.ReadPreferenceTag{
+				Key:   key.ValueString(),
+				Value: value.ValueString(),
+			}
+		}
+	}
+	return result
 }
