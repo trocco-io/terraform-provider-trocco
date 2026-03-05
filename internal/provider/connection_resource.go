@@ -851,6 +851,7 @@ func (r *connectionResource) Schema(
 			"read_preference_tags": schema.ListAttribute{
 				MarkdownDescription: "MongoDB: Read preference tag sets. A two-dimensional array where each element is a list of objects with `key` and `value` attributes.",
 				Optional:            true,
+				Computed:            true,
 				ElementType: types.ListType{
 					ElemType: types.ObjectType{
 						AttrTypes: map[string]attr.Type{
@@ -858,6 +859,9 @@ func (r *connectionResource) Schema(
 							"value": types.StringType,
 						},
 					},
+				},
+				PlanModifiers: []planmodifier.List{
+					planModifier.ConditionalEmptyListDefault("mongodb"),
 				},
 			},
 			"strict_read_preference_tags": schema.BoolAttribute{
