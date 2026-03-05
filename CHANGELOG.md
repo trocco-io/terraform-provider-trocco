@@ -1,3 +1,10 @@
+## 0.26.0
+FEATURES:
+- `trocco_connection` resource:
+  - Added support for `mongodb` type with replica set and read preference tags configuration
+- `trocco_job_definition` resource:
+  - Added support for `mongodb` input option
+
 ## 0.25.0
 FEATURES:
 - `trocco_job_definition` resource:
