@@ -63,6 +63,7 @@ func GcsOutputOptionSchema() schema.Attribute {
 			},
 			"encoder_type": schema.StringAttribute{
 				Optional: true,
+				Computed: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("", "gzip", "bzip2", "zip"),
 				},
