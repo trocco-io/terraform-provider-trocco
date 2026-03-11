@@ -54,8 +54,7 @@ func GcsOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Output file mode. true = output file number suppression mode, false = parallel transfer",
 			},
 			"formatter_type": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				Required: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("csv", "jsonl"),
 				},
@@ -67,6 +66,7 @@ func GcsOutputOptionSchema() schema.Attribute {
 				Validators: []validator.String{
 					stringvalidator.OneOf("", "gzip", "bzip2", "zip"),
 				},
+				Default:             stringdefault.StaticString(""),
 				MarkdownDescription: "Encoder type. Valid values: `` (no compression), `gzip`, `bzip2`, `zip`",
 			},
 			"csv_formatter": schema.SingleNestedAttribute{

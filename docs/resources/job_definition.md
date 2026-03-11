@@ -3298,6 +3298,7 @@ Required:
 
 - `bucket` (String) GCS bucket name
 - `file_ext` (String) File extension
+- `formatter_type` (String) Formatter type. Valid values: `csv`, `jsonl`
 - `gcs_connection_id` (Number) ID of GCS connection
 - `is_minimum_output_tasks` (Boolean) Output file mode. true = output file number suppression mode, false = parallel transfer
 - `path_prefix` (String) File path prefix. Can contain custom variables (e.g., $start_time$)
@@ -3307,7 +3308,6 @@ Optional:
 - `csv_formatter` (Attributes) CSV formatter configuration. Required when formatter_type is `csv` (see [below for nested schema](#nestedatt--output_option--gcs_output_option--csv_formatter))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--gcs_output_option--custom_variable_settings))
 - `encoder_type` (String) Encoder type. Valid values: `` (no compression), `gzip`, `bzip2`, `zip`
-- `formatter_type` (String) Formatter type. Valid values: `csv`, `jsonl`
 - `jsonl_formatter` (Attributes) JSONL formatter configuration. Required when formatter_type is `jsonl` (see [below for nested schema](#nestedatt--output_option--gcs_output_option--jsonl_formatter))
 - `sequence_format` (String) Sequence format for output files
 
