@@ -1,3 +1,8 @@
+## 0.27.0
+FEATURES:
+- `trocco_job_definition` resource:
+  - Added support for `gcs` output option
+
 ## 0.26.0
 FEATURES:
 - `trocco_connection` resource:
