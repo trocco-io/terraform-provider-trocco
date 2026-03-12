@@ -13,6 +13,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -94,6 +95,14 @@ type connectionResourceModel struct {
 	PersonalAccessToken types.String `tfsdk:"personal_access_token"`
 	OAuth2ClientID      types.String `tfsdk:"oauth2_client_id"`
 	OAuth2ClientSecret  types.String `tfsdk:"oauth2_client_secret"`
+
+	// MongoDB Fields
+	ConnectionStringFormat   types.String `tfsdk:"connection_string_format"`
+	ReadPreference           types.String `tfsdk:"read_preference"`
+	AuthSource               types.String `tfsdk:"auth_source"`
+	ReplicaSet               types.String `tfsdk:"replica_set"`
+	ReadPreferenceTags       types.List   `tfsdk:"read_preference_tags"`
+	StrictReadPreferenceTags types.Bool   `tfsdk:"strict_read_preference_tags"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -154,6 +163,19 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		PersonalAccessToken: model.NewNullableString(m.PersonalAccessToken),
 		OAuth2ClientID:      model.NewNullableString(m.OAuth2ClientID),
 		OAuth2ClientSecret:  model.NewNullableString(m.OAuth2ClientSecret),
+
+		// MongoDB Fields
+		ConnectionStringFormat:   model.NewNullableString(m.ConnectionStringFormat),
+		ReadPreference:           model.NewNullableString(m.ReadPreference),
+		AuthSource:               model.NewNullableString(m.AuthSource),
+		ReplicaSet:               model.NewNullableString(m.ReplicaSet),
+		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
+	}
+
+	// ReadPreferenceTags
+	if !m.ReadPreferenceTags.IsNull() && !m.ReadPreferenceTags.IsUnknown() {
+		tags := readPreferenceTagsFromList(m.ReadPreferenceTags)
+		input.ReadPreferenceTags = &tags
 	}
 
 	// SSL Fields
@@ -255,6 +277,19 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		PersonalAccessToken: model.NewNullableString(m.PersonalAccessToken),
 		OAuth2ClientID:      model.NewNullableString(m.OAuth2ClientID),
 		OAuth2ClientSecret:  model.NewNullableString(m.OAuth2ClientSecret),
+
+		// MongoDB Fields
+		ConnectionStringFormat:   model.NewNullableString(m.ConnectionStringFormat),
+		ReadPreference:           model.NewNullableString(m.ReadPreference),
+		AuthSource:               model.NewNullableString(m.AuthSource),
+		ReplicaSet:               model.NewNullableString(m.ReplicaSet),
+		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
+	}
+
+	// ReadPreferenceTags
+	if !m.ReadPreferenceTags.IsNull() && !m.ReadPreferenceTags.IsUnknown() {
+		tags := readPreferenceTagsFromList(m.ReadPreferenceTags)
+		input.ReadPreferenceTags = &tags
 	}
 
 	// SSL Fields
@@ -348,6 +383,7 @@ var supportedConnectionTypes = []string{
 	"kintone",
 	"sftp",
 	"databricks",
+	"mongodb",
 }
 
 func (r *connectionResource) Schema(
@@ -428,14 +464,14 @@ func (r *connectionResource) Schema(
 
 			// Snowflake Fields
 			"host": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.",
+				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB: The host of a (Snowflake, PostgreSQL, MongoDB) account.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
 			"user_name": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.",
+				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB: The name of a (Snowflake, PostgreSQL, MongoDB) user.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
@@ -449,14 +485,14 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"auth_method": schema.StringAttribute{
-				MarkdownDescription: "Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`.",
+				MarkdownDescription: "Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`. MongoDB: The authentication method. It must be one of `auto`, `mongodb-cr`, or `scram-sha-1`.",
 				Optional:            true,
 				Validators: []validator.String{
-					stringvalidator.OneOf("key_pair", "user_password"),
+					stringvalidator.OneOf("key_pair", "user_password", "auto", "mongodb-cr", "scram-sha-1"),
 				},
 			},
 			"password": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL: The password for the (Snowflake, PostgreSQL) user.",
+				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB: The password for the (Snowflake, PostgreSQL, MongoDB) user.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -491,7 +527,7 @@ func (r *connectionResource) Schema(
 
 			// MySQL Fields
 			"port": schema.Int64Attribute{
-				MarkdownDescription: "MySQL, PostgreSQL: The port of the (MySQL, PostgreSQL) server.",
+				MarkdownDescription: "MySQL, PostgreSQL, MongoDB: The port of the (MySQL, PostgreSQL, MongoDB) server.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
@@ -543,11 +579,11 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"gateway": schema.SingleNestedAttribute{
-				MarkdownDescription: "MySQL, PostgreSQL: Whether to connect via SSH",
+				MarkdownDescription: "MySQL, PostgreSQL, MongoDB: Whether to connect via SSH",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"host": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Host",
+						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH Host",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -555,7 +591,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"port": schema.Int64Attribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Port",
+						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH Port",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.Int64{
@@ -564,7 +600,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"user_name": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH User",
+						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH User",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -572,21 +608,21 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"password": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, Kintone: SSH Password",
+						MarkdownDescription: "MySQL, PostgreSQL, MongoDB, Kintone: SSH Password",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Private Key",
+						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH Private Key",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key_passphrase": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL: SSH Private Key Passphrase",
+						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH Private Key Passphrase",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
@@ -774,6 +810,68 @@ func (r *connectionResource) Schema(
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
+
+			// MongoDB Fields
+			"connection_string_format": schema.StringAttribute{
+				MarkdownDescription: "MongoDB: Connection string format. It must be one of `standard` or `dns_seed_list`. Default is `standard`.",
+				Optional:            true,
+				Computed:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("standard", "dns_seed_list"),
+				},
+				PlanModifiers: []planmodifier.String{
+					planModifier.ConditionalStringDefault("standard", "mongodb"),
+				},
+			},
+			"read_preference": schema.StringAttribute{
+				MarkdownDescription: "MongoDB: Read preference. It must be one of `primary`, `primaryPreferred`, `secondary`, `secondaryPreferred`, or `nearest`. Default is `primary`.",
+				Optional:            true,
+				Computed:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("primary", "primaryPreferred", "secondary", "secondaryPreferred", "nearest"),
+				},
+				PlanModifiers: []planmodifier.String{
+					planModifier.ConditionalStringDefault("primary", "mongodb"),
+				},
+			},
+			"auth_source": schema.StringAttribute{
+				MarkdownDescription: "MongoDB: Authentication database name.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"replica_set": schema.StringAttribute{
+				MarkdownDescription: "MongoDB: Replica set name. Recommended when `read_preference` is not `primary`.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"read_preference_tags": schema.ListAttribute{
+				MarkdownDescription: "MongoDB: Read preference tag sets. A two-dimensional array where each element is a list of objects with `key` and `value` attributes.",
+				Optional:            true,
+				Computed:            true,
+				ElementType: types.ListType{
+					ElemType: types.ObjectType{
+						AttrTypes: map[string]attr.Type{
+							"key":   types.StringType,
+							"value": types.StringType,
+						},
+					},
+				},
+				PlanModifiers: []planmodifier.List{
+					planModifier.ConditionalEmptyListDefault("mongodb"),
+				},
+			},
+			"strict_read_preference_tags": schema.BoolAttribute{
+				MarkdownDescription: "MongoDB: Whether to enable strict mode for read preference tag matching. Default is `false`.",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					planModifier.ConditionalBooleanDefault(false, "mongodb"),
+				},
+			},
 			// SFTP Fields
 			"secret_key": schema.StringAttribute{
 				MarkdownDescription: "SFTP: RSA private key for authentication.",
@@ -916,6 +1014,14 @@ func (r *connectionResource) Create(
 		PersonalAccessToken: plan.PersonalAccessToken,
 		OAuth2ClientID:      plan.OAuth2ClientID,
 		OAuth2ClientSecret:  plan.OAuth2ClientSecret,
+
+		// MongoDB Fields
+		ConnectionStringFormat:   types.StringPointerValue(conn.ConnectionStringFormat),
+		ReadPreference:           types.StringPointerValue(conn.ReadPreference),
+		AuthSource:               types.StringPointerValue(conn.AuthSource),
+		ReplicaSet:               types.StringPointerValue(conn.ReplicaSet),
+		ReadPreferenceTags:       readPreferenceTagsToList(conn.ReadPreferenceTags),
+		StrictReadPreferenceTags: types.BoolPointerValue(conn.StrictReadPreferenceTags),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1027,6 +1133,14 @@ func (r *connectionResource) Update(
 		PersonalAccessToken: plan.PersonalAccessToken,
 		OAuth2ClientID:      plan.OAuth2ClientID,
 		OAuth2ClientSecret:  plan.OAuth2ClientSecret,
+
+		// MongoDB Fields
+		ConnectionStringFormat:   types.StringPointerValue(connection.ConnectionStringFormat),
+		ReadPreference:           types.StringPointerValue(connection.ReadPreference),
+		AuthSource:               types.StringPointerValue(connection.AuthSource),
+		ReplicaSet:               types.StringPointerValue(connection.ReplicaSet),
+		ReadPreferenceTags:       readPreferenceTagsToList(connection.ReadPreferenceTags),
+		StrictReadPreferenceTags: types.BoolPointerValue(connection.StrictReadPreferenceTags),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1117,6 +1231,14 @@ func (r *connectionResource) Read(
 		PersonalAccessToken: state.PersonalAccessToken,
 		OAuth2ClientID:      types.StringPointerValue(conn.OAuth2ClientID),
 		OAuth2ClientSecret:  state.OAuth2ClientSecret,
+
+		// MongoDB Fields
+		ConnectionStringFormat:   types.StringPointerValue(conn.ConnectionStringFormat),
+		ReadPreference:           types.StringPointerValue(conn.ReadPreference),
+		AuthSource:               types.StringPointerValue(conn.AuthSource),
+		ReplicaSet:               types.StringPointerValue(conn.ReplicaSet),
+		ReadPreferenceTags:       readPreferenceTagsToList(conn.ReadPreferenceTags),
+		StrictReadPreferenceTags: types.BoolPointerValue(conn.StrictReadPreferenceTags),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1346,6 +1468,17 @@ func (r *connectionResource) ValidateConfig(
 				)
 			}
 		}
+	case "mongodb":
+		validateRequiredString(plan.Host, "host", "MongoDB", resp)
+		validateRequiredInt(plan.Port, "port", "MongoDB", resp)
+		if !plan.AuthMethod.IsNull() {
+			validateStringAgainstPatterns(plan.AuthMethod, "auth_method", "MongoDB", resp, "auto", "mongodb-cr", "scram-sha-1")
+		}
+		if plan.Gateway != nil {
+			validateRequiredString(plan.Gateway.Host, "gateway.host", "MongoDB", resp)
+			validateRequiredInt(plan.Gateway.Port, "gateway.port", "MongoDB", resp)
+			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "MongoDB", resp)
+		}
 	}
 }
 
@@ -1387,4 +1520,73 @@ func validateRequiredInt(field types.Int64, fieldName, connectionType string, re
 			fmt.Sprintf("%s is required for %s connection.", fieldName, connectionType),
 		)
 	}
+}
+
+var readPreferenceTagObjectType = types.ObjectType{
+	AttrTypes: map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	},
+}
+
+var readPreferenceTagsListType = types.ListType{
+	ElemType: readPreferenceTagObjectType,
+}
+
+func readPreferenceTagsToList(tags *[][]client.ReadPreferenceTag) types.List {
+	if tags == nil {
+		return types.ListNull(readPreferenceTagsListType)
+	}
+
+	outerElements := make([]attr.Value, len(*tags))
+	for i, innerTags := range *tags {
+		innerElements := make([]attr.Value, len(innerTags))
+		for j, tag := range innerTags {
+			obj, _ := types.ObjectValue(
+				readPreferenceTagObjectType.AttrTypes,
+				map[string]attr.Value{
+					"key":   types.StringValue(tag.Key),
+					"value": types.StringValue(tag.Value),
+				},
+			)
+			innerElements[j] = obj
+		}
+		innerList, _ := types.ListValue(readPreferenceTagObjectType, innerElements)
+		outerElements[i] = innerList
+	}
+	result, _ := types.ListValue(readPreferenceTagsListType, outerElements)
+	return result
+}
+
+func readPreferenceTagsFromList(list types.List) [][]client.ReadPreferenceTag {
+	outerElements := list.Elements()
+	result := make([][]client.ReadPreferenceTag, len(outerElements))
+	for i, outerElem := range outerElements {
+		innerList, ok := outerElem.(types.List)
+		if !ok {
+			panic("unexpected type for read_preference_tags outer element")
+		}
+		innerElements := innerList.Elements()
+		result[i] = make([]client.ReadPreferenceTag, len(innerElements))
+		for j, innerElem := range innerElements {
+			obj, ok := innerElem.(types.Object)
+			if !ok {
+				panic("unexpected type for read_preference_tags inner element")
+			}
+			attrs := obj.Attributes()
+			key, ok := attrs["key"].(types.String)
+			if !ok {
+				panic("unexpected type for read_preference_tags key")
+			}
+			value, ok := attrs["value"].(types.String)
+			if !ok {
+				panic("unexpected type for read_preference_tags value")
+			}
+			result[i][j] = client.ReadPreferenceTag{
+				Key:   key.ValueString(),
+				Value: value.ValueString(),
+			}
+		}
+	}
+	return result
 }

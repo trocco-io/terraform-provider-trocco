@@ -313,14 +313,15 @@ resource "trocco_connection" "databricks_oauth2" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, `postgresql`, `google_analytics4`, `kintone`, `sftp`, `databricks`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, `postgresql`, `google_analytics4`, `kintone`, `sftp`, `databricks`, `mongodb`.
 - `name` (String) The name of the connection.
 
 ### Optional
 
 - `application_name` (String) GCS: Application name.
 - `auth_end_point` (String) Salesforce: Authentication endpoint.
-- `auth_method` (String) Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`.
+- `auth_method` (String) Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`. MongoDB: The authentication method. It must be one of `auto`, `mongodb-cr`, or `scram-sha-1`.
+- `auth_source` (String) MongoDB: Authentication database name.
 - `auth_type` (String) Databricks: The Auth Type for the Databricks connection. It must be one of `pat` or `oauth-m2m`.
 - `aws_assume_role` (Attributes) S3: AssumeRole configuration. (see [below for nested schema](#nestedatt--aws_assume_role))
 - `aws_auth_type` (String) S3: The authentication type for the S3 connection. It must be one of `iam_user` or `assume_role`.
@@ -328,23 +329,27 @@ resource "trocco_connection" "databricks_oauth2" {
 - `aws_privatelink_enabled` (Boolean) SFTP: Whether AWS PrivateLink is enabled. Default is false.
 - `basic_auth_password` (String, Sensitive) Kintone: Basic Auth Password
 - `basic_auth_username` (String) Kintone: Basic Auth Username
+- `connection_string_format` (String) MongoDB: Connection string format. It must be one of `standard` or `dns_seed_list`. Default is `standard`.
 - `description` (String) The description of the connection.
 - `domain` (String) Kintone: Domain.
 - `driver` (String) Snowflake, MySQL, PostgreSQL: The name of a Database driver.
   - MySQL: null, mysql_connector_java_5_1_49
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
-- `gateway` (Attributes) MySQL, PostgreSQL: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
-- `host` (String) Snowflake, PostgreSQL: The host of a (Snowflake, PostgreSQL) account.
+- `gateway` (Attributes) MySQL, PostgreSQL, MongoDB: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
+- `host` (String) Snowflake, PostgreSQL, MongoDB: The host of a (Snowflake, PostgreSQL, MongoDB) account.
 - `http_path` (String) Databricks: The HTTP Path for the Databricks connection.
 - `login_method` (String) Kintone: Login Method
 - `oauth2_client_id` (String) Databricks: The OAuth2 Client ID for the Databricks connection.
 - `oauth2_client_secret` (String, Sensitive) Databricks: The OAuth2 Client Secret for the Databricks connection.
-- `password` (String, Sensitive) Snowflake, PostgreSQL: The password for the (Snowflake, PostgreSQL) user.
+- `password` (String, Sensitive) Snowflake, PostgreSQL, MongoDB: The password for the (Snowflake, PostgreSQL, MongoDB) user.
 - `personal_access_token` (String, Sensitive) Databricks: The Personal Access Token for the Databricks connection.
-- `port` (Number) MySQL, PostgreSQL: The port of the (MySQL, PostgreSQL) server.
+- `port` (Number) MySQL, PostgreSQL, MongoDB: The port of the (MySQL, PostgreSQL, MongoDB) server.
 - `private_key` (String, Sensitive) Snowflake: A private key for the Snowflake user.
 - `project_id` (String) BigQuery, GCS: A GCP project ID.
+- `read_preference` (String) MongoDB: Read preference. It must be one of `primary`, `primaryPreferred`, `secondary`, `secondaryPreferred`, or `nearest`. Default is `primary`.
+- `read_preference_tags` (List of List of Object) MongoDB: Read preference tag sets. A two-dimensional array where each element is a list of objects with `key` and `value` attributes.
+- `replica_set` (String) MongoDB: Replica set name. Recommended when `read_preference` is not `primary`.
 - `resource_group_id` (Number) The ID of the resource group the connection belongs to.
 - `role` (String) Snowflake: A role attached to the Snowflake user.
 - `secret_key` (String, Sensitive) SFTP: RSA private key for authentication.
@@ -355,9 +360,10 @@ resource "trocco_connection" "databricks_oauth2" {
 - `service_account_json_key` (String, Sensitive) BigQuery, Google Sheets, Google Analytics4: A GCP service account key.
 - `ssh_tunnel_id` (Number) SFTP: SSH tunnel ID. Required when aws_privatelink_enabled is true.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
+- `strict_read_preference_tags` (Boolean) MongoDB: Whether to enable strict mode for read preference tag matching. Default is `false`.
 - `token` (String, Sensitive) Kintone: Token.
 - `user_directory_is_root` (Boolean) SFTP: Whether the user directory is root. Default is true.
-- `user_name` (String) Snowflake, PostgreSQL: The name of a (Snowflake, PostgreSQL) user.
+- `user_name` (String) Snowflake, PostgreSQL, MongoDB: The name of a (Snowflake, PostgreSQL, MongoDB) user.
 - `username` (String) Kintone: The name of a user.
 - `windows_server` (Boolean) SFTP: Whether the server is a Windows server. Default is false.
 
@@ -388,12 +394,12 @@ Optional:
 
 Optional:
 
-- `host` (String, Sensitive) MySQL, PostgreSQL: SSH Host
-- `key` (String, Sensitive) MySQL, PostgreSQL: SSH Private Key
-- `key_passphrase` (String, Sensitive) MySQL, PostgreSQL: SSH Private Key Passphrase
-- `password` (String, Sensitive) MySQL, PostgreSQL, Kintone: SSH Password
-- `port` (Number, Sensitive) MySQL, PostgreSQL: SSH Port
-- `user_name` (String, Sensitive) MySQL, PostgreSQL: SSH User
+- `host` (String, Sensitive) MySQL, PostgreSQL, MongoDB: SSH Host
+- `key` (String, Sensitive) MySQL, PostgreSQL, MongoDB: SSH Private Key
+- `key_passphrase` (String, Sensitive) MySQL, PostgreSQL, MongoDB: SSH Private Key Passphrase
+- `password` (String, Sensitive) MySQL, PostgreSQL, MongoDB, Kintone: SSH Password
+- `port` (Number, Sensitive) MySQL, PostgreSQL, MongoDB: SSH Port
+- `user_name` (String, Sensitive) MySQL, PostgreSQL, MongoDB: SSH User
 
 
 <a id="nestedatt--ssl"></a>

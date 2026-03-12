@@ -25,6 +25,7 @@ type InputOption struct {
 	SftpInputOption               *inputOptionModel.SftpInputOption               `tfsdk:"sftp_input_option"`
 	HubspotInputOption            *inputOptionModel.HubspotInputOption            `tfsdk:"hubspot_input_option"`
 	DatabricksInputOption         *inputOptionModel.DatabricksInputOption         `tfsdk:"databricks_input_option"`
+	MongoDBInputOption            *inputOptionModel.MongoDBInputOption            `tfsdk:"mongodb_input_option"`
 	GoogleAdsInputOption          *inputOptionModel.GoogleAdsInputOption          `tfsdk:"google_ads_input_option"`
 }
 
@@ -50,6 +51,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		SftpInputOption:               inputOptionModel.NewSftpInputOption(ctx, inputOption.SftpInputOption),
 		HubspotInputOption:            inputOptionModel.NewHubspotInputOption(ctx, inputOption.HubspotInputOption),
 		DatabricksInputOption:         inputOptionModel.NewDatabricksInputOption(ctx, inputOption.DatabricksInputOption),
+		MongoDBInputOption:            inputOptionModel.NewMongodbInputOption(ctx, inputOption.MongoDBInputOption),
 		GoogleAdsInputOption:          inputOptionModel.NewGoogleAdsInputOption(ctx, inputOption.GoogleAdsInputOption),
 	}, diags
 }
@@ -76,6 +78,7 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 		SftpInputOption:               model.WrapObject(o.SftpInputOption.ToInput(ctx)),
 		HubspotInputOption:            model.WrapObject(o.HubspotInputOption.ToInput(ctx)),
 		DatabricksInputOption:         model.WrapObject(o.DatabricksInputOption.ToInput(ctx)),
+		MongoDBInputOption:            model.WrapObject(o.MongoDBInputOption.ToInput(ctx)),
 		GoogleAdsInputOption:          model.WrapObject(o.GoogleAdsInputOption.ToInput(ctx)),
 	}, diags
 }
@@ -101,6 +104,7 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 		SftpInputOption:               model.WrapObject(o.SftpInputOption.ToUpdateInput(ctx)),
 		HubspotInputOption:            model.WrapObject(o.HubspotInputOption.ToUpdateInput(ctx)),
 		DatabricksInputOption:         model.WrapObject(o.DatabricksInputOption.ToUpdateInput(ctx)),
+		MongoDBInputOption:            model.WrapObject(o.MongoDBInputOption.ToUpdateInput(ctx)),
 		GoogleAdsInputOption:          model.WrapObject(o.GoogleAdsInputOption.ToUpdateInput(ctx)),
 	}, diags
 }
