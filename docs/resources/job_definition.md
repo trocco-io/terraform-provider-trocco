@@ -3483,6 +3483,7 @@ Optional:
 
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
 - `databricks_output_option` (Attributes) Attributes of destination Databricks settings (see [below for nested schema](#nestedatt--output_option--databricks_output_option))
+- `google_drive_output_option` (Attributes) Attributes of destination Google Drive settings (see [below for nested schema](#nestedatt--output_option--google_drive_output_option))
 - `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
 - `hubspot_output_option` (Attributes) Attributes of destination HubSpot settings (see [below for nested schema](#nestedatt--output_option--hubspot_output_option))
 - `kintone_output_option` (Attributes) Attributes of destination Kintone settings (see [below for nested schema](#nestedatt--output_option--kintone_output_option))
@@ -3588,6 +3589,72 @@ Optional:
 - `timestamp_format` (String) Timestamp format
 - `timezone` (String) Time zone
 - `value_type` (String) Value type
+
+
+
+<a id="nestedatt--output_option--google_drive_output_option"></a>
+### Nested Schema for `output_option.google_drive_output_option`
+
+Required:
+
+- `file_name` (String) Output file name
+- `google_drive_connection_id` (Number) ID of Google Drive connection
+- `main_folder_id` (String) Google Drive folder ID
+
+Optional:
+
+- `child_folder_name` (String) Child folder name
+- `csv_formatter` (Attributes) CSV formatter settings (see [below for nested schema](#nestedatt--output_option--google_drive_output_option--csv_formatter))
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--google_drive_output_option--custom_variable_settings))
+- `formatter_type` (String) Formatter type
+
+<a id="nestedatt--output_option--google_drive_output_option--csv_formatter"></a>
+### Nested Schema for `output_option.google_drive_output_option.csv_formatter`
+
+Optional:
+
+- `charset` (String) Character encoding
+- `csv_formatter_column_options_attributes` (Attributes List) Column-specific options (see [below for nested schema](#nestedatt--output_option--google_drive_output_option--csv_formatter--csv_formatter_column_options_attributes))
+- `default_time_zone` (String) Default timezone
+- `delimiter` (String) Delimiter character
+- `escape` (String) Escape character
+- `header_line` (Boolean) Whether to include header line
+- `newline` (String) Newline character. Valid values: `CRLF`, `LF`, `CR`
+- `newline_in_field` (String) Newline character in field. Valid values: `CRLF`, `LF`, `CR`
+- `null_string` (String) Null string representation
+- `null_string_enabled` (Boolean) Whether to enable null string representation
+- `quote_policy` (String) Quote policy. Valid values: `ALL`, `MINIMAL`, `NONE`
+
+<a id="nestedatt--output_option--google_drive_output_option--csv_formatter--csv_formatter_column_options_attributes"></a>
+### Nested Schema for `output_option.google_drive_output_option.csv_formatter.csv_formatter_column_options_attributes`
+
+Required:
+
+- `name` (String) Column name
+
+Optional:
+
+- `format` (String) Date format
+- `timezone` (String) Timezone
+
+
+
+<a id="nestedatt--output_option--google_drive_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.google_drive_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
 
 
 
