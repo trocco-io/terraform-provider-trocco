@@ -1375,3 +1375,44 @@ func TestAccJobDefinitionResourceMysqlToHubspot(t *testing.T) {
 		},
 	})
 }
+
+func TestAccJobDefinitionResourceGoogleDriveToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.google_drive_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/google_drive_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Google Drive to BigQuery Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from Google Drive to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "0"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "google_drive"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					resource.TestCheckResourceAttrSet(resourceName, "input_option.google_drive_input_option.google_drive_connection_id"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_drive_input_option.folder_id", "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_drive_input_option.file_match_pattern", ""),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_drive_input_option.is_skip_header_line", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.google_drive_input_option.stop_when_file_not_found", "false"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "google_drive_to_bigquery_test_table"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.location", "US"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}

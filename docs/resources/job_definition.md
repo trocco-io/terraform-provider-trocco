@@ -1511,6 +1511,7 @@ Optional:
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
 - `google_ads_input_option` (Attributes) Attributes about source Google Ads (see [below for nested schema](#nestedatt--input_option--google_ads_input_option))
 - `google_analytics4_input_option` (Attributes) Attributes about source Google Analytics 4 (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option))
+- `google_drive_input_option` (Attributes) Attributes about source Google Drive (see [below for nested schema](#nestedatt--input_option--google_drive_input_option))
 - `google_spreadsheets_input_option` (Attributes) Attributes about source Google Spreadsheets (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option))
 - `http_input_option` (Attributes) Attributes about source HTTP (see [below for nested schema](#nestedatt--input_option--http_input_option))
 - `hubspot_input_option` (Attributes) attributes of source HubSpot (see [below for nested schema](#nestedatt--input_option--hubspot_input_option))
@@ -2001,6 +2002,254 @@ Required:
 Optional:
 
 - `expression` (String)
+
+
+
+<a id="nestedatt--input_option--google_drive_input_option"></a>
+### Nested Schema for `input_option.google_drive_input_option`
+
+Required:
+
+- `folder_id` (String) Google Drive folder ID
+- `google_drive_connection_id` (Number) ID of Google Drive connection
+
+Optional:
+
+- `csv_parser` (Attributes) For files in CSV format, this parameter is required (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--csv_parser))
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--custom_variable_settings))
+- `decoder` (Attributes) (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--decoder))
+- `decompression_type` (String) Decompression type. Omit if the file is not compressed.
+- `excel_parser` (Attributes) For files in excel format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--excel_parser))
+- `file_match_pattern` (String) File name match pattern
+- `is_skip_header_line` (Boolean) Flag whether or not to skip the header line
+- `jsonl_parser` (Attributes) For files in JSONL format, this parameter is required (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--jsonl_parser))
+- `jsonpath_parser` (Attributes) For files in jsonpath format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--jsonpath_parser))
+- `ltsv_parser` (Attributes) For files in LTSV format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--ltsv_parser))
+- `parquet_parser` (Attributes) For files in parquet format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--parquet_parser))
+- `stop_when_file_not_found` (Boolean) Flag whether the transfer should continue if the file does not exist in the specified path
+- `xml_parser` (Attributes) For files in xml format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--xml_parser))
+
+<a id="nestedatt--input_option--google_drive_input_option--csv_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.csv_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--csv_parser--columns))
+
+Optional:
+
+- `allow_extra_columns` (Boolean) If true, ignore the column. If false, treat as invalid record.
+- `allow_optional_columns` (Boolean) If true, NULL-complete the missing columns. If false, treat as invalid record.
+- `charset` (String) Character set
+- `comment_line_marker` (String) Comment line marker. Skip if this character is at the beginning of a line
+- `default_date` (String) Default date
+- `default_time_zone` (String) Default time zone
+- `delimiter` (String) Delimiter
+- `escape` (String) Escape character
+- `max_quoted_size_limit` (Number) Maximum amount of data that can be enclosed in quotation marks.
+- `newline` (String) Newline character
+- `null_string` (String) Replacement source string to be converted to NULL
+- `null_string_enabled` (Boolean) Flag whether or not to set the string to be replaced by NULL
+- `quote` (String) Quote character
+- `quotes_in_quoted_fields` (String) Processing method for irregular quarts
+- `skip_header_lines` (Number) Number of header lines to skip
+- `stop_on_invalid_record` (Boolean) Flag whether or not to abort the transfer if an invalid record is found.
+- `trim_if_not_quoted` (Boolean) Flag whether or not to remove spaces from the value if it is not quoted
+
+<a id="nestedatt--input_option--google_drive_input_option--csv_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.csv_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `date` (String) Date
+- `format` (String) Format of the column
+
+
+
+<a id="nestedatt--input_option--google_drive_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.google_drive_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--google_drive_input_option--decoder"></a>
+### Nested Schema for `input_option.google_drive_input_option.decoder`
+
+Optional:
+
+- `match_name` (String) Relative path after decompression (regular expression). If not entered, all data in the compressed file will be transferred.
+
+
+<a id="nestedatt--input_option--google_drive_input_option--excel_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.excel_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--excel_parser--columns))
+- `sheet_name` (String) Sheet name
+
+Optional:
+
+- `default_time_zone` (String) Default time zone
+- `skip_header_lines` (Number) Number of header lines to skip
+
+<a id="nestedatt--input_option--google_drive_input_option--excel_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.excel_parser.columns`
+
+Required:
+
+- `formula_handling` (String) Formula handling
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+
+
+
+<a id="nestedatt--input_option--google_drive_input_option--jsonl_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.jsonl_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--jsonl_parser--columns))
+
+Optional:
+
+- `charset` (String) Character set
+- `default_time_zone` (String) Default time zone
+- `newline` (String) Newline character
+- `stop_on_invalid_record` (Boolean) Flag whether the transfer should stop if an invalid record is found
+
+<a id="nestedatt--input_option--google_drive_input_option--jsonl_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.jsonl_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column
+- `time_zone` (String) time zone
+
+
+
+<a id="nestedatt--input_option--google_drive_input_option--jsonpath_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.jsonpath_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--jsonpath_parser--columns))
+- `root` (String) JSONPath
+
+Optional:
+
+- `default_time_zone` (String) Default time zone
+
+<a id="nestedatt--input_option--google_drive_input_option--jsonpath_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.jsonpath_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+- `time_zone` (String) time zone
+
+
+
+<a id="nestedatt--input_option--google_drive_input_option--ltsv_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.ltsv_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--ltsv_parser--columns))
+
+Optional:
+
+- `charset` (String) Character set
+- `newline` (String) Newline character
+
+<a id="nestedatt--input_option--google_drive_input_option--ltsv_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.ltsv_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+
+
+
+<a id="nestedatt--input_option--google_drive_input_option--parquet_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.parquet_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--parquet_parser--columns))
+
+<a id="nestedatt--input_option--google_drive_input_option--parquet_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.parquet_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+
+
+
+<a id="nestedatt--input_option--google_drive_input_option--xml_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.xml_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--xml_parser--columns))
+- `root` (String) Root element
+
+<a id="nestedatt--input_option--google_drive_input_option--xml_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.xml_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `path` (String) XPath
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+- `timezone` (String) time zone
+
 
 
 
