@@ -162,6 +162,7 @@ type OutputOption struct {
 	MysqlOutputOption              *outputOptionEntities.MysqlOutputOption              `json:"mysql_output_option"`
 	HubspotOutputOption            *outputOptionEntities.HubspotOutputOption            `json:"hubspot_output_option"`
 	GoogleDriveOutputOption        *outputOptionEntities.GoogleDriveOutputOption        `json:"google_drive_output_option"`
+	GcsOutputOption                *outputOptionEntities.GcsOutputOption                `json:"gcs_output_option"`
 }
 
 type OutputOptionInput struct {
@@ -177,6 +178,7 @@ type OutputOptionInput struct {
 	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.MysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
 	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.HubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
 	GoogleDriveOutputOption        *parameter.NullableObject[outputOptionParameters.GoogleDriveOutputOptionInput]        `json:"google_drive_output_option,omitempty"`
+	GcsOutputOption                *parameter.NullableObject[outputOptionParameters.GcsOutputOptionInput]                `json:"gcs_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
@@ -192,6 +194,7 @@ type UpdateOutputOptionInput struct {
 	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.UpdateMysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
 	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateHubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
 	GoogleDriveOutputOption        *parameter.NullableObject[outputOptionParameters.UpdateGoogleDriveOutputOptionInput]        `json:"google_drive_output_option,omitempty"`
+	GcsOutputOption                *parameter.NullableObject[outputOptionParameters.UpdateGcsOutputOptionInput]                `json:"gcs_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {

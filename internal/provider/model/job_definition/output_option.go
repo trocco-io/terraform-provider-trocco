@@ -20,6 +20,7 @@ type OutputOption struct {
 	MysqlOutputOption              *outputOptionModel.MysqlOutputOption              `tfsdk:"mysql_output_option"`
 	HubspotOutputOption            *outputOptionModel.HubspotOutputOption            `tfsdk:"hubspot_output_option"`
 	GoogleDriveOutputOption        *outputOptionModel.GoogleDriveOutputOption        `tfsdk:"google_drive_output_option"`
+	GcsOutputOption                *outputOptionModel.GcsOutputOption                `tfsdk:"gcs_output_option"`
 }
 
 func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *OutputOption {
@@ -36,6 +37,7 @@ func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *Out
 		MysqlOutputOption:              outputOptionModel.NewMysqlOutputOption(ctx, outputOption.MysqlOutputOption),
 		HubspotOutputOption:            outputOptionModel.NewHubspotOutputOption(ctx, outputOption.HubspotOutputOption),
 		GoogleDriveOutputOption:        outputOptionModel.NewGoogleDriveOutputOption(ctx, outputOption.GoogleDriveOutputOption),
+		GcsOutputOption:                outputOptionModel.NewGcsOutputOption(ctx, outputOption.GcsOutputOption),
 	}
 }
 
@@ -53,6 +55,7 @@ func (o OutputOption) ToInput(ctx context.Context) client.OutputOptionInput {
 		MysqlOutputOption:              model.WrapObject(o.MysqlOutputOption.ToInput(ctx)),
 		HubspotOutputOption:            model.WrapObject(o.HubspotOutputOption.ToInput(ctx)),
 		GoogleDriveOutputOption:        model.WrapObject(o.GoogleDriveOutputOption.ToInput(ctx)),
+		GcsOutputOption:                model.WrapObject(o.GcsOutputOption.ToInput(ctx)),
 	}
 }
 
@@ -70,5 +73,6 @@ func (o OutputOption) ToUpdateInput(ctx context.Context) *client.UpdateOutputOpt
 		MysqlOutputOption:              model.WrapObject(o.MysqlOutputOption.ToUpdateInput(ctx)),
 		HubspotOutputOption:            model.WrapObject(o.HubspotOutputOption.ToUpdateInput(ctx)),
 		GoogleDriveOutputOption:        model.WrapObject(o.GoogleDriveOutputOption.ToUpdateInput(ctx)),
+		GcsOutputOption:                model.WrapObject(o.GcsOutputOption.ToUpdateInput(ctx)),
 	}
 }
