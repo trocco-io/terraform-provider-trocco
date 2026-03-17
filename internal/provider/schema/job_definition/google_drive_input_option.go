@@ -56,7 +56,6 @@ func GoogleDriveInputOptionSchema() schema.Attribute {
 					stringvalidator.OneOf("bzip2", "gzip", "targz", "zip"),
 				},
 			},
-			"parquet_parser":           parser.ParquetParserSchema(),
 			"jsonpath_parser":          parser.JsonpathParserSchema(),
 			"xml_parser":               parser.XmlParserSchema(),
 			"excel_parser":             parser.ExcelParserSchema(),

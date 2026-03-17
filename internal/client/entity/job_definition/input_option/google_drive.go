@@ -18,7 +18,6 @@ type GoogleDriveInputOption struct {
 	LtsvParser              *jobDefinitionEntities.LtsvParser     `json:"ltsv_parser"`
 	ExcelParser             *jobDefinitionEntities.ExcelParser    `json:"excel_parser"`
 	XmlParser               *jobDefinitionEntities.XmlParser      `json:"xml_parser"`
-	ParquetParser           *jobDefinitionEntities.ParquetParser  `json:"parquet_parser"`
 	CustomVariableSettings  *[]entity.CustomVariableSetting       `json:"custom_variable_settings"`
 	Decoder                 *jobDefinitionEntities.Decoder        `json:"decoder"`
 }

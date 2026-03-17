@@ -18,7 +18,6 @@ type GoogleDriveInputOptionInput struct {
 	LtsvParser              *jobDefinitionParameters.LtsvParserInput     `json:"ltsv_parser,omitempty"`
 	ExcelParser             *jobDefinitionParameters.ExcelParserInput    `json:"excel_parser,omitempty"`
 	XmlParser               *jobDefinitionParameters.XmlParserInput      `json:"xml_parser,omitempty"`
-	ParquetParser           *jobDefinitionParameters.ParquetParserInput  `json:"parquet_parser,omitempty"`
 	CustomVariableSettings  *[]parameter.CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
 	Decoder                 *jobDefinitionParameters.DecoderInput        `json:"decoder,omitempty"`
 }
@@ -36,7 +35,6 @@ type UpdateGoogleDriveInputOptionInput struct {
 	LtsvParser              *jobDefinitionParameters.LtsvParserInput     `json:"ltsv_parser,omitempty"`
 	ExcelParser             *jobDefinitionParameters.ExcelParserInput    `json:"excel_parser,omitempty"`
 	XmlParser               *jobDefinitionParameters.XmlParserInput      `json:"xml_parser,omitempty"`
-	ParquetParser           *jobDefinitionParameters.ParquetParserInput  `json:"parquet_parser,omitempty"`
 	CustomVariableSettings  *[]parameter.CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
 	Decoder                 *jobDefinitionParameters.DecoderInput        `json:"decoder,omitempty"`
 }

@@ -2025,7 +2025,6 @@ Optional:
 - `jsonl_parser` (Attributes) For files in JSONL format, this parameter is required (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--jsonl_parser))
 - `jsonpath_parser` (Attributes) For files in jsonpath format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--jsonpath_parser))
 - `ltsv_parser` (Attributes) For files in LTSV format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--ltsv_parser))
-- `parquet_parser` (Attributes) For files in parquet format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--parquet_parser))
 - `stop_when_file_not_found` (Boolean) Flag whether the transfer should continue if the file does not exist in the specified path
 - `xml_parser` (Attributes) For files in xml format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--xml_parser))
 
@@ -2195,27 +2194,6 @@ Optional:
 
 <a id="nestedatt--input_option--google_drive_input_option--ltsv_parser--columns"></a>
 ### Nested Schema for `input_option.google_drive_input_option.ltsv_parser.columns`
-
-Required:
-
-- `name` (String) Column name
-- `type` (String) Column type
-
-Optional:
-
-- `format` (String) Format of the column.
-
-
-
-<a id="nestedatt--input_option--google_drive_input_option--parquet_parser"></a>
-### Nested Schema for `input_option.google_drive_input_option.parquet_parser`
-
-Required:
-
-- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--parquet_parser--columns))
-
-<a id="nestedatt--input_option--google_drive_input_option--parquet_parser--columns"></a>
-### Nested Schema for `input_option.google_drive_input_option.parquet_parser.columns`
 
 Required:
 

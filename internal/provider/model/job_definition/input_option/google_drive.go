@@ -24,7 +24,6 @@ type GoogleDriveInputOption struct {
 	LtsvParser              *parser.LtsvParser     `tfsdk:"ltsv_parser"`
 	ExcelParser             *parser.ExcelParser    `tfsdk:"excel_parser"`
 	XmlParser               *parser.XmlParser      `tfsdk:"xml_parser"`
-	ParquetParser           *parser.ParquetParser  `tfsdk:"parquet_parser"`
 	CustomVariableSettings  types.List             `tfsdk:"custom_variable_settings"`
 	Decoder                 *Decoder               `tfsdk:"decoder"`
 }
@@ -47,7 +46,6 @@ func NewGoogleDriveInputOption(ctx context.Context, googleDriveInputOption *inpu
 		LtsvParser:              parser.NewLtsvParser(ctx, googleDriveInputOption.LtsvParser),
 		ExcelParser:             parser.NewExcelParser(ctx, googleDriveInputOption.ExcelParser),
 		XmlParser:               parser.NewXmlParser(ctx, googleDriveInputOption.XmlParser),
-		ParquetParser:           parser.NewParquetParser(ctx, googleDriveInputOption.ParquetParser),
 		Decoder:                 NewDecoder(googleDriveInputOption.Decoder),
 	}
 
@@ -80,7 +78,6 @@ func (googleDriveInputOption *GoogleDriveInputOption) ToInput(ctx context.Contex
 		LtsvParser:              googleDriveInputOption.LtsvParser.ToLtsvParserInput(ctx),
 		ExcelParser:             googleDriveInputOption.ExcelParser.ToExcelParserInput(ctx),
 		XmlParser:               googleDriveInputOption.XmlParser.ToXmlParserInput(ctx),
-		ParquetParser:           googleDriveInputOption.ParquetParser.ToParquetParserInput(ctx),
 		CustomVariableSettings:  model.ToCustomVariableSettingInputs(customVarSettings),
 		Decoder:                 googleDriveInputOption.Decoder.ToDecoderInput(),
 	}
@@ -106,7 +103,6 @@ func (googleDriveInputOption *GoogleDriveInputOption) ToUpdateInput(ctx context.
 		LtsvParser:              googleDriveInputOption.LtsvParser.ToLtsvParserInput(ctx),
 		ExcelParser:             googleDriveInputOption.ExcelParser.ToExcelParserInput(ctx),
 		XmlParser:               googleDriveInputOption.XmlParser.ToXmlParserInput(ctx),
-		ParquetParser:           googleDriveInputOption.ParquetParser.ToParquetParserInput(ctx),
 		CustomVariableSettings:  model.ToCustomVariableSettingInputs(customVarSettings),
 		Decoder:                 googleDriveInputOption.Decoder.ToDecoderInput(),
 	}
