@@ -104,6 +104,7 @@ type InputOption struct {
 	DatabricksInputOption         *inputOptionEntities.DatabricksInputOption         `json:"databricks_input_option"`
 	MongoDBInputOption            *inputOptionEntities.MongoDBInputOption            `json:"mongodb_input_option"`
 	GoogleAdsInputOption          *inputOptionEntities.GoogleAdsInputOption          `json:"google_ads_input_option"`
+	RedshiftInputOption           *inputOptionEntities.RedshiftInputOption           `json:"redshift_input_option"`
 }
 
 type InputOptionInput struct {
@@ -124,6 +125,7 @@ type InputOptionInput struct {
 	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.DatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
 	MongoDBInputOption            *parameter.NullableObject[inputOptionParameters.MongoDBInputOptionInput]            `json:"mongodb_input_option,omitempty"`
 	GoogleAdsInputOption          *parameter.NullableObject[inputOptionParameters.GoogleAdsInputOptionInput]          `json:"google_ads_input_option,omitempty"`
+	RedshiftInputOption           *parameter.NullableObject[inputOptionParameters.RedshiftInputOptionInput]           `json:"redshift_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
@@ -144,6 +146,7 @@ type UpdateInputOptionInput struct {
 	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.UpdateDatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
 	MongoDBInputOption            *parameter.NullableObject[inputOptionParameters.UpdateMongoDBInputOptionInput]            `json:"mongodb_input_option,omitempty"`
 	GoogleAdsInputOption          *parameter.NullableObject[inputOptionParameters.UpdateGoogleAdsInputOptionInput]          `json:"google_ads_input_option,omitempty"`
+	RedshiftInputOption           *parameter.NullableObject[inputOptionParameters.UpdateRedshiftInputOptionInput]           `json:"redshift_input_option,omitempty"`
 }
 
 type OutputOption struct {

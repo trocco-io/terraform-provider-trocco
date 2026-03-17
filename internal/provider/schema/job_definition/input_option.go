@@ -28,6 +28,7 @@ func InputOptionSchema() schema.Attribute {
 			"databricks_input_option":          DatabricksInputOptionSchema(),
 			"mongodb_input_option":             MongodbInputOptionSchema(),
 			"google_ads_input_option":          GoogleAdsInputOptionSchema(),
+			"redshift_input_option":            RedshiftInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planModifier.InputOptionPlanModifier{},
