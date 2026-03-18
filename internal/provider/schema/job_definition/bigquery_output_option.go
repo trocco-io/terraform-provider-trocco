@@ -15,6 +15,57 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+var bigqueryColumnTypes = []string{
+	"BOOLEAN", "INTEGER", "FLOAT", "STRING", "TIMESTAMP", "DATETIME", "DATE", "RECORD", "NUMERIC", "JSON",
+}
+
+func bigqueryOutputOptionColumnOptionAttributes(depth int) map[string]schema.Attribute {
+	attrs := map[string]schema.Attribute{
+		"name": schema.StringAttribute{
+			Required:            true,
+			MarkdownDescription: "Column name",
+		},
+		"type": schema.StringAttribute{
+			Required: true,
+			Validators: []validator.String{
+				stringvalidator.OneOf(bigqueryColumnTypes...),
+			},
+			MarkdownDescription: "Column type",
+		},
+		"mode": schema.StringAttribute{
+			Required: true,
+			Validators: []validator.String{
+				stringvalidator.OneOf("NULLABLE", "REQUIRED", "REPEATED"),
+			},
+			MarkdownDescription: "Mode",
+		},
+		"timestamp_format": schema.StringAttribute{
+			Optional:            true,
+			MarkdownDescription: "Timestamp format",
+		},
+		"timezone": schema.StringAttribute{
+			Optional:            true,
+			MarkdownDescription: "Time zone",
+		},
+		"description": schema.StringAttribute{
+			Optional:            true,
+			MarkdownDescription: "Description",
+		},
+	}
+
+	if depth > 0 {
+		attrs["fields"] = schema.ListNestedAttribute{
+			Optional:            true,
+			MarkdownDescription: "Nested fields for RECORD type columns",
+			NestedObject: schema.NestedAttributeObject{
+				Attributes: bigqueryOutputOptionColumnOptionAttributes(depth - 1),
+			},
+		}
+	}
+
+	return attrs
+}
+
 func BigqueryOutputOptionSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Optional:            true,
@@ -137,52 +188,7 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 				Optional: true,
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"name": schema.StringAttribute{
-							Required:            true,
-							MarkdownDescription: "Column name",
-						},
-						"type": schema.StringAttribute{
-							Required: true,
-							Validators: []validator.String{
-								stringvalidator.OneOf(
-									"BOOLEAN",
-									"INTEGER",
-									"FLOAT",
-									"STRING",
-									"TIMESTAMP",
-									"DATETIME",
-									"DATE",
-									"RECORD",
-									"NUMERIC",
-								),
-							},
-							MarkdownDescription: "Column type",
-						},
-						"mode": schema.StringAttribute{
-							Required: true,
-							Validators: []validator.String{
-								stringvalidator.OneOf(
-									"NULLABLE",
-									"REQUIRED",
-									"REPEATED",
-								),
-							},
-							MarkdownDescription: "Mode",
-						},
-						"timestamp_format": schema.StringAttribute{
-							Optional:            true,
-							MarkdownDescription: "Timestamp format",
-						},
-						"timezone": schema.StringAttribute{
-							Optional:            true,
-							MarkdownDescription: "Time zone",
-						},
-						"description": schema.StringAttribute{
-							Optional:            true,
-							MarkdownDescription: "Description",
-						},
-					},
+					Attributes: bigqueryOutputOptionColumnOptionAttributes(2),
 				},
 				PlanModifiers: []planmodifier.List{
 					planModifier.EmptyListForNull(),
