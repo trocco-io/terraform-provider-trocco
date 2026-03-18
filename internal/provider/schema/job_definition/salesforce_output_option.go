@@ -1,9 +1,11 @@
 package job_definition
 
 import (
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -49,6 +51,15 @@ func SalesforceOutputOptionSchema() schema.Attribute {
 				Computed:            true,
 				Default:             booldefault.StaticBool(true),
 				MarkdownDescription: "Status of records that could not be sent",
+			},
+			"batch_size": schema.Int64Attribute{
+				Optional:            true,
+				Computed:            true,
+				Default:             int64default.StaticInt64(200),
+				MarkdownDescription: "Batch size for Salesforce API calls. Must be between 1 and 200.",
+				Validators: []validator.Int64{
+					int64validator.Between(1, 200),
+				},
 			},
 			"salesforce_connection_id": schema.Int64Attribute{
 				Required:            true,
