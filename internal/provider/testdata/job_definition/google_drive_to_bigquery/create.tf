@@ -78,6 +78,25 @@ resource "trocco_job_definition" "google_drive_to_bigquery" {
     }
   }
 
+  filter_columns = [
+    {
+      name = "id"
+      src  = "id"
+      type = "long"
+    },
+    {
+      name = "name"
+      src  = "name"
+      type = "string"
+    },
+    {
+      name   = "created_at"
+      src    = "created_at"
+      type   = "timestamp"
+      format = "%Y-%m-%d %H:%M:%S.%N %z"
+    },
+  ]
+
   output_option_type = "bigquery"
   output_option = {
     bigquery_output_option = {
