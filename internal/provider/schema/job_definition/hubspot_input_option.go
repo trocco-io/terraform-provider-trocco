@@ -24,7 +24,7 @@ func HubspotInputOptionSchema() schema.Attribute {
 				Required:            true,
 				MarkdownDescription: "type of data to retrieve from HubSpot",
 				Validators: []validator.String{
-					stringvalidator.OneOf("object", "association", "engagement", "engagement_association", "email_event", "pipeline", "pipeline_stage", "owner"),
+					stringvalidator.OneOf("object", "association", "engagement", "engagement_association", "email_event", "pipeline", "pipeline_stage", "owner", "call"),
 				},
 			},
 			"from_object_type": schema.StringAttribute{
