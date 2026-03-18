@@ -38,6 +38,10 @@ func SalesforceOutputOptionSchema() schema.Attribute {
 				Optional:            true,
 				MarkdownDescription: "Upsert key. If action_type is 'upsert', this field can be set.",
 			},
+			"update_key": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Update key. If action_type is 'update', this field can be set.",
+			},
 			"ignore_nulls": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
