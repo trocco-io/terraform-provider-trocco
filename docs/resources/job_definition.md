@@ -3701,6 +3701,7 @@ Optional:
 
 - `action_type` (String) Transfer mode
 - `api_version` (String) Api version
+- `batch_size` (Number) Batch size for Salesforce API calls. Must be between 1 and 200.
 - `ignore_nulls` (Boolean) Update processing when NULL is included. Even if true, the record update process itself is performed.
 - `throw_if_failed` (Boolean) Status of records that could not be sent
 - `upsert_key` (String) Upsert key. If action_type is 'upsert', this field can be set.
