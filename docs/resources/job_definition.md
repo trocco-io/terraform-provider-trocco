@@ -3286,8 +3286,42 @@ Required:
 Optional:
 
 - `description` (String) Description
+- `fields` (Attributes List) Nested fields for RECORD type columns (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields))
 - `timestamp_format` (String) Timestamp format
 - `timezone` (String) Time zone
+
+<a id="nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields"></a>
+### Nested Schema for `output_option.bigquery_output_option.bigquery_output_option_column_options.fields`
+
+Required:
+
+- `mode` (String) Mode
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `description` (String) Description
+- `fields` (Attributes List) Nested fields for RECORD type columns (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields--fields))
+- `timestamp_format` (String) Timestamp format
+- `timezone` (String) Time zone
+
+<a id="nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields--fields"></a>
+### Nested Schema for `output_option.bigquery_output_option.bigquery_output_option_column_options.fields.fields`
+
+Required:
+
+- `mode` (String) Mode
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `description` (String) Description
+- `timestamp_format` (String) Timestamp format
+- `timezone` (String) Time zone
+
+
 
 
 <a id="nestedatt--output_option--bigquery_output_option--custom_variable_settings"></a>
