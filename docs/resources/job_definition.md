@@ -3703,6 +3703,7 @@ Optional:
 - `api_version` (String) Api version
 - `ignore_nulls` (Boolean) Update processing when NULL is included. Even if true, the record update process itself is performed.
 - `throw_if_failed` (Boolean) Status of records that could not be sent
+- `update_key` (String) Update key. If action_type is 'update', this field can be set.
 - `upsert_key` (String) Upsert key. If action_type is 'upsert', this field can be set.
 
 
