@@ -1,7 +1,6 @@
 package client
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -273,68 +272,4 @@ func (c *TroccoClient) DeleteConnection(connectionType string, id int64) error {
 		nil,
 		nil,
 	)
-}
-
-// MarshalJSON implements custom JSON marshalling for CreateConnectionInput
-// to convert workload_identity_federation_config from string to object
-func (input *CreateConnectionInput) MarshalJSON() ([]byte, error) {
-	type Alias CreateConnectionInput
-
-	// Create a copy to avoid infinite recursion
-	aux := (*Alias)(input)
-
-	// If workload_identity_federation_config is a string, keep it as-is
-	// The standard JSON marshaller will handle it
-	data, err := json.Marshal(aux)
-	if err != nil {
-		return nil, err
-	}
-
-	// Parse and re-marshal to ensure string JSON becomes object
-	var result map[string]interface{}
-	if err := json.Unmarshal(data, &result); err != nil {
-		return nil, err
-	}
-
-	// Convert workload_identity_federation_config string to object if needed
-	if wifConfigStr, ok := result["workload_identity_federation_config"].(string); ok && wifConfigStr != "" {
-		var wifConfig interface{}
-		if err := json.Unmarshal([]byte(wifConfigStr), &wifConfig); err == nil {
-			result["workload_identity_federation_config"] = wifConfig
-		}
-	}
-
-	return json.Marshal(result)
-}
-
-// MarshalJSON implements custom JSON marshalling for UpdateConnectionInput
-// to convert workload_identity_federation_config from string to object
-func (input *UpdateConnectionInput) MarshalJSON() ([]byte, error) {
-	type Alias UpdateConnectionInput
-
-	// Create a copy to avoid infinite recursion
-	aux := (*Alias)(input)
-
-	// If workload_identity_federation_config is a string, keep it as-is
-	// The standard JSON marshaller will handle it
-	data, err := json.Marshal(aux)
-	if err != nil {
-		return nil, err
-	}
-
-	// Parse and re-marshal to ensure string JSON becomes object
-	var result map[string]interface{}
-	if err := json.Unmarshal(data, &result); err != nil {
-		return nil, err
-	}
-
-	// Convert workload_identity_federation_config string to object if needed
-	if wifConfigStr, ok := result["workload_identity_federation_config"].(string); ok && wifConfigStr != "" {
-		var wifConfig interface{}
-		if err := json.Unmarshal([]byte(wifConfigStr), &wifConfig); err == nil {
-			result["workload_identity_federation_config"] = wifConfig
-		}
-	}
-
-	return json.Marshal(result)
 }

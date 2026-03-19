@@ -1537,14 +1537,12 @@ func validateBigQueryConnection(plan *connectionResourceModel, resp *resource.Va
 				"project_id is required when is_workload_identity_federation is true.",
 			)
 		}
-	} else {
+	} else if !isServiceAccount {
 		// Service Account authentication
-		if !isServiceAccount {
-			resp.Diagnostics.AddError(
-				"service_account_json_key",
-				"service_account_json_key is required when is_workload_identity_federation is false or not specified.",
-			)
-		}
+		resp.Diagnostics.AddError(
+			"service_account_json_key",
+			"service_account_json_key is required when is_workload_identity_federation is false or not specified.",
+		)
 	}
 }
 
@@ -1613,25 +1611,6 @@ func validateRequiredInt(field types.Int64, fieldName, connectionType string, re
 			fmt.Sprintf("%s is required for %s connection.", fieldName, connectionType),
 		)
 	}
-}
-
-func convertWifConfigToString(config interface{}) *string {
-	if config == nil {
-		return nil
-	}
-
-	// If it's already a string, return it
-	if s, ok := config.(string); ok {
-		return &s
-	}
-
-	// Otherwise, try to marshal it as JSON
-	data, err := json.Marshal(config)
-	if err != nil {
-		return nil
-	}
-	result := string(data)
-	return &result
 }
 
 var readPreferenceTagObjectType = types.ObjectType{
