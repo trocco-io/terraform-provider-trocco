@@ -30,6 +30,29 @@ resource "trocco_connection" "bigquery" {
   }
   JSON
 }
+
+
+resource "trocco_connection" "bigquery_wif" {
+  connection_type   = "bigquery"
+  name              = "BigQuery with WIF"
+  description       = "BigQuery connection using Workload Identity Federation authentication"
+  resource_group_id = 2
+
+  # WIF authentication configuration
+  project_id                      = "example"
+  is_workload_identity_federation = true
+  workload_identity_federation_config = jsonencode({
+    type                              = "external_account"
+    audience                          = "//iam.googleapis.com/projects/123456789/locations/global/workloadIdentityPools/aws-pool/providers/aws-provider"
+    service_account_impersonation_url = "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/sa-bigquery@my-gcp-project.iam.gserviceaccount.com:generateAccessToken"
+    subject_token_type                = "urn:ietf:params:aws:token-type:aws4_request"
+    token_url                         = "https://sts.googleapis.com/v1/token"
+    credential_source = {
+      environment_id                 = "aws1"
+      regional_cred_verification_url = "https://sts.ap-northeast-1.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15"
+    }
+  })
+}
 ```
 
 ### Snowflake
@@ -339,6 +362,7 @@ resource "trocco_connection" "databricks_oauth2" {
 - `gateway` (Attributes) MySQL, PostgreSQL, MongoDB: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
 - `host` (String) Snowflake, PostgreSQL, MongoDB: The host of a (Snowflake, PostgreSQL, MongoDB) account.
 - `http_path` (String) Databricks: The HTTP Path for the Databricks connection.
+- `is_workload_identity_federation` (Boolean) BigQuery: Whether the connection uses Workload Identity Federation authentication. Set to `true` for WIF, `false` for Service Account authentication.
 - `login_method` (String) Kintone: Login Method
 - `oauth2_client_id` (String) Databricks: The OAuth2 Client ID for the Databricks connection.
 - `oauth2_client_secret` (String, Sensitive) Databricks: The OAuth2 Client Secret for the Databricks connection.
@@ -366,6 +390,7 @@ resource "trocco_connection" "databricks_oauth2" {
 - `user_name` (String) Snowflake, PostgreSQL, MongoDB: The name of a (Snowflake, PostgreSQL, MongoDB) user.
 - `username` (String) Kintone: The name of a user.
 - `windows_server` (Boolean) SFTP: Whether the server is a Windows server. Default is false.
+- `workload_identity_federation_config` (String) BigQuery: The Workload Identity Federation configuration as a JSON string. Required when `is_workload_identity_federation` is true.
 
 ### Read-Only
 

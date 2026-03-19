@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -41,8 +42,10 @@ type connectionResourceModel struct {
 	ResourceGroupID types.Int64  `tfsdk:"resource_group_id"`
 
 	// BigQuery Fields
-	ProjectID             types.String `tfsdk:"project_id"`
-	ServiceAccountJSONKey types.String `tfsdk:"service_account_json_key"`
+	ProjectID                        types.String `tfsdk:"project_id"`
+	ServiceAccountJSONKey            types.String `tfsdk:"service_account_json_key"`
+	IsWorkloadIdentityFederation     types.Bool   `tfsdk:"is_workload_identity_federation"`
+	WorkloadIdentityFederationConfig types.String `tfsdk:"workload_identity_federation_config"`
 
 	// Snowflake Fields
 	Host       types.String `tfsdk:"host"`
@@ -113,8 +116,10 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		ResourceGroupID: model.NewNullableInt64(m.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             m.ProjectID.ValueStringPointer(),
-		ServiceAccountJSONKey: m.ServiceAccountJSONKey.ValueStringPointer(),
+		ProjectID:                        m.ProjectID.ValueStringPointer(),
+		ServiceAccountJSONKey:            m.ServiceAccountJSONKey.ValueStringPointer(),
+		IsWorkloadIdentityFederation:     m.IsWorkloadIdentityFederation.ValueBoolPointer(),
+		WorkloadIdentityFederationConfig: m.WorkloadIdentityFederationConfig.ValueStringPointer(),
 
 		// Snowflake Fields
 		Host:       m.Host.ValueStringPointer(),
@@ -227,8 +232,10 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		ResourceGroupID: model.NewNullableInt64(m.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             m.ProjectID.ValueStringPointer(),
-		ServiceAccountJSONKey: m.ServiceAccountJSONKey.ValueStringPointer(),
+		ProjectID:                        m.ProjectID.ValueStringPointer(),
+		ServiceAccountJSONKey:            m.ServiceAccountJSONKey.ValueStringPointer(),
+		IsWorkloadIdentityFederation:     m.IsWorkloadIdentityFederation.ValueBoolPointer(),
+		WorkloadIdentityFederationConfig: m.WorkloadIdentityFederationConfig.ValueStringPointer(),
 
 		// Snowflake Fields
 		Host:       m.Host.ValueStringPointer(),
@@ -457,6 +464,18 @@ func (r *connectionResource) Schema(
 				MarkdownDescription: "BigQuery, Google Sheets, Google Analytics4: A GCP service account key.",
 				Optional:            true,
 				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"is_workload_identity_federation": schema.BoolAttribute{
+				MarkdownDescription: "BigQuery: Whether the connection uses Workload Identity Federation authentication. Set to `true` for WIF, `false` for Service Account authentication.",
+				Optional:            true,
+			},
+			"workload_identity_federation_config": schema.StringAttribute{
+				MarkdownDescription: "BigQuery: The Workload Identity Federation configuration as a JSON string. Required when `is_workload_identity_federation` is true.",
+				Optional:            true,
+				Sensitive:           false,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
@@ -956,8 +975,10 @@ func (r *connectionResource) Create(
 		ResourceGroupID: types.Int64PointerValue(conn.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             types.StringPointerValue(conn.ProjectID),
-		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
+		ProjectID:                        types.StringPointerValue(conn.ProjectID),
+		ServiceAccountJSONKey:            plan.ServiceAccountJSONKey,
+		IsWorkloadIdentityFederation:     plan.IsWorkloadIdentityFederation,
+		WorkloadIdentityFederationConfig: plan.WorkloadIdentityFederationConfig,
 
 		// Snowflake Fields
 		Host:       types.StringPointerValue(conn.Host),
@@ -1079,8 +1100,10 @@ func (r *connectionResource) Update(
 		ResourceGroupID: types.Int64PointerValue(connection.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             types.StringPointerValue(connection.ProjectID),
-		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
+		ProjectID:                        types.StringPointerValue(connection.ProjectID),
+		ServiceAccountJSONKey:            plan.ServiceAccountJSONKey,
+		IsWorkloadIdentityFederation:     plan.IsWorkloadIdentityFederation,
+		WorkloadIdentityFederationConfig: plan.WorkloadIdentityFederationConfig,
 
 		// Snowflake Fields
 		Host:       types.StringPointerValue(connection.Host),
@@ -1177,8 +1200,10 @@ func (r *connectionResource) Read(
 		ResourceGroupID: types.Int64PointerValue(conn.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             types.StringPointerValue(conn.ProjectID),
-		ServiceAccountJSONKey: state.ServiceAccountJSONKey,
+		ProjectID:                        types.StringPointerValue(conn.ProjectID),
+		ServiceAccountJSONKey:            state.ServiceAccountJSONKey,
+		IsWorkloadIdentityFederation:     state.IsWorkloadIdentityFederation,
+		WorkloadIdentityFederationConfig: state.WorkloadIdentityFederationConfig,
 
 		// Snowflake Fields
 		Host:       types.StringPointerValue(conn.Host),
@@ -1311,8 +1336,7 @@ func (r *connectionResource) ValidateConfig(
 
 	switch plan.ConnectionType.ValueString() {
 	case "bigquery":
-		validateRequiredString(plan.ServiceAccountJSONKey, "service_account_json_key", "BigQuery", resp)
-		validateRequiredString(plan.ProjectID, "project_id", "BigQuery", resp)
+		validateBigQueryConnection(plan, resp)
 	case "snowflake":
 		validateRequiredString(plan.Host, "host", "Snowflake", resp)
 		validateRequiredString(plan.UserName, "user_name", "Snowflake", resp)
@@ -1482,6 +1506,75 @@ func (r *connectionResource) ValidateConfig(
 	}
 }
 
+func validateBigQueryConnection(plan *connectionResourceModel, resp *resource.ValidateConfigResponse) {
+	isWif := !plan.IsWorkloadIdentityFederation.IsNull() && plan.IsWorkloadIdentityFederation.ValueBool()
+	isServiceAccount := !plan.ServiceAccountJSONKey.IsNull()
+	isWifConfig := !plan.WorkloadIdentityFederationConfig.IsNull()
+
+	// Check exclusive parameters
+	if isServiceAccount && isWifConfig {
+		resp.Diagnostics.AddError(
+			"bigquery_connection",
+			"service_account_json_key and workload_identity_federation_config cannot be used together for BigQuery connection.",
+		)
+	}
+
+	// Validate based on authentication method
+	if isWif {
+		// WIF authentication
+		if !isWifConfig {
+			resp.Diagnostics.AddError(
+				"workload_identity_federation_config",
+				"workload_identity_federation_config is required when is_workload_identity_federation is true.",
+			)
+		} else {
+			// Validate WIF config JSON and audience key
+			validateWifConfig(plan.WorkloadIdentityFederationConfig, resp)
+		}
+		if plan.ProjectID.IsNull() {
+			resp.Diagnostics.AddError(
+				"project_id",
+				"project_id is required when is_workload_identity_federation is true.",
+			)
+		}
+	} else {
+		// Service Account authentication
+		if !isServiceAccount {
+			resp.Diagnostics.AddError(
+				"service_account_json_key",
+				"service_account_json_key is required when is_workload_identity_federation is false or not specified.",
+			)
+		}
+	}
+}
+
+func validateWifConfig(configStr types.String, resp *resource.ValidateConfigResponse) {
+	if configStr.IsNull() || configStr.IsUnknown() {
+		return
+	}
+
+	jsonStr := configStr.ValueString()
+
+	// Parse JSON
+	var config map[string]interface{}
+	decoder := json.NewDecoder(strings.NewReader(jsonStr))
+	if err := decoder.Decode(&config); err != nil {
+		resp.Diagnostics.AddError(
+			"workload_identity_federation_config",
+			fmt.Sprintf("workload_identity_federation_config must be valid JSON: %s", err.Error()),
+		)
+		return
+	}
+
+	// Check for required audience key
+	if _, ok := config["audience"]; !ok {
+		resp.Diagnostics.AddError(
+			"workload_identity_federation_config",
+			"audience key is required in workload_identity_federation_config.",
+		)
+	}
+}
+
 func validateStringAgainstPatterns(field types.String, fieldName, connectionType string, resp *resource.ValidateConfigResponse, patterns ...string) {
 	if field.IsNull() {
 		return
@@ -1520,6 +1613,25 @@ func validateRequiredInt(field types.Int64, fieldName, connectionType string, re
 			fmt.Sprintf("%s is required for %s connection.", fieldName, connectionType),
 		)
 	}
+}
+
+func convertWifConfigToString(config interface{}) *string {
+	if config == nil {
+		return nil
+	}
+
+	// If it's already a string, return it
+	if s, ok := config.(string); ok {
+		return &s
+	}
+
+	// Otherwise, try to marshal it as JSON
+	data, err := json.Marshal(config)
+	if err != nil {
+		return nil
+	}
+	result := string(data)
+	return &result
 }
 
 var readPreferenceTagObjectType = types.ObjectType{
