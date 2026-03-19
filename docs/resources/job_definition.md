@@ -1518,6 +1518,7 @@ Optional:
 - `mongodb_input_option` (Attributes) Attributes of source MongoDB (see [below for nested schema](#nestedatt--input_option--mongodb_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
 - `postgresql_input_option` (Attributes) Attributes of source postgresql (see [below for nested schema](#nestedatt--input_option--postgresql_input_option))
+- `redshift_input_option` (Attributes) Attributes of source redshift (see [below for nested schema](#nestedatt--input_option--redshift_input_option))
 - `s3_input_option` (Attributes) Attributes about source S3 (see [below for nested schema](#nestedatt--input_option--s3_input_option))
 - `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
 - `sftp_input_option` (Attributes) Attributes about source SFTP (see [below for nested schema](#nestedatt--input_option--sftp_input_option))
@@ -2597,6 +2598,42 @@ Required:
 
 - `column_name` (String) Column name
 - `column_value_type` (String) Column value type
+
+
+
+<a id="nestedatt--input_option--redshift_input_option"></a>
+### Nested Schema for `input_option.redshift_input_option`
+
+Required:
+
+- `database` (String) Database name
+- `query` (String) SQL query to fetch data
+- `redshift_connection_id` (Number) ID of Redshift connection
+
+Optional:
+
+- `connect_timeout` (Number) Connection timeout (sec)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--redshift_input_option--custom_variable_settings))
+- `fetch_rows` (Number) Number of records processed by the cursor at one time
+- `schema` (String) Schema name
+- `socket_timeout` (Number) Socket timeout (sec)
+
+<a id="nestedatt--input_option--redshift_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.redshift_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
 
 
 

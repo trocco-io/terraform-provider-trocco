@@ -1506,3 +1506,49 @@ func TestAccJobDefinitionResourceMysqlToGcsJSONL(t *testing.T) {
 		},
 	})
 }
+
+func TestAccJobDefinitionResourceRedshiftToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.redshift_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/redshift_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Redshift to BigQuery Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from Redshift to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "redshift"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.redshift_input_option.database", "analytics"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.redshift_input_option.query", "SELECT * FROM test_table WHERE status = 'active'"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.redshift_input_option.schema", "public"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.redshift_input_option.fetch_rows", "1000"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.redshift_input_option.connect_timeout", "30"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.redshift_input_option.socket_timeout", "60"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.name", "created_at"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.type", "timestamp"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "redshift_test_table"),
+				),
+			},
+			// ImportState testing
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
