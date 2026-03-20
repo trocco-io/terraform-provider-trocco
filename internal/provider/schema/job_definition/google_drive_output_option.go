@@ -44,8 +44,7 @@ func GoogleDriveOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Output file name",
 			},
 			"formatter_type": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				Required: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("csv"),
 				},

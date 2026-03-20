@@ -3658,6 +3658,7 @@ Optional:
 Required:
 
 - `file_name` (String) Output file name
+- `formatter_type` (String) Formatter type
 - `google_drive_connection_id` (Number) ID of Google Drive connection
 - `main_folder_id` (String) Google Drive folder ID
 
@@ -3666,7 +3667,6 @@ Optional:
 - `child_folder_name` (String) Child folder name
 - `csv_formatter` (Attributes) CSV formatter settings (see [below for nested schema](#nestedatt--output_option--google_drive_output_option--csv_formatter))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--google_drive_output_option--custom_variable_settings))
-- `formatter_type` (String) Formatter type
 
 <a id="nestedatt--output_option--google_drive_output_option--csv_formatter"></a>
 ### Nested Schema for `output_option.google_drive_output_option.csv_formatter`

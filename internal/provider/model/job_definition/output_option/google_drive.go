@@ -41,9 +41,6 @@ func NewGoogleDriveOutputOption(ctx context.Context, googleDriveOutputOption *ou
 	if googleDriveOutputOption.Formatter != nil {
 		result.FormatterType = types.StringValue(googleDriveOutputOption.Formatter.Type)
 		result.CsvFormatter = newCsvFormatter(ctx, googleDriveOutputOption.Formatter.CsvFormatter)
-	} else {
-		result.FormatterType = types.StringNull()
-		result.CsvFormatter = nil
 	}
 
 	return result
