@@ -23,6 +23,7 @@ func OutputOptionSchema() schema.Attribute {
 			"mysql_output_option":               MysqlOutputOptionSchema(),
 			"hubspot_output_option":             HubspotOutputOptionSchema(),
 			"gcs_output_option":                 GcsOutputOptionSchema(),
+			"redshift_output_option":            RedshiftOutputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planModifier.OutputOptionPlanModifier{},
