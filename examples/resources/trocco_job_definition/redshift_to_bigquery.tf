@@ -9,12 +9,12 @@ resource "trocco_job_definition" "redshift_to_bigquery_example" {
   input_option = {
     redshift_input_option = {
       redshift_connection_id = trocco_connection.test_redshift.id
-      database                    = "analytics"
-      query                       = "SELECT * FROM test_table WHERE status = 'active'"
-      schema                      = "public"
-      fetch_rows                  = 1000
-      connect_timeout             = 30
-      socket_timeout              = 60
+      database               = "analytics"
+      query                  = "SELECT * FROM test_table WHERE status = 'active'"
+      schema                 = "public"
+      fetch_rows             = 1000
+      connect_timeout        = 30
+      socket_timeout         = 60
     }
   }
 

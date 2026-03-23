@@ -3277,6 +3277,7 @@ Optional:
 - `kintone_output_option` (Attributes) Attributes of destination Kintone settings (see [below for nested schema](#nestedatt--output_option--kintone_output_option))
 - `mysql_output_option` (Attributes) Attributes of destination MySQL settings (see [below for nested schema](#nestedatt--output_option--mysql_output_option))
 - `postgresql_output_option` (Attributes) Attributes of destination PostgreSQL settings (see [below for nested schema](#nestedatt--output_option--postgresql_output_option))
+- `redshift_output_option` (Attributes) Attributes of destination Redshift settings (see [below for nested schema](#nestedatt--output_option--redshift_output_option))
 - `s3_output_option` (Attributes) Attributes of destination Amazon S3 settings (see [below for nested schema](#nestedatt--output_option--s3_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `sftp_output_option` (Attributes) attributes of destination SFTP settings (see [below for nested schema](#nestedatt--output_option--sftp_output_option))
@@ -3640,6 +3641,70 @@ Optional:
 - `merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
 - `retry_limit` (Number) Maximum number of retries. Default is 12.
 - `retry_wait` (Number) Initial wait time in milliseconds between retries. Default is 1000.
+
+
+<a id="nestedatt--output_option--redshift_output_option"></a>
+### Nested Schema for `output_option.redshift_output_option`
+
+Required:
+
+- `database` (String) Database name
+- `redshift_connection_id` (Number) ID of Redshift connection
+- `s3_bucket` (String) S3 bucket for temporary data
+- `s3_key_prefix` (String) S3 key prefix for temporary data
+- `schema` (String) Schema name
+- `table` (String) Table name
+
+Optional:
+
+- `after_load` (String) SQL statement to execute after data transfer
+- `batch_size` (Number) Batch size in KB. Default is 16384.
+- `before_load` (String) SQL statement to execute before data transfer
+- `copy_iam_role_name` (String) IAM role name for COPY command
+- `create_table_constraint` (String) Constraint added to CREATE TABLE statement
+- `create_table_option` (String) Option added to CREATE TABLE statement
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--redshift_output_option--custom_variable_settings))
+- `default_time_zone` (String) Default time zone. Default is UTC.
+- `delete_s3_temp_file` (Boolean) Whether to delete temporary S3 files after transfer. Default is true.
+- `max_retry_wait` (Number) Maximum retry wait time in milliseconds. Default is 1800000.
+- `mode` (String) Transfer mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`
+- `redshift_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--redshift_output_option--redshift_output_option_column_options))
+- `redshift_output_option_merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
+- `retry_limit` (Number) Maximum number of retries. Default is 12.
+- `retry_wait` (Number) Retry wait time in milliseconds. Default is 1000.
+
+<a id="nestedatt--output_option--redshift_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.redshift_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--output_option--redshift_output_option--redshift_output_option_column_options"></a>
+### Nested Schema for `output_option.redshift_output_option.redshift_output_option_column_options`
+
+Required:
+
+- `name` (String) Column name
+
+Optional:
+
+- `timestamp_format` (String) Timestamp format (required when type is TIMESTAMP, TIME, or DATE and value_type is string or nstring)
+- `timezone` (String) Timezone (applicable when type is TIMESTAMP)
+- `type` (String) Column type. One of `BIGINT`, `VARCHAR`, `BOOLEAN`, `DOUBLE PRECISION`, `CLOB`, `TIMESTAMP`, `TIME`, `DATE`
+- `value_type` (String) Value type
+
 
 
 <a id="nestedatt--output_option--s3_output_option"></a>

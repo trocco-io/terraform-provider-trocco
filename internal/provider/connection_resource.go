@@ -184,7 +184,8 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 	}
 
 	// SSL Fields
-	if m.SSL != nil {
+	switch {
+	case m.SSL != nil:
 		input.SSL = model.NewNullableBool(types.BoolValue(true))
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
@@ -192,9 +193,9 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
 		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 		input.SSLMode = model.NewNullableString(m.SSL.SSLMode)
-	} else if !m.SSLEnabled.IsNull() && !m.SSLEnabled.IsUnknown() {
+	case !m.SSLEnabled.IsNull() && !m.SSLEnabled.IsUnknown():
 		input.SSL = model.NewNullableBool(m.SSLEnabled)
-	} else {
+	default:
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
 
@@ -308,7 +309,8 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 	}
 
 	// SSL Fields
-	if m.SSL != nil {
+	switch {
+	case m.SSL != nil:
 		input.SSL = model.NewNullableBool(types.BoolValue(true))
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
@@ -316,9 +318,9 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.SSLClientCa = m.SSL.Cert.ValueStringPointer()
 		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 		input.SSLMode = model.NewNullableString(m.SSL.SSLMode)
-	} else if !m.SSLEnabled.IsNull() && !m.SSLEnabled.IsUnknown() {
+	case !m.SSLEnabled.IsNull() && !m.SSLEnabled.IsUnknown():
 		input.SSL = model.NewNullableBool(m.SSLEnabled)
-	} else {
+	default:
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
 
