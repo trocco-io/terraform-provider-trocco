@@ -1,16 +1,3 @@
-resource "trocco_connection" "test_redshift" {
-  connection_type       = "redshift"
-  name                  = "Redshift Basic Example"
-  description           = "This is a basic Redshift connection example"
-  host                  = "my-cluster.abc123.us-east-1.redshift.amazonaws.com"
-  port                  = 5439
-  user_name             = "admin"
-  password              = "password"
-  aws_access_key_id     = "ACCESS_KEY_ID_EXAMPLE"
-  aws_secret_access_key = "SECRET_ACCESS_KEY_EXAMPLE"
-  ssl_enabled           = true
-}
-
 resource "trocco_connection" "test_bq" {
   connection_type          = "bigquery"
   name                     = "BigQuery Example"
@@ -35,7 +22,7 @@ resource "trocco_job_definition" "redshift_to_bigquery" {
   input_option_type = "redshift"
   input_option = {
     redshift_input_option = {
-      redshift_connection_id = trocco_connection.test_redshift.id
+      redshift_connection_id = 1
       database                    = "analytics"
       query                       = "SELECT * FROM test_table WHERE status = 'active'"
       schema                      = "public"
