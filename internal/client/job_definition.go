@@ -104,6 +104,7 @@ type InputOption struct {
 	DatabricksInputOption         *inputOptionEntities.DatabricksInputOption         `json:"databricks_input_option"`
 	MongoDBInputOption            *inputOptionEntities.MongoDBInputOption            `json:"mongodb_input_option"`
 	GoogleAdsInputOption          *inputOptionEntities.GoogleAdsInputOption          `json:"google_ads_input_option"`
+	GoogleDriveInputOption        *inputOptionEntities.GoogleDriveInputOption        `json:"google_drive_input_option"`
 }
 
 type InputOptionInput struct {
@@ -124,6 +125,7 @@ type InputOptionInput struct {
 	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.DatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
 	MongoDBInputOption            *parameter.NullableObject[inputOptionParameters.MongoDBInputOptionInput]            `json:"mongodb_input_option,omitempty"`
 	GoogleAdsInputOption          *parameter.NullableObject[inputOptionParameters.GoogleAdsInputOptionInput]          `json:"google_ads_input_option,omitempty"`
+	GoogleDriveInputOption        *parameter.NullableObject[inputOptionParameters.GoogleDriveInputOptionInput]        `json:"google_drive_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
@@ -144,6 +146,7 @@ type UpdateInputOptionInput struct {
 	DatabricksInputOption         *parameter.NullableObject[inputOptionParameters.UpdateDatabricksInputOptionInput]         `json:"databricks_input_option,omitempty"`
 	MongoDBInputOption            *parameter.NullableObject[inputOptionParameters.UpdateMongoDBInputOptionInput]            `json:"mongodb_input_option,omitempty"`
 	GoogleAdsInputOption          *parameter.NullableObject[inputOptionParameters.UpdateGoogleAdsInputOptionInput]          `json:"google_ads_input_option,omitempty"`
+	GoogleDriveInputOption        *parameter.NullableObject[inputOptionParameters.UpdateGoogleDriveInputOptionInput]        `json:"google_drive_input_option,omitempty"`
 }
 
 type OutputOption struct {
@@ -158,6 +161,7 @@ type OutputOption struct {
 	KintoneOutputOption            *outputOptionEntities.KintoneOutputOption            `json:"kintone_output_option"`
 	MysqlOutputOption              *outputOptionEntities.MysqlOutputOption              `json:"mysql_output_option"`
 	HubspotOutputOption            *outputOptionEntities.HubspotOutputOption            `json:"hubspot_output_option"`
+	GoogleDriveOutputOption        *outputOptionEntities.GoogleDriveOutputOption        `json:"google_drive_output_option"`
 	GcsOutputOption                *outputOptionEntities.GcsOutputOption                `json:"gcs_output_option"`
 }
 
@@ -173,6 +177,7 @@ type OutputOptionInput struct {
 	KintoneOutputOption            *parameter.NullableObject[outputOptionParameters.KintoneOutputOptionInput]            `json:"kintone_output_option,omitempty"`
 	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.MysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
 	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.HubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
+	GoogleDriveOutputOption        *parameter.NullableObject[outputOptionParameters.GoogleDriveOutputOptionInput]        `json:"google_drive_output_option,omitempty"`
 	GcsOutputOption                *parameter.NullableObject[outputOptionParameters.GcsOutputOptionInput]                `json:"gcs_output_option,omitempty"`
 }
 
@@ -188,6 +193,7 @@ type UpdateOutputOptionInput struct {
 	KintoneOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateKintoneOutputOptionInput]            `json:"kintone_output_option,omitempty"`
 	MysqlOutputOption              *parameter.NullableObject[outputOptionParameters.UpdateMysqlOutputOptionInput]              `json:"mysql_output_option,omitempty"`
 	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateHubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
+	GoogleDriveOutputOption        *parameter.NullableObject[outputOptionParameters.UpdateGoogleDriveOutputOptionInput]        `json:"google_drive_output_option,omitempty"`
 	GcsOutputOption                *parameter.NullableObject[outputOptionParameters.UpdateGcsOutputOptionInput]                `json:"gcs_output_option,omitempty"`
 }
 
