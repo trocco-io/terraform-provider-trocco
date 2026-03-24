@@ -1544,8 +1544,6 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "MongoDB", resp)
 		}
 	case "redshift":
-		validateRequiredString(plan.AWSAccessKeyID, "aws_access_key_id", "Redshift", resp)
-		validateRequiredString(plan.AWSSecretAccessKey, "aws_secret_access_key", "Redshift", resp)
 		validateRequiredString(plan.Host, "host", "Redshift", resp)
 		validateRequiredInt(plan.Port, "port", "Redshift", resp)
 		validateRequiredString(plan.UserName, "user_name", "Redshift", resp)
