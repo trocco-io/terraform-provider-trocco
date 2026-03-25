@@ -27,6 +27,7 @@ type InputOption struct {
 	DatabricksInputOption         *inputOptionModel.DatabricksInputOption         `tfsdk:"databricks_input_option"`
 	MongoDBInputOption            *inputOptionModel.MongoDBInputOption            `tfsdk:"mongodb_input_option"`
 	GoogleAdsInputOption          *inputOptionModel.GoogleAdsInputOption          `tfsdk:"google_ads_input_option"`
+	GoogleDriveInputOption        *inputOptionModel.GoogleDriveInputOption        `tfsdk:"google_drive_input_option"`
 	RedshiftInputOption           *inputOptionModel.RedshiftInputOption           `tfsdk:"redshift_input_option"`
 }
 
@@ -54,6 +55,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		DatabricksInputOption:         inputOptionModel.NewDatabricksInputOption(ctx, inputOption.DatabricksInputOption),
 		MongoDBInputOption:            inputOptionModel.NewMongodbInputOption(ctx, inputOption.MongoDBInputOption),
 		GoogleAdsInputOption:          inputOptionModel.NewGoogleAdsInputOption(ctx, inputOption.GoogleAdsInputOption),
+		GoogleDriveInputOption:        inputOptionModel.NewGoogleDriveInputOption(ctx, inputOption.GoogleDriveInputOption),
 		RedshiftInputOption:           inputOptionModel.NewRedshiftInputOption(ctx, inputOption.RedshiftInputOption),
 	}, diags
 }
@@ -82,6 +84,7 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 		DatabricksInputOption:         model.WrapObject(o.DatabricksInputOption.ToInput(ctx)),
 		MongoDBInputOption:            model.WrapObject(o.MongoDBInputOption.ToInput(ctx)),
 		GoogleAdsInputOption:          model.WrapObject(o.GoogleAdsInputOption.ToInput(ctx)),
+		GoogleDriveInputOption:        model.WrapObject(o.GoogleDriveInputOption.ToInput(ctx)),
 		RedshiftInputOption:           model.WrapObject(o.RedshiftInputOption.ToInput(ctx)),
 	}, diags
 }
@@ -109,6 +112,7 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 		DatabricksInputOption:         model.WrapObject(o.DatabricksInputOption.ToUpdateInput(ctx)),
 		MongoDBInputOption:            model.WrapObject(o.MongoDBInputOption.ToUpdateInput(ctx)),
 		GoogleAdsInputOption:          model.WrapObject(o.GoogleAdsInputOption.ToUpdateInput(ctx)),
+		GoogleDriveInputOption:        model.WrapObject(o.GoogleDriveInputOption.ToUpdateInput(ctx)),
 		RedshiftInputOption:           model.WrapObject(o.RedshiftInputOption.ToUpdateInput(ctx)),
 	}, diags
 }

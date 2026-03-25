@@ -19,6 +19,7 @@ type OutputOption struct {
 	KintoneOutputOption            *outputOptionModel.KintoneOutputOption            `tfsdk:"kintone_output_option"`
 	MysqlOutputOption              *outputOptionModel.MysqlOutputOption              `tfsdk:"mysql_output_option"`
 	HubspotOutputOption            *outputOptionModel.HubspotOutputOption            `tfsdk:"hubspot_output_option"`
+	GoogleDriveOutputOption        *outputOptionModel.GoogleDriveOutputOption        `tfsdk:"google_drive_output_option"`
 	GcsOutputOption                *outputOptionModel.GcsOutputOption                `tfsdk:"gcs_output_option"`
 	RedshiftOutputOption           *outputOptionModel.RedshiftOutputOption           `tfsdk:"redshift_output_option"`
 }
@@ -36,6 +37,7 @@ func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *Out
 		KintoneOutputOption:            outputOptionModel.NewKintoneOutputOption(ctx, outputOption.KintoneOutputOption),
 		MysqlOutputOption:              outputOptionModel.NewMysqlOutputOption(ctx, outputOption.MysqlOutputOption),
 		HubspotOutputOption:            outputOptionModel.NewHubspotOutputOption(ctx, outputOption.HubspotOutputOption),
+		GoogleDriveOutputOption:        outputOptionModel.NewGoogleDriveOutputOption(ctx, outputOption.GoogleDriveOutputOption),
 		GcsOutputOption:                outputOptionModel.NewGcsOutputOption(ctx, outputOption.GcsOutputOption),
 		RedshiftOutputOption:           outputOptionModel.NewRedshiftOutputOption(ctx, outputOption.RedshiftOutputOption),
 	}
@@ -54,6 +56,7 @@ func (o OutputOption) ToInput(ctx context.Context) client.OutputOptionInput {
 		KintoneOutputOption:            model.WrapObject(o.KintoneOutputOption.ToInput(ctx)),
 		MysqlOutputOption:              model.WrapObject(o.MysqlOutputOption.ToInput(ctx)),
 		HubspotOutputOption:            model.WrapObject(o.HubspotOutputOption.ToInput(ctx)),
+		GoogleDriveOutputOption:        model.WrapObject(o.GoogleDriveOutputOption.ToInput(ctx)),
 		GcsOutputOption:                model.WrapObject(o.GcsOutputOption.ToInput(ctx)),
 		RedshiftOutputOption:           model.WrapObject(o.RedshiftOutputOption.ToInput(ctx)),
 	}
@@ -72,6 +75,7 @@ func (o OutputOption) ToUpdateInput(ctx context.Context) *client.UpdateOutputOpt
 		KintoneOutputOption:            model.WrapObject(o.KintoneOutputOption.ToUpdateInput(ctx)),
 		MysqlOutputOption:              model.WrapObject(o.MysqlOutputOption.ToUpdateInput(ctx)),
 		HubspotOutputOption:            model.WrapObject(o.HubspotOutputOption.ToUpdateInput(ctx)),
+		GoogleDriveOutputOption:        model.WrapObject(o.GoogleDriveOutputOption.ToUpdateInput(ctx)),
 		GcsOutputOption:                model.WrapObject(o.GcsOutputOption.ToUpdateInput(ctx)),
 		RedshiftOutputOption:           model.WrapObject(o.RedshiftOutputOption.ToUpdateInput(ctx)),
 	}

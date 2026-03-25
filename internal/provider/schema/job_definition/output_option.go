@@ -22,6 +22,7 @@ func OutputOptionSchema() schema.Attribute {
 			"kintone_output_option":             KintoneOutputOptionSchema(),
 			"mysql_output_option":               MysqlOutputOptionSchema(),
 			"hubspot_output_option":             HubspotOutputOptionSchema(),
+			"google_drive_output_option":        GoogleDriveOutputOptionSchema(),
 			"gcs_output_option":                 GcsOutputOptionSchema(),
 			"redshift_output_option":            RedshiftOutputOptionSchema(),
 		},
