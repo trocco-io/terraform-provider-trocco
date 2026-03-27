@@ -1,9 +1,3 @@
-resource "trocco_connection" "test_yahoo_ads_api_stats" {
-  connection_type = "yahoo_ads_api"
-  name            = "Yahoo Ads API Test Connection"
-  description     = "Test connection for Yahoo Ads API"
-}
-
 resource "trocco_connection" "test_bq_yahoo_stats" {
   connection_type = "bigquery"
   name            = "BigQuery Test Connection"
@@ -23,7 +17,7 @@ JSON
 resource "trocco_job_definition" "yahoo_ads_stats_to_bigquery" {
   name                     = "Yahoo Ads Campaign Stats to BigQuery"
   description              = "Campaign stats data from Yahoo Ads YDN synced to BigQuery"
-  resource_enhancement     = "large"
+  resource_enhancement     = "medium"
   retry_limit              = 3
   is_runnable_concurrently = false
 
@@ -32,14 +26,14 @@ resource "trocco_job_definition" "yahoo_ads_stats_to_bigquery" {
 
   input_option = {
     yahoo_ads_api_ydn_input_option = {
-      yahoo_ads_api_connection_id = trocco_connection.test_yahoo_ads_api_stats.id
+      yahoo_ads_api_connection_id = 1
       target                      = "stats"
       base_account_id             = "1234567890"
       account_id                  = "1234567890"
       report_type                 = "CAMPAIGN"
       start_date                  = "2024-01-01"
       end_date                    = "2024-01-31"
-      include_deleted             = true
+      include_deleted             = false
 
       input_option_columns = [
         {
@@ -79,9 +73,6 @@ resource "trocco_job_definition" "yahoo_ads_stats_to_bigquery" {
       read_timeout_sec       = 300
       send_timeout_sec       = 300
       retries                = 3
-      bigquery_output_option_merge_keys = [
-        "CAMPAIGN_ID"
-      ]
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []
     }

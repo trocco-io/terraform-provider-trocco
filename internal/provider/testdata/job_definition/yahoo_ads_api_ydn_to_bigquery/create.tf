@@ -1,9 +1,3 @@
-resource "trocco_connection" "test_yahoo_ads_api" {
-  connection_type = "yahoo_ads_api"
-  name            = "Yahoo Ads API Test Connection"
-  description     = "Test connection for Yahoo Ads API"
-}
-
 resource "trocco_connection" "test_bq_yahoo" {
   connection_type = "bigquery"
   name            = "BigQuery Test Connection"
@@ -32,7 +26,7 @@ resource "trocco_job_definition" "yahoo_ads_report_to_bigquery" {
 
   input_option = {
     yahoo_ads_api_ydn_input_option = {
-      yahoo_ads_api_connection_id = trocco_connection.test_yahoo_ads_api.id
+      yahoo_ads_api_connection_id = 1
       target                      = "report"
       base_account_id             = "1234567890"
       account_id                  = "1234567890"

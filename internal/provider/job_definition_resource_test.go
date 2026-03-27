@@ -1657,7 +1657,7 @@ func TestAccJobDefinitionResourceYahooAdsApiYdnStatsToBigQuery(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "Yahoo Ads Campaign Stats to BigQuery"),
 					resource.TestCheckResourceAttr(resourceName, "description", "Campaign stats data from Yahoo Ads YDN synced to BigQuery"),
-					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "large"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
 					resource.TestCheckResourceAttr(resourceName, "retry_limit", "3"),
 					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
 					resource.TestCheckResourceAttr(resourceName, "input_option_type", "yahoo_ads_api_ydn"),
@@ -1669,7 +1669,7 @@ func TestAccJobDefinitionResourceYahooAdsApiYdnStatsToBigQuery(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.account_id", "1234567890"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.start_date", "2024-01-01"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.end_date", "2024-01-31"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.include_deleted", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.include_deleted", "false"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.input_option_columns.0.name", "CAMPAIGN_NAME"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.input_option_columns.0.type", "string"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.input_option_columns.1.name", "CAMPAIGN_ID"),
