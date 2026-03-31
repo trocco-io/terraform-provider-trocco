@@ -155,6 +155,7 @@ func BigqueryOutputOptionSchema() schema.Attribute {
 									"DATE",
 									"RECORD",
 									"NUMERIC",
+									"JSON",
 								),
 							},
 							MarkdownDescription: "Column type",

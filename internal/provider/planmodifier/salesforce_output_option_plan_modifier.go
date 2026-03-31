@@ -35,6 +35,16 @@ func (d *SalesforceOutputOptionPlanModifier) PlanModifyObject(ctx context.Contex
 	if actionType.ValueString() != "upsert" && !upsertKey.IsNull() {
 		addSalesforceOutputOptionAttributeError(req, resp, "upsert_key can only be set when action_type is 'upsert'")
 	}
+
+	var updateKey types.String
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("update_key"), &updateKey)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if actionType.ValueString() != "update" && !updateKey.IsNull() {
+		addSalesforceOutputOptionAttributeError(req, resp, "update_key can only be set when action_type is 'update'")
+	}
 }
 
 func addSalesforceOutputOptionAttributeError(req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse, message string) {
