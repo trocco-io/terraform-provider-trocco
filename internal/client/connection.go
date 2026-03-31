@@ -18,14 +18,14 @@ type ReadPreferenceTag struct {
 }
 
 type Connection struct {
-	ID                       int64                  `json:"id"`                                   // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb
-	Name                     *string                `json:"name"`                                 // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb
-	Description              *string                `json:"description"`                          // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb
-	ResourceGroupID          *int64                 `json:"resource_group_id"`                    // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb
+	ID                       int64                  `json:"id"`                                   // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb, google_drive
+	Name                     *string                `json:"name"`                                 // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb, google_drive
+	Description              *string                `json:"description"`                          // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb, google_drive
+	ResourceGroupID          *int64                 `json:"resource_group_id"`                    // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, mongodb, google_drive
 	ProjectID                *string                `json:"project_id"`                           // bigquery, gcs
-	IsOAuth                  *bool                  `json:"is_oauth"`                             // bigquery, gcs, google_spreadsheets, google_analytics4 (read-only)
-	HasServiceAccountJSONKey *bool                  `json:"has_service_account_json_key"`         // bigquery, gcs, google_spreadsheets, google_analytics4 (read-only)
-	GoogleOAuth2CredentialID *int64                 `json:"google_oauth2_credential_id"`          // bigquery, gcs, google_spreadsheets, google_analytics4 (read-only)
+	IsOAuth                  *bool                  `json:"is_oauth"`                             // bigquery, gcs, google_spreadsheets, google_analytics4, google_drive (read-only)
+	HasServiceAccountJSONKey *bool                  `json:"has_service_account_json_key"`         // bigquery, gcs, google_spreadsheets, google_analytics4, google_drive (read-only)
+	GoogleOAuth2CredentialID *int64                 `json:"google_oauth2_credential_id"`          // bigquery, gcs, google_spreadsheets, google_analytics4, google_drive (read-only)
 	Host                     *string                `json:"host"`                                 // snowflake, mysql, postgresql, sftp, mongodb
 	UserName                 *string                `json:"user_name"`                            // snowflake, mysql, postgresql, salesforce, sftp, mongodb
 	Role                     *string                `json:"role"`                                 // snowflake
@@ -70,11 +70,11 @@ type GetConnectionsInput struct {
 }
 
 type CreateConnectionInput struct {
-	Name                     string                    `json:"name"`                                  // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb
-	Description              *string                   `json:"description,omitempty"`                 // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb
-	ResourceGroupID          *parameter.NullableInt64  `json:"resource_group_id,omitempty"`           // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb
+	Name                     string                    `json:"name"`                                  // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb, google_drive
+	Description              *string                   `json:"description,omitempty"`                 // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb, google_drive
+	ResourceGroupID          *parameter.NullableInt64  `json:"resource_group_id,omitempty"`           // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb, google_drive
 	ProjectID                *string                   `json:"project_id,omitempty"`                  // bigquery, gcs
-	ServiceAccountJSONKey    *string                   `json:"service_account_json_key,omitempty"`    // bigquery, gcs, google_spreadsheets, google_analytics4
+	ServiceAccountJSONKey    *string                   `json:"service_account_json_key,omitempty"`    // bigquery, gcs, google_spreadsheets, google_analytics4, google_drive
 	Host                     *string                   `json:"host,omitempty"`                        // snowflake, mysql, postgresql, sftp, mongodb
 	UserName                 *string                   `json:"user_name,omitempty"`                   // snowflake, mysql, postgresql, salesforce, sftp, mongodb
 	Role                     *string                   `json:"role,omitempty"`                        // snowflake
@@ -133,11 +133,11 @@ type CreateConnectionInput struct {
 }
 
 type UpdateConnectionInput struct {
-	Name                     *string                   `json:"name,omitempty"`                        // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb
-	Description              *string                   `json:"description,omitempty"`                 // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb
-	ResourceGroupID          *parameter.NullableInt64  `json:"resource_group_id,omitempty"`           // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb
+	Name                     *string                   `json:"name,omitempty"`                        // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb, google_drive
+	Description              *string                   `json:"description,omitempty"`                 // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb, google_drive
+	ResourceGroupID          *parameter.NullableInt64  `json:"resource_group_id,omitempty"`           // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb, google_drive
 	ProjectID                *string                   `json:"project_id,omitempty"`                  // bigquery, gcs
-	ServiceAccountJSONKey    *string                   `json:"service_account_json_key"`              // bigquery, gcs, google_spreadsheets, google_analytics4
+	ServiceAccountJSONKey    *string                   `json:"service_account_json_key"`              // bigquery, gcs, google_spreadsheets, google_analytics4, google_drive
 	Host                     *string                   `json:"host,omitempty"`                        // snowflake, mysql, postgresql, sftp, mongodb
 	UserName                 *string                   `json:"user_name,omitempty"`                   // snowflake, mysql, postgresql, salesforce, sftp, mongodb
 	Role                     *string                   `json:"role,omitempty"`                        // snowflake
