@@ -25,6 +25,9 @@ func TestAccConnectionResource(t *testing.T) {
 	t.Run("google_analytics4", func(t *testing.T) {
 		testAccConnectionResourceGoogleAnalytics4(t)
 	})
+	t.Run("google_drive", func(t *testing.T) {
+		testAccConnectionResourceGoogleDrive(t)
+	})
 	t.Run("kintone", func(t *testing.T) {
 		testAccConnectionResourceKintone(t)
 	})
@@ -130,6 +133,37 @@ func testAccConnectionResourceGoogleAnalytics4(t *testing.T) {
 						"{\"type\":\"service_account\",\"project_id\":\"create_project_id\",\"private_key_id\":\"create_private_key_id\",\"private_key\":\"create_private_key\",\"client_email\":\"create_client_email\",\"client_id\":\"create_client_id\"}"),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceGoogleDrive(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.google_drive_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/google_drive_create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "google_drive"),
+					resource.TestCheckResourceAttr(resourceName, "name", "google drive test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "test"),
+					resource.TestCheckResourceAttr(resourceName, "service_account_json_key",
+						"{\"type\":\"service_account\",\"project_id\":\"create_project_id\",\"private_key_id\":\"create_private_key_id\",\"private_key\":\"create_private_key\",\"client_email\":\"create_client_email\",\"client_id\":\"create_client_id\"}"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"service_account_json_key"},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					connectionID := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("google_drive,%s", connectionID), nil
+				},
 			},
 		},
 	})
