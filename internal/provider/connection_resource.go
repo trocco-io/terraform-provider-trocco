@@ -384,6 +384,7 @@ var supportedConnectionTypes = []string{
 	"sftp",
 	"databricks",
 	"mongodb",
+	"google_drive",
 }
 
 func (r *connectionResource) Schema(
@@ -454,7 +455,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"service_account_json_key": schema.StringAttribute{
-				MarkdownDescription: "BigQuery, Google Sheets, Google Analytics4: A GCP service account key.",
+				MarkdownDescription: "BigQuery, Google Sheets, Google Analytics4, Google Drive: A GCP service account key.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -1396,6 +1397,8 @@ func (r *connectionResource) ValidateConfig(
 		}
 	case "google_analytics4":
 		validateRequiredString(plan.ServiceAccountJSONKey, "service_account_json_key", "Google Analytics4", resp)
+	case "google_drive":
+		validateRequiredString(plan.ServiceAccountJSONKey, "service_account_json_key", "Google Drive", resp)
 	case "kintone":
 		validateRequiredString(plan.Domain, "domain", "Kintone", resp)
 		validateRequiredString(plan.LoginMethod, "login_method", "Kintone", resp)
