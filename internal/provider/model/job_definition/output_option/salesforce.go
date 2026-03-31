@@ -13,6 +13,7 @@ type SalesforceOutputOption struct {
 	ActionType             types.String `tfsdk:"action_type"`
 	ApiVersion             types.String `tfsdk:"api_version"`
 	UpsertKey              types.String `tfsdk:"upsert_key"`
+	UpdateKey              types.String `tfsdk:"update_key"`
 	IgnoreNulls            types.Bool   `tfsdk:"ignore_nulls"`
 	ThrowIfFailed          types.Bool   `tfsdk:"throw_if_failed"`
 	BatchSize              types.Int64  `tfsdk:"batch_size"`
@@ -29,6 +30,7 @@ func NewSalesforceOutputOption(salesforceOutputOption *output_option.SalesforceO
 		ActionType:             types.StringValue(salesforceOutputOption.ActionType),
 		ApiVersion:             types.StringValue(salesforceOutputOption.ApiVersion),
 		UpsertKey:              types.StringPointerValue(salesforceOutputOption.UpsertKey),
+		UpdateKey:              types.StringPointerValue(salesforceOutputOption.UpdateKey),
 		IgnoreNulls:            types.BoolValue(salesforceOutputOption.IgnoreNulls),
 		ThrowIfFailed:          types.BoolValue(salesforceOutputOption.ThrowIfFailed),
 		BatchSize:              types.Int64Value(salesforceOutputOption.BatchSize),
@@ -46,6 +48,7 @@ func (salesforceOutputOption *SalesforceOutputOption) ToInput() *outputOptionPar
 		ActionType:             model.NewNullableString(salesforceOutputOption.ActionType),
 		ApiVersion:             model.NewNullableString(salesforceOutputOption.ApiVersion),
 		UpsertKey:              model.NewNullableString(salesforceOutputOption.UpsertKey),
+		UpdateKey:              model.NewNullableString(salesforceOutputOption.UpdateKey),
 		IgnoreNulls:            model.NewNullableBool(salesforceOutputOption.IgnoreNulls),
 		ThrowIfFailed:          model.NewNullableBool(salesforceOutputOption.ThrowIfFailed),
 		BatchSize:              salesforceOutputOption.BatchSize.ValueInt64(),
@@ -63,6 +66,7 @@ func (salesforceOutputOption *SalesforceOutputOption) ToUpdateInput() *outputOpt
 		ActionType:             model.NewNullableString(salesforceOutputOption.ActionType),
 		ApiVersion:             model.NewNullableString(salesforceOutputOption.ApiVersion),
 		UpsertKey:              model.NewNullableString(salesforceOutputOption.UpsertKey),
+		UpdateKey:              model.NewNullableString(salesforceOutputOption.UpdateKey),
 		IgnoreNulls:            model.NewNullableBool(salesforceOutputOption.IgnoreNulls),
 		ThrowIfFailed:          model.NewNullableBool(salesforceOutputOption.ThrowIfFailed),
 		BatchSize:              salesforceOutputOption.BatchSize.ValueInt64Pointer(),
