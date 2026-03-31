@@ -1,3 +1,8 @@
+## 0.28.1
+
+CHORE:
+- Fixed goreleaser configuration to explicitly exclude windows/arm (32-bit) due to Go 1.26 discontinuing support for this platform
+
 ## 0.28.0
 FEATURES:
 - `trocco_connection` resource:
