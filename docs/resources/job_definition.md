@@ -3996,7 +3996,7 @@ Optional:
 
 - `timestamp_format` (String) Timestamp format (required when type is TIMESTAMP, TIME, or DATE and value_type is string or nstring)
 - `timezone` (String) Timezone (applicable when type is TIMESTAMP)
-- `type` (String) Column type. One of `BIGINT`, `VARCHAR`, `BOOLEAN`, `DOUBLE PRECISION`, `CLOB`, `TIMESTAMP`, `TIME`, `DATE`
+- `type` (String) Column type. One of `BIGINT`, `VARCHAR`, `BOOLEAN`, `DOUBLE_PRECISION`, `CLOB`, `TIMESTAMP`, `TIME`, `DATE`
 - `value_type` (String) Value type
 
 

@@ -147,11 +147,11 @@ func RedshiftOutputOptionSchema() schema.Attribute {
 							Optional: true,
 							Validators: []validator.String{
 								stringvalidator.OneOf(
-									"BIGINT", "VARCHAR", "BOOLEAN", "DOUBLE PRECISION",
+									"BIGINT", "VARCHAR", "BOOLEAN", "DOUBLE_PRECISION",
 									"CLOB", "TIMESTAMP", "TIME", "DATE",
 								),
 							},
-							MarkdownDescription: "Column type. One of `BIGINT`, `VARCHAR`, `BOOLEAN`, `DOUBLE PRECISION`, `CLOB`, `TIMESTAMP`, `TIME`, `DATE`",
+							MarkdownDescription: "Column type. One of `BIGINT`, `VARCHAR`, `BOOLEAN`, `DOUBLE_PRECISION`, `CLOB`, `TIMESTAMP`, `TIME`, `DATE`",
 						},
 						"value_type": schema.StringAttribute{
 							Optional: true,
