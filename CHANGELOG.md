@@ -1,3 +1,12 @@
+## 0.28.0
+FEATURES:
+- `trocco_connection` resource:
+  - Added support for `google_drive` type
+- `trocco_job_definition` resource:
+  - Added support for `google_drive` input option
+  - Added support for `google_drive` output option
+  - Added support for JSON column type in `bigquery` output option
+
 ## 0.27.0
 FEATURES:
 - `trocco_job_definition` resource:
