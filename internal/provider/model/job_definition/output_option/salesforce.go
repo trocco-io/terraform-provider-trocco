@@ -16,6 +16,7 @@ type SalesforceOutputOption struct {
 	UpdateKey              types.String `tfsdk:"update_key"`
 	IgnoreNulls            types.Bool   `tfsdk:"ignore_nulls"`
 	ThrowIfFailed          types.Bool   `tfsdk:"throw_if_failed"`
+	BatchSize              types.Int64  `tfsdk:"batch_size"`
 	SalesforceConnectionId types.Int64  `tfsdk:"salesforce_connection_id"`
 }
 
@@ -32,6 +33,7 @@ func NewSalesforceOutputOption(salesforceOutputOption *output_option.SalesforceO
 		UpdateKey:              types.StringPointerValue(salesforceOutputOption.UpdateKey),
 		IgnoreNulls:            types.BoolValue(salesforceOutputOption.IgnoreNulls),
 		ThrowIfFailed:          types.BoolValue(salesforceOutputOption.ThrowIfFailed),
+		BatchSize:              types.Int64Value(salesforceOutputOption.BatchSize),
 		SalesforceConnectionId: types.Int64Value(salesforceOutputOption.SalesforceConnectionId),
 	}
 }
@@ -49,6 +51,7 @@ func (salesforceOutputOption *SalesforceOutputOption) ToInput() *outputOptionPar
 		UpdateKey:              model.NewNullableString(salesforceOutputOption.UpdateKey),
 		IgnoreNulls:            model.NewNullableBool(salesforceOutputOption.IgnoreNulls),
 		ThrowIfFailed:          model.NewNullableBool(salesforceOutputOption.ThrowIfFailed),
+		BatchSize:              salesforceOutputOption.BatchSize.ValueInt64(),
 		SalesforceConnectionId: salesforceOutputOption.SalesforceConnectionId.ValueInt64(),
 	}
 }
@@ -66,6 +69,7 @@ func (salesforceOutputOption *SalesforceOutputOption) ToUpdateInput() *outputOpt
 		UpdateKey:              model.NewNullableString(salesforceOutputOption.UpdateKey),
 		IgnoreNulls:            model.NewNullableBool(salesforceOutputOption.IgnoreNulls),
 		ThrowIfFailed:          model.NewNullableBool(salesforceOutputOption.ThrowIfFailed),
+		BatchSize:              salesforceOutputOption.BatchSize.ValueInt64Pointer(),
 		SalesforceConnectionId: salesforceOutputOption.SalesforceConnectionId.ValueInt64Pointer(),
 	}
 }
