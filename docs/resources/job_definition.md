@@ -1750,7 +1750,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -2121,7 +2121,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -2414,7 +2414,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -2947,7 +2947,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -3245,7 +3245,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 

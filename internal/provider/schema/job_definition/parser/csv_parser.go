@@ -128,8 +128,8 @@ func CsvParserSchema() schema.Attribute {
 						},
 						"type": schema.StringAttribute{
 							Required:            true,
-							Validators:          []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean")},
-							MarkdownDescription: "Column type",
+							Validators:          []validator.String{stringvalidator.OneOf("string", "long", "timestamp", "double", "boolean", "json")},
+							MarkdownDescription: "Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`",
 						},
 						"format": schema.StringAttribute{
 							Optional:            true,
