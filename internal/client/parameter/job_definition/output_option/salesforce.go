@@ -9,8 +9,10 @@ type SalesforceOutputOptionInput struct {
 	ActionType             *parameter.NullableString `json:"action_type,omitempty"`
 	ApiVersion             *parameter.NullableString `json:"api_version,omitempty"`
 	UpsertKey              *parameter.NullableString `json:"upsert_key,omitempty"`
+	UpdateKey              *parameter.NullableString `json:"update_key,omitempty"`
 	IgnoreNulls            *parameter.NullableBool   `json:"ignore_nulls,omitempty"`
 	ThrowIfFailed          *parameter.NullableBool   `json:"throw_if_failed,omitempty"`
+	BatchSize              int64                     `json:"batch_size"`
 	SalesforceConnectionId int64                     `json:"salesforce_connection_id"`
 }
 
@@ -19,7 +21,9 @@ type UpdateSalesforceOutputOptionInput struct {
 	ActionType             *parameter.NullableString `json:"action_type,omitempty"`
 	ApiVersion             *parameter.NullableString `json:"api_version,omitempty"`
 	UpsertKey              *parameter.NullableString `json:"upsert_key,omitempty"`
+	UpdateKey              *parameter.NullableString `json:"update_key,omitempty"`
 	IgnoreNulls            *parameter.NullableBool   `json:"ignore_nulls,omitempty"`
 	ThrowIfFailed          *parameter.NullableBool   `json:"throw_if_failed,omitempty"`
+	BatchSize              *int64                    `json:"batch_size,omitempty"`
 	SalesforceConnectionId *int64                    `json:"salesforce_connection_id"`
 }
