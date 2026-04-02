@@ -60,7 +60,10 @@ func RedshiftOutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "S3 bucket for temporary data",
 			},
 			"s3_key_prefix": schema.StringAttribute{
-				Required:            true,
+				Required: true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
 				MarkdownDescription: "S3 key prefix for temporary data",
 			},
 			"delete_s3_temp_file": schema.BoolAttribute{
@@ -140,7 +143,10 @@ func RedshiftOutputOptionSchema() schema.Attribute {
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"name": schema.StringAttribute{
-							Required:            true,
+							Required: true,
+							Validators: []validator.String{
+								stringvalidator.UTF8LengthAtLeast(1),
+							},
 							MarkdownDescription: "Column name",
 						},
 						"type": schema.StringAttribute{
