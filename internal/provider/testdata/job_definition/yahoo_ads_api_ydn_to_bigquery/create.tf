@@ -26,7 +26,7 @@ resource "trocco_job_definition" "yahoo_ads_report_to_bigquery" {
 
   input_option = {
     yahoo_ads_api_ydn_input_option = {
-      yahoo_ads_api_connection_id = 1
+      yahoo_ads_api_connection_id = 540
       target                      = "report"
       base_account_id             = "1234567890"
       account_id                  = "1234567890"

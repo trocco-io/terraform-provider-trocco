@@ -26,7 +26,7 @@ resource "trocco_job_definition" "yahoo_ads_stats_to_bigquery" {
 
   input_option = {
     yahoo_ads_api_ydn_input_option = {
-      yahoo_ads_api_connection_id = 1
+      yahoo_ads_api_connection_id = 540
       target                      = "stats"
       base_account_id             = "1234567890"
       account_id                  = "1234567890"
@@ -62,17 +62,17 @@ resource "trocco_job_definition" "yahoo_ads_stats_to_bigquery" {
 
   output_option = {
     bigquery_output_option = {
-      bigquery_connection_id = trocco_connection.test_bq_yahoo_stats.id
-      dataset                = "yahoo_ads"
-      table                  = "campaign_stats"
-      mode                   = "replace"
-      auto_create_dataset    = true
-      location               = "US"
-      timeout_sec            = 600
-      open_timeout_sec       = 300
-      read_timeout_sec       = 300
-      send_timeout_sec       = 300
-      retries                = 3
+      bigquery_connection_id                   = trocco_connection.test_bq_yahoo_stats.id
+      dataset                                  = "yahoo_ads"
+      table                                    = "campaign_stats"
+      mode                                     = "replace"
+      auto_create_dataset                      = true
+      location                                 = "US"
+      timeout_sec                              = 600
+      open_timeout_sec                         = 300
+      read_timeout_sec                         = 300
+      send_timeout_sec                         = 300
+      retries                                  = 3
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []
     }
