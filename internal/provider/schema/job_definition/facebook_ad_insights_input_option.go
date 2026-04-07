@@ -4,9 +4,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 func FacebookAdsInsightsInputOptionSchema() schema.Attribute {
@@ -43,8 +46,8 @@ func FacebookAdsInsightsInputOptionSchema() schema.Attribute {
 			"use_unified_attribution_setting": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				Default:             booldefault.StaticBool(false),
-				MarkdownDescription: "Use unified attribution setting. Default: false",
+				Default:             booldefault.StaticBool(true),
+				MarkdownDescription: "Use unified attribution setting. Default: true",
 			},
 			"fields": schema.ListNestedAttribute{
 				Required:            true,
@@ -106,6 +109,8 @@ func FacebookAdsInsightsInputOptionSchema() schema.Attribute {
 			},
 			"breakdowns": schema.ListNestedAttribute{
 				Optional:            true,
+				Computed:            true,
+				Default:             listdefault.StaticValue(types.ListValueMust(types.ObjectType{AttrTypes: map[string]attr.Type{"name": types.StringType}}, []attr.Value{})),
 				MarkdownDescription: "List of breakdowns for data segmentation",
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -130,6 +135,8 @@ func FacebookAdsInsightsInputOptionSchema() schema.Attribute {
 			},
 			"action_attribution_windows": schema.ListNestedAttribute{
 				Optional:            true,
+				Computed:            true,
+				Default:             listdefault.StaticValue(types.ListValueMust(types.ObjectType{AttrTypes: map[string]attr.Type{"name": types.StringType}}, []attr.Value{})),
 				MarkdownDescription: "List of action attribution windows",
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -148,6 +155,8 @@ func FacebookAdsInsightsInputOptionSchema() schema.Attribute {
 			},
 			"action_breakdowns": schema.ListNestedAttribute{
 				Optional:            true,
+				Computed:            true,
+				Default:             listdefault.StaticValue(types.ListValueMust(types.ObjectType{AttrTypes: map[string]attr.Type{"name": types.StringType}}, []attr.Value{})),
 				MarkdownDescription: "List of action breakdowns",
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
