@@ -1583,6 +1583,7 @@ Optional:
 - `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
 - `sftp_input_option` (Attributes) Attributes about source SFTP (see [below for nested schema](#nestedatt--input_option--sftp_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
+- `yahoo_ads_api_ydn_input_option` (Attributes) Attributes of source yahoo_ads_api_ydn (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option))
 - `yahoo_ads_api_yss_input_option` (Attributes) Attributes of source yahoo_ads_api_yss (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_yss_input_option))
 
 <a id="nestedatt--input_option--bigquery_input_option"></a>
@@ -3459,6 +3460,54 @@ Optional:
 - `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--input_option--yahoo_ads_api_ydn_input_option"></a>
+### Nested Schema for `input_option.yahoo_ads_api_ydn_input_option`
+
+Required:
+
+- `account_id` (String) Yahoo Display Ads account ID
+- `end_date` (String) End date. Format: YYYYMMDD or custom variable (e.g., $end_date$)
+- `start_date` (String) Start date. Format: YYYYMMDD or custom variable (e.g., $start_date$)
+- `target` (String) Data retrieval target. Either "report" or "stats"
+- `yahoo_ads_api_connection_id` (Number) ID of yahoo_ads_api connection
+
+Optional:
+
+- `base_account_id` (String) Base account ID (required for POST)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option--custom_variable_settings))
+- `include_deleted` (Boolean) Include deleted ads. Valid only when target="report"
+- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option--input_option_columns))
+- `report_type` (String) Report type. Valid only when target="stats". One of: CAMPAIGN, ADGROUP, AD
+
+<a id="nestedatt--input_option--yahoo_ads_api_ydn_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.yahoo_ads_api_ydn_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--yahoo_ads_api_ydn_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.yahoo_ads_api_ydn_input_option.input_option_columns`
+
+Optional:
+
+- `format` (String) Column format (for timestamp type)
+- `name` (String) Column name
+- `type` (String) Column type
 
 
 
