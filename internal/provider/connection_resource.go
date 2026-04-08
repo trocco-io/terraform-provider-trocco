@@ -1228,6 +1228,13 @@ func (r *connectionResource) Read(
 		return
 	}
 
+	var sslEnabled types.Bool
+	if state.ConnectionType.ValueString() == "redshift" {
+		sslEnabled = types.BoolPointerValue(conn.SSL)
+	} else {
+		sslEnabled = state.SSLEnabled
+	}
+
 	newState := connectionResourceModel{
 		// Common Fields
 		ConnectionType:  state.ConnectionType,
@@ -1303,7 +1310,7 @@ func (r *connectionResource) Read(
 		// Redshift Fields
 		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
 		AWSSecretAccessKey: state.AWSSecretAccessKey,
-		SSLEnabled:         state.SSLEnabled,
+		SSLEnabled:         sslEnabled,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
