@@ -20,6 +20,66 @@ resource "trocco_job_definition" "bigquery_output_example" {
       bigquery_output_option_merge_keys = [
         "id"
       ]
+      bigquery_output_option_column_options = [
+        {
+          name = "id"
+          type = "INTEGER"
+          mode = "REQUIRED"
+        },
+        {
+          name        = "name"
+          type        = "STRING"
+          mode        = "NULLABLE"
+          description = "User name"
+        },
+        {
+          name             = "created_at"
+          type             = "TIMESTAMP"
+          mode             = "NULLABLE"
+          timestamp_format = "yyyy-MM-dd HH:mm:ss"
+          timezone         = "Asia/Tokyo"
+        },
+        {
+          name = "metadata"
+          type = "JSON"
+          mode = "NULLABLE"
+        },
+        {
+          name        = "address"
+          type        = "RECORD"
+          mode        = "NULLABLE"
+          description = "Address information"
+          fields = [
+            {
+              name = "city"
+              type = "STRING"
+              mode = "NULLABLE"
+            },
+            {
+              name = "zip_code"
+              type = "STRING"
+              mode = "NULLABLE"
+            },
+            {
+              name = "coordinates"
+              type = "RECORD"
+              mode = "NULLABLE"
+              fields = [
+                {
+                  name = "latitude"
+                  type = "FLOAT"
+                  mode = "NULLABLE"
+                },
+                {
+                  name = "longitude"
+                  type = "FLOAT"
+                  mode = "NULLABLE"
+                },
+              ]
+            },
+          ]
+        },
+      ]
     }
   }
 }

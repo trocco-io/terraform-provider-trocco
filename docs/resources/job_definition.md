@@ -1246,6 +1246,66 @@ resource "trocco_job_definition" "bigquery_output_example" {
       bigquery_output_option_merge_keys = [
         "id"
       ]
+      bigquery_output_option_column_options = [
+        {
+          name = "id"
+          type = "INTEGER"
+          mode = "REQUIRED"
+        },
+        {
+          name        = "name"
+          type        = "STRING"
+          mode        = "NULLABLE"
+          description = "User name"
+        },
+        {
+          name             = "created_at"
+          type             = "TIMESTAMP"
+          mode             = "NULLABLE"
+          timestamp_format = "yyyy-MM-dd HH:mm:ss"
+          timezone         = "Asia/Tokyo"
+        },
+        {
+          name = "metadata"
+          type = "JSON"
+          mode = "NULLABLE"
+        },
+        {
+          name        = "address"
+          type        = "RECORD"
+          mode        = "NULLABLE"
+          description = "Address information"
+          fields = [
+            {
+              name = "city"
+              type = "STRING"
+              mode = "NULLABLE"
+            },
+            {
+              name = "zip_code"
+              type = "STRING"
+              mode = "NULLABLE"
+            },
+            {
+              name = "coordinates"
+              type = "RECORD"
+              mode = "NULLABLE"
+              fields = [
+                {
+                  name = "latitude"
+                  type = "FLOAT"
+                  mode = "NULLABLE"
+                },
+                {
+                  name = "longitude"
+                  type = "FLOAT"
+                  mode = "NULLABLE"
+                },
+              ]
+            },
+          ]
+        },
+      ]
     }
   }
 }
@@ -1691,7 +1751,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -2062,7 +2122,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -2355,7 +2415,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -2888,7 +2948,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -3186,7 +3246,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -3563,8 +3623,42 @@ Required:
 Optional:
 
 - `description` (String) Description
+- `fields` (Attributes List) Nested fields for RECORD type columns (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields))
 - `timestamp_format` (String) Timestamp format
 - `timezone` (String) Time zone
+
+<a id="nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields"></a>
+### Nested Schema for `output_option.bigquery_output_option.bigquery_output_option_column_options.fields`
+
+Required:
+
+- `mode` (String) Mode
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `description` (String) Description
+- `fields` (Attributes List) Nested fields for RECORD type columns (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields--fields))
+- `timestamp_format` (String) Timestamp format
+- `timezone` (String) Time zone
+
+<a id="nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields--fields"></a>
+### Nested Schema for `output_option.bigquery_output_option.bigquery_output_option_column_options.fields.fields`
+
+Required:
+
+- `mode` (String) Mode
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `description` (String) Description
+- `timestamp_format` (String) Timestamp format
+- `timezone` (String) Time zone
+
+
 
 
 <a id="nestedatt--output_option--bigquery_output_option--custom_variable_settings"></a>
@@ -4044,8 +4138,10 @@ Optional:
 
 - `action_type` (String) Transfer mode
 - `api_version` (String) Api version
+- `batch_size` (Number) Batch size for Salesforce API calls. Must be between 1 and 200.
 - `ignore_nulls` (Boolean) Update processing when NULL is included. Even if true, the record update process itself is performed.
 - `throw_if_failed` (Boolean) Status of records that could not be sent
+- `update_key` (String) Update key. If action_type is 'update', this field can be set.
 - `upsert_key` (String) Upsert key. If action_type is 'upsert', this field can be set.
 
 
