@@ -35,13 +35,23 @@ type BigQueryOutputOption struct {
 	BigQueryOutputOptionMergeKeys        types.Set    `tfsdk:"bigquery_output_option_merge_keys"`
 }
 
-type bigQueryOutputOptionColumnOption struct {
-	Name            types.String `tfsdk:"name"`
-	Type            types.String `tfsdk:"type"`
-	Mode            types.String `tfsdk:"mode"`
-	TimestampFormat types.String `tfsdk:"timestamp_format"`
-	Timezone        types.String `tfsdk:"timezone"`
-	Description     types.String `tfsdk:"description"`
+func bigqueryColumnOptionAttrTypes(depth int) map[string]attr.Type {
+	attrTypes := map[string]attr.Type{
+		"name":             types.StringType,
+		"type":             types.StringType,
+		"mode":             types.StringType,
+		"timestamp_format": types.StringType,
+		"timezone":         types.StringType,
+		"description":      types.StringType,
+	}
+	if depth > 0 {
+		attrTypes["fields"] = types.ListType{
+			ElemType: types.ObjectType{
+				AttrTypes: bigqueryColumnOptionAttrTypes(depth - 1),
+			},
+		}
+	}
+	return attrTypes
 }
 
 func NewBigQueryOutputOption(ctx context.Context, bigQueryOutputOption *output_option.BigQueryOutputOption) *BigQueryOutputOption {
@@ -78,7 +88,7 @@ func NewBigQueryOutputOption(ctx context.Context, bigQueryOutputOption *output_o
 	if bigQueryOutputOption.BigQueryOutputOptionColumnOptions != nil {
 		columnOptions = *bigQueryOutputOption.BigQueryOutputOptionColumnOptions
 	}
-	BigQueryOutputOptionColumnOptions, err := newBigqueryOutputOptionColumnOptions(ctx, columnOptions)
+	BigQueryOutputOptionColumnOptions, err := newBigqueryOutputOptionColumnOptions(columnOptions, 2)
 	if err != nil {
 		return nil
 	}
@@ -143,46 +153,52 @@ func newBigQueryOutputOptionClusteringFields(ctx context.Context, fields []strin
 }
 
 func newBigqueryOutputOptionColumnOptions(
-	ctx context.Context,
 	bigQueryOutputOptionColumnOptions []output_option.BigQueryOutputOptionColumnOption,
+	depth int,
 ) (types.List, error) {
 	objectType := types.ObjectType{
-		AttrTypes: bigQueryOutputOptionColumnOption{}.attrTypes(),
+		AttrTypes: bigqueryColumnOptionAttrTypes(depth),
 	}
 
 	if bigQueryOutputOptionColumnOptions == nil {
 		return types.ListNull(objectType), nil
 	}
 
-	columnOptions := make([]bigQueryOutputOptionColumnOption, 0, len(bigQueryOutputOptionColumnOptions))
+	columnOptions := make([]attr.Value, 0, len(bigQueryOutputOptionColumnOptions))
 	for _, input := range bigQueryOutputOptionColumnOptions {
-		columnOption := bigQueryOutputOptionColumnOption{
-			Name:            types.StringValue(input.Name),
-			Type:            types.StringValue(input.Type),
-			Mode:            types.StringValue(input.Mode),
-			TimestampFormat: types.StringPointerValue(input.TimestampFormat),
-			Timezone:        types.StringPointerValue(input.Timezone),
-			Description:     types.StringPointerValue(input.Description),
+		attrs := map[string]attr.Value{
+			"name":             types.StringValue(input.Name),
+			"type":             types.StringValue(input.Type),
+			"mode":             types.StringValue(input.Mode),
+			"timestamp_format": types.StringPointerValue(input.TimestampFormat),
+			"timezone":         types.StringPointerValue(input.Timezone),
+			"description":      types.StringPointerValue(input.Description),
 		}
-		columnOptions = append(columnOptions, columnOption)
+
+		if depth > 0 {
+			var childFields []output_option.BigQueryOutputOptionColumnOption
+			if input.Fields != nil {
+				childFields = *input.Fields
+			}
+			fieldsVal, err := newBigqueryOutputOptionColumnOptions(childFields, depth-1)
+			if err != nil {
+				return types.ListNull(objectType), err
+			}
+			attrs["fields"] = fieldsVal
+		}
+
+		objVal, diags := types.ObjectValue(bigqueryColumnOptionAttrTypes(depth), attrs)
+		if diags.HasError() {
+			return types.ListNull(objectType), fmt.Errorf("failed to create object value: %v", diags)
+		}
+		columnOptions = append(columnOptions, objVal)
 	}
 
-	listValue, diags := types.ListValueFrom(ctx, objectType, columnOptions)
+	listValue, diags := types.ListValue(objectType, columnOptions)
 	if diags.HasError() {
 		return types.ListNull(objectType), fmt.Errorf("failed to convert column options to ListValue: %v", diags)
 	}
 	return listValue, nil
-}
-
-func (bigQueryOutputOptionColumnOption) attrTypes() map[string]attr.Type {
-	return map[string]attr.Type{
-		"name":             types.StringType,
-		"type":             types.StringType,
-		"mode":             types.StringType,
-		"timestamp_format": types.StringType,
-		"timezone":         types.StringType,
-		"description":      types.StringType,
-	}
 }
 
 func (bigqueryOutputOption *BigQueryOutputOption) ToInput(ctx context.Context) *outputOptionParameters.BigQueryOutputOptionInput {
@@ -222,14 +238,7 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToInput(ctx context.Context) *
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, bigqueryOutputOption.CustomVariableSettings)
 
-	var columnOptionValues []bigQueryOutputOptionColumnOption
-	if !bigqueryOutputOption.BigQueryOutputOptionColumnOptions.IsNull() && !bigqueryOutputOption.BigQueryOutputOptionColumnOptions.IsUnknown() {
-		diags := bigqueryOutputOption.BigQueryOutputOptionColumnOptions.ElementsAs(ctx, &columnOptionValues, false)
-		if diags.HasError() {
-			return nil
-		}
-	}
-	columnOptions := toInputBigqueryOutputOptionColumnOptions(&columnOptionValues)
+	columnOptions := toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOption.BigQueryOutputOptionColumnOptions)
 
 	return &outputOptionParameters.BigQueryOutputOptionInput{
 		Dataset:                              bigqueryOutputOption.Dataset.ValueString(),
@@ -290,20 +299,19 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput(ctx context.Cont
 		}
 	}
 
-	var columnOptionValues []bigQueryOutputOptionColumnOption
+	var columnOptions *[]outputOptionParameters.BigQueryOutputOptionColumnOptionInput
 	if !bigqueryOutputOption.BigQueryOutputOptionColumnOptions.IsNull() {
-		if !bigqueryOutputOption.BigQueryOutputOptionColumnOptions.IsUnknown() {
-			diags := bigqueryOutputOption.BigQueryOutputOptionColumnOptions.ElementsAs(ctx, &columnOptionValues, false)
-			if diags.HasError() {
-				return nil
-			}
+		result := toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOption.BigQueryOutputOptionColumnOptions)
+		if result != nil {
+			columnOptions = result
 		} else {
-			columnOptionValues = []bigQueryOutputOptionColumnOption{}
+			empty := make([]outputOptionParameters.BigQueryOutputOptionColumnOptionInput, 0)
+			columnOptions = &empty
 		}
 	} else {
-		columnOptionValues = []bigQueryOutputOptionColumnOption{}
+		empty := make([]outputOptionParameters.BigQueryOutputOptionColumnOptionInput, 0)
+		columnOptions = &empty
 	}
-	columnOptions := toInputBigqueryOutputOptionColumnOptions(&columnOptionValues)
 
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, bigqueryOutputOption.CustomVariableSettings)
 
@@ -331,21 +339,44 @@ func (bigqueryOutputOption *BigQueryOutputOption) ToUpdateInput(ctx context.Cont
 	}
 }
 
-func toInputBigqueryOutputOptionColumnOptions(bigqueryOutputOptionColumnOptions *[]bigQueryOutputOptionColumnOption) *[]outputOptionParameters.BigQueryOutputOptionColumnOptionInput {
-	if bigqueryOutputOptionColumnOptions == nil {
+func toInputBigqueryOutputOptionColumnOptions(columnOptionsList types.List) *[]outputOptionParameters.BigQueryOutputOptionColumnOptionInput {
+	if columnOptionsList.IsNull() || columnOptionsList.IsUnknown() {
 		return nil
 	}
 
-	outputs := make([]outputOptionParameters.BigQueryOutputOptionColumnOptionInput, 0, len(*bigqueryOutputOptionColumnOptions))
-	for _, input := range *bigqueryOutputOptionColumnOptions {
-		outputs = append(outputs, outputOptionParameters.BigQueryOutputOptionColumnOptionInput{
-			Name:            input.Name.ValueString(),
-			Type:            input.Type.ValueString(),
-			Mode:            input.Mode.ValueString(),
-			TimestampFormat: input.TimestampFormat.ValueStringPointer(),
-			Timezone:        input.Timezone.ValueStringPointer(),
-			Description:     input.Description.ValueStringPointer(),
-		})
+	elements := columnOptionsList.Elements()
+
+	outputs := make([]outputOptionParameters.BigQueryOutputOptionColumnOptionInput, 0, len(elements))
+	for _, elem := range elements {
+		obj, ok := elem.(types.Object)
+		if !ok {
+			continue
+		}
+		attrs := obj.Attributes()
+
+		nameVal, _ := attrs["name"].(types.String)
+		typeVal, _ := attrs["type"].(types.String)
+		modeVal, _ := attrs["mode"].(types.String)
+		timestampFormatVal, _ := attrs["timestamp_format"].(types.String)
+		timezoneVal, _ := attrs["timezone"].(types.String)
+		descriptionVal, _ := attrs["description"].(types.String)
+
+		input := outputOptionParameters.BigQueryOutputOptionColumnOptionInput{
+			Name:            nameVal.ValueString(),
+			Type:            typeVal.ValueString(),
+			Mode:            modeVal.ValueString(),
+			TimestampFormat: timestampFormatVal.ValueStringPointer(),
+			Timezone:        timezoneVal.ValueStringPointer(),
+			Description:     descriptionVal.ValueStringPointer(),
+		}
+
+		if fieldsVal, ok := attrs["fields"]; ok {
+			if fieldsList, ok := fieldsVal.(types.List); ok {
+				input.Fields = toInputBigqueryOutputOptionColumnOptions(fieldsList)
+			}
+		}
+
+		outputs = append(outputs, input)
 	}
 	return &outputs
 }

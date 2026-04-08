@@ -1246,6 +1246,66 @@ resource "trocco_job_definition" "bigquery_output_example" {
       bigquery_output_option_merge_keys = [
         "id"
       ]
+      bigquery_output_option_column_options = [
+        {
+          name = "id"
+          type = "INTEGER"
+          mode = "REQUIRED"
+        },
+        {
+          name        = "name"
+          type        = "STRING"
+          mode        = "NULLABLE"
+          description = "User name"
+        },
+        {
+          name             = "created_at"
+          type             = "TIMESTAMP"
+          mode             = "NULLABLE"
+          timestamp_format = "yyyy-MM-dd HH:mm:ss"
+          timezone         = "Asia/Tokyo"
+        },
+        {
+          name = "metadata"
+          type = "JSON"
+          mode = "NULLABLE"
+        },
+        {
+          name        = "address"
+          type        = "RECORD"
+          mode        = "NULLABLE"
+          description = "Address information"
+          fields = [
+            {
+              name = "city"
+              type = "STRING"
+              mode = "NULLABLE"
+            },
+            {
+              name = "zip_code"
+              type = "STRING"
+              mode = "NULLABLE"
+            },
+            {
+              name = "coordinates"
+              type = "RECORD"
+              mode = "NULLABLE"
+              fields = [
+                {
+                  name = "latitude"
+                  type = "FLOAT"
+                  mode = "NULLABLE"
+                },
+                {
+                  name = "longitude"
+                  type = "FLOAT"
+                  mode = "NULLABLE"
+                },
+              ]
+            },
+          ]
+        },
+      ]
     }
   }
 }
@@ -1524,6 +1584,7 @@ Optional:
 - `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
 - `sftp_input_option` (Attributes) Attributes about source SFTP (see [below for nested schema](#nestedatt--input_option--sftp_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
+- `yahoo_ads_api_ydn_input_option` (Attributes) Attributes of source yahoo_ads_api_ydn (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option))
 - `yahoo_ads_api_yss_input_option` (Attributes) Attributes of source yahoo_ads_api_yss (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_yss_input_option))
 
 <a id="nestedatt--input_option--bigquery_input_option"></a>
@@ -1691,7 +1752,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -2062,7 +2123,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -2355,7 +2416,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -2924,7 +2985,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -3222,7 +3283,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -3439,6 +3500,54 @@ Optional:
 
 
 
+<a id="nestedatt--input_option--yahoo_ads_api_ydn_input_option"></a>
+### Nested Schema for `input_option.yahoo_ads_api_ydn_input_option`
+
+Required:
+
+- `account_id` (String) Yahoo Display Ads account ID
+- `end_date` (String) End date. Format: YYYYMMDD or custom variable (e.g., $end_date$)
+- `start_date` (String) Start date. Format: YYYYMMDD or custom variable (e.g., $start_date$)
+- `target` (String) Data retrieval target. Either "report" or "stats"
+- `yahoo_ads_api_connection_id` (Number) ID of yahoo_ads_api connection
+
+Optional:
+
+- `base_account_id` (String) Base account ID (required for POST)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option--custom_variable_settings))
+- `include_deleted` (Boolean) Include deleted ads. Valid only when target="report"
+- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option--input_option_columns))
+- `report_type` (String) Report type. Valid only when target="stats". One of: CAMPAIGN, ADGROUP, AD
+
+<a id="nestedatt--input_option--yahoo_ads_api_ydn_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.yahoo_ads_api_ydn_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--yahoo_ads_api_ydn_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.yahoo_ads_api_ydn_input_option.input_option_columns`
+
+Optional:
+
+- `format` (String) Column format (for timestamp type)
+- `name` (String) Column name
+- `type` (String) Column type
+
+
+
 <a id="nestedatt--input_option--yahoo_ads_api_yss_input_option"></a>
 ### Nested Schema for `input_option.yahoo_ads_api_yss_input_option`
 
@@ -3552,8 +3661,42 @@ Required:
 Optional:
 
 - `description` (String) Description
+- `fields` (Attributes List) Nested fields for RECORD type columns (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields))
 - `timestamp_format` (String) Timestamp format
 - `timezone` (String) Time zone
+
+<a id="nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields"></a>
+### Nested Schema for `output_option.bigquery_output_option.bigquery_output_option_column_options.fields`
+
+Required:
+
+- `mode` (String) Mode
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `description` (String) Description
+- `fields` (Attributes List) Nested fields for RECORD type columns (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields--fields))
+- `timestamp_format` (String) Timestamp format
+- `timezone` (String) Time zone
+
+<a id="nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields--fields"></a>
+### Nested Schema for `output_option.bigquery_output_option.bigquery_output_option_column_options.fields.fields`
+
+Required:
+
+- `mode` (String) Mode
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `description` (String) Description
+- `timestamp_format` (String) Timestamp format
+- `timezone` (String) Time zone
+
+
 
 
 <a id="nestedatt--output_option--bigquery_output_option--custom_variable_settings"></a>
@@ -4097,8 +4240,10 @@ Optional:
 
 - `action_type` (String) Transfer mode
 - `api_version` (String) Api version
+- `batch_size` (Number) Batch size for Salesforce API calls. Must be between 1 and 200.
 - `ignore_nulls` (Boolean) Update processing when NULL is included. Even if true, the record update process itself is performed.
 - `throw_if_failed` (Boolean) Status of records that could not be sent
+- `update_key` (String) Update key. If action_type is 'update', this field can be set.
 - `upsert_key` (String) Upsert key. If action_type is 'upsert', this field can be set.
 
 
