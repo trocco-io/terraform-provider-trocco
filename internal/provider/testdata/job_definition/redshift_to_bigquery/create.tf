@@ -22,7 +22,7 @@ resource "trocco_job_definition" "redshift_to_bigquery" {
   input_option_type = "redshift"
   input_option = {
     redshift_input_option = {
-      redshift_connection_id = 1
+      redshift_connection_id = 301
       database                    = "analytics"
       query                       = "SELECT * FROM test_table WHERE status = 'active'"
       schema                      = "public"
