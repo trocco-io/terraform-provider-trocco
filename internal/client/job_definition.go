@@ -106,6 +106,7 @@ type InputOption struct {
 	MongoDBInputOption            *inputOptionEntities.MongoDBInputOption            `json:"mongodb_input_option"`
 	GoogleAdsInputOption          *inputOptionEntities.GoogleAdsInputOption          `json:"google_ads_input_option"`
 	GoogleDriveInputOption        *inputOptionEntities.GoogleDriveInputOption        `json:"google_drive_input_option"`
+	RedshiftInputOption           *inputOptionEntities.RedshiftInputOption           `json:"redshift_input_option"`
 }
 
 type InputOptionInput struct {
@@ -128,6 +129,7 @@ type InputOptionInput struct {
 	MongoDBInputOption            *parameter.NullableObject[inputOptionParameters.MongoDBInputOptionInput]            `json:"mongodb_input_option,omitempty"`
 	GoogleAdsInputOption          *parameter.NullableObject[inputOptionParameters.GoogleAdsInputOptionInput]          `json:"google_ads_input_option,omitempty"`
 	GoogleDriveInputOption        *parameter.NullableObject[inputOptionParameters.GoogleDriveInputOptionInput]        `json:"google_drive_input_option,omitempty"`
+	RedshiftInputOption           *parameter.NullableObject[inputOptionParameters.RedshiftInputOptionInput]           `json:"redshift_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
@@ -150,6 +152,7 @@ type UpdateInputOptionInput struct {
 	MongoDBInputOption            *parameter.NullableObject[inputOptionParameters.UpdateMongoDBInputOptionInput]            `json:"mongodb_input_option,omitempty"`
 	GoogleAdsInputOption          *parameter.NullableObject[inputOptionParameters.UpdateGoogleAdsInputOptionInput]          `json:"google_ads_input_option,omitempty"`
 	GoogleDriveInputOption        *parameter.NullableObject[inputOptionParameters.UpdateGoogleDriveInputOptionInput]        `json:"google_drive_input_option,omitempty"`
+	RedshiftInputOption           *parameter.NullableObject[inputOptionParameters.UpdateRedshiftInputOptionInput]           `json:"redshift_input_option,omitempty"`
 }
 
 type OutputOption struct {
@@ -166,6 +169,7 @@ type OutputOption struct {
 	HubspotOutputOption            *outputOptionEntities.HubspotOutputOption            `json:"hubspot_output_option"`
 	GoogleDriveOutputOption        *outputOptionEntities.GoogleDriveOutputOption        `json:"google_drive_output_option"`
 	GcsOutputOption                *outputOptionEntities.GcsOutputOption                `json:"gcs_output_option"`
+	RedshiftOutputOption           *outputOptionEntities.RedshiftOutputOption           `json:"redshift_output_option"`
 }
 
 type OutputOptionInput struct {
@@ -182,6 +186,7 @@ type OutputOptionInput struct {
 	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.HubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
 	GoogleDriveOutputOption        *parameter.NullableObject[outputOptionParameters.GoogleDriveOutputOptionInput]        `json:"google_drive_output_option,omitempty"`
 	GcsOutputOption                *parameter.NullableObject[outputOptionParameters.GcsOutputOptionInput]                `json:"gcs_output_option,omitempty"`
+	RedshiftOutputOption           *parameter.NullableObject[outputOptionParameters.RedshiftOutputOptionInput]           `json:"redshift_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
@@ -198,6 +203,7 @@ type UpdateOutputOptionInput struct {
 	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateHubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
 	GoogleDriveOutputOption        *parameter.NullableObject[outputOptionParameters.UpdateGoogleDriveOutputOptionInput]        `json:"google_drive_output_option,omitempty"`
 	GcsOutputOption                *parameter.NullableObject[outputOptionParameters.UpdateGcsOutputOptionInput]                `json:"gcs_output_option,omitempty"`
+	RedshiftOutputOption           *parameter.NullableObject[outputOptionParameters.UpdateRedshiftOutputOptionInput]           `json:"redshift_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {

@@ -30,6 +30,7 @@ func InputOptionSchema() schema.Attribute {
 			"mongodb_input_option":             MongodbInputOptionSchema(),
 			"google_ads_input_option":          GoogleAdsInputOptionSchema(),
 			"google_drive_input_option":        GoogleDriveInputOptionSchema(),
+			"redshift_input_option":            RedshiftInputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planModifier.InputOptionPlanModifier{},

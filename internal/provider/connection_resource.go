@@ -103,6 +103,11 @@ type connectionResourceModel struct {
 	ReplicaSet               types.String `tfsdk:"replica_set"`
 	ReadPreferenceTags       types.List   `tfsdk:"read_preference_tags"`
 	StrictReadPreferenceTags types.Bool   `tfsdk:"strict_read_preference_tags"`
+
+	// Redshift Fields
+	AWSAccessKeyID     types.String `tfsdk:"aws_access_key_id"`
+	AWSSecretAccessKey types.String `tfsdk:"aws_secret_access_key"`
+	SSLEnabled         types.Bool   `tfsdk:"ssl_enabled"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -179,7 +184,8 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 	}
 
 	// SSL Fields
-	if m.SSL != nil {
+	switch {
+	case m.SSL != nil:
 		input.SSL = model.NewNullableBool(types.BoolValue(true))
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
@@ -187,7 +193,9 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
 		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 		input.SSLMode = model.NewNullableString(m.SSL.SSLMode)
-	} else {
+	case !m.SSLEnabled.IsNull() && !m.SSLEnabled.IsUnknown():
+		input.SSL = model.NewNullableBool(m.SSLEnabled)
+	default:
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
 
@@ -208,6 +216,14 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 	if m.AWSIAMUser != nil {
 		input.AWSAccessKeyID = m.AWSIAMUser.AccessKeyID.ValueStringPointer()
 		input.AWSSecretAccessKey = m.AWSIAMUser.SecretAccessKey.ValueStringPointer()
+	}
+
+	// Redshift AWS Fields
+	if !m.AWSAccessKeyID.IsNull() {
+		input.AWSAccessKeyID = m.AWSAccessKeyID.ValueStringPointer()
+	}
+	if !m.AWSSecretAccessKey.IsNull() {
+		input.AWSSecretAccessKey = m.AWSSecretAccessKey.ValueStringPointer()
 	}
 
 	// AWS Assume Role Fields
@@ -293,7 +309,8 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 	}
 
 	// SSL Fields
-	if m.SSL != nil {
+	switch {
+	case m.SSL != nil:
 		input.SSL = model.NewNullableBool(types.BoolValue(true))
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
@@ -301,7 +318,9 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.SSLClientCa = m.SSL.Cert.ValueStringPointer()
 		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 		input.SSLMode = model.NewNullableString(m.SSL.SSLMode)
-	} else {
+	case !m.SSLEnabled.IsNull() && !m.SSLEnabled.IsUnknown():
+		input.SSL = model.NewNullableBool(m.SSLEnabled)
+	default:
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
 
@@ -322,6 +341,14 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 	if m.AWSIAMUser != nil {
 		input.AWSAccessKeyID = m.AWSIAMUser.AccessKeyID.ValueStringPointer()
 		input.AWSSecretAccessKey = m.AWSIAMUser.SecretAccessKey.ValueStringPointer()
+	}
+
+	// Redshift AWS Fields
+	if !m.AWSAccessKeyID.IsNull() {
+		input.AWSAccessKeyID = m.AWSAccessKeyID.ValueStringPointer()
+	}
+	if !m.AWSSecretAccessKey.IsNull() {
+		input.AWSSecretAccessKey = m.AWSSecretAccessKey.ValueStringPointer()
 	}
 
 	// AWS Assume Role Fields
@@ -385,6 +412,7 @@ var supportedConnectionTypes = []string{
 	"databricks",
 	"mongodb",
 	"google_drive",
+	"redshift",
 }
 
 func (r *connectionResource) Schema(
@@ -465,14 +493,14 @@ func (r *connectionResource) Schema(
 
 			// Snowflake Fields
 			"host": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB: The host of a (Snowflake, PostgreSQL, MongoDB) account.",
+				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB, Redshift: The host of a (Snowflake, PostgreSQL, MongoDB, Redshift) account.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
 			"user_name": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB: The name of a (Snowflake, PostgreSQL, MongoDB) user.",
+				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB, Redshift: The name of a (Snowflake, PostgreSQL, MongoDB, Redshift) user.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
@@ -493,7 +521,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"password": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB: The password for the (Snowflake, PostgreSQL, MongoDB) user.",
+				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB, Redshift: The password for the (Snowflake, PostgreSQL, MongoDB, Redshift) user.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -528,7 +556,7 @@ func (r *connectionResource) Schema(
 
 			// MySQL Fields
 			"port": schema.Int64Attribute{
-				MarkdownDescription: "MySQL, PostgreSQL, MongoDB: The port of the (MySQL, PostgreSQL, MongoDB) server.",
+				MarkdownDescription: "MySQL, PostgreSQL, MongoDB, Redshift: The port of the (MySQL, PostgreSQL, MongoDB, Redshift) server.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
@@ -580,7 +608,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"gateway": schema.SingleNestedAttribute{
-				MarkdownDescription: "MySQL, PostgreSQL, MongoDB: Whether to connect via SSH",
+				MarkdownDescription: "MySQL, PostgreSQL, MongoDB, Redshift: Whether to connect via SSH",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"host": schema.StringAttribute{
@@ -907,19 +935,40 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"ssh_tunnel_id": schema.Int64Attribute{
-				MarkdownDescription: "SFTP: SSH tunnel ID. Required when aws_privatelink_enabled is true.",
+				MarkdownDescription: "SFTP, Redshift: SSH tunnel ID. Required when aws_privatelink_enabled is true.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
 			},
 			"aws_privatelink_enabled": schema.BoolAttribute{
-				MarkdownDescription: "SFTP: Whether AWS PrivateLink is enabled. Default is false.",
+				MarkdownDescription: "SFTP, Redshift: Whether AWS PrivateLink is enabled. Default is false.",
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Bool{
-					planModifier.ConditionalBooleanDefault(false, "sftp"),
+					planModifier.ConditionalBooleanDefault(false, "sftp", "redshift"),
 				},
+			},
+
+			// Redshift Fields
+			"aws_access_key_id": schema.StringAttribute{
+				MarkdownDescription: "Redshift: AWS access key ID.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"aws_secret_access_key": schema.StringAttribute{
+				MarkdownDescription: "Redshift: AWS secret access key.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"ssl_enabled": schema.BoolAttribute{
+				MarkdownDescription: "Redshift: Whether SSL is enabled.",
+				Optional:            true,
 			},
 		},
 	}
@@ -1023,6 +1072,11 @@ func (r *connectionResource) Create(
 		ReplicaSet:               types.StringPointerValue(conn.ReplicaSet),
 		ReadPreferenceTags:       readPreferenceTagsToList(conn.ReadPreferenceTags),
 		StrictReadPreferenceTags: types.BoolPointerValue(conn.StrictReadPreferenceTags),
+
+		// Redshift Fields
+		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
+		AWSSecretAccessKey: plan.AWSSecretAccessKey,
+		SSLEnabled:         plan.SSLEnabled,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1142,6 +1196,11 @@ func (r *connectionResource) Update(
 		ReplicaSet:               types.StringPointerValue(connection.ReplicaSet),
 		ReadPreferenceTags:       readPreferenceTagsToList(connection.ReadPreferenceTags),
 		StrictReadPreferenceTags: types.BoolPointerValue(connection.StrictReadPreferenceTags),
+
+		// Redshift Fields
+		AWSAccessKeyID:     types.StringPointerValue(connection.AWSAccessKeyID),
+		AWSSecretAccessKey: plan.AWSSecretAccessKey,
+		SSLEnabled:         plan.SSLEnabled,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1167,6 +1226,13 @@ func (r *connectionResource) Read(
 			fmt.Sprintf("Unable to read connection, got error: %s", err),
 		)
 		return
+	}
+
+	var sslEnabled types.Bool
+	if state.ConnectionType.ValueString() == "redshift" {
+		sslEnabled = types.BoolPointerValue(conn.SSL)
+	} else {
+		sslEnabled = state.SSLEnabled
 	}
 
 	newState := connectionResourceModel{
@@ -1240,6 +1306,11 @@ func (r *connectionResource) Read(
 		ReplicaSet:               types.StringPointerValue(conn.ReplicaSet),
 		ReadPreferenceTags:       readPreferenceTagsToList(conn.ReadPreferenceTags),
 		StrictReadPreferenceTags: types.BoolPointerValue(conn.StrictReadPreferenceTags),
+
+		// Redshift Fields
+		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
+		AWSSecretAccessKey: state.AWSSecretAccessKey,
+		SSLEnabled:         sslEnabled,
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1481,6 +1552,21 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "MongoDB", resp)
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "MongoDB", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "MongoDB", resp)
+		}
+	case "redshift":
+		validateRequiredString(plan.Host, "host", "Redshift", resp)
+		validateRequiredInt(plan.Port, "port", "Redshift", resp)
+		validateRequiredString(plan.UserName, "user_name", "Redshift", resp)
+		validateRequiredString(plan.Password, "password", "Redshift", resp)
+		validateRequiredString(plan.AWSAccessKeyID, "aws_access_key_id", "Redshift", resp)
+		validateRequiredString(plan.AWSSecretAccessKey, "aws_secret_access_key", "Redshift", resp)
+		if plan.AWSPrivatelinkEnabled.ValueBool() {
+			validateRequiredInt(plan.SSHTunnelID, "ssh_tunnel_id", "Redshift", resp)
+		}
+		if plan.Gateway != nil {
+			validateRequiredString(plan.Gateway.Host, "gateway.host", "Redshift", resp)
+			validateRequiredInt(plan.Gateway.Port, "gateway.port", "Redshift", resp)
+			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "Redshift", resp)
 		}
 	}
 }
