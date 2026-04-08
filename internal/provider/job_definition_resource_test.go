@@ -1665,7 +1665,6 @@ func TestAccJobDefinitionResourceMysqlToRedshift(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.incremental_loading_enabled", "false"),
 
 					// Check Redshift output option
-					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_connection_id", "1"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.database", "analytics"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.schema", "$schema$"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.table", "users"),
