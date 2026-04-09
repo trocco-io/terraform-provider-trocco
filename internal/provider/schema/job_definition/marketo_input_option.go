@@ -160,7 +160,7 @@ func MarketoInputOptionSchema() schema.Attribute {
 				},
 			},
 			// Filter Columns (lead/all_lead_with_list_id only)
-			"input_option_filter_columns": schema.ListNestedAttribute{
+			"marketo_input_option_filter_columns": schema.ListNestedAttribute{
 				Optional:            true,
 				MarkdownDescription: "Filter columns (lead/all_lead_with_list_id only)",
 				NestedObject: schema.NestedAttributeObject{

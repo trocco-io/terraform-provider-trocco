@@ -25,7 +25,7 @@ type MarketoInputOptionInput struct {
 	MaxDepth                        *parameter.NullableInt64                `json:"max_depth,omitempty"`
 	Workspace                       *string                                 `json:"workspace,omitempty"`
 	MarketoInputOptionColumns       *[]MarketoColumn                        `json:"input_option_columns,omitempty"`
-	MarketoInputOptionFilterColumns *[]MarketoFilterColumn                  `json:"input_option_filter_columns,omitempty"`
+	MarketoInputOptionFilterColumns *[]MarketoFilterColumn                  `json:"marketo_input_option_filter_columns,omitempty"`
 	CustomVariableSettings          *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
 }
 
@@ -50,7 +50,7 @@ type UpdateMarketoInputOptionInput struct {
 	MaxDepth                        *parameter.NullableInt64                `json:"max_depth,omitempty"`
 	Workspace                       *string                                 `json:"workspace,omitempty"`
 	MarketoInputOptionColumns       *[]MarketoColumn                        `json:"input_option_columns,omitempty"`
-	MarketoInputOptionFilterColumns *[]MarketoFilterColumn                  `json:"input_option_filter_columns,omitempty"`
+	MarketoInputOptionFilterColumns *[]MarketoFilterColumn                  `json:"marketo_input_option_filter_columns,omitempty"`
 	CustomVariableSettings          *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
 }
 

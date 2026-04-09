@@ -24,8 +24,8 @@ type MarketoInputOption struct {
 	RootType                        *string                         `json:"root_type"`
 	MaxDepth                        *int64                          `json:"max_depth"`
 	Workspace                       *string                         `json:"workspace"`
-	MarketoInputOptionColumns       *[]MarketoColumn                `json:"input_option_columns"`
-	MarketoInputOptionFilterColumns *[]MarketoFilterColumn          `json:"input_option_filter_columns"`
+	InputOptionColumns              *[]MarketoColumn                `json:"input_option_columns"`
+	MarketoInputOptionFilterColumns *[]MarketoFilterColumn          `json:"marketo_input_option_filter_columns"`
 	CustomVariableSettings          *[]entity.CustomVariableSetting `json:"custom_variable_settings"`
 }
 

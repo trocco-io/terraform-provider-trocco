@@ -2746,8 +2746,8 @@ Optional:
 - `end_date` (String) End date in ISO 8601 format (lead/activity only)
 - `from_date` (String) Start date in ISO 8601 format (lead/activity only)
 - `input_option_columns` (Attributes List) Column definitions (see [below for nested schema](#nestedatt--input_option--marketo_input_option--input_option_columns))
-- `input_option_filter_columns` (Attributes List) Filter columns (lead/all_lead_with_list_id only) (see [below for nested schema](#nestedatt--input_option--marketo_input_option--input_option_filter_columns))
 - `list_ids` (String) List IDs comma-separated (all_lead_with_list_id only)
+- `marketo_input_option_filter_columns` (Attributes List) Filter columns (lead/all_lead_with_list_id only) (see [below for nested schema](#nestedatt--input_option--marketo_input_option--marketo_input_option_filter_columns))
 - `max_depth` (Number) Max folder depth (folder only)
 - `polling_interval_second` (Number) Polling interval in seconds (lead/activity only)
 - `program_ids` (String) Program IDs comma-separated (program_members only)
@@ -2791,8 +2791,8 @@ Required:
 - `type` (String) Column data type
 
 
-<a id="nestedatt--input_option--marketo_input_option--input_option_filter_columns"></a>
-### Nested Schema for `input_option.marketo_input_option.input_option_filter_columns`
+<a id="nestedatt--input_option--marketo_input_option--marketo_input_option_filter_columns"></a>
+### Nested Schema for `input_option.marketo_input_option.marketo_input_option_filter_columns`
 
 Required:
 

@@ -33,8 +33,8 @@ type MarketoInputOption struct {
 	RootType                        types.String `tfsdk:"root_type"`
 	MaxDepth                        types.Int64  `tfsdk:"max_depth"`
 	Workspace                       types.String `tfsdk:"workspace"`
-	MarketoInputOptionColumns       types.List   `tfsdk:"input_option_columns"`
-	MarketoInputOptionFilterColumns types.List   `tfsdk:"input_option_filter_columns"`
+	InputOptionColumns              types.List   `tfsdk:"input_option_columns"`
+	MarketoInputOptionFilterColumns types.List   `tfsdk:"marketo_input_option_filter_columns"`
 	CustomVariableSettings          types.List   `tfsdk:"custom_variable_settings"`
 }
 
@@ -106,9 +106,9 @@ func NewMarketoInputOption(ctx context.Context, marketoInputOption *inputOptionE
 	}
 
 	// Convert columns
-	columns, err := newMarketoColumns(ctx, marketoInputOption.MarketoInputOptionColumns)
+	columns, err := newMarketoColumns(ctx, marketoInputOption.InputOptionColumns)
 	if err == nil {
-		result.MarketoInputOptionColumns = columns
+		result.InputOptionColumns = columns
 	}
 
 	// Convert filter columns
@@ -250,8 +250,8 @@ func (marketoInputOption *MarketoInputOption) ToInput(ctx context.Context) *inpu
 
 	// Convert columns
 	var columnValues []MarketoColumn
-	if !marketoInputOption.MarketoInputOptionColumns.IsNull() && !marketoInputOption.MarketoInputOptionColumns.IsUnknown() {
-		diags := marketoInputOption.MarketoInputOptionColumns.ElementsAs(ctx, &columnValues, false)
+	if !marketoInputOption.InputOptionColumns.IsNull() && !marketoInputOption.InputOptionColumns.IsUnknown() {
+		diags := marketoInputOption.InputOptionColumns.ElementsAs(ctx, &columnValues, false)
 		if !diags.HasError() {
 			input.MarketoInputOptionColumns = toMarketoColumnsInput(columnValues)
 		}
@@ -320,9 +320,9 @@ func (marketoInputOption *MarketoInputOption) ToUpdateInput(ctx context.Context)
 
 	// Convert columns
 	var columnValues []MarketoColumn
-	if !marketoInputOption.MarketoInputOptionColumns.IsNull() {
-		if !marketoInputOption.MarketoInputOptionColumns.IsUnknown() {
-			diags := marketoInputOption.MarketoInputOptionColumns.ElementsAs(ctx, &columnValues, false)
+	if !marketoInputOption.InputOptionColumns.IsNull() {
+		if !marketoInputOption.InputOptionColumns.IsUnknown() {
+			diags := marketoInputOption.InputOptionColumns.ElementsAs(ctx, &columnValues, false)
 			if !diags.HasError() {
 				input.MarketoInputOptionColumns = toMarketoColumnsInput(columnValues)
 			}

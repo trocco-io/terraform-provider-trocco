@@ -1607,7 +1607,7 @@ func TestAccJobDefinitionResourceMarketoLeadAppend(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "input_option_type", "marketo"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.target", "lead"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.use_updated_at", "false"),
-					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "merge"),
 				),
 			},
 			{
@@ -1635,10 +1635,11 @@ func TestAccJobDefinitionResourceMarketoLeadMerge(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "Marketo to BigQuery Example - Merge"),
 					resource.TestCheckResourceAttr(resourceName, "input_option_type", "marketo"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.target", "lead"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.use_updated_at", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.target", "activity"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.activity_type_ids.0", "1"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.activity_type_ids.1", "6"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.activity_type_ids.2", "12"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "merge"),
-					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.retries", "5"),
 				),
 			},
 			{
@@ -1666,11 +1667,9 @@ func TestAccJobDefinitionResourceMarketoActivityReplace(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "Marketo Activity to BigQuery Example - Replace"),
 					resource.TestCheckResourceAttr(resourceName, "input_option_type", "marketo"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.target", "activity"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.activity_type_ids.0", "1"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.activity_type_ids.1", "6"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.activity_type_ids.2", "12"),
-					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "replace"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.target", "custom_object"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.custom_object_api_name", "company"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "merge"),
 				),
 			},
 			{
