@@ -99,12 +99,14 @@ type InputOption struct {
 	HttpInputOption                *inputOptionEntities.HttpInputOption                `json:"http_input_option"`
 	KintoneInputOption             *inputOptionEntities.KintoneInputOption             `json:"kintone_input_option"`
 	YahooAdsApiYssInputOption      *inputOptionEntities.YahooAdsApiYssInputOption      `json:"yahoo_ads_api_yss_input_option"`
+	YahooAdsApiYdnInputOption      *inputOptionEntities.YahooAdsApiYdnInputOption      `json:"yahoo_ads_api_ydn_input_option"`
 	SftpInputOption                *inputOptionEntities.SftpInputOption                `json:"sftp_input_option"`
 	HubspotInputOption             *inputOptionEntities.HubspotInputOption             `json:"hubspot_input_option"`
 	DatabricksInputOption          *inputOptionEntities.DatabricksInputOption          `json:"databricks_input_option"`
 	MongoDBInputOption             *inputOptionEntities.MongoDBInputOption             `json:"mongodb_input_option"`
 	GoogleAdsInputOption           *inputOptionEntities.GoogleAdsInputOption           `json:"google_ads_input_option"`
 	GoogleDriveInputOption         *inputOptionEntities.GoogleDriveInputOption         `json:"google_drive_input_option"`
+	RedshiftInputOption            *inputOptionEntities.RedshiftInputOption            `json:"redshift_input_option"`
 	FacebookAdsInsightsInputOption *inputOptionEntities.FacebookAdsInsightsInputOption `json:"facebook_ads_insights_input_option"`
 }
 
@@ -121,12 +123,14 @@ type InputOptionInput struct {
 	HttpInputOption                *parameter.NullableObject[inputOptionParameters.HttpInputOptionInput]                `json:"http_input_option,omitempty"`
 	KintoneInputOption             *parameter.NullableObject[inputOptionParameters.KintoneInputOptionInput]             `json:"kintone_input_option,omitempty"`
 	YahooAdsApiYssInputOption      *parameter.NullableObject[inputOptionParameters.YahooAdsApiYssInputOptionInput]      `json:"yahoo_ads_api_yss_input_option,omitempty"`
+	YahooAdsApiYdnInputOption      *parameter.NullableObject[inputOptionParameters.YahooAdsApiYdnInputOptionInput]      `json:"yahoo_ads_api_ydn_input_option,omitempty"`
 	SftpInputOption                *parameter.NullableObject[inputOptionParameters.SftpInputOptionInput]                `json:"sftp_input_option,omitempty"`
 	HubspotInputOption             *parameter.NullableObject[inputOptionParameters.HubspotInputOptionInput]             `json:"hubspot_input_option,omitempty"`
 	DatabricksInputOption          *parameter.NullableObject[inputOptionParameters.DatabricksInputOptionInput]          `json:"databricks_input_option,omitempty"`
 	MongoDBInputOption             *parameter.NullableObject[inputOptionParameters.MongoDBInputOptionInput]             `json:"mongodb_input_option,omitempty"`
 	GoogleAdsInputOption           *parameter.NullableObject[inputOptionParameters.GoogleAdsInputOptionInput]           `json:"google_ads_input_option,omitempty"`
 	GoogleDriveInputOption         *parameter.NullableObject[inputOptionParameters.GoogleDriveInputOptionInput]         `json:"google_drive_input_option,omitempty"`
+	RedshiftInputOption            *parameter.NullableObject[inputOptionParameters.RedshiftInputOptionInput]            `json:"redshift_input_option,omitempty"`
 	FacebookAdsInsightsInputOption *parameter.NullableObject[inputOptionParameters.FacebookAdsInsightsInputOptionInput] `json:"facebook_ads_insights_input_option,omitempty"`
 }
 
@@ -143,12 +147,14 @@ type UpdateInputOptionInput struct {
 	HttpInputOption                *parameter.NullableObject[inputOptionParameters.UpdateHttpInputOptionInput]                `json:"http_input_option,omitempty"`
 	KintoneInputOption             *parameter.NullableObject[inputOptionParameters.UpdateKintoneInputOptionInput]             `json:"kintone_input_option,omitempty"`
 	YahooAdsApiYssInputOption      *parameter.NullableObject[inputOptionParameters.UpdateYahooAdsApiYssInputOptionInput]      `json:"yahoo_ads_api_yss_input_option,omitempty"`
+	YahooAdsApiYdnInputOption      *parameter.NullableObject[inputOptionParameters.UpdateYahooAdsApiYdnInputOptionInput]      `json:"yahoo_ads_api_ydn_input_option,omitempty"`
 	SftpInputOption                *parameter.NullableObject[inputOptionParameters.UpdateSftpInputOptionInput]                `json:"sftp_input_option,omitempty"`
 	HubspotInputOption             *parameter.NullableObject[inputOptionParameters.UpdateHubspotInputOptionInput]             `json:"hubspot_input_option,omitempty"`
 	DatabricksInputOption          *parameter.NullableObject[inputOptionParameters.UpdateDatabricksInputOptionInput]          `json:"databricks_input_option,omitempty"`
 	MongoDBInputOption             *parameter.NullableObject[inputOptionParameters.UpdateMongoDBInputOptionInput]             `json:"mongodb_input_option,omitempty"`
 	GoogleAdsInputOption           *parameter.NullableObject[inputOptionParameters.UpdateGoogleAdsInputOptionInput]           `json:"google_ads_input_option,omitempty"`
 	GoogleDriveInputOption         *parameter.NullableObject[inputOptionParameters.UpdateGoogleDriveInputOptionInput]         `json:"google_drive_input_option,omitempty"`
+	RedshiftInputOption            *parameter.NullableObject[inputOptionParameters.UpdateRedshiftInputOptionInput]            `json:"redshift_input_option,omitempty"`
 	FacebookAdsInsightsInputOption *parameter.NullableObject[inputOptionParameters.UpdateFacebookAdsInsightsInputOptionInput] `json:"facebook_ads_insights_input_option,omitempty"`
 }
 
@@ -166,6 +172,7 @@ type OutputOption struct {
 	HubspotOutputOption            *outputOptionEntities.HubspotOutputOption            `json:"hubspot_output_option"`
 	GoogleDriveOutputOption        *outputOptionEntities.GoogleDriveOutputOption        `json:"google_drive_output_option"`
 	GcsOutputOption                *outputOptionEntities.GcsOutputOption                `json:"gcs_output_option"`
+	RedshiftOutputOption           *outputOptionEntities.RedshiftOutputOption           `json:"redshift_output_option"`
 }
 
 type OutputOptionInput struct {
@@ -182,6 +189,7 @@ type OutputOptionInput struct {
 	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.HubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
 	GoogleDriveOutputOption        *parameter.NullableObject[outputOptionParameters.GoogleDriveOutputOptionInput]        `json:"google_drive_output_option,omitempty"`
 	GcsOutputOption                *parameter.NullableObject[outputOptionParameters.GcsOutputOptionInput]                `json:"gcs_output_option,omitempty"`
+	RedshiftOutputOption           *parameter.NullableObject[outputOptionParameters.RedshiftOutputOptionInput]           `json:"redshift_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
@@ -198,6 +206,7 @@ type UpdateOutputOptionInput struct {
 	HubspotOutputOption            *parameter.NullableObject[outputOptionParameters.UpdateHubspotOutputOptionInput]            `json:"hubspot_output_option,omitempty"`
 	GoogleDriveOutputOption        *parameter.NullableObject[outputOptionParameters.UpdateGoogleDriveOutputOptionInput]        `json:"google_drive_output_option,omitempty"`
 	GcsOutputOption                *parameter.NullableObject[outputOptionParameters.UpdateGcsOutputOptionInput]                `json:"gcs_output_option,omitempty"`
+	RedshiftOutputOption           *parameter.NullableObject[outputOptionParameters.UpdateRedshiftOutputOptionInput]           `json:"redshift_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {
