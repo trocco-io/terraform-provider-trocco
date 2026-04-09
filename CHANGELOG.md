@@ -1,3 +1,17 @@
+## 0.29.0
+
+FEATURES:
+- `trocco_connection` resource:
+  - Added support for `redshift` type
+- `trocco_job_definition` resource:
+  - Added support for `redshift` input option
+  - Added support for `redshift` output option
+  - Added support for `yahoo_ads_api_ydn` input option
+  - Added nested field support for RECORD type in `bigquery` output option
+  - Added `batch_size` support for `salesforce` output option
+  - Added `update_key` support for `salesforce` output option
+  - Added JSON column type support in CSV parser
+
 ## 0.28.1
 
 CHORE:
