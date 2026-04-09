@@ -62,6 +62,10 @@ type Connection struct {
 	ReplicaSet               *string                `json:"replica_set"`                          // mongodb
 	ReadPreferenceTags       *[][]ReadPreferenceTag `json:"read_preference_tags"`                 // mongodb
 	StrictReadPreferenceTags *bool                  `json:"strict_read_preference_tags"`          // mongodb
+	AccountID                *string                `json:"account_id"`                           // marketo
+	ClientID                 *string                `json:"client_id"`                            // marketo
+	HasClientSecret          *bool                  `json:"has_client_secret"`                    // marketo (read-only)
+	APIMaxCallCount          *int64                 `json:"api_max_call_count"`                   // marketo
 }
 
 type GetConnectionsInput struct {
@@ -130,6 +134,10 @@ type CreateConnectionInput struct {
 	ReplicaSet               *parameter.NullableString `json:"replica_set,omitempty"`                 // mongodb
 	ReadPreferenceTags       *[][]ReadPreferenceTag    `json:"read_preference_tags,omitempty"`        // mongodb
 	StrictReadPreferenceTags *parameter.NullableBool   `json:"strict_read_preference_tags,omitempty"` // mongodb
+	AccountID                *string                   `json:"account_id,omitempty"`                  // marketo
+	ClientID                 *string                   `json:"client_id,omitempty"`                   // marketo
+	ClientSecret             *string                   `json:"client_secret,omitempty"`               // marketo
+	APIMaxCallCount          *parameter.NullableInt64  `json:"api_max_call_count,omitempty"`          // marketo
 }
 
 type UpdateConnectionInput struct {
@@ -193,6 +201,10 @@ type UpdateConnectionInput struct {
 	ReplicaSet               *parameter.NullableString `json:"replica_set,omitempty"`                 // mongodb
 	ReadPreferenceTags       *[][]ReadPreferenceTag    `json:"read_preference_tags,omitempty"`        // mongodb
 	StrictReadPreferenceTags *parameter.NullableBool   `json:"strict_read_preference_tags,omitempty"` // mongodb
+	AccountID                *string                   `json:"account_id,omitempty"`                  // marketo
+	ClientID                 *string                   `json:"client_id,omitempty"`                   // marketo
+	ClientSecret             *string                   `json:"client_secret,omitempty"`               // marketo
+	APIMaxCallCount          *parameter.NullableInt64  `json:"api_max_call_count,omitempty"`          // marketo
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {

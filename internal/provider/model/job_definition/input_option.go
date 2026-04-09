@@ -28,6 +28,7 @@ type InputOption struct {
 	MongoDBInputOption            *inputOptionModel.MongoDBInputOption            `tfsdk:"mongodb_input_option"`
 	GoogleAdsInputOption          *inputOptionModel.GoogleAdsInputOption          `tfsdk:"google_ads_input_option"`
 	GoogleDriveInputOption        *inputOptionModel.GoogleDriveInputOption        `tfsdk:"google_drive_input_option"`
+	MarketoInputOption            *inputOptionModel.MarketoInputOption            `tfsdk:"marketo_input_option"`
 }
 
 func NewInputOption(ctx context.Context, inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics) {
@@ -55,6 +56,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		MongoDBInputOption:            inputOptionModel.NewMongodbInputOption(ctx, inputOption.MongoDBInputOption),
 		GoogleAdsInputOption:          inputOptionModel.NewGoogleAdsInputOption(ctx, inputOption.GoogleAdsInputOption),
 		GoogleDriveInputOption:        inputOptionModel.NewGoogleDriveInputOption(ctx, inputOption.GoogleDriveInputOption),
+		MarketoInputOption:            inputOptionModel.NewMarketoInputOption(ctx, inputOption.MarketoInputOption),
 	}, diags
 }
 
@@ -83,6 +85,7 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 		MongoDBInputOption:            model.WrapObject(o.MongoDBInputOption.ToInput(ctx)),
 		GoogleAdsInputOption:          model.WrapObject(o.GoogleAdsInputOption.ToInput(ctx)),
 		GoogleDriveInputOption:        model.WrapObject(o.GoogleDriveInputOption.ToInput(ctx)),
+		MarketoInputOption:            model.WrapObject(o.MarketoInputOption.ToInput(ctx)),
 	}, diags
 }
 
@@ -110,5 +113,6 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 		MongoDBInputOption:            model.WrapObject(o.MongoDBInputOption.ToUpdateInput(ctx)),
 		GoogleAdsInputOption:          model.WrapObject(o.GoogleAdsInputOption.ToUpdateInput(ctx)),
 		GoogleDriveInputOption:        model.WrapObject(o.GoogleDriveInputOption.ToUpdateInput(ctx)),
+		MarketoInputOption:            model.WrapObject(o.MarketoInputOption.ToUpdateInput(ctx)),
 	}, diags
 }

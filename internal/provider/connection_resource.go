@@ -103,6 +103,13 @@ type connectionResourceModel struct {
 	ReplicaSet               types.String `tfsdk:"replica_set"`
 	ReadPreferenceTags       types.List   `tfsdk:"read_preference_tags"`
 	StrictReadPreferenceTags types.Bool   `tfsdk:"strict_read_preference_tags"`
+
+	// Marketo Fields
+	MarketoAccountID       types.String `tfsdk:"account_id"`
+	MarketoClientID        types.String `tfsdk:"client_id"`
+	MarketoClientSecret    types.String `tfsdk:"client_secret"`
+	MarketoHasClientSecret types.Bool   `tfsdk:"has_client_secret"`
+	MarketoAPIMaxCallCount types.Int64  `tfsdk:"api_max_call_count"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -215,6 +222,12 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.AWSAssumeRoleAccountID = m.AWSAssumeRole.AccountID.ValueStringPointer()
 		input.AWSAssumeRoleName = m.AWSAssumeRole.AccountRoleName.ValueStringPointer()
 	}
+
+	// Marketo Fields
+	input.AccountID = m.MarketoAccountID.ValueStringPointer()
+	input.ClientID = m.MarketoClientID.ValueStringPointer()
+	input.ClientSecret = m.MarketoClientSecret.ValueStringPointer()
+	input.APIMaxCallCount = model.NewNullableInt64(m.MarketoAPIMaxCallCount)
 
 	return input
 }
@@ -330,6 +343,12 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.AWSAssumeRoleName = m.AWSAssumeRole.AccountRoleName.ValueStringPointer()
 	}
 
+	// Marketo Fields
+	input.AccountID = m.MarketoAccountID.ValueStringPointer()
+	input.ClientID = m.MarketoClientID.ValueStringPointer()
+	input.ClientSecret = m.MarketoClientSecret.ValueStringPointer()
+	input.APIMaxCallCount = model.NewNullableInt64(m.MarketoAPIMaxCallCount)
+
 	return input
 }
 
@@ -385,6 +404,7 @@ var supportedConnectionTypes = []string{
 	"databricks",
 	"mongodb",
 	"google_drive",
+	"marketo",
 }
 
 func (r *connectionResource) Schema(
@@ -921,6 +941,40 @@ func (r *connectionResource) Schema(
 					planModifier.ConditionalBooleanDefault(false, "sftp"),
 				},
 			},
+			// Marketo Fields
+			"account_id": schema.StringAttribute{
+				MarkdownDescription: "Marketo: Marketo account identifier.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"client_id": schema.StringAttribute{
+				MarkdownDescription: "Marketo: Marketo REST API client ID.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"client_secret": schema.StringAttribute{
+				MarkdownDescription: "Marketo: Marketo REST API client secret.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"has_client_secret": schema.BoolAttribute{
+				MarkdownDescription: "Marketo: Whether a client secret is set (read-only).",
+				Computed:            true,
+			},
+			"api_max_call_count": schema.Int64Attribute{
+				MarkdownDescription: "Marketo: API call limit. Default is 1000.",
+				Optional:            true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
+				},
+			},
 		},
 	}
 }
@@ -1023,6 +1077,13 @@ func (r *connectionResource) Create(
 		ReplicaSet:               types.StringPointerValue(conn.ReplicaSet),
 		ReadPreferenceTags:       readPreferenceTagsToList(conn.ReadPreferenceTags),
 		StrictReadPreferenceTags: types.BoolPointerValue(conn.StrictReadPreferenceTags),
+
+		// Marketo Fields
+		MarketoAccountID:       types.StringPointerValue(conn.AccountID),
+		MarketoClientID:        types.StringPointerValue(conn.ClientID),
+		MarketoClientSecret:    plan.MarketoClientSecret,
+		MarketoHasClientSecret: types.BoolPointerValue(conn.HasClientSecret),
+		MarketoAPIMaxCallCount: types.Int64PointerValue(conn.APIMaxCallCount),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1142,6 +1203,13 @@ func (r *connectionResource) Update(
 		ReplicaSet:               types.StringPointerValue(connection.ReplicaSet),
 		ReadPreferenceTags:       readPreferenceTagsToList(connection.ReadPreferenceTags),
 		StrictReadPreferenceTags: types.BoolPointerValue(connection.StrictReadPreferenceTags),
+
+		// Marketo Fields
+		MarketoAccountID:       types.StringPointerValue(connection.AccountID),
+		MarketoClientID:        types.StringPointerValue(connection.ClientID),
+		MarketoClientSecret:    plan.MarketoClientSecret,
+		MarketoHasClientSecret: types.BoolPointerValue(connection.HasClientSecret),
+		MarketoAPIMaxCallCount: types.Int64PointerValue(connection.APIMaxCallCount),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1240,6 +1308,13 @@ func (r *connectionResource) Read(
 		ReplicaSet:               types.StringPointerValue(conn.ReplicaSet),
 		ReadPreferenceTags:       readPreferenceTagsToList(conn.ReadPreferenceTags),
 		StrictReadPreferenceTags: types.BoolPointerValue(conn.StrictReadPreferenceTags),
+
+		// Marketo Fields
+		MarketoAccountID:       types.StringPointerValue(conn.AccountID),
+		MarketoClientID:        types.StringPointerValue(conn.ClientID),
+		MarketoClientSecret:    state.MarketoClientSecret,
+		MarketoHasClientSecret: types.BoolPointerValue(conn.HasClientSecret),
+		MarketoAPIMaxCallCount: types.Int64PointerValue(conn.APIMaxCallCount),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1482,6 +1557,10 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "MongoDB", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "MongoDB", resp)
 		}
+	case "marketo":
+		validateRequiredString(plan.MarketoAccountID, "account_id", "Marketo", resp)
+		validateRequiredString(plan.MarketoClientID, "client_id", "Marketo", resp)
+		validateRequiredString(plan.MarketoClientSecret, "client_secret", "Marketo", resp)
 	}
 }
 

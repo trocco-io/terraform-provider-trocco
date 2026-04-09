@@ -1593,3 +1593,96 @@ func TestAccJobDefinitionResourceGoogleDriveToBigQuery(t *testing.T) {
 		},
 	})
 }
+
+func TestAccJobDefinitionResourceMarketoLeadAppend(t *testing.T) {
+	resourceName := "trocco_job_definition.marketo_to_bigquery_append"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/marketo_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Marketo to BigQuery Example - Append"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "marketo"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.target", "lead"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.use_updated_at", "false"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceMarketoLeadMerge(t *testing.T) {
+	resourceName := "trocco_job_definition.marketo_to_bigquery_merge"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/marketo_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Marketo to BigQuery Example - Merge"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "marketo"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.target", "lead"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.use_updated_at", "true"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "merge"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.retries", "5"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceMarketoActivityReplace(t *testing.T) {
+	resourceName := "trocco_job_definition.marketo_activity_to_bigquery_replace"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/marketo_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Marketo Activity to BigQuery Example - Replace"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "marketo"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.target", "activity"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.activity_type_ids.0", "1"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.activity_type_ids.1", "6"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.marketo_input_option.activity_type_ids.2", "12"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "replace"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}

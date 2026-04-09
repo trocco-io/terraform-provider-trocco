@@ -105,6 +105,7 @@ type InputOption struct {
 	MongoDBInputOption            *inputOptionEntities.MongoDBInputOption            `json:"mongodb_input_option"`
 	GoogleAdsInputOption          *inputOptionEntities.GoogleAdsInputOption          `json:"google_ads_input_option"`
 	GoogleDriveInputOption        *inputOptionEntities.GoogleDriveInputOption        `json:"google_drive_input_option"`
+	MarketoInputOption            *inputOptionEntities.MarketoInputOption            `json:"marketo_input_option"`
 }
 
 type InputOptionInput struct {
@@ -126,6 +127,7 @@ type InputOptionInput struct {
 	MongoDBInputOption            *parameter.NullableObject[inputOptionParameters.MongoDBInputOptionInput]            `json:"mongodb_input_option,omitempty"`
 	GoogleAdsInputOption          *parameter.NullableObject[inputOptionParameters.GoogleAdsInputOptionInput]          `json:"google_ads_input_option,omitempty"`
 	GoogleDriveInputOption        *parameter.NullableObject[inputOptionParameters.GoogleDriveInputOptionInput]        `json:"google_drive_input_option,omitempty"`
+	MarketoInputOption            *parameter.NullableObject[inputOptionParameters.MarketoInputOptionInput]            `json:"marketo_input_option,omitempty"`
 }
 
 type UpdateInputOptionInput struct {
@@ -147,6 +149,7 @@ type UpdateInputOptionInput struct {
 	MongoDBInputOption            *parameter.NullableObject[inputOptionParameters.UpdateMongoDBInputOptionInput]            `json:"mongodb_input_option,omitempty"`
 	GoogleAdsInputOption          *parameter.NullableObject[inputOptionParameters.UpdateGoogleAdsInputOptionInput]          `json:"google_ads_input_option,omitempty"`
 	GoogleDriveInputOption        *parameter.NullableObject[inputOptionParameters.UpdateGoogleDriveInputOptionInput]        `json:"google_drive_input_option,omitempty"`
+	MarketoInputOption            *parameter.NullableObject[inputOptionParameters.UpdateMarketoInputOptionInput]            `json:"marketo_input_option,omitempty"`
 }
 
 type OutputOption struct {
