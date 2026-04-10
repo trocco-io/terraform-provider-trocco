@@ -1,12 +1,12 @@
 resource "trocco_connection" "marketo_test" {
   connection_type = "marketo"
 
-  name               = "Test Marketo Connection"
-  description        = "Test Marketo connection for job definitions"
-  account_id         = "123-ABC-456"
-  client_id          = "client_test_123"
-  client_secret      = "secret_test_123"
-  api_max_call_count = 5000
+  name                       = "Test Marketo Connection"
+
+  marketo_account_id         = "123-ABC-456"
+  marketo_client_id          = "client_test_123"
+  marketo_client_secret      = "secret_test_123"
+  marketo_api_max_call_count = 5000
 }
 
 resource "trocco_connection" "bigquery_test" {
@@ -27,11 +27,13 @@ resource "trocco_connection" "bigquery_test" {
 }
 
 # Example 1: Lead Transfer with Date Filter
-resource "trocco_job_definition" "marketo_to_bigquery_append" {
-  name        = "Marketo to BigQuery Example - Append"
-  description = "Transfer Marketo lead data to BigQuery with merge mode"
+resource "trocco_job_definition" "marketo_lead_with_date_filter" {
+  name        = "Marketo to BigQuery - Lead with Date Filter"
+  description = "Transfer Marketo lead data with date range filter"
 
-  input_option_type = "marketo"
+  input_option_type  = "marketo"
+  output_option_type = "bigquery"
+
   input_option = {
     marketo_input_option = {
       marketo_connection_id   = trocco_connection.marketo_test.id
@@ -61,13 +63,16 @@ resource "trocco_job_definition" "marketo_to_bigquery_append" {
 
   filter_columns = [
     {
-      name = "id"
-      src  = "id"
-      type = "long"
+      name                         = "id"
+      src                          = "id"
+      type                         = "long"
+      default                      = null
+      json_expand_enabled          = false
+      json_expand_keep_base_column = false
+      json_expand_columns          = null
     }
   ]
 
-  output_option_type = "bigquery"
   output_option = {
     bigquery_output_option = {
       bigquery_connection_id            = trocco_connection.bigquery_test.id
@@ -82,11 +87,13 @@ resource "trocco_job_definition" "marketo_to_bigquery_append" {
 }
 
 # Example 2: Activity Transfer with Type Filter
-resource "trocco_job_definition" "marketo_to_bigquery_merge" {
-  name        = "Marketo to BigQuery Example - Merge"
-  description = "Transfer Marketo activity data to BigQuery with merge mode"
+resource "trocco_job_definition" "marketo_activity_with_type_filter" {
+  name        = "Marketo to BigQuery - Activity with Type Filter"
+  description = "Transfer Marketo activity data with specific activity types"
 
-  input_option_type = "marketo"
+  input_option_type  = "marketo"
+  output_option_type = "bigquery"
+
   input_option = {
     marketo_input_option = {
       marketo_connection_id   = trocco_connection.marketo_test.id
@@ -112,13 +119,16 @@ resource "trocco_job_definition" "marketo_to_bigquery_merge" {
 
   filter_columns = [
     {
-      name = "id"
-      src  = "id"
-      type = "long"
+      name                         = "lead_id"
+      src                          = "lead_id"
+      type                         = "long"
+      default                      = null
+      json_expand_enabled          = false
+      json_expand_keep_base_column = false
+      json_expand_columns          = null
     }
   ]
 
-  output_option_type = "bigquery"
   output_option = {
     bigquery_output_option = {
       bigquery_connection_id            = trocco_connection.bigquery_test.id
@@ -133,14 +143,16 @@ resource "trocco_job_definition" "marketo_to_bigquery_merge" {
 }
 
 # Example 3: Custom Object with Filter
-resource "trocco_job_definition" "marketo_activity_to_bigquery_replace" {
-  name        = "Marketo Activity to BigQuery Example - Replace"
-  description = "Transfer Marketo custom object data to BigQuery with merge mode"
+resource "trocco_job_definition" "marketo_custom_object_with_filter" {
+  name        = "Marketo to BigQuery - Custom Object with Filter"
+  description = "Transfer Marketo custom object data with ID range filter"
 
-  input_option_type = "marketo"
+  input_option_type  = "marketo"
+  output_option_type = "bigquery"
+
   input_option = {
     marketo_input_option = {
-      marketo_connection_id           = 4
+      marketo_connection_id           = trocco_connection.marketo_test.id
       target                          = "custom_object"
       custom_object_api_name          = "company"
       custom_object_filter_type       = "id"
@@ -178,18 +190,156 @@ resource "trocco_job_definition" "marketo_activity_to_bigquery_replace" {
 
   filter_columns = [
     {
-      name = "id"
-      src  = "id"
-      type = "long"
+      name                         = "id"
+      src                          = "id"
+      type                         = "long"
+      default                      = null
+      json_expand_enabled          = false
+      json_expand_keep_base_column = false
+      json_expand_columns          = null
     }
   ]
 
-  output_option_type = "bigquery"
   output_option = {
     bigquery_output_option = {
       bigquery_connection_id            = trocco_connection.bigquery_test.id
       dataset                           = "marketing_data"
       table                             = "marketo_custom_objects"
+      mode                              = "merge"
+      auto_create_dataset               = false
+      location                          = "US"
+      bigquery_output_option_merge_keys = ["id"]
+    }
+  }
+}
+
+# Example 4: Folder Transfer
+resource "trocco_job_definition" "marketo_folder_transfer" {
+  name        = "Marketo to BigQuery - Folder Transfer"
+  description = "Transfer Marketo folder structure with folder type"
+
+  input_option_type  = "marketo"
+  output_option_type = "bigquery"
+
+  input_option = {
+    marketo_input_option = {
+      marketo_connection_id = trocco_connection.marketo_test.id
+      target                = "folder"
+      root_type             = "program"
+      root_id               = 456
+      max_depth             = 3
+      workspace             = "Marketing"
+
+      input_option_columns = [
+        {
+          name = "id"
+          type = "long"
+        },
+        {
+          name = "name"
+          type = "string"
+        },
+        {
+          name = "path"
+          type = "string"
+        }
+      ]
+    }
+  }
+
+  filter_columns = [
+    {
+      name                         = "id"
+      src                          = "id"
+      type                         = "long"
+      default                      = null
+      json_expand_enabled          = false
+      json_expand_keep_base_column = false
+      json_expand_columns          = null
+    }
+  ]
+
+  output_option = {
+    bigquery_output_option = {
+      bigquery_connection_id            = trocco_connection.bigquery_test.id
+      dataset                           = "marketing_data"
+      table                             = "marketo_folders"
+      mode                              = "merge"
+      auto_create_dataset               = false
+      location                          = "US"
+      bigquery_output_option_merge_keys = ["id"]
+    }
+  }
+}
+
+# Example 5: Dynamic Configuration with Custom Variables
+resource "trocco_job_definition" "marketo_with_custom_variables_to_bigquery" {
+  name        = "Marketo to BigQuery - Dynamic Configuration"
+  description = "Transfer Marketo lead data with custom variables for dynamic date filtering"
+
+  input_option_type  = "marketo"
+  output_option_type = "bigquery"
+
+  input_option = {
+    marketo_input_option = {
+      marketo_connection_id   = trocco_connection.marketo_test.id
+      target                  = "lead"
+      from_date               = "$start_date$"
+      end_date                = "$end_date$"
+      polling_interval_second = 60
+      bulk_job_timeout_second = 3600
+
+      input_option_columns = [
+        {
+          name = "id"
+          type = "long"
+        },
+        {
+          name = "email"
+          type = "string"
+        }
+      ]
+
+      custom_variable_settings = [
+        {
+          name      = "$start_date$"
+          type      = "timestamp_runtime"
+          quantity  = 7
+          unit      = "date"
+          direction = "ago"
+          format    = "%Y-%m-%d"
+          time_zone = "Asia/Tokyo"
+        },
+        {
+          name      = "$end_date$"
+          type      = "timestamp_runtime"
+          quantity  = 1
+          unit      = "date"
+          direction = "ago"
+          format    = "%Y-%m-%d"
+          time_zone = "Asia/Tokyo"
+        }
+      ]
+    }
+  }
+
+  filter_columns = [
+    {
+      name                         = "id"
+      src                          = "id"
+      type                         = "long"
+      default                      = null
+      json_expand_enabled          = false
+      json_expand_keep_base_column = false
+      json_expand_columns          = null
+    }
+  ]
+
+  output_option = {
+    bigquery_output_option = {
+      bigquery_connection_id            = trocco_connection.bigquery_test.id
+      dataset                           = "marketing_data"
+      table                             = "marketo_leads_dynamic"
       mode                              = "merge"
       auto_create_dataset               = false
       location                          = "US"
