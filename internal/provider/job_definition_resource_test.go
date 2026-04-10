@@ -1836,7 +1836,7 @@ func TestAccJobDefinitionResourceFacebookAdsInsightsToBigQuery(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				ResourceName: resourceName,
-				Config:       providerConfig + LoadTextFile("testdata/job_definition/facebook_ad_insights_to_bigquery/create.tf"),
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/facebook_ads_insights_to_bigquery/create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "Facebook Ads Insights to BigQuery Test"),
 					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from Facebook Ads Insights to BigQuery"),
