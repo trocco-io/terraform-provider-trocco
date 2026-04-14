@@ -12,7 +12,6 @@ resource "trocco_job_definition" "bigquery_to_sftp_jsonl" {
       src                          = "id",
       type                         = "long",
       default                      = "",
-      has_parser                   = true,
       json_expand_enabled          = false,
       json_expand_keep_base_column = false,
       json_expand_columns          = null

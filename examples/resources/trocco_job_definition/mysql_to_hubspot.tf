@@ -10,7 +10,6 @@ resource "trocco_job_definition" "mysql_to_hubspot_example" {
       src                          = "id"
       type                         = "long"
       default                      = null
-      has_parser                   = false
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       json_expand_columns          = []
@@ -20,7 +19,6 @@ resource "trocco_job_definition" "mysql_to_hubspot_example" {
       src                          = "task_name"
       type                         = "string"
       default                      = null
-      has_parser                   = false
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       json_expand_columns          = []
@@ -30,7 +28,6 @@ resource "trocco_job_definition" "mysql_to_hubspot_example" {
       src                          = "contact_email"
       type                         = "string"
       default                      = null
-      has_parser                   = false
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       json_expand_columns          = []
@@ -40,7 +37,6 @@ resource "trocco_job_definition" "mysql_to_hubspot_example" {
       src                          = "deal_task"
       type                         = "string"
       default                      = null
-      has_parser                   = false
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       json_expand_columns          = []
