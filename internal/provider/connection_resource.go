@@ -1771,7 +1771,7 @@ func readPreferenceTagsFromList(list types.List) [][]client.ReadPreferenceTag {
 	return result
 }
 
-// parseWifConfig parses JSON string to map for workload identity federation config
+// parseWifConfig parses JSON string to map for workload identity federation config.
 func parseWifConfig(configStr *string) interface{} {
 	if configStr == nil || *configStr == "" {
 		return nil
@@ -1779,7 +1779,7 @@ func parseWifConfig(configStr *string) interface{} {
 
 	var config interface{}
 	if err := json.Unmarshal([]byte(*configStr), &config); err != nil {
-		// If parsing fails, return original string
+		// If parsing fails, return original string.
 		return *configStr
 	}
 	return config
