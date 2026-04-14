@@ -1845,7 +1845,7 @@ func TestAccJobDefinitionResourceFacebookAdsInsightsToBigQuery(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
 					resource.TestCheckResourceAttr(resourceName, "input_option_type", "facebook_ads_insights"),
 					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.facebook_ads_insights_connection_id", "1"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.facebook_ads_insights_connection_id", "922"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.ad_account_id", "act_123456789"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.level", "campaign"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.time_range_since", "2024-01-01"),

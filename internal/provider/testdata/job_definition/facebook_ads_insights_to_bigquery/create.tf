@@ -25,7 +25,7 @@ resource "trocco_job_definition" "facebook_ads_insights_to_bigquery" {
   input_option_type = "facebook_ads_insights"
   input_option = {
     facebook_ads_insights_input_option = {
-      facebook_ads_insights_connection_id = 1
+      facebook_ads_insights_connection_id = 922
       ad_account_id                       = "act_123456789"
       level                               = "campaign"
       time_range_since                    = "2024-01-01"
