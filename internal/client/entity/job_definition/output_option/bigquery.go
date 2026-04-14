@@ -28,10 +28,11 @@ type BigQueryOutputOption struct {
 }
 
 type BigQueryOutputOptionColumnOption struct {
-	Name            string  `json:"name"`
-	Type            string  `json:"type"`
-	Mode            string  `json:"mode"`
-	TimestampFormat *string `json:"timestamp_format"`
-	Timezone        *string `json:"timezone"`
-	Description     *string `json:"description"`
+	Name            string                              `json:"name"`
+	Type            string                              `json:"type"`
+	Mode            string                              `json:"mode"`
+	TimestampFormat *string                             `json:"timestamp_format"`
+	Timezone        *string                             `json:"timezone"`
+	Description     *string                             `json:"description"`
+	Fields          *[]BigQueryOutputOptionColumnOption `json:"fields"`
 }

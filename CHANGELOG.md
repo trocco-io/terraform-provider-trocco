@@ -1,3 +1,31 @@
+## 0.29.0
+
+FEATURES:
+- `trocco_connection` resource:
+  - Added support for `redshift` type
+- `trocco_job_definition` resource:
+  - Added support for `redshift` input option
+  - Added support for `redshift` output option
+  - Added support for `yahoo_ads_api_ydn` input option
+  - Added nested field support for RECORD type in `bigquery` output option
+  - Added `batch_size` support for `salesforce` output option
+  - Added `update_key` support for `salesforce` output option
+  - Added JSON column type support in CSV parser
+
+## 0.28.1
+
+CHORE:
+- Fixed goreleaser configuration to explicitly exclude windows/arm (32-bit) due to Go 1.26 discontinuing support for this platform
+
+## 0.28.0
+FEATURES:
+- `trocco_connection` resource:
+  - Added support for `google_drive` type
+- `trocco_job_definition` resource:
+  - Added support for `google_drive` input option
+  - Added support for `google_drive` output option
+  - Added support for JSON column type in `bigquery` output option
+
 ## 0.27.0
 FEATURES:
 - `trocco_job_definition` resource:

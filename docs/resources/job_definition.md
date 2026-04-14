@@ -1246,6 +1246,66 @@ resource "trocco_job_definition" "bigquery_output_example" {
       bigquery_output_option_merge_keys = [
         "id"
       ]
+      bigquery_output_option_column_options = [
+        {
+          name = "id"
+          type = "INTEGER"
+          mode = "REQUIRED"
+        },
+        {
+          name        = "name"
+          type        = "STRING"
+          mode        = "NULLABLE"
+          description = "User name"
+        },
+        {
+          name             = "created_at"
+          type             = "TIMESTAMP"
+          mode             = "NULLABLE"
+          timestamp_format = "yyyy-MM-dd HH:mm:ss"
+          timezone         = "Asia/Tokyo"
+        },
+        {
+          name = "metadata"
+          type = "JSON"
+          mode = "NULLABLE"
+        },
+        {
+          name        = "address"
+          type        = "RECORD"
+          mode        = "NULLABLE"
+          description = "Address information"
+          fields = [
+            {
+              name = "city"
+              type = "STRING"
+              mode = "NULLABLE"
+            },
+            {
+              name = "zip_code"
+              type = "STRING"
+              mode = "NULLABLE"
+            },
+            {
+              name = "coordinates"
+              type = "RECORD"
+              mode = "NULLABLE"
+              fields = [
+                {
+                  name = "latitude"
+                  type = "FLOAT"
+                  mode = "NULLABLE"
+                },
+                {
+                  name = "longitude"
+                  type = "FLOAT"
+                  mode = "NULLABLE"
+                },
+              ]
+            },
+          ]
+        },
+      ]
     }
   }
 }
@@ -1511,6 +1571,7 @@ Optional:
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
 - `google_ads_input_option` (Attributes) Attributes about source Google Ads (see [below for nested schema](#nestedatt--input_option--google_ads_input_option))
 - `google_analytics4_input_option` (Attributes) Attributes about source Google Analytics 4 (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option))
+- `google_drive_input_option` (Attributes) Attributes about source Google Drive (see [below for nested schema](#nestedatt--input_option--google_drive_input_option))
 - `google_spreadsheets_input_option` (Attributes) Attributes about source Google Spreadsheets (see [below for nested schema](#nestedatt--input_option--google_spreadsheets_input_option))
 - `http_input_option` (Attributes) Attributes about source HTTP (see [below for nested schema](#nestedatt--input_option--http_input_option))
 - `hubspot_input_option` (Attributes) attributes of source HubSpot (see [below for nested schema](#nestedatt--input_option--hubspot_input_option))
@@ -1518,10 +1579,12 @@ Optional:
 - `mongodb_input_option` (Attributes) Attributes of source MongoDB (see [below for nested schema](#nestedatt--input_option--mongodb_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
 - `postgresql_input_option` (Attributes) Attributes of source postgresql (see [below for nested schema](#nestedatt--input_option--postgresql_input_option))
+- `redshift_input_option` (Attributes) Attributes of source redshift (see [below for nested schema](#nestedatt--input_option--redshift_input_option))
 - `s3_input_option` (Attributes) Attributes about source S3 (see [below for nested schema](#nestedatt--input_option--s3_input_option))
 - `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
 - `sftp_input_option` (Attributes) Attributes about source SFTP (see [below for nested schema](#nestedatt--input_option--sftp_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
+- `yahoo_ads_api_ydn_input_option` (Attributes) Attributes of source yahoo_ads_api_ydn (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option))
 - `yahoo_ads_api_yss_input_option` (Attributes) Attributes of source yahoo_ads_api_yss (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_yss_input_option))
 
 <a id="nestedatt--input_option--bigquery_input_option"></a>
@@ -1689,7 +1752,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -2004,6 +2067,232 @@ Optional:
 
 
 
+<a id="nestedatt--input_option--google_drive_input_option"></a>
+### Nested Schema for `input_option.google_drive_input_option`
+
+Required:
+
+- `folder_id` (String) Google Drive folder ID
+- `google_drive_connection_id` (Number) ID of Google Drive connection
+
+Optional:
+
+- `csv_parser` (Attributes) For files in CSV format, this parameter is required (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--csv_parser))
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--custom_variable_settings))
+- `decoder` (Attributes) (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--decoder))
+- `decompression_type` (String) Decompression type. Omit if the file is not compressed.
+- `excel_parser` (Attributes) For files in excel format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--excel_parser))
+- `file_match_pattern` (String) File name match pattern
+- `is_skip_header_line` (Boolean) Flag whether or not to skip the header line
+- `jsonl_parser` (Attributes) For files in JSONL format, this parameter is required (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--jsonl_parser))
+- `jsonpath_parser` (Attributes) For files in jsonpath format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--jsonpath_parser))
+- `ltsv_parser` (Attributes) For files in LTSV format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--ltsv_parser))
+- `stop_when_file_not_found` (Boolean) Flag whether the transfer should continue if the file does not exist in the specified path
+- `xml_parser` (Attributes) For files in xml format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--xml_parser))
+
+<a id="nestedatt--input_option--google_drive_input_option--csv_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.csv_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--csv_parser--columns))
+
+Optional:
+
+- `allow_extra_columns` (Boolean) If true, ignore the column. If false, treat as invalid record.
+- `allow_optional_columns` (Boolean) If true, NULL-complete the missing columns. If false, treat as invalid record.
+- `charset` (String) Character set
+- `comment_line_marker` (String) Comment line marker. Skip if this character is at the beginning of a line
+- `default_date` (String) Default date
+- `default_time_zone` (String) Default time zone
+- `delimiter` (String) Delimiter
+- `escape` (String) Escape character
+- `max_quoted_size_limit` (Number) Maximum amount of data that can be enclosed in quotation marks.
+- `newline` (String) Newline character
+- `null_string` (String) Replacement source string to be converted to NULL
+- `null_string_enabled` (Boolean) Flag whether or not to set the string to be replaced by NULL
+- `quote` (String) Quote character
+- `quotes_in_quoted_fields` (String) Processing method for irregular quarts
+- `skip_header_lines` (Number) Number of header lines to skip
+- `stop_on_invalid_record` (Boolean) Flag whether or not to abort the transfer if an invalid record is found.
+- `trim_if_not_quoted` (Boolean) Flag whether or not to remove spaces from the value if it is not quoted
+
+<a id="nestedatt--input_option--google_drive_input_option--csv_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.csv_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
+
+Optional:
+
+- `date` (String) Date
+- `format` (String) Format of the column
+
+
+
+<a id="nestedatt--input_option--google_drive_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.google_drive_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--google_drive_input_option--decoder"></a>
+### Nested Schema for `input_option.google_drive_input_option.decoder`
+
+Optional:
+
+- `match_name` (String) Relative path after decompression (regular expression). If not entered, all data in the compressed file will be transferred.
+
+
+<a id="nestedatt--input_option--google_drive_input_option--excel_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.excel_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--excel_parser--columns))
+- `sheet_name` (String) Sheet name
+
+Optional:
+
+- `default_time_zone` (String) Default time zone
+- `skip_header_lines` (Number) Number of header lines to skip
+
+<a id="nestedatt--input_option--google_drive_input_option--excel_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.excel_parser.columns`
+
+Required:
+
+- `formula_handling` (String) Formula handling
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+
+
+
+<a id="nestedatt--input_option--google_drive_input_option--jsonl_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.jsonl_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--jsonl_parser--columns))
+
+Optional:
+
+- `charset` (String) Character set
+- `default_time_zone` (String) Default time zone
+- `newline` (String) Newline character
+- `stop_on_invalid_record` (Boolean) Flag whether the transfer should stop if an invalid record is found
+
+<a id="nestedatt--input_option--google_drive_input_option--jsonl_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.jsonl_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column
+- `time_zone` (String) time zone
+
+
+
+<a id="nestedatt--input_option--google_drive_input_option--jsonpath_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.jsonpath_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--jsonpath_parser--columns))
+- `root` (String) JSONPath
+
+Optional:
+
+- `default_time_zone` (String) Default time zone
+
+<a id="nestedatt--input_option--google_drive_input_option--jsonpath_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.jsonpath_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+- `time_zone` (String) time zone
+
+
+
+<a id="nestedatt--input_option--google_drive_input_option--ltsv_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.ltsv_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--ltsv_parser--columns))
+
+Optional:
+
+- `charset` (String) Character set
+- `newline` (String) Newline character
+
+<a id="nestedatt--input_option--google_drive_input_option--ltsv_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.ltsv_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+
+
+
+<a id="nestedatt--input_option--google_drive_input_option--xml_parser"></a>
+### Nested Schema for `input_option.google_drive_input_option.xml_parser`
+
+Required:
+
+- `columns` (Attributes List) (see [below for nested schema](#nestedatt--input_option--google_drive_input_option--xml_parser--columns))
+- `root` (String) Root element
+
+<a id="nestedatt--input_option--google_drive_input_option--xml_parser--columns"></a>
+### Nested Schema for `input_option.google_drive_input_option.xml_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `path` (String) XPath
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column.
+- `timezone` (String) time zone
+
+
+
+
 <a id="nestedatt--input_option--google_spreadsheets_input_option"></a>
 ### Nested Schema for `input_option.google_spreadsheets_input_option`
 
@@ -2127,7 +2416,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -2600,6 +2889,42 @@ Required:
 
 
 
+<a id="nestedatt--input_option--redshift_input_option"></a>
+### Nested Schema for `input_option.redshift_input_option`
+
+Required:
+
+- `database` (String) Database name
+- `query` (String) SQL query to fetch data
+- `redshift_connection_id` (Number) ID of Redshift connection
+
+Optional:
+
+- `connect_timeout` (Number) Connection timeout (sec)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--redshift_input_option--custom_variable_settings))
+- `fetch_rows` (Number) Number of records processed by the cursor at one time
+- `schema` (String) Schema name
+- `socket_timeout` (Number) Socket timeout (sec)
+
+<a id="nestedatt--input_option--redshift_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.redshift_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
 <a id="nestedatt--input_option--s3_input_option"></a>
 ### Nested Schema for `input_option.s3_input_option`
 
@@ -2660,7 +2985,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -2958,7 +3283,7 @@ Optional:
 Required:
 
 - `name` (String) Column name
-- `type` (String) Column type
+- `type` (String) Column type. The following types are supported: `string`, `long`, `timestamp`, `double`, `boolean`, `json`
 
 Optional:
 
@@ -3175,6 +3500,54 @@ Optional:
 
 
 
+<a id="nestedatt--input_option--yahoo_ads_api_ydn_input_option"></a>
+### Nested Schema for `input_option.yahoo_ads_api_ydn_input_option`
+
+Required:
+
+- `account_id` (String) Yahoo Display Ads account ID
+- `end_date` (String) End date. Format: YYYYMMDD or custom variable (e.g., $end_date$)
+- `start_date` (String) Start date. Format: YYYYMMDD or custom variable (e.g., $start_date$)
+- `target` (String) Data retrieval target. Either "report" or "stats"
+- `yahoo_ads_api_connection_id` (Number) ID of yahoo_ads_api connection
+
+Optional:
+
+- `base_account_id` (String) Base account ID (required for POST)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option--custom_variable_settings))
+- `include_deleted` (Boolean) Include deleted ads. Valid only when target="report"
+- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option--input_option_columns))
+- `report_type` (String) Report type. Valid only when target="stats". One of: CAMPAIGN, ADGROUP, AD
+
+<a id="nestedatt--input_option--yahoo_ads_api_ydn_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.yahoo_ads_api_ydn_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--yahoo_ads_api_ydn_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.yahoo_ads_api_ydn_input_option.input_option_columns`
+
+Optional:
+
+- `format` (String) Column format (for timestamp type)
+- `name` (String) Column name
+- `type` (String) Column type
+
+
+
 <a id="nestedatt--input_option--yahoo_ads_api_yss_input_option"></a>
 ### Nested Schema for `input_option.yahoo_ads_api_yss_input_option`
 
@@ -3235,11 +3608,13 @@ Optional:
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
 - `databricks_output_option` (Attributes) Attributes of destination Databricks settings (see [below for nested schema](#nestedatt--output_option--databricks_output_option))
 - `gcs_output_option` (Attributes) Attributes of destination Google Cloud Storage settings (see [below for nested schema](#nestedatt--output_option--gcs_output_option))
+- `google_drive_output_option` (Attributes) Attributes of destination Google Drive settings (see [below for nested schema](#nestedatt--output_option--google_drive_output_option))
 - `google_spreadsheets_output_option` (Attributes) Attributes of destination Google Spreadsheets settings (see [below for nested schema](#nestedatt--output_option--google_spreadsheets_output_option))
 - `hubspot_output_option` (Attributes) Attributes of destination HubSpot settings (see [below for nested schema](#nestedatt--output_option--hubspot_output_option))
 - `kintone_output_option` (Attributes) Attributes of destination Kintone settings (see [below for nested schema](#nestedatt--output_option--kintone_output_option))
 - `mysql_output_option` (Attributes) Attributes of destination MySQL settings (see [below for nested schema](#nestedatt--output_option--mysql_output_option))
 - `postgresql_output_option` (Attributes) Attributes of destination PostgreSQL settings (see [below for nested schema](#nestedatt--output_option--postgresql_output_option))
+- `redshift_output_option` (Attributes) Attributes of destination Redshift settings (see [below for nested schema](#nestedatt--output_option--redshift_output_option))
 - `s3_output_option` (Attributes) Attributes of destination Amazon S3 settings (see [below for nested schema](#nestedatt--output_option--s3_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `sftp_output_option` (Attributes) attributes of destination SFTP settings (see [below for nested schema](#nestedatt--output_option--sftp_output_option))
@@ -3286,8 +3661,42 @@ Required:
 Optional:
 
 - `description` (String) Description
+- `fields` (Attributes List) Nested fields for RECORD type columns (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields))
 - `timestamp_format` (String) Timestamp format
 - `timezone` (String) Time zone
+
+<a id="nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields"></a>
+### Nested Schema for `output_option.bigquery_output_option.bigquery_output_option_column_options.fields`
+
+Required:
+
+- `mode` (String) Mode
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `description` (String) Description
+- `fields` (Attributes List) Nested fields for RECORD type columns (see [below for nested schema](#nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields--fields))
+- `timestamp_format` (String) Timestamp format
+- `timezone` (String) Time zone
+
+<a id="nestedatt--output_option--bigquery_output_option--bigquery_output_option_column_options--fields--fields"></a>
+### Nested Schema for `output_option.bigquery_output_option.bigquery_output_option_column_options.fields.fields`
+
+Required:
+
+- `mode` (String) Mode
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `description` (String) Description
+- `timestamp_format` (String) Timestamp format
+- `timezone` (String) Time zone
+
+
 
 
 <a id="nestedatt--output_option--bigquery_output_option--custom_variable_settings"></a>
@@ -3421,6 +3830,72 @@ Optional:
 - `encoding` (String) Character encoding. Valid values: `UTF-8`, `UTF-16LE`, `UTF-32BE`, `UTF-32LE`
 - `newline` (String) Newline character. Valid values: `CRLF`, `LF`, `CR`, `NUL`, `NO`
 - `timezone` (String) Timezone
+
+
+
+<a id="nestedatt--output_option--google_drive_output_option"></a>
+### Nested Schema for `output_option.google_drive_output_option`
+
+Required:
+
+- `file_name` (String) Output file name
+- `formatter_type` (String) Formatter type
+- `google_drive_connection_id` (Number) ID of Google Drive connection
+- `main_folder_id` (String) Google Drive folder ID
+
+Optional:
+
+- `child_folder_name` (String) Child folder name
+- `csv_formatter` (Attributes) CSV formatter settings (see [below for nested schema](#nestedatt--output_option--google_drive_output_option--csv_formatter))
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--google_drive_output_option--custom_variable_settings))
+
+<a id="nestedatt--output_option--google_drive_output_option--csv_formatter"></a>
+### Nested Schema for `output_option.google_drive_output_option.csv_formatter`
+
+Optional:
+
+- `charset` (String) Character encoding
+- `csv_formatter_column_options_attributes` (Attributes List) Column-specific options (see [below for nested schema](#nestedatt--output_option--google_drive_output_option--csv_formatter--csv_formatter_column_options_attributes))
+- `default_time_zone` (String) Default timezone
+- `delimiter` (String) Delimiter character
+- `escape` (String) Escape character
+- `header_line` (Boolean) Whether to include header line
+- `newline` (String) Newline character. Valid values: `CRLF`, `LF`, `CR`
+- `newline_in_field` (String) Newline character in field. Valid values: `CRLF`, `LF`, `CR`
+- `null_string` (String) Null string representation
+- `null_string_enabled` (Boolean) Whether to enable null string representation
+- `quote_policy` (String) Quote policy. Valid values: `ALL`, `MINIMAL`, `NONE`
+
+<a id="nestedatt--output_option--google_drive_output_option--csv_formatter--csv_formatter_column_options_attributes"></a>
+### Nested Schema for `output_option.google_drive_output_option.csv_formatter.csv_formatter_column_options_attributes`
+
+Required:
+
+- `name` (String) Column name
+
+Optional:
+
+- `format` (String) Date format
+- `timezone` (String) Timezone
+
+
+
+<a id="nestedatt--output_option--google_drive_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.google_drive_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
 
 
 
@@ -3605,6 +4080,70 @@ Optional:
 - `retry_wait` (Number) Initial wait time in milliseconds between retries. Default is 1000.
 
 
+<a id="nestedatt--output_option--redshift_output_option"></a>
+### Nested Schema for `output_option.redshift_output_option`
+
+Required:
+
+- `database` (String) Database name
+- `redshift_connection_id` (Number) ID of Redshift connection
+- `s3_bucket` (String) S3 bucket for temporary data
+- `s3_key_prefix` (String) S3 key prefix for temporary data
+- `schema` (String) Schema name
+- `table` (String) Table name
+
+Optional:
+
+- `after_load` (String) SQL statement to execute after data transfer
+- `batch_size` (Number) Batch size in KB. Default is 16384.
+- `before_load` (String) SQL statement to execute before data transfer
+- `copy_iam_role_name` (String) IAM role name for COPY command
+- `create_table_constraint` (String) Constraint added to CREATE TABLE statement
+- `create_table_option` (String) Option added to CREATE TABLE statement
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--redshift_output_option--custom_variable_settings))
+- `default_time_zone` (String) Default time zone. Default is UTC.
+- `delete_s3_temp_file` (Boolean) Whether to delete temporary S3 files after transfer. Default is true.
+- `max_retry_wait` (Number) Maximum retry wait time in milliseconds. Default is 1800000.
+- `mode` (String) Transfer mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`
+- `redshift_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--redshift_output_option--redshift_output_option_column_options))
+- `redshift_output_option_merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
+- `retry_limit` (Number) Maximum number of retries. Default is 12.
+- `retry_wait` (Number) Retry wait time in milliseconds. Default is 1000.
+
+<a id="nestedatt--output_option--redshift_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.redshift_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--output_option--redshift_output_option--redshift_output_option_column_options"></a>
+### Nested Schema for `output_option.redshift_output_option.redshift_output_option_column_options`
+
+Required:
+
+- `name` (String) Column name
+
+Optional:
+
+- `timestamp_format` (String) Timestamp format (required when type is TIMESTAMP, TIME, or DATE and value_type is string or nstring)
+- `timezone` (String) Timezone (applicable when type is TIMESTAMP)
+- `type` (String) Column type. One of `BIGINT`, `VARCHAR`, `BOOLEAN`, `DOUBLE_PRECISION`, `CLOB`, `TIMESTAMP`, `TIME`, `DATE`
+- `value_type` (String) Value type
+
+
+
 <a id="nestedatt--output_option--s3_output_option"></a>
 ### Nested Schema for `output_option.s3_output_option`
 
@@ -3701,8 +4240,10 @@ Optional:
 
 - `action_type` (String) Transfer mode
 - `api_version` (String) Api version
+- `batch_size` (Number) Batch size for Salesforce API calls. Must be between 1 and 200.
 - `ignore_nulls` (Boolean) Update processing when NULL is included. Even if true, the record update process itself is performed.
 - `throw_if_failed` (Boolean) Status of records that could not be sent
+- `update_key` (String) Update key. If action_type is 'update', this field can be set.
 - `upsert_key` (String) Upsert key. If action_type is 'upsert', this field can be set.
 
 
