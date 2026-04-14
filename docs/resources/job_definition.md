@@ -4150,6 +4150,7 @@ Optional:
 Required:
 
 - `bucket` (String) S3 bucket name
+- `formatter_type` (String) Formatter type
 - `path_prefix` (String) File path prefix
 - `s3_connection_id` (Number) Id of S3 connection
 
@@ -4160,7 +4161,6 @@ Optional:
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--s3_output_option--custom_variable_settings))
 - `encoder_type` (String) Encoder type
 - `file_ext` (String) File extension
-- `formatter_type` (String) Formatter type
 - `is_minimum_output_tasks` (Boolean) Minimum output tasks setting
 - `jsonl_formatter` (Attributes) JSONL formatter settings. Required when formatter_type is jsonl (see [below for nested schema](#nestedatt--output_option--s3_output_option--jsonl_formatter))
 - `multipart_upload_enabled` (Boolean) Enable multipart upload
