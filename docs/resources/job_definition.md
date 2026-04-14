@@ -1568,6 +1568,7 @@ Optional:
 
 - `bigquery_input_option` (Attributes) Attributes about source bigquery (see [below for nested schema](#nestedatt--input_option--bigquery_input_option))
 - `databricks_input_option` (Attributes) Attributes of source databricks (see [below for nested schema](#nestedatt--input_option--databricks_input_option))
+- `facebook_ads_insights_input_option` (Attributes) Attributes about source Facebook Ads Insights (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option))
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
 - `google_ads_input_option` (Attributes) Attributes about source Google Ads (see [below for nested schema](#nestedatt--input_option--google_ads_input_option))
 - `google_analytics4_input_option` (Attributes) Attributes about source Google Analytics 4 (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option))
@@ -1677,6 +1678,77 @@ Required:
 
 <a id="nestedatt--input_option--databricks_input_option--custom_variable_settings"></a>
 ### Nested Schema for `input_option.databricks_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--input_option--facebook_ads_insights_input_option"></a>
+### Nested Schema for `input_option.facebook_ads_insights_input_option`
+
+Required:
+
+- `ad_account_id` (String) Facebook Ad Account ID (format: act_XXXXXXXXX)
+- `facebook_ads_insights_connection_id` (Number) ID of Facebook Ads Insights connection
+- `fields` (Attributes List) List of metrics/fields to be retrieved. At least one field is required. (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option--fields))
+- `level` (String) Data retrieval level. Supported values: `account`, `campaign`, `adset`, `ad`
+- `time_range_since` (String) Start date for data retrieval (ISO8601 format: YYYY-MM-DD)
+- `time_range_until` (String) End date for data retrieval (ISO8601 format: YYYY-MM-DD)
+
+Optional:
+
+- `action_attribution_windows` (Attributes List) List of action attribution windows (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option--action_attribution_windows))
+- `action_breakdowns` (Attributes List) List of action breakdowns (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option--action_breakdowns))
+- `breakdowns` (Attributes List) List of breakdowns for data segmentation (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option--breakdowns))
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option--custom_variable_settings))
+- `use_unified_attribution_setting` (Boolean) Use unified attribution setting. Default: true
+
+<a id="nestedatt--input_option--facebook_ads_insights_input_option--fields"></a>
+### Nested Schema for `input_option.facebook_ads_insights_input_option.fields`
+
+Required:
+
+- `name` (String) Field name defined by Meta Ads Insights API
+
+
+<a id="nestedatt--input_option--facebook_ads_insights_input_option--action_attribution_windows"></a>
+### Nested Schema for `input_option.facebook_ads_insights_input_option.action_attribution_windows`
+
+Required:
+
+- `name` (String) Attribution window value defined by Meta Ads API
+
+
+<a id="nestedatt--input_option--facebook_ads_insights_input_option--action_breakdowns"></a>
+### Nested Schema for `input_option.facebook_ads_insights_input_option.action_breakdowns`
+
+Required:
+
+- `name` (String) Action breakdown value defined by Meta Ads API
+
+
+<a id="nestedatt--input_option--facebook_ads_insights_input_option--breakdowns"></a>
+### Nested Schema for `input_option.facebook_ads_insights_input_option.breakdowns`
+
+Required:
+
+- `name` (String) Breakdown name defined by Meta Ads Insights API
+
+
+<a id="nestedatt--input_option--facebook_ads_insights_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.facebook_ads_insights_input_option.custom_variable_settings`
 
 Required:
 
