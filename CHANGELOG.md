@@ -1,3 +1,16 @@
+## 0.30.0
+
+FEATURES:
+- `trocco_connection` resource:
+  - Added support for Workload Identity Federation (WIF) authentication in `bigquery` type
+- `trocco_job_definition` resource:
+  - Added support for `facebook_ads_insights` input option
+
+BUG FIXES:
+- `trocco_job_definition` resource:
+  - Made `formatter_type` required in `s3` output option to prevent API call failures when omitted
+  - Removed undocumented `has_parser` field that was silently ignored by the API
+
 ## 0.29.0
 
 FEATURES:

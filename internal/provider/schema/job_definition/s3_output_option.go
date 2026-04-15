@@ -77,8 +77,7 @@ func S3OutputOptionSchema() schema.Attribute {
 				MarkdownDescription: "Enable multipart upload",
 			},
 			"formatter_type": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				Required: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("csv", "jsonl"),
 				},
