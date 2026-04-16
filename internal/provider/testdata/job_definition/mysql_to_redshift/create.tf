@@ -67,7 +67,7 @@ resource "trocco_job_definition" "mysql_to_redshift" {
   output_option_type = "redshift"
   output_option = {
     redshift_output_option = {
-      redshift_connection_id = 301
+      redshift_connection_id  = 301
       database                = "analytics"
       schema                  = "$schema$"
       table                   = "users"

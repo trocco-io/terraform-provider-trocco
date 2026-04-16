@@ -92,7 +92,7 @@ resource "trocco_job_definition" "mysql_to_gcs" {
       file_ext                = ".jsonl"
       sequence_format         = ".%03d.%02d"
       is_minimum_output_tasks = false
-      formatter_type           = "jsonl"
+      formatter_type          = "jsonl"
       encoder_type            = "gzip"
       jsonl_formatter = {
         encoding    = "UTF-8"
