@@ -108,6 +108,10 @@ type InputOption struct {
 	GoogleDriveInputOption         *inputOptionEntities.GoogleDriveInputOption         `json:"google_drive_input_option"`
 	RedshiftInputOption            *inputOptionEntities.RedshiftInputOption            `json:"redshift_input_option"`
 	FacebookAdsInsightsInputOption *inputOptionEntities.FacebookAdsInsightsInputOption `json:"facebook_ads_insights_input_option"`
+	// START [GENERATOR:JOB_DEF_INPUT_OPTION_ENTITY]
+	// pagerduty (auto-generated)
+	PagerdutyInputOption *inputOptionEntities.PagerdutyInputOption `json:"pagerduty_input_option"`
+	// END [GENERATOR:JOB_DEF_INPUT_OPTION_ENTITY]
 }
 
 type InputOptionInput struct {
@@ -132,6 +136,10 @@ type InputOptionInput struct {
 	GoogleDriveInputOption         *parameter.NullableObject[inputOptionParameters.GoogleDriveInputOptionInput]         `json:"google_drive_input_option,omitempty"`
 	RedshiftInputOption            *parameter.NullableObject[inputOptionParameters.RedshiftInputOptionInput]            `json:"redshift_input_option,omitempty"`
 	FacebookAdsInsightsInputOption *parameter.NullableObject[inputOptionParameters.FacebookAdsInsightsInputOptionInput] `json:"facebook_ads_insights_input_option,omitempty"`
+	// START [GENERATOR:JOB_DEF_INPUT_OPTION_INPUT]
+	// pagerduty (auto-generated)
+	PagerdutyInputOption *parameter.NullableObject[inputOptionParameters.PagerdutyInputOptionInput] `json:"pagerduty_input_option,omitempty"`
+	// END [GENERATOR:JOB_DEF_INPUT_OPTION_INPUT]
 }
 
 type UpdateInputOptionInput struct {
@@ -156,6 +164,10 @@ type UpdateInputOptionInput struct {
 	GoogleDriveInputOption         *parameter.NullableObject[inputOptionParameters.UpdateGoogleDriveInputOptionInput]         `json:"google_drive_input_option,omitempty"`
 	RedshiftInputOption            *parameter.NullableObject[inputOptionParameters.UpdateRedshiftInputOptionInput]            `json:"redshift_input_option,omitempty"`
 	FacebookAdsInsightsInputOption *parameter.NullableObject[inputOptionParameters.UpdateFacebookAdsInsightsInputOptionInput] `json:"facebook_ads_insights_input_option,omitempty"`
+	// START [GENERATOR:JOB_DEF_INPUT_OPTION_UPDATE_INPUT]
+	// pagerduty (auto-generated)
+	PagerdutyInputOption *parameter.NullableObject[inputOptionParameters.UpdatePagerdutyInputOptionInput] `json:"pagerduty_input_option,omitempty"`
+	// END [GENERATOR:JOB_DEF_INPUT_OPTION_UPDATE_INPUT]
 }
 
 type OutputOption struct {

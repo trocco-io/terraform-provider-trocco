@@ -31,6 +31,10 @@ type InputOption struct {
 	GoogleDriveInputOption         *inputOptionModel.GoogleDriveInputOption         `tfsdk:"google_drive_input_option"`
 	RedshiftInputOption            *inputOptionModel.RedshiftInputOption            `tfsdk:"redshift_input_option"`
 	FacebookAdsInsightsInputOption *inputOptionModel.FacebookAdsInsightsInputOption `tfsdk:"facebook_ads_insights_input_option"`
+	// START [GENERATOR:INPUT_OPTION_STRUCT_FIELD]
+	// pagerduty (auto-generated)
+	PagerdutyInputOption *inputOptionModel.PagerdutyInputOption `tfsdk:"pagerduty_input_option"`
+	// END [GENERATOR:INPUT_OPTION_STRUCT_FIELD]
 }
 
 func NewInputOption(ctx context.Context, inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics) {
@@ -61,6 +65,10 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		GoogleDriveInputOption:         inputOptionModel.NewGoogleDriveInputOption(ctx, inputOption.GoogleDriveInputOption),
 		RedshiftInputOption:            inputOptionModel.NewRedshiftInputOption(ctx, inputOption.RedshiftInputOption),
 		FacebookAdsInsightsInputOption: inputOptionModel.NewFacebookAdsInsightsInputOption(ctx, inputOption.FacebookAdsInsightsInputOption),
+		// START [GENERATOR:INPUT_OPTION_NEW]
+		// pagerduty (auto-generated)
+		PagerdutyInputOption: inputOptionModel.NewPagerdutyInputOption(ctx, inputOption.PagerdutyInputOption),
+		// END [GENERATOR:INPUT_OPTION_NEW]
 	}, diags
 }
 
@@ -92,6 +100,10 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 		GoogleDriveInputOption:         model.WrapObject(o.GoogleDriveInputOption.ToInput(ctx)),
 		RedshiftInputOption:            model.WrapObject(o.RedshiftInputOption.ToInput(ctx)),
 		FacebookAdsInsightsInputOption: model.WrapObject(o.FacebookAdsInsightsInputOption.ToInput(ctx)),
+		// START [GENERATOR:INPUT_OPTION_TO_INPUT]
+		// pagerduty (auto-generated)
+		PagerdutyInputOption: model.WrapObject(o.PagerdutyInputOption.ToInput(ctx)),
+		// END [GENERATOR:INPUT_OPTION_TO_INPUT]
 	}, diags
 }
 
@@ -122,5 +134,9 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 		GoogleDriveInputOption:         model.WrapObject(o.GoogleDriveInputOption.ToUpdateInput(ctx)),
 		RedshiftInputOption:            model.WrapObject(o.RedshiftInputOption.ToUpdateInput(ctx)),
 		FacebookAdsInsightsInputOption: model.WrapObject(o.FacebookAdsInsightsInputOption.ToUpdateInput(ctx)),
+		// START [GENERATOR:INPUT_OPTION_TO_UPDATE_INPUT]
+		// pagerduty (auto-generated)
+		PagerdutyInputOption: model.WrapObject(o.PagerdutyInputOption.ToUpdateInput(ctx)),
+		// END [GENERATOR:INPUT_OPTION_TO_UPDATE_INPUT]
 	}, diags
 }

@@ -111,6 +111,10 @@ type connectionResourceModel struct {
 	AWSAccessKeyID     types.String `tfsdk:"aws_access_key_id"`
 	AWSSecretAccessKey types.String `tfsdk:"aws_secret_access_key"`
 	SSLEnabled         types.Bool   `tfsdk:"ssl_enabled"`
+
+	// START [GENERATOR:CONNECTION_FIELDS]
+	APIKey types.String `tfsdk:"api_key"`
+	// END [GENERATOR:CONNECTION_FIELDS]
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -180,6 +184,9 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		AuthSource:               model.NewNullableString(m.AuthSource),
 		ReplicaSet:               model.NewNullableString(m.ReplicaSet),
 		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
+		// START [GENERATOR:CONNECTION_INPUT]
+		APIKey: m.APIKey.ValueStringPointer(),
+		// END [GENERATOR:CONNECTION_INPUT]
 	}
 
 	// ReadPreferenceTags
@@ -307,6 +314,9 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		AuthSource:               model.NewNullableString(m.AuthSource),
 		ReplicaSet:               model.NewNullableString(m.ReplicaSet),
 		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
+		// START [GENERATOR:CONNECTION_INPUT]
+		APIKey: m.APIKey.ValueStringPointer(),
+		// END [GENERATOR:CONNECTION_INPUT]
 	}
 
 	// ReadPreferenceTags
@@ -420,6 +430,7 @@ var supportedConnectionTypes = []string{
 	"mongodb",
 	"google_drive",
 	"redshift",
+	"pagerduty",
 }
 
 func (r *connectionResource) Schema(
@@ -989,6 +1000,13 @@ func (r *connectionResource) Schema(
 				MarkdownDescription: "Redshift: Whether SSL is enabled.",
 				Optional:            true,
 			},
+			// START [GENERATOR:CONNECTION_SCHEMA]
+			"api_key": schema.StringAttribute{
+				Optional:            true,
+				Sensitive:           true,
+				MarkdownDescription: "API トークン",
+			},
+			// END [GENERATOR:CONNECTION_SCHEMA]
 		},
 	}
 }
@@ -1098,6 +1116,10 @@ func (r *connectionResource) Create(
 		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
 		AWSSecretAccessKey: plan.AWSSecretAccessKey,
 		SSLEnabled:         plan.SSLEnabled,
+
+		// START [GENERATOR:CONNECTION_STATE_CREATE]
+		APIKey: plan.APIKey,
+		// END [GENERATOR:CONNECTION_STATE_CREATE]
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1224,6 +1246,10 @@ func (r *connectionResource) Update(
 		AWSAccessKeyID:     types.StringPointerValue(connection.AWSAccessKeyID),
 		AWSSecretAccessKey: plan.AWSSecretAccessKey,
 		SSLEnabled:         plan.SSLEnabled,
+
+		// START [GENERATOR:CONNECTION_STATE_UPDATE]
+		APIKey: plan.APIKey,
+		// END [GENERATOR:CONNECTION_STATE_UPDATE]
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1336,6 +1362,10 @@ func (r *connectionResource) Read(
 		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
 		AWSSecretAccessKey: state.AWSSecretAccessKey,
 		SSLEnabled:         sslEnabled,
+
+		// START [GENERATOR:CONNECTION_STATE_READ]
+		APIKey: state.APIKey,
+		// END [GENERATOR:CONNECTION_STATE_READ]
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
