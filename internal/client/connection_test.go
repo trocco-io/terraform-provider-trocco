@@ -184,9 +184,11 @@ func TestCreatePagerdutyConnection(t *testing.T) {
 		assert.Equal(t, "/api/connections/pagerduty", r.URL.Path)
 
 		var body map[string]interface{}
-		require.NoError(t, json.NewDecoder(r.Body).Decode(&body))
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 		assert.NotNil(t, body["api_key"], "api_key should be present")
-
 		w.Header().Set("Content-Type", "application/json")
 		c := Connection{
 			ID:   8,
