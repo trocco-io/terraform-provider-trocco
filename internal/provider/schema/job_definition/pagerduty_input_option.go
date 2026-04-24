@@ -3,6 +3,7 @@ package job_definition
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
@@ -22,6 +23,9 @@ func PagerdutyInputOptionSchema() schema.Attribute {
 			"path": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: "API endpoint path",
+				Validators: []validator.String{
+					stringvalidator.OneOf("escalation_policies", "incidents", "log_entries", "oncalls", "priorities", "schedules", "services", "teams", "users"),
+				},
 			},
 			"earliest": schema.BoolAttribute{
 				Optional: true,
