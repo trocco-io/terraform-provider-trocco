@@ -92,7 +92,7 @@ resource "trocco_job_definition" "mysql_to_gcs" {
       file_ext                = ".csv"
       sequence_format         = ".%03d.%02d"
       is_minimum_output_tasks = false
-      formatter_type           = "csv"
+      formatter_type          = "csv"
       encoder_type            = "gzip"
       csv_formatter = {
         delimiter           = ","

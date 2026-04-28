@@ -1,7 +1,7 @@
 # BigQuery to SFTP Csv Job Definition Example
 resource "trocco_job_definition" "bigquery_to_sftp_csv" {
-  name           = "BigQuery to SFTP CSV Export"
-  description    = "Export BigQuery data to SFTP in CSV format"
+  name        = "BigQuery to SFTP CSV Export"
+  description = "Export BigQuery data to SFTP in CSV format"
 
   input_option_type  = "bigquery"
   output_option_type = "sftp"
@@ -70,16 +70,16 @@ resource "trocco_job_definition" "bigquery_to_sftp_csv" {
       encoder_type            = "gzip"
 
       csv_formatter = {
-        delimiter               = ","
-        newline                 = "CRLF"
-        newline_in_field        = "LF"
-        charset                 = "UTF-8"
-        quote_policy            = "MINIMAL"
-        escape                  = "\\"
-        header_line             = true
-        null_string_enabled     = true
-        null_string             = "NULL"
-        default_time_zone       = "Asia/Tokyo"
+        delimiter           = ","
+        newline             = "CRLF"
+        newline_in_field    = "LF"
+        charset             = "UTF-8"
+        quote_policy        = "MINIMAL"
+        escape              = "\\"
+        header_line         = true
+        null_string_enabled = true
+        null_string         = "NULL"
+        default_time_zone   = "Asia/Tokyo"
 
         csv_formatter_column_options_attributes = [
           {
@@ -108,9 +108,9 @@ resource "trocco_job_definition" "bigquery_to_sftp_csv" {
 # BigQuery source connection
 resource "trocco_connection" "bigquery" {
   connection_type = "bigquery"
-  name           = "Analytics BigQuery"
-  description    = "BigQuery connection for analytics data"
-  
+  name            = "Analytics BigQuery"
+  description     = "BigQuery connection for analytics data"
+
   project_id               = "my-analytics-project"
   service_account_json_key = <<JSON
   {
@@ -125,10 +125,10 @@ resource "trocco_connection" "bigquery" {
 # SFTP destination connection
 resource "trocco_connection" "sftp" {
   connection_type = "sftp"
-  name           = "Analytics SFTP"
-  description    = "SFTP server for analytics exports"
-  
-  host                    = "analytics-sftp.example.com"
-  port                    = 22
-  user_name               = "analytics"
+  name            = "Analytics SFTP"
+  description     = "SFTP server for analytics exports"
+
+  host      = "analytics-sftp.example.com"
+  port      = 22
+  user_name = "analytics"
 }

@@ -1,3 +1,10 @@
+## 0.30.1
+
+CHORE:
+- Updated GitHub Actions workflows for Node.js 24 compatibility
+- Fixed Terraform example formatting and added CI format check
+- Fixed missing type in `trocco_notification_destination` import example
+
 ## 0.30.0
 
 FEATURES:

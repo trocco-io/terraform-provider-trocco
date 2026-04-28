@@ -79,7 +79,7 @@ In Terraform v1.5.0 and later, use an [`import` block](https://developer.hashico
 
 ```terraform
 import {
-  id = 1
+  id = "slack_channel,1"
   to = trocco_notification_destination.example
 }
 ```
