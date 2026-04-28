@@ -31,12 +31,7 @@ func NewPagerdutyInputOption(
 		return nil
 	}
 
-	// All params are stored in Meta in the API response.
-	path := types.StringValue("")
-	meta := e.Meta
-	if meta != nil {
-		path = types.StringValue(meta.Path)
-	}
+	path := types.StringValue(e.Path)
 
 	customVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, e.CustomVariableSettings)
 	if err != nil {
@@ -44,26 +39,11 @@ func NewPagerdutyInputOption(
 	}
 
 	return &PagerdutyInputOption{
-		PagerdutyConnectionID: types.Int64Value(e.PagerdutyConnectionID),
-		Path:                  path,
-		Earliest: types.BoolPointerValue(func() *bool {
-			if meta != nil {
-				return meta.Earliest
-			}
-			return nil
-		}()),
-		Since: types.StringPointerValue(func() *string {
-			if meta != nil {
-				return meta.Since
-			}
-			return nil
-		}()),
-		Until: types.StringPointerValue(func() *string {
-			if meta != nil {
-				return meta.Until
-			}
-			return nil
-		}()),
+		PagerdutyConnectionID:  types.Int64Value(e.PagerdutyConnectionID),
+		Path:                   path,
+		Earliest:               types.BoolPointerValue(e.Earliest),
+		Since:                  types.StringPointerValue(e.Since),
+		Until:                  types.StringPointerValue(e.Until),
 		CustomVariableSettings: customVariableSettings,
 	}
 }

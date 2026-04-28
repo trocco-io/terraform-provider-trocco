@@ -9,6 +9,7 @@ resource "trocco_connection" "pagerduty_example" {
   connection_type = "pagerduty"
   name            = "Pagerduty Connection"
   # fill in required connection fields
+  api_key = "your-api-key"
 }
 
 # Example: pagerduty → bigquery (path = escalation_policies)
@@ -48,8 +49,8 @@ resource "trocco_job_definition" "pagerduty_Incidents_to_bigquery" {
     pagerduty_input_option = {
       pagerduty_connection_id = trocco_connection.pagerduty_example.id
       path                    = "incidents"
-      # since = <string>
-      # until = <string>
+      since                   = "2023-01-01T00:00:00Z"
+      until                   = "2023-02-01T00:00:00Z"
     }
   }
 

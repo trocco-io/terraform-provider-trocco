@@ -5,15 +5,11 @@ import (
 	"terraform-provider-trocco/internal/client/entity"
 )
 
-type PagerdutyInputOptionMeta struct {
-	Path     string  `json:"path"`
-	Earliest *bool   `json:"parameter__earliest"`
-	Since    *string `json:"parameter__since"`
-	Until    *string `json:"parameter__until"`
-}
-
 type PagerdutyInputOption struct {
 	PagerdutyConnectionID  int64                           `json:"pagerduty_connection_id"`
-	Meta                   *PagerdutyInputOptionMeta       `json:"meta"`
+	Path                   string                          `json:"path"`
+	Earliest               *bool                           `json:"parameter__earliest"`
+	Since                  *string                         `json:"parameter__since"`
+	Until                  *string                         `json:"parameter__until"`
 	CustomVariableSettings *[]entity.CustomVariableSetting `json:"custom_variable_settings"`
 }

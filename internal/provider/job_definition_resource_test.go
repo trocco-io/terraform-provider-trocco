@@ -1914,7 +1914,7 @@ func TestAccJobDefinitionResourcePagerdutyToBigQuery(t *testing.T) {
 				ResourceName:            resourceName,
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"input_option.pagerduty_input_option.path"},
+				ImportStateVerifyIgnore: []string{},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
 					return jobDefinitionId, nil

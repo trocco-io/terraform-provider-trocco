@@ -1004,7 +1004,7 @@ func (r *connectionResource) Schema(
 			"api_key": schema.StringAttribute{
 				Optional:            true,
 				Sensitive:           true,
-				MarkdownDescription: "API トークン",
+				MarkdownDescription: "API Key",
 			},
 			// END [GENERATOR:CONNECTION_SCHEMA]
 		},

@@ -361,7 +361,7 @@ resource "trocco_connection" "google_drive" {
 
 ### Optional
 
-- `api_key` (String, Sensitive) API トークン
+- `api_key` (String, Sensitive) API Key
 - `application_name` (String) GCS: Application name.
 - `auth_end_point` (String) Salesforce: Authentication endpoint.
 - `auth_method` (String) Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`. MongoDB: The authentication method. It must be one of `auto`, `mongodb-cr`, or `scram-sha-1`.

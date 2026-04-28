@@ -2912,9 +2912,9 @@ Required:
 Optional:
 
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--pagerduty_input_option--custom_variable_settings))
-- `earliest` (Boolean)
-- `since` (String)
-- `until` (String)
+- `earliest` (Boolean) If true, returns only the earliest on-call for each combination of escalation policy, escalation level, and user. This is available if `path` is `oncalls`.
+- `since` (String) Start date. This is available if `path` is in `oncalls`, `incidents`, and `log_entries`.
+- `until` (String) End date and time. This is available if `path` is in `oncalls`, `incidents`, and `log_entries`.
 
 <a id="nestedatt--input_option--pagerduty_input_option--custom_variable_settings"></a>
 ### Nested Schema for `input_option.pagerduty_input_option.custom_variable_settings`

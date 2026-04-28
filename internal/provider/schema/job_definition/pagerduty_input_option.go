@@ -28,13 +28,16 @@ func PagerdutyInputOptionSchema() schema.Attribute {
 				},
 			},
 			"earliest": schema.BoolAttribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "If true, returns only the earliest on-call for each combination of escalation policy, escalation level, and user. This is available if `path` is `oncalls`.",
 			},
 			"since": schema.StringAttribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "Start date. This is available if `path` is in `oncalls`, `incidents`, and `log_entries`.",
 			},
 			"until": schema.StringAttribute{
-				Optional: true,
+				Optional:            true,
+				MarkdownDescription: "End date and time. This is available if `path` is in `oncalls`, `incidents`, and `log_entries`.",
 			},
 			"custom_variable_settings": CustomVariableSettingsSchema(),
 		},
