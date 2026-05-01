@@ -42,13 +42,11 @@ func MarketoInputOptionSchema() schema.Attribute {
 			"use_updated_at": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				Default:             booldefault.StaticBool(false),
 				MarkdownDescription: "Use updated_at for filtering (lead only)",
 			},
 			"polling_interval_second": schema.Int64Attribute{
 				Optional:            true,
 				Computed:            true,
-				Default:             int64default.StaticInt64(60),
 				MarkdownDescription: "Polling interval in seconds (lead/activity only)",
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
@@ -57,7 +55,6 @@ func MarketoInputOptionSchema() schema.Attribute {
 			"bulk_job_timeout_second": schema.Int64Attribute{
 				Optional:            true,
 				Computed:            true,
-				Default:             int64default.StaticInt64(3600),
 				MarkdownDescription: "Bulk job timeout in seconds (lead/activity only)",
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
@@ -126,7 +123,6 @@ func MarketoInputOptionSchema() schema.Attribute {
 			"max_depth": schema.Int64Attribute{
 				Optional:            true,
 				Computed:            true,
-				Default:             int64default.StaticInt64(2),
 				MarkdownDescription: "Max folder depth (folder only)",
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
