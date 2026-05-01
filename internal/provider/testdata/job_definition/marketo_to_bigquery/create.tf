@@ -1,7 +1,7 @@
 resource "trocco_connection" "marketo_test" {
   connection_type = "marketo"
 
-  name                       = "Test Marketo Connection"
+  name = "Test Marketo Connection"
 
   marketo_account_id         = "123-ABC-456"
   marketo_client_id          = "client_test_123"
