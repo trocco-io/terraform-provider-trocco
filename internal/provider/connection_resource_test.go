@@ -264,9 +264,9 @@ func testAccConnectionResourceMarketo(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "connection_type", "marketo"),
 					resource.TestCheckResourceAttr(resourceName, "name", "Test Marketo Connection"),
 					resource.TestCheckResourceAttr(resourceName, "description", "Test Marketo connection for API operations"),
-					resource.TestCheckResourceAttr(resourceName, "marketo_account_id", "123-ABC-456"),
-					resource.TestCheckResourceAttr(resourceName, "marketo_client_id", "client_test_123"),
-					resource.TestCheckResourceAttr(resourceName, "marketo_api_max_call_count", "5000"),
+					resource.TestCheckResourceAttr(resourceName, "account_id", "123-ABC-456"),
+					resource.TestCheckResourceAttr(resourceName, "client_id", "client_test_123"),
+					resource.TestCheckResourceAttr(resourceName, "api_max_call_count", "5000"),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
@@ -274,7 +274,7 @@ func testAccConnectionResourceMarketo(t *testing.T) {
 				ResourceName:            resourceName,
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"marketo_client_secret"},
+				ImportStateVerifyIgnore: []string{"client_secret"},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					connectionId := s.RootModule().Resources[resourceName].Primary.ID
 					return connectionId, nil
