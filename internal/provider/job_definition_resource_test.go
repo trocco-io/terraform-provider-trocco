@@ -1594,6 +1594,308 @@ func TestAccJobDefinitionResourceGoogleDriveToBigQuery(t *testing.T) {
 	})
 }
 
+func TestAccJobDefinitionResourceYahooAdsApiYdnReportToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.yahoo_ads_report_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/yahoo_ads_api_ydn_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Yahoo Ads Report to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Daily report data from Yahoo Ads YDN synced to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "yahoo_ads_api_ydn"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					resource.TestCheckResourceAttrSet(resourceName, "input_option.yahoo_ads_api_ydn_input_option.yahoo_ads_api_connection_id"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.target", "report"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.base_account_id", "1234567890"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.account_id", "1234567890"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.start_date", "2024-01-01"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.end_date", "2024-01-31"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.include_deleted", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.input_option_columns.0.name", "DATE"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.input_option_columns.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.input_option_columns.1.name", "CAMPAIGN_ID"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.input_option_columns.1.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "yahoo_ads"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "report"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "merge"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.location", "US"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.timeout_sec", "300"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.retries", "5"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "DATE"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.src", "DATE"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.type", "string"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceYahooAdsApiYdnStatsToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.yahoo_ads_stats_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/yahoo_ads_api_ydn_stats_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Yahoo Ads Campaign Stats to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Campaign stats data from Yahoo Ads YDN synced to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "3"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "yahoo_ads_api_ydn"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					resource.TestCheckResourceAttrSet(resourceName, "input_option.yahoo_ads_api_ydn_input_option.yahoo_ads_api_connection_id"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.target", "stats"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.report_type", "CAMPAIGN"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.base_account_id", "1234567890"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.account_id", "1234567890"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.start_date", "2024-01-01"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.end_date", "2024-01-31"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.include_deleted", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.input_option_columns.0.name", "CAMPAIGN_NAME"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.input_option_columns.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.input_option_columns.1.name", "CAMPAIGN_ID"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.yahoo_ads_api_ydn_input_option.input_option_columns.1.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "yahoo_ads"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "campaign_stats"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "replace"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.location", "US"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.auto_create_dataset", "true"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.timeout_sec", "600"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.retries", "3"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "CAMPAIGN_NAME"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.src", "CAMPAIGN_NAME"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.type", "string"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceRedshiftToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.redshift_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/redshift_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Redshift to BigQuery Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from Redshift to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "redshift"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.redshift_input_option.database", "analytics"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.redshift_input_option.query", "SELECT * FROM test_table WHERE status = 'active'"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.redshift_input_option.schema", "public"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.redshift_input_option.fetch_rows", "1000"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.redshift_input_option.connect_timeout", "30"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.redshift_input_option.socket_timeout", "60"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.name", "created_at"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.type", "timestamp"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "redshift_test_table"),
+				),
+			},
+			// ImportState testing
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceMysqlToRedshift(t *testing.T) {
+	resourceName := "trocco_job_definition.mysql_to_redshift"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/mysql_to_redshift/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "MySQL to Redshift Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from MySQL to Redshift"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "mysql"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "redshift"),
+
+					// Check MySQL input option
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.database", "test_database"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.table", "test_table"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.connect_timeout", "300"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.socket_timeout", "1800"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.mysql_input_option.incremental_loading_enabled", "false"),
+
+					// Check Redshift output option
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.database", "analytics"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.schema", "$schema$"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.table", "users"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.mode", "merge"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.s3_bucket", "my-redshift-bucket"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.s3_key_prefix", "/redshift-temp"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.delete_s3_temp_file", "true"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.retry_limit", "12"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.retry_wait", "1000"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.max_retry_wait", "1800000"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.default_time_zone", "UTC"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.batch_size", "1024"),
+
+					// Check custom variables and merge settings
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.custom_variable_settings.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.custom_variable_settings.0.name", "$schema$"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.custom_variable_settings.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.custom_variable_settings.0.value", "public"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_output_option_merge_keys.#", "2"),
+
+					// Check column options
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_output_option_column_options.#", "3"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_output_option_column_options.0.name", "user_id"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_output_option_column_options.0.type", "BIGINT"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_output_option_column_options.0.value_type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_output_option_column_options.1.name", "user_name"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_output_option_column_options.1.type", "VARCHAR"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_output_option_column_options.1.value_type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_output_option_column_options.2.name", "created_timestamp"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_output_option_column_options.2.type", "TIMESTAMP"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_output_option_column_options.2.value_type", "timestamp"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.redshift_output_option.redshift_output_option_column_options.2.timezone", "Asia/Tokyo"),
+
+					// Check filter columns
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.src", "id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.name", "type"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.src", "type"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.type", "string"),
+				),
+			},
+			// ImportState testing
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceFacebookAdsInsightsToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.facebook_ads_insights_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/job_definition/facebook_ads_insights_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Facebook Ads Insights to BigQuery Test"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition for transferring data from Facebook Ads Insights to BigQuery"),
+					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "medium"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "2"),
+					resource.TestCheckResourceAttr(resourceName, "is_runnable_concurrently", "false"),
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "facebook_ads_insights"),
+					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.facebook_ads_insights_connection_id", "922"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.ad_account_id", "act_123456789"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.level", "campaign"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.time_range_since", "2024-01-01"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.time_range_until", "2024-01-31"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.use_unified_attribution_setting", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.fields.#", "5"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.fields.0.name", "campaign_id"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.fields.1.name", "campaign_name"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.fields.2.name", "impressions"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.fields.3.name", "clicks"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.fields.4.name", "spend"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.breakdowns.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.breakdowns.0.name", "country"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.breakdowns.1.name", "device_platform"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.action_attribution_windows.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.action_attribution_windows.0.name", "1d_click"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.action_attribution_windows.1.name", "7d_click"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.action_breakdowns.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.action_breakdowns.0.name", "action_type"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.custom_variable_settings.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.custom_variable_settings.0.name", "$window_start$"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.custom_variable_settings.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.facebook_ads_insights_input_option.custom_variable_settings.0.value", "2024-01-01"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.name", "campaign_id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.src", "campaign_id"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.0.type", "string"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.name", "impressions"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.src", "impressions"),
+					resource.TestCheckResourceAttr(resourceName, "filter_columns.1.type", "long"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "facebook_ads_insights_test"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.location", "US"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
 func TestAccJobDefinitionResourceMarketoToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.marketo_lead_with_date_filter"
 	resource.Test(t, resource.TestCase{

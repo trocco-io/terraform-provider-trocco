@@ -10,25 +10,28 @@ import (
 )
 
 type InputOption struct {
-	MySQLInputOption              *inputOptionModel.MySQLInputOption              `tfsdk:"mysql_input_option"`
-	GcsInputOption                *inputOptionModel.GcsInputOption                `tfsdk:"gcs_input_option"`
-	SnowflakeInputOption          *inputOptionModel.SnowflakeInputOption          `tfsdk:"snowflake_input_option"`
-	SalesforceInputOption         *inputOptionModel.SalesforceInputOption         `tfsdk:"salesforce_input_option"`
-	GoogleSpreadsheetsInputOption *inputOptionModel.GoogleSpreadsheetsInputOption `tfsdk:"google_spreadsheets_input_option"`
-	S3InputOption                 *inputOptionModel.S3InputOption                 `tfsdk:"s3_input_option"`
-	BigqueryInputOption           *inputOptionModel.BigqueryInputOption           `tfsdk:"bigquery_input_option"`
-	PostgreSQLInputOption         *inputOptionModel.PostgreSQLInputOption         `tfsdk:"postgresql_input_option"`
-	GoogleAnalytics4InputOption   *inputOptionModel.GoogleAnalytics4InputOption   `tfsdk:"google_analytics4_input_option"`
-	HttpInputOption               *inputOptionModel.HttpInputOption               `tfsdk:"http_input_option"`
-	KintoneInputOption            *inputOptionModel.KintoneInputOption            `tfsdk:"kintone_input_option"`
-	YahooAdsApiYssInputOption     *inputOptionModel.YahooAdsApiYssInputOption     `tfsdk:"yahoo_ads_api_yss_input_option"`
-	SftpInputOption               *inputOptionModel.SftpInputOption               `tfsdk:"sftp_input_option"`
-	HubspotInputOption            *inputOptionModel.HubspotInputOption            `tfsdk:"hubspot_input_option"`
-	DatabricksInputOption         *inputOptionModel.DatabricksInputOption         `tfsdk:"databricks_input_option"`
-	MongoDBInputOption            *inputOptionModel.MongoDBInputOption            `tfsdk:"mongodb_input_option"`
-	GoogleAdsInputOption          *inputOptionModel.GoogleAdsInputOption          `tfsdk:"google_ads_input_option"`
-	GoogleDriveInputOption        *inputOptionModel.GoogleDriveInputOption        `tfsdk:"google_drive_input_option"`
-	MarketoInputOption            *inputOptionModel.MarketoInputOption            `tfsdk:"marketo_input_option"`
+	MySQLInputOption               *inputOptionModel.MySQLInputOption               `tfsdk:"mysql_input_option"`
+	GcsInputOption                 *inputOptionModel.GcsInputOption                 `tfsdk:"gcs_input_option"`
+	SnowflakeInputOption           *inputOptionModel.SnowflakeInputOption           `tfsdk:"snowflake_input_option"`
+	SalesforceInputOption          *inputOptionModel.SalesforceInputOption          `tfsdk:"salesforce_input_option"`
+	GoogleSpreadsheetsInputOption  *inputOptionModel.GoogleSpreadsheetsInputOption  `tfsdk:"google_spreadsheets_input_option"`
+	S3InputOption                  *inputOptionModel.S3InputOption                  `tfsdk:"s3_input_option"`
+	BigqueryInputOption            *inputOptionModel.BigqueryInputOption            `tfsdk:"bigquery_input_option"`
+	PostgreSQLInputOption          *inputOptionModel.PostgreSQLInputOption          `tfsdk:"postgresql_input_option"`
+	GoogleAnalytics4InputOption    *inputOptionModel.GoogleAnalytics4InputOption    `tfsdk:"google_analytics4_input_option"`
+	HttpInputOption                *inputOptionModel.HttpInputOption                `tfsdk:"http_input_option"`
+	KintoneInputOption             *inputOptionModel.KintoneInputOption             `tfsdk:"kintone_input_option"`
+	YahooAdsApiYssInputOption      *inputOptionModel.YahooAdsApiYssInputOption      `tfsdk:"yahoo_ads_api_yss_input_option"`
+	YahooAdsApiYdnInputOption      *inputOptionModel.YahooAdsApiYdnInputOption      `tfsdk:"yahoo_ads_api_ydn_input_option"`
+	SftpInputOption                *inputOptionModel.SftpInputOption                `tfsdk:"sftp_input_option"`
+	HubspotInputOption             *inputOptionModel.HubspotInputOption             `tfsdk:"hubspot_input_option"`
+	DatabricksInputOption          *inputOptionModel.DatabricksInputOption          `tfsdk:"databricks_input_option"`
+	MongoDBInputOption             *inputOptionModel.MongoDBInputOption             `tfsdk:"mongodb_input_option"`
+	GoogleAdsInputOption           *inputOptionModel.GoogleAdsInputOption           `tfsdk:"google_ads_input_option"`
+	GoogleDriveInputOption         *inputOptionModel.GoogleDriveInputOption         `tfsdk:"google_drive_input_option"`
+	RedshiftInputOption            *inputOptionModel.RedshiftInputOption            `tfsdk:"redshift_input_option"`
+	FacebookAdsInsightsInputOption *inputOptionModel.FacebookAdsInsightsInputOption `tfsdk:"facebook_ads_insights_input_option"`
+	MarketoInputOption             *inputOptionModel.MarketoInputOption             `tfsdk:"marketo_input_option"`
 }
 
 func NewInputOption(ctx context.Context, inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics) {
@@ -38,25 +41,28 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 	}
 	httpInputOption, diags := inputOptionModel.NewHttpInputOption(ctx, inputOption.HttpInputOption, previousHttpInputOption)
 	return &InputOption{
-		GcsInputOption:                inputOptionModel.NewGcsInputOption(ctx, inputOption.GcsInputOption),
-		MySQLInputOption:              inputOptionModel.NewMysqlInputOption(ctx, inputOption.MySQLInputOption),
-		SnowflakeInputOption:          inputOptionModel.NewSnowflakeInputOption(ctx, inputOption.SnowflakeInputOption),
-		SalesforceInputOption:         inputOptionModel.NewSalesforceInputOption(ctx, inputOption.SalesforceInputOption),
-		GoogleSpreadsheetsInputOption: inputOptionModel.NewGoogleSpreadsheetsInputOption(ctx, inputOption.GoogleSpreadsheetsInputOption),
-		S3InputOption:                 inputOptionModel.NewS3InputOption(ctx, inputOption.S3InputOption),
-		BigqueryInputOption:           inputOptionModel.NewBigqueryInputOption(ctx, inputOption.BigqueryInputOption),
-		PostgreSQLInputOption:         inputOptionModel.NewPostgreSQLInputOption(ctx, inputOption.PostgreSQLInputOption),
-		GoogleAnalytics4InputOption:   inputOptionModel.NewGoogleAnalytics4InputOption(ctx, inputOption.GoogleAnalytics4InputOption),
-		HttpInputOption:               httpInputOption,
-		KintoneInputOption:            inputOptionModel.NewKintoneInputOption(ctx, inputOption.KintoneInputOption),
-		YahooAdsApiYssInputOption:     inputOptionModel.NewYahooAdsApiYssInputOption(ctx, inputOption.YahooAdsApiYssInputOption),
-		SftpInputOption:               inputOptionModel.NewSftpInputOption(ctx, inputOption.SftpInputOption),
-		HubspotInputOption:            inputOptionModel.NewHubspotInputOption(ctx, inputOption.HubspotInputOption),
-		DatabricksInputOption:         inputOptionModel.NewDatabricksInputOption(ctx, inputOption.DatabricksInputOption),
-		MongoDBInputOption:            inputOptionModel.NewMongodbInputOption(ctx, inputOption.MongoDBInputOption),
-		GoogleAdsInputOption:          inputOptionModel.NewGoogleAdsInputOption(ctx, inputOption.GoogleAdsInputOption),
-		GoogleDriveInputOption:        inputOptionModel.NewGoogleDriveInputOption(ctx, inputOption.GoogleDriveInputOption),
-		MarketoInputOption:            inputOptionModel.NewMarketoInputOption(ctx, inputOption.MarketoInputOption),
+		GcsInputOption:                 inputOptionModel.NewGcsInputOption(ctx, inputOption.GcsInputOption),
+		MySQLInputOption:               inputOptionModel.NewMysqlInputOption(ctx, inputOption.MySQLInputOption),
+		SnowflakeInputOption:           inputOptionModel.NewSnowflakeInputOption(ctx, inputOption.SnowflakeInputOption),
+		SalesforceInputOption:          inputOptionModel.NewSalesforceInputOption(ctx, inputOption.SalesforceInputOption),
+		GoogleSpreadsheetsInputOption:  inputOptionModel.NewGoogleSpreadsheetsInputOption(ctx, inputOption.GoogleSpreadsheetsInputOption),
+		S3InputOption:                  inputOptionModel.NewS3InputOption(ctx, inputOption.S3InputOption),
+		BigqueryInputOption:            inputOptionModel.NewBigqueryInputOption(ctx, inputOption.BigqueryInputOption),
+		PostgreSQLInputOption:          inputOptionModel.NewPostgreSQLInputOption(ctx, inputOption.PostgreSQLInputOption),
+		GoogleAnalytics4InputOption:    inputOptionModel.NewGoogleAnalytics4InputOption(ctx, inputOption.GoogleAnalytics4InputOption),
+		HttpInputOption:                httpInputOption,
+		KintoneInputOption:             inputOptionModel.NewKintoneInputOption(ctx, inputOption.KintoneInputOption),
+		YahooAdsApiYssInputOption:      inputOptionModel.NewYahooAdsApiYssInputOption(ctx, inputOption.YahooAdsApiYssInputOption),
+		YahooAdsApiYdnInputOption:      inputOptionModel.NewYahooAdsApiYdnInputOption(ctx, inputOption.YahooAdsApiYdnInputOption),
+		SftpInputOption:                inputOptionModel.NewSftpInputOption(ctx, inputOption.SftpInputOption),
+		HubspotInputOption:             inputOptionModel.NewHubspotInputOption(ctx, inputOption.HubspotInputOption),
+		DatabricksInputOption:          inputOptionModel.NewDatabricksInputOption(ctx, inputOption.DatabricksInputOption),
+		MongoDBInputOption:             inputOptionModel.NewMongodbInputOption(ctx, inputOption.MongoDBInputOption),
+		GoogleAdsInputOption:           inputOptionModel.NewGoogleAdsInputOption(ctx, inputOption.GoogleAdsInputOption),
+		GoogleDriveInputOption:         inputOptionModel.NewGoogleDriveInputOption(ctx, inputOption.GoogleDriveInputOption),
+		RedshiftInputOption:            inputOptionModel.NewRedshiftInputOption(ctx, inputOption.RedshiftInputOption),
+		FacebookAdsInsightsInputOption: inputOptionModel.NewFacebookAdsInsightsInputOption(ctx, inputOption.FacebookAdsInsightsInputOption),
+		MarketoInputOption:             inputOptionModel.NewMarketoInputOption(ctx, inputOption.MarketoInputOption),
 	}, diags
 }
 
@@ -67,25 +73,28 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 	diags.Append(d...)
 
 	return client.InputOptionInput{
-		GcsInputOption:                model.WrapObject(o.GcsInputOption.ToInput(ctx)),
-		MySQLInputOption:              model.WrapObject(o.MySQLInputOption.ToInput(ctx)),
-		SnowflakeInputOption:          model.WrapObject(o.SnowflakeInputOption.ToInput(ctx)),
-		SalesforceInputOption:         model.WrapObject(o.SalesforceInputOption.ToInput(ctx)),
-		GoogleSpreadsheetsInputOption: model.WrapObject(o.GoogleSpreadsheetsInputOption.ToInput(ctx)),
-		S3InputOption:                 model.WrapObject(o.S3InputOption.ToInput(ctx)),
-		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToInput(ctx)),
-		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToInput(ctx)),
-		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToInput(ctx)),
-		HttpInputOption:               model.WrapObject(httpInput),
-		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToInput(ctx)),
-		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToInput(ctx)),
-		SftpInputOption:               model.WrapObject(o.SftpInputOption.ToInput(ctx)),
-		HubspotInputOption:            model.WrapObject(o.HubspotInputOption.ToInput(ctx)),
-		DatabricksInputOption:         model.WrapObject(o.DatabricksInputOption.ToInput(ctx)),
-		MongoDBInputOption:            model.WrapObject(o.MongoDBInputOption.ToInput(ctx)),
-		GoogleAdsInputOption:          model.WrapObject(o.GoogleAdsInputOption.ToInput(ctx)),
-		GoogleDriveInputOption:        model.WrapObject(o.GoogleDriveInputOption.ToInput(ctx)),
-		MarketoInputOption:            model.WrapObject(o.MarketoInputOption.ToInput(ctx)),
+		GcsInputOption:                 model.WrapObject(o.GcsInputOption.ToInput(ctx)),
+		MySQLInputOption:               model.WrapObject(o.MySQLInputOption.ToInput(ctx)),
+		SnowflakeInputOption:           model.WrapObject(o.SnowflakeInputOption.ToInput(ctx)),
+		SalesforceInputOption:          model.WrapObject(o.SalesforceInputOption.ToInput(ctx)),
+		GoogleSpreadsheetsInputOption:  model.WrapObject(o.GoogleSpreadsheetsInputOption.ToInput(ctx)),
+		S3InputOption:                  model.WrapObject(o.S3InputOption.ToInput(ctx)),
+		BigqueryInputOption:            model.WrapObject(o.BigqueryInputOption.ToInput(ctx)),
+		PostgreSQLInputOption:          model.WrapObject(o.PostgreSQLInputOption.ToInput(ctx)),
+		GoogleAnalytics4InputOption:    model.WrapObject(o.GoogleAnalytics4InputOption.ToInput(ctx)),
+		HttpInputOption:                model.WrapObject(httpInput),
+		KintoneInputOption:             model.WrapObject(o.KintoneInputOption.ToInput(ctx)),
+		YahooAdsApiYssInputOption:      model.WrapObject(o.YahooAdsApiYssInputOption.ToInput(ctx)),
+		YahooAdsApiYdnInputOption:      model.WrapObject(o.YahooAdsApiYdnInputOption.ToInput(ctx)),
+		SftpInputOption:                model.WrapObject(o.SftpInputOption.ToInput(ctx)),
+		HubspotInputOption:             model.WrapObject(o.HubspotInputOption.ToInput(ctx)),
+		DatabricksInputOption:          model.WrapObject(o.DatabricksInputOption.ToInput(ctx)),
+		MongoDBInputOption:             model.WrapObject(o.MongoDBInputOption.ToInput(ctx)),
+		GoogleAdsInputOption:           model.WrapObject(o.GoogleAdsInputOption.ToInput(ctx)),
+		GoogleDriveInputOption:         model.WrapObject(o.GoogleDriveInputOption.ToInput(ctx)),
+		RedshiftInputOption:            model.WrapObject(o.RedshiftInputOption.ToInput(ctx)),
+		FacebookAdsInsightsInputOption: model.WrapObject(o.FacebookAdsInsightsInputOption.ToInput(ctx)),
+		MarketoInputOption:             model.WrapObject(o.MarketoInputOption.ToInput(ctx)),
 	}, diags
 }
 
@@ -95,24 +104,27 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 	diags.Append(d...)
 
 	return &client.UpdateInputOptionInput{
-		GcsInputOption:                model.WrapObject(o.GcsInputOption.ToUpdateInput(ctx)),
-		MySQLInputOption:              model.WrapObject(o.MySQLInputOption.ToUpdateInput(ctx)),
-		SnowflakeInputOption:          model.WrapObject(o.SnowflakeInputOption.ToUpdateInput(ctx)),
-		SalesforceInputOption:         model.WrapObject(o.SalesforceInputOption.ToUpdateInput(ctx)),
-		GoogleSpreadsheetsInputOption: model.WrapObject(o.GoogleSpreadsheetsInputOption.ToUpdateInput(ctx)),
-		S3InputOption:                 model.WrapObject(o.S3InputOption.ToUpdateInput(ctx)),
-		BigqueryInputOption:           model.WrapObject(o.BigqueryInputOption.ToUpdateInput(ctx)),
-		PostgreSQLInputOption:         model.WrapObject(o.PostgreSQLInputOption.ToUpdateInput(ctx)),
-		GoogleAnalytics4InputOption:   model.WrapObject(o.GoogleAnalytics4InputOption.ToUpdateInput(ctx)),
-		HttpInputOption:               model.WrapObject(httpInput),
-		KintoneInputOption:            model.WrapObject(o.KintoneInputOption.ToUpdateInput(ctx)),
-		YahooAdsApiYssInputOption:     model.WrapObject(o.YahooAdsApiYssInputOption.ToUpdateInput(ctx)),
-		SftpInputOption:               model.WrapObject(o.SftpInputOption.ToUpdateInput(ctx)),
-		HubspotInputOption:            model.WrapObject(o.HubspotInputOption.ToUpdateInput(ctx)),
-		DatabricksInputOption:         model.WrapObject(o.DatabricksInputOption.ToUpdateInput(ctx)),
-		MongoDBInputOption:            model.WrapObject(o.MongoDBInputOption.ToUpdateInput(ctx)),
-		GoogleAdsInputOption:          model.WrapObject(o.GoogleAdsInputOption.ToUpdateInput(ctx)),
-		GoogleDriveInputOption:        model.WrapObject(o.GoogleDriveInputOption.ToUpdateInput(ctx)),
-		MarketoInputOption:            model.WrapObject(o.MarketoInputOption.ToUpdateInput(ctx)),
+		GcsInputOption:                 model.WrapObject(o.GcsInputOption.ToUpdateInput(ctx)),
+		MySQLInputOption:               model.WrapObject(o.MySQLInputOption.ToUpdateInput(ctx)),
+		SnowflakeInputOption:           model.WrapObject(o.SnowflakeInputOption.ToUpdateInput(ctx)),
+		SalesforceInputOption:          model.WrapObject(o.SalesforceInputOption.ToUpdateInput(ctx)),
+		GoogleSpreadsheetsInputOption:  model.WrapObject(o.GoogleSpreadsheetsInputOption.ToUpdateInput(ctx)),
+		S3InputOption:                  model.WrapObject(o.S3InputOption.ToUpdateInput(ctx)),
+		BigqueryInputOption:            model.WrapObject(o.BigqueryInputOption.ToUpdateInput(ctx)),
+		PostgreSQLInputOption:          model.WrapObject(o.PostgreSQLInputOption.ToUpdateInput(ctx)),
+		GoogleAnalytics4InputOption:    model.WrapObject(o.GoogleAnalytics4InputOption.ToUpdateInput(ctx)),
+		HttpInputOption:                model.WrapObject(httpInput),
+		KintoneInputOption:             model.WrapObject(o.KintoneInputOption.ToUpdateInput(ctx)),
+		YahooAdsApiYssInputOption:      model.WrapObject(o.YahooAdsApiYssInputOption.ToUpdateInput(ctx)),
+		YahooAdsApiYdnInputOption:      model.WrapObject(o.YahooAdsApiYdnInputOption.ToUpdateInput(ctx)),
+		SftpInputOption:                model.WrapObject(o.SftpInputOption.ToUpdateInput(ctx)),
+		HubspotInputOption:             model.WrapObject(o.HubspotInputOption.ToUpdateInput(ctx)),
+		DatabricksInputOption:          model.WrapObject(o.DatabricksInputOption.ToUpdateInput(ctx)),
+		MongoDBInputOption:             model.WrapObject(o.MongoDBInputOption.ToUpdateInput(ctx)),
+		GoogleAdsInputOption:           model.WrapObject(o.GoogleAdsInputOption.ToUpdateInput(ctx)),
+		GoogleDriveInputOption:         model.WrapObject(o.GoogleDriveInputOption.ToUpdateInput(ctx)),
+		RedshiftInputOption:            model.WrapObject(o.RedshiftInputOption.ToUpdateInput(ctx)),
+		FacebookAdsInsightsInputOption: model.WrapObject(o.FacebookAdsInsightsInputOption.ToUpdateInput(ctx)),
+		MarketoInputOption:             model.WrapObject(o.MarketoInputOption.ToUpdateInput(ctx)),
 	}, diags
 }

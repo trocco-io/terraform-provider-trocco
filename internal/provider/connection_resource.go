@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -41,8 +42,10 @@ type connectionResourceModel struct {
 	ResourceGroupID types.Int64  `tfsdk:"resource_group_id"`
 
 	// BigQuery Fields
-	ProjectID             types.String `tfsdk:"project_id"`
-	ServiceAccountJSONKey types.String `tfsdk:"service_account_json_key"`
+	ProjectID                        types.String `tfsdk:"project_id"`
+	ServiceAccountJSONKey            types.String `tfsdk:"service_account_json_key"`
+	IsWorkloadIdentityFederation     types.Bool   `tfsdk:"is_workload_identity_federation"`
+	WorkloadIdentityFederationConfig types.String `tfsdk:"workload_identity_federation_config"`
 
 	// Snowflake Fields
 	Host       types.String `tfsdk:"host"`
@@ -104,6 +107,11 @@ type connectionResourceModel struct {
 	ReadPreferenceTags       types.List   `tfsdk:"read_preference_tags"`
 	StrictReadPreferenceTags types.Bool   `tfsdk:"strict_read_preference_tags"`
 
+	// Redshift Fields
+	AWSAccessKeyID     types.String `tfsdk:"aws_access_key_id"`
+	AWSSecretAccessKey types.String `tfsdk:"aws_secret_access_key"`
+	SSLEnabled         types.Bool   `tfsdk:"ssl_enabled"`
+
 	// Marketo Fields
 	MarketoAccountID       types.String `tfsdk:"account_id"`
 	MarketoClientID        types.String `tfsdk:"client_id"`
@@ -120,8 +128,10 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		ResourceGroupID: model.NewNullableInt64(m.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             m.ProjectID.ValueStringPointer(),
-		ServiceAccountJSONKey: m.ServiceAccountJSONKey.ValueStringPointer(),
+		ProjectID:                        m.ProjectID.ValueStringPointer(),
+		ServiceAccountJSONKey:            m.ServiceAccountJSONKey.ValueStringPointer(),
+		IsWorkloadIdentityFederation:     m.IsWorkloadIdentityFederation.ValueBoolPointer(),
+		WorkloadIdentityFederationConfig: parseWifConfig(m.WorkloadIdentityFederationConfig.ValueStringPointer()),
 
 		// Snowflake Fields
 		Host:       m.Host.ValueStringPointer(),
@@ -186,7 +196,8 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 	}
 
 	// SSL Fields
-	if m.SSL != nil {
+	switch {
+	case m.SSL != nil:
 		input.SSL = model.NewNullableBool(types.BoolValue(true))
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
@@ -194,7 +205,9 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.SSLKey = m.SSL.Key.ValueStringPointer()
 		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 		input.SSLMode = model.NewNullableString(m.SSL.SSLMode)
-	} else {
+	case !m.SSLEnabled.IsNull() && !m.SSLEnabled.IsUnknown():
+		input.SSL = model.NewNullableBool(m.SSLEnabled)
+	default:
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
 
@@ -215,6 +228,14 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 	if m.AWSIAMUser != nil {
 		input.AWSAccessKeyID = m.AWSIAMUser.AccessKeyID.ValueStringPointer()
 		input.AWSSecretAccessKey = m.AWSIAMUser.SecretAccessKey.ValueStringPointer()
+	}
+
+	// Redshift AWS Fields
+	if !m.AWSAccessKeyID.IsNull() {
+		input.AWSAccessKeyID = m.AWSAccessKeyID.ValueStringPointer()
+	}
+	if !m.AWSSecretAccessKey.IsNull() {
+		input.AWSSecretAccessKey = m.AWSSecretAccessKey.ValueStringPointer()
 	}
 
 	// AWS Assume Role Fields
@@ -240,8 +261,10 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		ResourceGroupID: model.NewNullableInt64(m.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             m.ProjectID.ValueStringPointer(),
-		ServiceAccountJSONKey: m.ServiceAccountJSONKey.ValueStringPointer(),
+		ProjectID:                        m.ProjectID.ValueStringPointer(),
+		ServiceAccountJSONKey:            m.ServiceAccountJSONKey.ValueStringPointer(),
+		IsWorkloadIdentityFederation:     m.IsWorkloadIdentityFederation.ValueBoolPointer(),
+		WorkloadIdentityFederationConfig: parseWifConfig(m.WorkloadIdentityFederationConfig.ValueStringPointer()),
 
 		// Snowflake Fields
 		Host:       m.Host.ValueStringPointer(),
@@ -306,7 +329,8 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 	}
 
 	// SSL Fields
-	if m.SSL != nil {
+	switch {
+	case m.SSL != nil:
 		input.SSL = model.NewNullableBool(types.BoolValue(true))
 		input.SSLCA = m.SSL.CA.ValueStringPointer()
 		input.SSLCert = m.SSL.Cert.ValueStringPointer()
@@ -314,7 +338,9 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.SSLClientCa = m.SSL.Cert.ValueStringPointer()
 		input.SSLClientKey = m.SSL.Key.ValueStringPointer()
 		input.SSLMode = model.NewNullableString(m.SSL.SSLMode)
-	} else {
+	case !m.SSLEnabled.IsNull() && !m.SSLEnabled.IsUnknown():
+		input.SSL = model.NewNullableBool(m.SSLEnabled)
+	default:
 		input.SSL = model.NewNullableBool(types.BoolValue(false))
 	}
 
@@ -335,6 +361,14 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 	if m.AWSIAMUser != nil {
 		input.AWSAccessKeyID = m.AWSIAMUser.AccessKeyID.ValueStringPointer()
 		input.AWSSecretAccessKey = m.AWSIAMUser.SecretAccessKey.ValueStringPointer()
+	}
+
+	// Redshift AWS Fields
+	if !m.AWSAccessKeyID.IsNull() {
+		input.AWSAccessKeyID = m.AWSAccessKeyID.ValueStringPointer()
+	}
+	if !m.AWSSecretAccessKey.IsNull() {
+		input.AWSSecretAccessKey = m.AWSSecretAccessKey.ValueStringPointer()
 	}
 
 	// AWS Assume Role Fields
@@ -404,6 +438,7 @@ var supportedConnectionTypes = []string{
 	"databricks",
 	"mongodb",
 	"google_drive",
+	"redshift",
 	"marketo",
 }
 
@@ -482,17 +517,29 @@ func (r *connectionResource) Schema(
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
+			"is_workload_identity_federation": schema.BoolAttribute{
+				MarkdownDescription: "BigQuery: Whether the connection uses Workload Identity Federation authentication. Set to `true` for WIF, `false` for Service Account authentication.",
+				Optional:            true,
+			},
+			"workload_identity_federation_config": schema.StringAttribute{
+				MarkdownDescription: "BigQuery: The Workload Identity Federation configuration as a JSON string. Required when `is_workload_identity_federation` is true.",
+				Optional:            true,
+				Sensitive:           false,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
 
 			// Snowflake Fields
 			"host": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB: The host of a (Snowflake, PostgreSQL, MongoDB) account.",
+				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB, Redshift: The host of a (Snowflake, PostgreSQL, MongoDB, Redshift) account.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
 			"user_name": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB: The name of a (Snowflake, PostgreSQL, MongoDB) user.",
+				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB, Redshift: The name of a (Snowflake, PostgreSQL, MongoDB, Redshift) user.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
@@ -513,7 +560,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"password": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB: The password for the (Snowflake, PostgreSQL, MongoDB) user.",
+				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB, Redshift: The password for the (Snowflake, PostgreSQL, MongoDB, Redshift) user.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -548,7 +595,7 @@ func (r *connectionResource) Schema(
 
 			// MySQL Fields
 			"port": schema.Int64Attribute{
-				MarkdownDescription: "MySQL, PostgreSQL, MongoDB: The port of the (MySQL, PostgreSQL, MongoDB) server.",
+				MarkdownDescription: "MySQL, PostgreSQL, MongoDB, Redshift: The port of the (MySQL, PostgreSQL, MongoDB, Redshift) server.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
@@ -600,7 +647,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"gateway": schema.SingleNestedAttribute{
-				MarkdownDescription: "MySQL, PostgreSQL, MongoDB: Whether to connect via SSH",
+				MarkdownDescription: "MySQL, PostgreSQL, MongoDB, Redshift: Whether to connect via SSH",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"host": schema.StringAttribute{
@@ -927,19 +974,39 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"ssh_tunnel_id": schema.Int64Attribute{
-				MarkdownDescription: "SFTP: SSH tunnel ID. Required when aws_privatelink_enabled is true.",
+				MarkdownDescription: "SFTP, Redshift: SSH tunnel ID. Required when aws_privatelink_enabled is true.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
 			},
 			"aws_privatelink_enabled": schema.BoolAttribute{
-				MarkdownDescription: "SFTP: Whether AWS PrivateLink is enabled. Default is false.",
+				MarkdownDescription: "SFTP, Redshift: Whether AWS PrivateLink is enabled. Default is false.",
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Bool{
-					planModifier.ConditionalBooleanDefault(false, "sftp"),
+					planModifier.ConditionalBooleanDefault(false, "sftp", "redshift"),
 				},
+			},
+			// Redshift Fields
+			"aws_access_key_id": schema.StringAttribute{
+				MarkdownDescription: "Redshift: AWS access key ID.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"aws_secret_access_key": schema.StringAttribute{
+				MarkdownDescription: "Redshift: AWS secret access key.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"ssl_enabled": schema.BoolAttribute{
+				MarkdownDescription: "Redshift: Whether SSL is enabled.",
+				Optional:            true,
 			},
 			// Marketo Fields
 			"account_id": schema.StringAttribute{
@@ -1011,8 +1078,10 @@ func (r *connectionResource) Create(
 		ResourceGroupID: types.Int64PointerValue(conn.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             types.StringPointerValue(conn.ProjectID),
-		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
+		ProjectID:                        types.StringPointerValue(conn.ProjectID),
+		ServiceAccountJSONKey:            plan.ServiceAccountJSONKey,
+		IsWorkloadIdentityFederation:     plan.IsWorkloadIdentityFederation,
+		WorkloadIdentityFederationConfig: plan.WorkloadIdentityFederationConfig,
 
 		// Snowflake Fields
 		Host:       types.StringPointerValue(conn.Host),
@@ -1078,6 +1147,11 @@ func (r *connectionResource) Create(
 		ReadPreferenceTags:       readPreferenceTagsToList(conn.ReadPreferenceTags),
 		StrictReadPreferenceTags: types.BoolPointerValue(conn.StrictReadPreferenceTags),
 
+		// Redshift Fields
+		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
+		AWSSecretAccessKey: plan.AWSSecretAccessKey,
+		SSLEnabled:         plan.SSLEnabled,
+
 		// Marketo Fields
 		MarketoAccountID:       types.StringPointerValue(conn.AccountID),
 		MarketoClientID:        types.StringPointerValue(conn.ClientID),
@@ -1141,8 +1215,10 @@ func (r *connectionResource) Update(
 		ResourceGroupID: types.Int64PointerValue(connection.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             types.StringPointerValue(connection.ProjectID),
-		ServiceAccountJSONKey: plan.ServiceAccountJSONKey,
+		ProjectID:                        types.StringPointerValue(connection.ProjectID),
+		ServiceAccountJSONKey:            plan.ServiceAccountJSONKey,
+		IsWorkloadIdentityFederation:     plan.IsWorkloadIdentityFederation,
+		WorkloadIdentityFederationConfig: plan.WorkloadIdentityFederationConfig,
 
 		// Snowflake Fields
 		Host:       types.StringPointerValue(connection.Host),
@@ -1204,6 +1280,11 @@ func (r *connectionResource) Update(
 		ReadPreferenceTags:       readPreferenceTagsToList(connection.ReadPreferenceTags),
 		StrictReadPreferenceTags: types.BoolPointerValue(connection.StrictReadPreferenceTags),
 
+		// Redshift Fields
+		AWSAccessKeyID:     types.StringPointerValue(connection.AWSAccessKeyID),
+		AWSSecretAccessKey: plan.AWSSecretAccessKey,
+		SSLEnabled:         plan.SSLEnabled,
+
 		// Marketo Fields
 		MarketoAccountID:       types.StringPointerValue(connection.AccountID),
 		MarketoClientID:        types.StringPointerValue(connection.ClientID),
@@ -1237,6 +1318,13 @@ func (r *connectionResource) Read(
 		return
 	}
 
+	var sslEnabled types.Bool
+	if state.ConnectionType.ValueString() == "redshift" {
+		sslEnabled = types.BoolPointerValue(conn.SSL)
+	} else {
+		sslEnabled = state.SSLEnabled
+	}
+
 	newState := connectionResourceModel{
 		// Common Fields
 		ConnectionType:  state.ConnectionType,
@@ -1246,8 +1334,10 @@ func (r *connectionResource) Read(
 		ResourceGroupID: types.Int64PointerValue(conn.ResourceGroupID),
 
 		// BigQuery Fields
-		ProjectID:             types.StringPointerValue(conn.ProjectID),
-		ServiceAccountJSONKey: state.ServiceAccountJSONKey,
+		ProjectID:                        types.StringPointerValue(conn.ProjectID),
+		ServiceAccountJSONKey:            state.ServiceAccountJSONKey,
+		IsWorkloadIdentityFederation:     state.IsWorkloadIdentityFederation,
+		WorkloadIdentityFederationConfig: state.WorkloadIdentityFederationConfig,
 
 		// Snowflake Fields
 		Host:       types.StringPointerValue(conn.Host),
@@ -1308,6 +1398,11 @@ func (r *connectionResource) Read(
 		ReplicaSet:               types.StringPointerValue(conn.ReplicaSet),
 		ReadPreferenceTags:       readPreferenceTagsToList(conn.ReadPreferenceTags),
 		StrictReadPreferenceTags: types.BoolPointerValue(conn.StrictReadPreferenceTags),
+
+		// Redshift Fields
+		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
+		AWSSecretAccessKey: state.AWSSecretAccessKey,
+		SSLEnabled:         sslEnabled,
 
 		// Marketo Fields
 		MarketoAccountID:       types.StringPointerValue(conn.AccountID),
@@ -1387,8 +1482,7 @@ func (r *connectionResource) ValidateConfig(
 
 	switch plan.ConnectionType.ValueString() {
 	case "bigquery":
-		validateRequiredString(plan.ServiceAccountJSONKey, "service_account_json_key", "BigQuery", resp)
-		validateRequiredString(plan.ProjectID, "project_id", "BigQuery", resp)
+		validateBigQueryConnection(plan, resp)
 	case "snowflake":
 		validateRequiredString(plan.Host, "host", "Snowflake", resp)
 		validateRequiredString(plan.UserName, "user_name", "Snowflake", resp)
@@ -1557,10 +1651,92 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "MongoDB", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "MongoDB", resp)
 		}
+	case "redshift":
+		validateRequiredString(plan.Host, "host", "Redshift", resp)
+		validateRequiredInt(plan.Port, "port", "Redshift", resp)
+		validateRequiredString(plan.UserName, "user_name", "Redshift", resp)
+		validateRequiredString(plan.Password, "password", "Redshift", resp)
+		validateRequiredString(plan.AWSAccessKeyID, "aws_access_key_id", "Redshift", resp)
+		validateRequiredString(plan.AWSSecretAccessKey, "aws_secret_access_key", "Redshift", resp)
+		if plan.AWSPrivatelinkEnabled.ValueBool() {
+			validateRequiredInt(plan.SSHTunnelID, "ssh_tunnel_id", "Redshift", resp)
+		}
+		if plan.Gateway != nil {
+			validateRequiredString(plan.Gateway.Host, "gateway.host", "Redshift", resp)
+			validateRequiredInt(plan.Gateway.Port, "gateway.port", "Redshift", resp)
+			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "Redshift", resp)
+		}
 	case "marketo":
 		validateRequiredString(plan.MarketoAccountID, "account_id", "Marketo", resp)
 		validateRequiredString(plan.MarketoClientID, "client_id", "Marketo", resp)
 		validateRequiredString(plan.MarketoClientSecret, "client_secret", "Marketo", resp)
+	}
+}
+
+func validateBigQueryConnection(plan *connectionResourceModel, resp *resource.ValidateConfigResponse) {
+	isWif := !plan.IsWorkloadIdentityFederation.IsNull() && plan.IsWorkloadIdentityFederation.ValueBool()
+	isServiceAccount := !plan.ServiceAccountJSONKey.IsNull()
+	isWifConfig := !plan.WorkloadIdentityFederationConfig.IsNull()
+
+	// Check exclusive parameters
+	if isServiceAccount && isWifConfig {
+		resp.Diagnostics.AddError(
+			"bigquery_connection",
+			"service_account_json_key and workload_identity_federation_config cannot be used together for BigQuery connection.",
+		)
+	}
+
+	// Validate based on authentication method
+	if isWif {
+		// WIF authentication
+		if !isWifConfig {
+			resp.Diagnostics.AddError(
+				"workload_identity_federation_config",
+				"workload_identity_federation_config is required when is_workload_identity_federation is true.",
+			)
+		} else {
+			// Validate WIF config JSON and audience key
+			validateWifConfig(plan.WorkloadIdentityFederationConfig, resp)
+		}
+		if plan.ProjectID.IsNull() {
+			resp.Diagnostics.AddError(
+				"project_id",
+				"project_id is required when is_workload_identity_federation is true.",
+			)
+		}
+	} else if !isServiceAccount {
+		// Service Account authentication
+		resp.Diagnostics.AddError(
+			"service_account_json_key",
+			"service_account_json_key is required when is_workload_identity_federation is false or not specified.",
+		)
+	}
+}
+
+func validateWifConfig(configStr types.String, resp *resource.ValidateConfigResponse) {
+	if configStr.IsNull() || configStr.IsUnknown() {
+		return
+	}
+
+	jsonStr := configStr.ValueString()
+
+	// Parse JSON
+	var config map[string]interface{}
+	decoder := json.NewDecoder(strings.NewReader(jsonStr))
+	if err := decoder.Decode(&config); err != nil {
+		resp.Diagnostics.AddError(
+			"workload_identity_federation_config",
+			fmt.Sprintf("workload_identity_federation_config must be valid JSON: %s", err.Error()),
+		)
+		return
+	}
+
+	// Check for required audience key
+	if _, ok := config["audience"]; !ok {
+		resp.Diagnostics.AddError(
+			"workload_identity_federation_config",
+			"audience key is required in workload_identity_federation_config.",
+		)
 	}
 }
 
@@ -1671,4 +1847,18 @@ func readPreferenceTagsFromList(list types.List) [][]client.ReadPreferenceTag {
 		}
 	}
 	return result
+}
+
+// parseWifConfig parses JSON string to map for workload identity federation config.
+func parseWifConfig(configStr *string) interface{} {
+	if configStr == nil || *configStr == "" {
+		return nil
+	}
+
+	var config interface{}
+	if err := json.Unmarshal([]byte(*configStr), &config); err != nil {
+		// If parsing fails, return original string.
+		return *configStr
+	}
+	return config
 }

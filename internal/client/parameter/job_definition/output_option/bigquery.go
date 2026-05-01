@@ -51,11 +51,11 @@ type UpdateBigQueryOutputOptionInput struct {
 }
 
 type BigQueryOutputOptionColumnOptionInput struct {
-	Name            string                                  `json:"name"`
-	Type            string                                  `json:"type"`
-	Mode            string                                  `json:"mode"`
-	TimestampFormat *string                                 `json:"timestamp_format,omitempty"`
-	Timezone        *string                                 `json:"timezone,omitempty"`
-	Description     *string                                 `json:"description,omitempty"`
+	Name            string                                   `json:"name"`
+	Type            string                                   `json:"type"`
+	Mode            string                                   `json:"mode"`
+	TimestampFormat *string                                  `json:"timestamp_format,omitempty"`
+	Timezone        *string                                  `json:"timezone,omitempty"`
+	Description     *string                                  `json:"description,omitempty"`
 	Fields          *[]BigQueryOutputOptionColumnOptionInput `json:"fields,omitempty"`
 }

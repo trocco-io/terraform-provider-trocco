@@ -1568,6 +1568,7 @@ Optional:
 
 - `bigquery_input_option` (Attributes) Attributes about source bigquery (see [below for nested schema](#nestedatt--input_option--bigquery_input_option))
 - `databricks_input_option` (Attributes) Attributes of source databricks (see [below for nested schema](#nestedatt--input_option--databricks_input_option))
+- `facebook_ads_insights_input_option` (Attributes) Attributes about source Facebook Ads Insights (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option))
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
 - `google_ads_input_option` (Attributes) Attributes about source Google Ads (see [below for nested schema](#nestedatt--input_option--google_ads_input_option))
 - `google_analytics4_input_option` (Attributes) Attributes about source Google Analytics 4 (see [below for nested schema](#nestedatt--input_option--google_analytics4_input_option))
@@ -1580,10 +1581,12 @@ Optional:
 - `mongodb_input_option` (Attributes) Attributes of source MongoDB (see [below for nested schema](#nestedatt--input_option--mongodb_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
 - `postgresql_input_option` (Attributes) Attributes of source postgresql (see [below for nested schema](#nestedatt--input_option--postgresql_input_option))
+- `redshift_input_option` (Attributes) Attributes of source redshift (see [below for nested schema](#nestedatt--input_option--redshift_input_option))
 - `s3_input_option` (Attributes) Attributes about source S3 (see [below for nested schema](#nestedatt--input_option--s3_input_option))
 - `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
 - `sftp_input_option` (Attributes) Attributes about source SFTP (see [below for nested schema](#nestedatt--input_option--sftp_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
+- `yahoo_ads_api_ydn_input_option` (Attributes) Attributes of source yahoo_ads_api_ydn (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option))
 - `yahoo_ads_api_yss_input_option` (Attributes) Attributes of source yahoo_ads_api_yss (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_yss_input_option))
 
 <a id="nestedatt--input_option--bigquery_input_option"></a>
@@ -1676,6 +1679,77 @@ Required:
 
 <a id="nestedatt--input_option--databricks_input_option--custom_variable_settings"></a>
 ### Nested Schema for `input_option.databricks_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--input_option--facebook_ads_insights_input_option"></a>
+### Nested Schema for `input_option.facebook_ads_insights_input_option`
+
+Required:
+
+- `ad_account_id` (String) Facebook Ad Account ID (format: act_XXXXXXXXX)
+- `facebook_ads_insights_connection_id` (Number) ID of Facebook Ads Insights connection
+- `fields` (Attributes List) List of metrics/fields to be retrieved. At least one field is required. (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option--fields))
+- `level` (String) Data retrieval level. Supported values: `account`, `campaign`, `adset`, `ad`
+- `time_range_since` (String) Start date for data retrieval (ISO8601 format: YYYY-MM-DD)
+- `time_range_until` (String) End date for data retrieval (ISO8601 format: YYYY-MM-DD)
+
+Optional:
+
+- `action_attribution_windows` (Attributes List) List of action attribution windows (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option--action_attribution_windows))
+- `action_breakdowns` (Attributes List) List of action breakdowns (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option--action_breakdowns))
+- `breakdowns` (Attributes List) List of breakdowns for data segmentation (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option--breakdowns))
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option--custom_variable_settings))
+- `use_unified_attribution_setting` (Boolean) Use unified attribution setting. Default: true
+
+<a id="nestedatt--input_option--facebook_ads_insights_input_option--fields"></a>
+### Nested Schema for `input_option.facebook_ads_insights_input_option.fields`
+
+Required:
+
+- `name` (String) Field name defined by Meta Ads Insights API
+
+
+<a id="nestedatt--input_option--facebook_ads_insights_input_option--action_attribution_windows"></a>
+### Nested Schema for `input_option.facebook_ads_insights_input_option.action_attribution_windows`
+
+Required:
+
+- `name` (String) Attribution window value defined by Meta Ads API
+
+
+<a id="nestedatt--input_option--facebook_ads_insights_input_option--action_breakdowns"></a>
+### Nested Schema for `input_option.facebook_ads_insights_input_option.action_breakdowns`
+
+Required:
+
+- `name` (String) Action breakdown value defined by Meta Ads API
+
+
+<a id="nestedatt--input_option--facebook_ads_insights_input_option--breakdowns"></a>
+### Nested Schema for `input_option.facebook_ads_insights_input_option.breakdowns`
+
+Required:
+
+- `name` (String) Breakdown name defined by Meta Ads Insights API
+
+
+<a id="nestedatt--input_option--facebook_ads_insights_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.facebook_ads_insights_input_option.custom_variable_settings`
 
 Required:
 
@@ -2963,6 +3037,42 @@ Required:
 
 
 
+<a id="nestedatt--input_option--redshift_input_option"></a>
+### Nested Schema for `input_option.redshift_input_option`
+
+Required:
+
+- `database` (String) Database name
+- `query` (String) SQL query to fetch data
+- `redshift_connection_id` (Number) ID of Redshift connection
+
+Optional:
+
+- `connect_timeout` (Number) Connection timeout (sec)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--redshift_input_option--custom_variable_settings))
+- `fetch_rows` (Number) Number of records processed by the cursor at one time
+- `schema` (String) Schema name
+- `socket_timeout` (Number) Socket timeout (sec)
+
+<a id="nestedatt--input_option--redshift_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.redshift_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
 <a id="nestedatt--input_option--s3_input_option"></a>
 ### Nested Schema for `input_option.s3_input_option`
 
@@ -3538,6 +3648,54 @@ Optional:
 
 
 
+<a id="nestedatt--input_option--yahoo_ads_api_ydn_input_option"></a>
+### Nested Schema for `input_option.yahoo_ads_api_ydn_input_option`
+
+Required:
+
+- `account_id` (String) Yahoo Display Ads account ID
+- `end_date` (String) End date. Format: YYYYMMDD or custom variable (e.g., $end_date$)
+- `start_date` (String) Start date. Format: YYYYMMDD or custom variable (e.g., $start_date$)
+- `target` (String) Data retrieval target. Either "report" or "stats"
+- `yahoo_ads_api_connection_id` (Number) ID of yahoo_ads_api connection
+
+Optional:
+
+- `base_account_id` (String) Base account ID (required for POST)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option--custom_variable_settings))
+- `include_deleted` (Boolean) Include deleted ads. Valid only when target="report"
+- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option--input_option_columns))
+- `report_type` (String) Report type. Valid only when target="stats". One of: CAMPAIGN, ADGROUP, AD
+
+<a id="nestedatt--input_option--yahoo_ads_api_ydn_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.yahoo_ads_api_ydn_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--yahoo_ads_api_ydn_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.yahoo_ads_api_ydn_input_option.input_option_columns`
+
+Optional:
+
+- `format` (String) Column format (for timestamp type)
+- `name` (String) Column name
+- `type` (String) Column type
+
+
+
 <a id="nestedatt--input_option--yahoo_ads_api_yss_input_option"></a>
 ### Nested Schema for `input_option.yahoo_ads_api_yss_input_option`
 
@@ -3604,6 +3762,7 @@ Optional:
 - `kintone_output_option` (Attributes) Attributes of destination Kintone settings (see [below for nested schema](#nestedatt--output_option--kintone_output_option))
 - `mysql_output_option` (Attributes) Attributes of destination MySQL settings (see [below for nested schema](#nestedatt--output_option--mysql_output_option))
 - `postgresql_output_option` (Attributes) Attributes of destination PostgreSQL settings (see [below for nested schema](#nestedatt--output_option--postgresql_output_option))
+- `redshift_output_option` (Attributes) Attributes of destination Redshift settings (see [below for nested schema](#nestedatt--output_option--redshift_output_option))
 - `s3_output_option` (Attributes) Attributes of destination Amazon S3 settings (see [below for nested schema](#nestedatt--output_option--s3_output_option))
 - `salesforce_output_option` (Attributes) Attributes of destination Salesforce settings (see [below for nested schema](#nestedatt--output_option--salesforce_output_option))
 - `sftp_output_option` (Attributes) attributes of destination SFTP settings (see [below for nested schema](#nestedatt--output_option--sftp_output_option))
@@ -4069,12 +4228,77 @@ Optional:
 - `retry_wait` (Number) Initial wait time in milliseconds between retries. Default is 1000.
 
 
+<a id="nestedatt--output_option--redshift_output_option"></a>
+### Nested Schema for `output_option.redshift_output_option`
+
+Required:
+
+- `database` (String) Database name
+- `redshift_connection_id` (Number) ID of Redshift connection
+- `s3_bucket` (String) S3 bucket for temporary data
+- `s3_key_prefix` (String) S3 key prefix for temporary data
+- `schema` (String) Schema name
+- `table` (String) Table name
+
+Optional:
+
+- `after_load` (String) SQL statement to execute after data transfer
+- `batch_size` (Number) Batch size in KB. Default is 16384.
+- `before_load` (String) SQL statement to execute before data transfer
+- `copy_iam_role_name` (String) IAM role name for COPY command
+- `create_table_constraint` (String) Constraint added to CREATE TABLE statement
+- `create_table_option` (String) Option added to CREATE TABLE statement
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--redshift_output_option--custom_variable_settings))
+- `default_time_zone` (String) Default time zone. Default is UTC.
+- `delete_s3_temp_file` (Boolean) Whether to delete temporary S3 files after transfer. Default is true.
+- `max_retry_wait` (Number) Maximum retry wait time in milliseconds. Default is 1800000.
+- `mode` (String) Transfer mode. One of `insert`, `insert_direct`, `truncate_insert`, `replace`, `merge`
+- `redshift_output_option_column_options` (Attributes List) (see [below for nested schema](#nestedatt--output_option--redshift_output_option--redshift_output_option_column_options))
+- `redshift_output_option_merge_keys` (Set of String) Merge keys (only applicable if mode is 'merge')
+- `retry_limit` (Number) Maximum number of retries. Default is 12.
+- `retry_wait` (Number) Retry wait time in milliseconds. Default is 1000.
+
+<a id="nestedatt--output_option--redshift_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.redshift_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--output_option--redshift_output_option--redshift_output_option_column_options"></a>
+### Nested Schema for `output_option.redshift_output_option.redshift_output_option_column_options`
+
+Required:
+
+- `name` (String) Column name
+
+Optional:
+
+- `timestamp_format` (String) Timestamp format (required when type is TIMESTAMP, TIME, or DATE and value_type is string or nstring)
+- `timezone` (String) Timezone (applicable when type is TIMESTAMP)
+- `type` (String) Column type. One of `BIGINT`, `VARCHAR`, `BOOLEAN`, `DOUBLE_PRECISION`, `CLOB`, `TIMESTAMP`, `TIME`, `DATE`
+- `value_type` (String) Value type
+
+
+
 <a id="nestedatt--output_option--s3_output_option"></a>
 ### Nested Schema for `output_option.s3_output_option`
 
 Required:
 
 - `bucket` (String) S3 bucket name
+- `formatter_type` (String) Formatter type
 - `path_prefix` (String) File path prefix
 - `s3_connection_id` (Number) Id of S3 connection
 
@@ -4085,7 +4309,6 @@ Optional:
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--s3_output_option--custom_variable_settings))
 - `encoder_type` (String) Encoder type
 - `file_ext` (String) File extension
-- `formatter_type` (String) Formatter type
 - `is_minimum_output_tasks` (Boolean) Minimum output tasks setting
 - `jsonl_formatter` (Attributes) JSONL formatter settings. Required when formatter_type is jsonl (see [below for nested schema](#nestedatt--output_option--s3_output_option--jsonl_formatter))
 - `multipart_upload_enabled` (Boolean) Enable multipart upload

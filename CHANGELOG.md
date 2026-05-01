@@ -1,3 +1,37 @@
+## 0.30.1
+
+CHORE:
+- Updated GitHub Actions workflows for Node.js 24 compatibility
+- Fixed Terraform example formatting and added CI format check
+- Fixed missing type in `trocco_notification_destination` import example
+
+## 0.30.0
+
+FEATURES:
+- `trocco_connection` resource:
+  - Added support for Workload Identity Federation (WIF) authentication in `bigquery` type
+- `trocco_job_definition` resource:
+  - Added support for `facebook_ads_insights` input option
+
+BUG FIXES:
+- `trocco_job_definition` resource:
+  - Made `formatter_type` required in `s3` output option to prevent API call failures when omitted
+  - Removed undocumented `has_parser` field that was silently ignored by the API
+
+## 0.29.0
+
+FEATURES:
+- `trocco_connection` resource:
+  - Added support for `redshift` type
+- `trocco_job_definition` resource:
+  - Added support for `redshift` input option
+  - Added support for `redshift` output option
+  - Added support for `yahoo_ads_api_ydn` input option
+  - Added nested field support for RECORD type in `bigquery` output option
+  - Added `batch_size` support for `salesforce` output option
+  - Added `update_key` support for `salesforce` output option
+  - Added JSON column type support in CSV parser
+
 ## 0.28.1
 
 CHORE:

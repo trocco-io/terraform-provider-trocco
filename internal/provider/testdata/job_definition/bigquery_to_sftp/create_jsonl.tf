@@ -1,9 +1,9 @@
 # BigQuery to SFTP JSONL Job Definition Example
 resource "trocco_job_definition" "bigquery_to_sftp_jsonl" {
-  name           = "BigQuery to SFTP JSONL Export"
-  description    = "Export BigQuery analytics data to SFTP in JSONL format"
+  name        = "BigQuery to SFTP JSONL Export"
+  description = "Export BigQuery analytics data to SFTP in JSONL format"
 
-  input_option_type = "bigquery"
+  input_option_type  = "bigquery"
   output_option_type = "sftp"
 
   filter_columns = [
@@ -12,7 +12,6 @@ resource "trocco_job_definition" "bigquery_to_sftp_jsonl" {
       src                          = "id",
       type                         = "long",
       default                      = "",
-      has_parser                   = true,
       json_expand_enabled          = false,
       json_expand_keep_base_column = false,
       json_expand_columns          = null
@@ -44,12 +43,12 @@ resource "trocco_job_definition" "bigquery_to_sftp_jsonl" {
 
   output_option = {
     sftp_output_option = {
-      sftp_connection_id       = trocco_connection.sftp.id
-      path_prefix              = "/analytics/events/$date$/events"
-      file_ext                 = ".jsonl"
-      is_minimum_output_tasks  = true
-      encoder_type             = "gzip"
-      sequence_format          = "%03d.%02d"
+      sftp_connection_id      = trocco_connection.sftp.id
+      path_prefix             = "/analytics/events/$date$/events"
+      file_ext                = ".jsonl"
+      is_minimum_output_tasks = true
+      encoder_type            = "gzip"
+      sequence_format         = "%03d.%02d"
 
       jsonl_formatter = {
         encoding    = "UTF-8"
@@ -64,9 +63,9 @@ resource "trocco_job_definition" "bigquery_to_sftp_jsonl" {
 # BigQuery source connection
 resource "trocco_connection" "bigquery" {
   connection_type = "bigquery"
-  name           = "Analytics BigQuery"
-  description    = "BigQuery connection for analytics data"
-  
+  name            = "Analytics BigQuery"
+  description     = "BigQuery connection for analytics data"
+
   project_id               = "my-analytics-project"
   service_account_json_key = <<JSON
   {
@@ -81,10 +80,10 @@ resource "trocco_connection" "bigquery" {
 # SFTP destination connection
 resource "trocco_connection" "sftp" {
   connection_type = "sftp"
-  name           = "Analytics SFTP"
-  description    = "SFTP server for analytics exports"
-  
-  host                    = "analytics-sftp.example.com"
-  port                    = 22
-  user_name               = "analytics"
+  name            = "Analytics SFTP"
+  description     = "SFTP server for analytics exports"
+
+  host      = "analytics-sftp.example.com"
+  port      = 22
+  user_name = "analytics"
 }
