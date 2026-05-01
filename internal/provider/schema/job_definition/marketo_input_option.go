@@ -174,6 +174,5 @@ func MarketoInputOptionSchema() schema.Attribute {
 			// Custom Variables
 			"custom_variable_settings": CustomVariableSettingsSchema(),
 		},
-		PlanModifiers: []planmodifier.Object{},
 	}
 }
