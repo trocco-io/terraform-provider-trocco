@@ -111,7 +111,6 @@ func MarketoInputOptionSchema() schema.Attribute {
 			},
 			"root_type": schema.StringAttribute{
 				Optional:            true,
-				Computed:            true,
 				MarkdownDescription: "Root type (folder only)",
 				Validators: []validator.String{
 					stringvalidator.OneOf("folder", "program"),
