@@ -3,10 +3,10 @@ resource "trocco_connection" "marketo_test" {
 
   name = "Test Marketo Connection"
 
-  marketo_account_id         = "123-ABC-456"
-  marketo_client_id          = "client_test_123"
-  marketo_client_secret      = "secret_test_123"
-  marketo_api_max_call_count = 5000
+  account_id         = "123-ABC-456"
+  client_id          = "client_test_123"
+  client_secret      = "secret_test_123"
+  api_max_call_count = 5000
 }
 
 resource "trocco_connection" "bigquery_test" {
