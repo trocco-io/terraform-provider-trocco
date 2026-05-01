@@ -97,37 +97,38 @@ func NewMarketoInputOption(ctx context.Context, marketoInputOption *inputOptionE
 
 	// Convert activity type IDs
 	if marketoInputOption.ActivityTypeIDs != nil {
-		activityTypeIDList, err := types.ListValueFrom(ctx, types.Int64Type, *marketoInputOption.ActivityTypeIDs)
-		if err == nil {
-			result.ActivityTypeIDs = activityTypeIDList
+		activityTypeIDList, diags := types.ListValueFrom(ctx, types.Int64Type, *marketoInputOption.ActivityTypeIDs)
+		if diags.HasError() {
+			return nil
 		}
+		result.ActivityTypeIDs = activityTypeIDList
 	} else {
 		result.ActivityTypeIDs = types.ListNull(types.Int64Type)
 	}
 
-	// Convert columns
 	columns, err := newMarketoColumns(ctx, marketoInputOption.InputOptionColumns)
-	if err == nil {
-		result.InputOptionColumns = columns
+	if err != nil {
+		return nil
 	}
+	result.InputOptionColumns = columns
 
-	// Convert filter columns
 	filterColumns, err := newMarketoFilterColumns(ctx, marketoInputOption.MarketoInputOptionFilterColumns)
-	if err == nil {
-		result.MarketoInputOptionFilterColumns = filterColumns
+	if err != nil {
+		return nil
 	}
+	result.MarketoInputOptionFilterColumns = filterColumns
 
-	// Convert custom object fields
 	customObjectFields, err := newMarketoCustomObjectFields(ctx, marketoInputOption.CustomObjectFields)
-	if err == nil {
-		result.CustomObjectFields = customObjectFields
+	if err != nil {
+		return nil
 	}
+	result.CustomObjectFields = customObjectFields
 
-	// Convert custom variable settings
 	customVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, marketoInputOption.CustomVariableSettings)
-	if err == nil {
-		result.CustomVariableSettings = customVariableSettings
+	if err != nil {
+		return nil
 	}
+	result.CustomVariableSettings = customVariableSettings
 
 	return result
 }
