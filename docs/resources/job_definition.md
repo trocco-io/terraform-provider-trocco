@@ -1579,6 +1579,7 @@ Optional:
 - `kintone_input_option` (Attributes) Attributes of source kintone (see [below for nested schema](#nestedatt--input_option--kintone_input_option))
 - `mongodb_input_option` (Attributes) Attributes of source MongoDB (see [below for nested schema](#nestedatt--input_option--mongodb_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
+- `pagerduty_input_option` (Attributes) attributes of source Pagerduty (see [below for nested schema](#nestedatt--input_option--pagerduty_input_option))
 - `postgresql_input_option` (Attributes) Attributes of source postgresql (see [below for nested schema](#nestedatt--input_option--postgresql_input_option))
 - `redshift_input_option` (Attributes) Attributes of source redshift (see [below for nested schema](#nestedatt--input_option--redshift_input_option))
 - `s3_input_option` (Attributes) Attributes about source S3 (see [below for nested schema](#nestedatt--input_option--s3_input_option))
@@ -2883,6 +2884,40 @@ Required:
 
 <a id="nestedatt--input_option--mysql_input_option--custom_variable_settings"></a>
 ### Nested Schema for `input_option.mysql_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--input_option--pagerduty_input_option"></a>
+### Nested Schema for `input_option.pagerduty_input_option`
+
+Required:
+
+- `pagerduty_connection_id` (Number) id of Pagerduty connection
+- `path` (String) API endpoint path
+
+Optional:
+
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--pagerduty_input_option--custom_variable_settings))
+- `earliest` (Boolean) If true, returns only the earliest on-call for each combination of escalation policy, escalation level, and user. This is available if `path` is `oncalls`.
+- `since` (String) Start date. This is available if `path` is in `oncalls`, `incidents`, and `log_entries`.
+- `until` (String) End date and time. This is available if `path` is in `oncalls`, `incidents`, and `log_entries`.
+
+<a id="nestedatt--input_option--pagerduty_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.pagerduty_input_option.custom_variable_settings`
 
 Required:
 

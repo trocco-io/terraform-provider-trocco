@@ -67,6 +67,9 @@ type Connection struct {
 	ReplicaSet                       *string                `json:"replica_set"`                          // mongodb
 	ReadPreferenceTags               *[][]ReadPreferenceTag `json:"read_preference_tags"`                 // mongodb
 	StrictReadPreferenceTags         *bool                  `json:"strict_read_preference_tags"`          // mongodb
+	// pagerduty (auto-generated)
+	APIKey *string `json:"api_key"` // API トークン
+
 }
 
 type GetConnectionsInput struct {
@@ -137,6 +140,8 @@ type CreateConnectionInput struct {
 	ReplicaSet                       *parameter.NullableString `json:"replica_set,omitempty"`                         // mongodb
 	ReadPreferenceTags               *[][]ReadPreferenceTag    `json:"read_preference_tags,omitempty"`                // mongodb
 	StrictReadPreferenceTags         *parameter.NullableBool   `json:"strict_read_preference_tags,omitempty"`         // mongodb
+	// pagerduty (auto-generated)
+	APIKey *string `json:"api_key,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -202,6 +207,8 @@ type UpdateConnectionInput struct {
 	ReplicaSet                       *parameter.NullableString `json:"replica_set,omitempty"`                         // mongodb
 	ReadPreferenceTags               *[][]ReadPreferenceTag    `json:"read_preference_tags,omitempty"`                // mongodb
 	StrictReadPreferenceTags         *parameter.NullableBool   `json:"strict_read_preference_tags,omitempty"`         // mongodb
+	// pagerduty (auto-generated)
+	APIKey *string `json:"api_key,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {

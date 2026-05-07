@@ -356,11 +356,12 @@ resource "trocco_connection" "google_drive" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, `postgresql`, `google_analytics4`, `kintone`, `sftp`, `databricks`, `mongodb`, `google_drive`, `redshift`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, `postgresql`, `google_analytics4`, `kintone`, `sftp`, `databricks`, `mongodb`, `google_drive`, `redshift`, `pagerduty`.
 - `name` (String) The name of the connection.
 
 ### Optional
 
+- `api_key` (String, Sensitive) API Key
 - `application_name` (String) GCS: Application name.
 - `auth_end_point` (String) Salesforce: Authentication endpoint.
 - `auth_method` (String) Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`. MongoDB: The authentication method. It must be one of `auto`, `mongodb-cr`, or `scram-sha-1`.
