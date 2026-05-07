@@ -277,7 +277,7 @@ func testAccConnectionResourceMarketo(t *testing.T) {
 				ImportStateVerifyIgnore: []string{"client_secret"},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					connectionId := s.RootModule().Resources[resourceName].Primary.ID
-					return connectionId, nil
+					return fmt.Sprintf("marketo,%s", connectionId), nil
 				},
 			},
 		},

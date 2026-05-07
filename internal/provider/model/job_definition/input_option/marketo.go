@@ -169,7 +169,7 @@ func newMarketoFilterColumns(
 		AttrTypes: MarketoFilterColumn{}.attrTypes(),
 	}
 
-	if filterColumns == nil {
+	if filterColumns == nil || len(*filterColumns) == 0 {
 		return types.ListNull(objectType), nil
 	}
 
@@ -196,7 +196,7 @@ func newMarketoCustomObjectFields(
 		AttrTypes: MarketoCustomObjectField{}.attrTypes(),
 	}
 
-	if fields == nil {
+	if fields == nil || len(*fields) == 0 {
 		return types.ListNull(objectType), nil
 	}
 
