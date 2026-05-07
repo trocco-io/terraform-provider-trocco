@@ -356,12 +356,14 @@ resource "trocco_connection" "google_drive" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, `postgresql`, `google_analytics4`, `kintone`, `sftp`, `databricks`, `mongodb`, `google_drive`, `redshift`, `pagerduty`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, `postgresql`, `google_analytics4`, `kintone`, `sftp`, `databricks`, `mongodb`, `google_drive`, `redshift`, `marketo`, `pagerduty`.
 - `name` (String) The name of the connection.
 
 ### Optional
 
+- `account_id` (String) Marketo: Marketo account identifier.
 - `api_key` (String, Sensitive) API Key
+- `api_max_call_count` (Number) Marketo: API call limit. Default is 1000.
 - `application_name` (String) GCS: Application name.
 - `auth_end_point` (String) Salesforce: Authentication endpoint.
 - `auth_method` (String) Snowflake: The authentication method for the Snowflake user. It must be one of `key_pair` or `user_password`. MongoDB: The authentication method. It must be one of `auto`, `mongodb-cr`, or `scram-sha-1`.
@@ -375,6 +377,8 @@ resource "trocco_connection" "google_drive" {
 - `aws_secret_access_key` (String, Sensitive) Redshift: AWS secret access key.
 - `basic_auth_password` (String, Sensitive) Kintone: Basic Auth Password
 - `basic_auth_username` (String) Kintone: Basic Auth Username
+- `client_id` (String) Marketo: Marketo REST API client ID.
+- `client_secret` (String, Sensitive) Marketo: Marketo REST API client secret.
 - `connection_string_format` (String) MongoDB: Connection string format. It must be one of `standard` or `dns_seed_list`. Default is `standard`.
 - `description` (String) The description of the connection.
 - `domain` (String) Kintone: Domain.
@@ -418,6 +422,7 @@ resource "trocco_connection" "google_drive" {
 
 ### Read-Only
 
+- `has_client_secret` (Boolean) Marketo: Whether a client secret is set (read-only).
 - `id` (Number) The ID of the connection.
 
 <a id="nestedatt--aws_assume_role"></a>

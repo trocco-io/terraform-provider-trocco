@@ -31,6 +31,9 @@ func TestAccConnectionResource(t *testing.T) {
 	t.Run("kintone", func(t *testing.T) {
 		testAccConnectionResourceKintone(t)
 	})
+	t.Run("marketo", func(t *testing.T) {
+		testAccConnectionResourceMarketo(t)
+	})
 	// START [GENERATOR:CONNECTION_RESOURCE_TEST]
 	t.Run("pagerduty", func(t *testing.T) {
 		testAccConnectionResourcePagerduty(t)
@@ -249,6 +252,38 @@ func TestInvalidLoginMethod(t *testing.T) {
 			{
 				Config:      providerConfig + LoadTextFile("testdata/connection/invalid_login_method.tf"),
 				ExpectError: regexp.MustCompile("login_method: `invalid_login_method` is invalid for Kintone connection."),
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceMarketo(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.marketo"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/marketo/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "marketo"),
+					resource.TestCheckResourceAttr(resourceName, "name", "Test Marketo Connection"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test Marketo connection for API operations"),
+					resource.TestCheckResourceAttr(resourceName, "account_id", "123-ABC-456"),
+					resource.TestCheckResourceAttr(resourceName, "client_id", "client_test_123"),
+					resource.TestCheckResourceAttr(resourceName, "api_max_call_count", "5000"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"client_secret"},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					connectionId := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("marketo,%s", connectionId), nil
+				},
 			},
 		},
 	})

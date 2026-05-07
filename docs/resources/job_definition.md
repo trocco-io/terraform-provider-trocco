@@ -1577,6 +1577,7 @@ Optional:
 - `http_input_option` (Attributes) Attributes about source HTTP (see [below for nested schema](#nestedatt--input_option--http_input_option))
 - `hubspot_input_option` (Attributes) attributes of source HubSpot (see [below for nested schema](#nestedatt--input_option--hubspot_input_option))
 - `kintone_input_option` (Attributes) Attributes of source kintone (see [below for nested schema](#nestedatt--input_option--kintone_input_option))
+- `marketo_input_option` (Attributes) Attributes about source Marketo Engage (see [below for nested schema](#nestedatt--input_option--marketo_input_option))
 - `mongodb_input_option` (Attributes) Attributes of source MongoDB (see [below for nested schema](#nestedatt--input_option--mongodb_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
 - `pagerduty_input_option` (Attributes) attributes of source Pagerduty (see [below for nested schema](#nestedatt--input_option--pagerduty_input_option))
@@ -2796,6 +2797,81 @@ Optional:
 - `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--input_option--marketo_input_option"></a>
+### Nested Schema for `input_option.marketo_input_option`
+
+Required:
+
+- `marketo_connection_id` (Number) Id of Marketo connection
+- `target` (String) Target data type
+
+Optional:
+
+- `activity_type_ids` (List of Number) Activity type IDs (activity only)
+- `bulk_job_timeout_second` (Number) Bulk job timeout in seconds (lead/activity only)
+- `custom_object_api_name` (String) Custom object API name (custom_object only)
+- `custom_object_fields` (Attributes List) Custom object fields (custom_object only) (see [below for nested schema](#nestedatt--input_option--marketo_input_option--custom_object_fields))
+- `custom_object_filter_from_value` (Number) Custom object filter range start (custom_object only)
+- `custom_object_filter_to_value` (Number) Custom object filter range end (custom_object only)
+- `custom_object_filter_type` (String) Custom object filter type (custom_object only)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--marketo_input_option--custom_variable_settings))
+- `end_date` (String) End date in ISO 8601 format (lead/activity only)
+- `from_date` (String) Start date in ISO 8601 format (lead/activity only)
+- `input_option_columns` (Attributes List) Column definitions (see [below for nested schema](#nestedatt--input_option--marketo_input_option--input_option_columns))
+- `list_ids` (String) List IDs comma-separated (all_lead_with_list_id only)
+- `marketo_input_option_filter_columns` (Attributes List) Filter columns (lead/all_lead_with_list_id only) (see [below for nested schema](#nestedatt--input_option--marketo_input_option--marketo_input_option_filter_columns))
+- `max_depth` (Number) Max folder depth (folder only)
+- `polling_interval_second` (Number) Polling interval in seconds (lead/activity only)
+- `program_ids` (String) Program IDs comma-separated (program_members only)
+- `root_id` (Number) Root folder/program ID (folder only)
+- `root_type` (String) Root type (folder only)
+- `use_updated_at` (Boolean) Use updated_at for filtering (lead only)
+- `workspace` (String) Workspace name (folder only)
+
+<a id="nestedatt--input_option--marketo_input_option--custom_object_fields"></a>
+### Nested Schema for `input_option.marketo_input_option.custom_object_fields`
+
+Required:
+
+- `name` (String) Field name
+
+
+<a id="nestedatt--input_option--marketo_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.marketo_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--marketo_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.marketo_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column data type
+
+
+<a id="nestedatt--input_option--marketo_input_option--marketo_input_option_filter_columns"></a>
+### Nested Schema for `input_option.marketo_input_option.marketo_input_option_filter_columns`
+
+Required:
+
+- `name` (String) Filter column name
 
 
 

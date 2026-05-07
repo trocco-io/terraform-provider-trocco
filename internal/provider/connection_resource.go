@@ -112,6 +112,13 @@ type connectionResourceModel struct {
 	AWSSecretAccessKey types.String `tfsdk:"aws_secret_access_key"`
 	SSLEnabled         types.Bool   `tfsdk:"ssl_enabled"`
 
+	// Marketo Fields
+	MarketoAccountID       types.String `tfsdk:"account_id"`
+	MarketoClientID        types.String `tfsdk:"client_id"`
+	MarketoClientSecret    types.String `tfsdk:"client_secret"`
+	MarketoHasClientSecret types.Bool   `tfsdk:"has_client_secret"`
+	MarketoAPIMaxCallCount types.Int64  `tfsdk:"api_max_call_count"`
+
 	// START [GENERATOR:CONNECTION_FIELDS]
 	APIKey types.String `tfsdk:"api_key"`
 	// END [GENERATOR:CONNECTION_FIELDS]
@@ -244,6 +251,12 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		input.AWSAssumeRoleName = m.AWSAssumeRole.AccountRoleName.ValueStringPointer()
 	}
 
+	// Marketo Fields
+	input.AccountID = m.MarketoAccountID.ValueStringPointer()
+	input.ClientID = m.MarketoClientID.ValueStringPointer()
+	input.ClientSecret = m.MarketoClientSecret.ValueStringPointer()
+	input.APIMaxCallCount = model.NewNullableInt64(m.MarketoAPIMaxCallCount)
+
 	return input
 }
 
@@ -374,6 +387,12 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.AWSAssumeRoleName = m.AWSAssumeRole.AccountRoleName.ValueStringPointer()
 	}
 
+	// Marketo Fields
+	input.AccountID = m.MarketoAccountID.ValueStringPointer()
+	input.ClientID = m.MarketoClientID.ValueStringPointer()
+	input.ClientSecret = m.MarketoClientSecret.ValueStringPointer()
+	input.APIMaxCallCount = model.NewNullableInt64(m.MarketoAPIMaxCallCount)
+
 	return input
 }
 
@@ -430,6 +449,7 @@ var supportedConnectionTypes = []string{
 	"mongodb",
 	"google_drive",
 	"redshift",
+	"marketo",
 	"pagerduty",
 }
 
@@ -979,7 +999,6 @@ func (r *connectionResource) Schema(
 					planModifier.ConditionalBooleanDefault(false, "sftp", "redshift"),
 				},
 			},
-
 			// Redshift Fields
 			"aws_access_key_id": schema.StringAttribute{
 				MarkdownDescription: "Redshift: AWS access key ID.",
@@ -999,6 +1018,40 @@ func (r *connectionResource) Schema(
 			"ssl_enabled": schema.BoolAttribute{
 				MarkdownDescription: "Redshift: Whether SSL is enabled.",
 				Optional:            true,
+			},
+			// Marketo Fields
+			"account_id": schema.StringAttribute{
+				MarkdownDescription: "Marketo: Marketo account identifier.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"client_id": schema.StringAttribute{
+				MarkdownDescription: "Marketo: Marketo REST API client ID.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"client_secret": schema.StringAttribute{
+				MarkdownDescription: "Marketo: Marketo REST API client secret.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"has_client_secret": schema.BoolAttribute{
+				MarkdownDescription: "Marketo: Whether a client secret is set (read-only).",
+				Computed:            true,
+			},
+			"api_max_call_count": schema.Int64Attribute{
+				MarkdownDescription: "Marketo: API call limit. Default is 1000.",
+				Optional:            true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
+				},
 			},
 			// START [GENERATOR:CONNECTION_SCHEMA]
 			"api_key": schema.StringAttribute{
@@ -1116,6 +1169,13 @@ func (r *connectionResource) Create(
 		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
 		AWSSecretAccessKey: plan.AWSSecretAccessKey,
 		SSLEnabled:         plan.SSLEnabled,
+
+		// Marketo Fields
+		MarketoAccountID:       types.StringPointerValue(conn.AccountID),
+		MarketoClientID:        types.StringPointerValue(conn.ClientID),
+		MarketoClientSecret:    plan.MarketoClientSecret,
+		MarketoHasClientSecret: types.BoolPointerValue(conn.HasClientSecret),
+		MarketoAPIMaxCallCount: types.Int64PointerValue(conn.APIMaxCallCount),
 
 		// START [GENERATOR:CONNECTION_STATE_CREATE]
 		APIKey: plan.APIKey,
@@ -1247,6 +1307,13 @@ func (r *connectionResource) Update(
 		AWSSecretAccessKey: plan.AWSSecretAccessKey,
 		SSLEnabled:         plan.SSLEnabled,
 
+		// Marketo Fields
+		MarketoAccountID:       types.StringPointerValue(connection.AccountID),
+		MarketoClientID:        types.StringPointerValue(connection.ClientID),
+		MarketoClientSecret:    plan.MarketoClientSecret,
+		MarketoHasClientSecret: types.BoolPointerValue(connection.HasClientSecret),
+		MarketoAPIMaxCallCount: types.Int64PointerValue(connection.APIMaxCallCount),
+
 		// START [GENERATOR:CONNECTION_STATE_UPDATE]
 		APIKey: plan.APIKey,
 		// END [GENERATOR:CONNECTION_STATE_UPDATE]
@@ -1362,6 +1429,13 @@ func (r *connectionResource) Read(
 		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
 		AWSSecretAccessKey: state.AWSSecretAccessKey,
 		SSLEnabled:         sslEnabled,
+
+		// Marketo Fields
+		MarketoAccountID:       types.StringPointerValue(conn.AccountID),
+		MarketoClientID:        types.StringPointerValue(conn.ClientID),
+		MarketoClientSecret:    state.MarketoClientSecret,
+		MarketoHasClientSecret: types.BoolPointerValue(conn.HasClientSecret),
+		MarketoAPIMaxCallCount: types.Int64PointerValue(conn.APIMaxCallCount),
 
 		// START [GENERATOR:CONNECTION_STATE_READ]
 		APIKey: state.APIKey,
@@ -1622,6 +1696,10 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "Redshift", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "Redshift", resp)
 		}
+	case "marketo":
+		validateRequiredString(plan.MarketoAccountID, "account_id", "Marketo", resp)
+		validateRequiredString(plan.MarketoClientID, "client_id", "Marketo", resp)
+		validateRequiredString(plan.MarketoClientSecret, "client_secret", "Marketo", resp)
 	}
 }
 
