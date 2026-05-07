@@ -356,7 +356,7 @@ resource "trocco_connection" "google_drive" {
 
 ### Required
 
-- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, `postgresql`, `google_analytics4`, `kintone`, `sftp`, `databricks`, `mongodb`, `google_drive`, `redshift`, `pagerduty`, `marketo`.
+- `connection_type` (String) The type of the connection. It must be one of `bigquery`, `snowflake`, `gcs`, `google_spreadsheets`, `mysql`, `salesforce`, `s3`, `postgresql`, `google_analytics4`, `kintone`, `sftp`, `databricks`, `mongodb`, `google_drive`, `redshift`, `marketo`, `pagerduty`.
 - `name` (String) The name of the connection.
 
 ### Optional
