@@ -32,6 +32,10 @@ type InputOption struct {
 	RedshiftInputOption            *inputOptionModel.RedshiftInputOption            `tfsdk:"redshift_input_option"`
 	FacebookAdsInsightsInputOption *inputOptionModel.FacebookAdsInsightsInputOption `tfsdk:"facebook_ads_insights_input_option"`
 	MarketoInputOption             *inputOptionModel.MarketoInputOption             `tfsdk:"marketo_input_option"`
+	// START [GENERATOR:INPUT_OPTION_STRUCT_FIELD]
+	// pagerduty (auto-generated)
+	PagerdutyInputOption *inputOptionModel.PagerdutyInputOption `tfsdk:"pagerduty_input_option"`
+	// END [GENERATOR:INPUT_OPTION_STRUCT_FIELD]
 }
 
 func NewInputOption(ctx context.Context, inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics) {
@@ -63,6 +67,10 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		RedshiftInputOption:            inputOptionModel.NewRedshiftInputOption(ctx, inputOption.RedshiftInputOption),
 		FacebookAdsInsightsInputOption: inputOptionModel.NewFacebookAdsInsightsInputOption(ctx, inputOption.FacebookAdsInsightsInputOption),
 		MarketoInputOption:             inputOptionModel.NewMarketoInputOption(ctx, inputOption.MarketoInputOption),
+		// START [GENERATOR:INPUT_OPTION_NEW]
+		// pagerduty (auto-generated)
+		PagerdutyInputOption: inputOptionModel.NewPagerdutyInputOption(ctx, inputOption.PagerdutyInputOption),
+		// END [GENERATOR:INPUT_OPTION_NEW]
 	}, diags
 }
 
@@ -95,6 +103,10 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 		RedshiftInputOption:            model.WrapObject(o.RedshiftInputOption.ToInput(ctx)),
 		FacebookAdsInsightsInputOption: model.WrapObject(o.FacebookAdsInsightsInputOption.ToInput(ctx)),
 		MarketoInputOption:             model.WrapObject(o.MarketoInputOption.ToInput(ctx)),
+		// START [GENERATOR:INPUT_OPTION_TO_INPUT]
+		// pagerduty (auto-generated)
+		PagerdutyInputOption: model.WrapObject(o.PagerdutyInputOption.ToInput(ctx)),
+		// END [GENERATOR:INPUT_OPTION_TO_INPUT]
 	}, diags
 }
 
@@ -126,5 +138,9 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 		RedshiftInputOption:            model.WrapObject(o.RedshiftInputOption.ToUpdateInput(ctx)),
 		FacebookAdsInsightsInputOption: model.WrapObject(o.FacebookAdsInsightsInputOption.ToUpdateInput(ctx)),
 		MarketoInputOption:             model.WrapObject(o.MarketoInputOption.ToUpdateInput(ctx)),
+		// START [GENERATOR:INPUT_OPTION_TO_UPDATE_INPUT]
+		// pagerduty (auto-generated)
+		PagerdutyInputOption: model.WrapObject(o.PagerdutyInputOption.ToUpdateInput(ctx)),
+		// END [GENERATOR:INPUT_OPTION_TO_UPDATE_INPUT]
 	}, diags
 }

@@ -118,6 +118,10 @@ type connectionResourceModel struct {
 	MarketoClientSecret    types.String `tfsdk:"client_secret"`
 	MarketoHasClientSecret types.Bool   `tfsdk:"has_client_secret"`
 	MarketoAPIMaxCallCount types.Int64  `tfsdk:"api_max_call_count"`
+
+	// START [GENERATOR:CONNECTION_FIELDS]
+	APIKey types.String `tfsdk:"api_key"`
+	// END [GENERATOR:CONNECTION_FIELDS]
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -187,6 +191,9 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		AuthSource:               model.NewNullableString(m.AuthSource),
 		ReplicaSet:               model.NewNullableString(m.ReplicaSet),
 		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
+		// START [GENERATOR:CONNECTION_INPUT]
+		APIKey: m.APIKey.ValueStringPointer(),
+		// END [GENERATOR:CONNECTION_INPUT]
 	}
 
 	// ReadPreferenceTags
@@ -320,6 +327,9 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		AuthSource:               model.NewNullableString(m.AuthSource),
 		ReplicaSet:               model.NewNullableString(m.ReplicaSet),
 		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
+		// START [GENERATOR:CONNECTION_INPUT]
+		APIKey: m.APIKey.ValueStringPointer(),
+		// END [GENERATOR:CONNECTION_INPUT]
 	}
 
 	// ReadPreferenceTags
@@ -440,6 +450,7 @@ var supportedConnectionTypes = []string{
 	"google_drive",
 	"redshift",
 	"marketo",
+	"pagerduty",
 }
 
 func (r *connectionResource) Schema(
@@ -1042,6 +1053,13 @@ func (r *connectionResource) Schema(
 					int64validator.AtLeast(1),
 				},
 			},
+			// START [GENERATOR:CONNECTION_SCHEMA]
+			"api_key": schema.StringAttribute{
+				Optional:            true,
+				Sensitive:           true,
+				MarkdownDescription: "API Key",
+			},
+			// END [GENERATOR:CONNECTION_SCHEMA]
 		},
 	}
 }
@@ -1158,6 +1176,10 @@ func (r *connectionResource) Create(
 		MarketoClientSecret:    plan.MarketoClientSecret,
 		MarketoHasClientSecret: types.BoolPointerValue(conn.HasClientSecret),
 		MarketoAPIMaxCallCount: types.Int64PointerValue(conn.APIMaxCallCount),
+
+		// START [GENERATOR:CONNECTION_STATE_CREATE]
+		APIKey: plan.APIKey,
+		// END [GENERATOR:CONNECTION_STATE_CREATE]
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1291,6 +1313,10 @@ func (r *connectionResource) Update(
 		MarketoClientSecret:    plan.MarketoClientSecret,
 		MarketoHasClientSecret: types.BoolPointerValue(connection.HasClientSecret),
 		MarketoAPIMaxCallCount: types.Int64PointerValue(connection.APIMaxCallCount),
+
+		// START [GENERATOR:CONNECTION_STATE_UPDATE]
+		APIKey: plan.APIKey,
+		// END [GENERATOR:CONNECTION_STATE_UPDATE]
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1410,6 +1436,10 @@ func (r *connectionResource) Read(
 		MarketoClientSecret:    state.MarketoClientSecret,
 		MarketoHasClientSecret: types.BoolPointerValue(conn.HasClientSecret),
 		MarketoAPIMaxCallCount: types.Int64PointerValue(conn.APIMaxCallCount),
+
+		// START [GENERATOR:CONNECTION_STATE_READ]
+		APIKey: state.APIKey,
+		// END [GENERATOR:CONNECTION_STATE_READ]
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }

@@ -33,6 +33,10 @@ func InputOptionSchema() schema.Attribute {
 			"redshift_input_option":              RedshiftInputOptionSchema(),
 			"facebook_ads_insights_input_option": FacebookAdsInsightsInputOptionSchema(),
 			"marketo_input_option":               MarketoInputOptionSchema(),
+			// START [GENERATOR:JOB_DEF_INPUT_OPTION_SCHEMA]
+			// pagerduty (auto-generated)
+			"pagerduty_input_option": PagerdutyInputOptionSchema(),
+			// END [GENERATOR:JOB_DEF_INPUT_OPTION_SCHEMA]
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planModifier.InputOptionPlanModifier{},

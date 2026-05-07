@@ -71,6 +71,8 @@ type Connection struct {
 	ClientID                         *string                `json:"client_id"`                            // marketo
 	HasClientSecret                  *bool                  `json:"has_client_secret"`                    // marketo (read-only)
 	APIMaxCallCount                  *int64                 `json:"api_max_call_count"`                   // marketo
+	// pagerduty (auto-generated)
+	APIKey *string `json:"api_key"` // API トークン
 }
 
 type GetConnectionsInput struct {
@@ -145,6 +147,8 @@ type CreateConnectionInput struct {
 	ClientID                         *string                   `json:"client_id,omitempty"`                           // marketo
 	ClientSecret                     *string                   `json:"client_secret,omitempty"`                       // marketo
 	APIMaxCallCount                  *parameter.NullableInt64  `json:"api_max_call_count,omitempty"`                  // marketo
+	// pagerduty (auto-generated)
+	APIKey *string `json:"api_key,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -214,6 +218,8 @@ type UpdateConnectionInput struct {
 	ClientID                         *string                   `json:"client_id,omitempty"`                           // marketo
 	ClientSecret                     *string                   `json:"client_secret,omitempty"`                       // marketo
 	APIMaxCallCount                  *parameter.NullableInt64  `json:"api_max_call_count,omitempty"`                  // marketo
+	// pagerduty (auto-generated)
+	APIKey *string `json:"api_key,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {
