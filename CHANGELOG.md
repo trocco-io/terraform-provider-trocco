@@ -1,3 +1,13 @@
+## 0.31.0
+
+FEATURES:
+- `trocco_connection` resource:
+  - Added support for `marketo` (Adobe Engage) type
+  - Added support for `pagerduty` type
+- `trocco_job_definition` resource:
+  - Added support for `marketo` (Adobe Engage) input option
+  - Added support for `pagerduty` input option
+
 ## 0.30.1
 
 CHORE:
