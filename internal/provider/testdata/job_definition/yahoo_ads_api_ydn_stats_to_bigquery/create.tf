@@ -1,19 +1,3 @@
-resource "trocco_connection" "test_bq_yahoo_stats" {
-  connection_type = "bigquery"
-  name            = "BigQuery Test Connection"
-  description     = "Test connection for BigQuery"
-
-  project_id               = "test-project"
-  service_account_json_key = <<JSON
-{
-  "type": "service_account",
-  "project_id": "test-project",
-  "private_key_id": "test-key-id",
-  "private_key": "-----BEGIN PRIVATE KEY-----\ntest\n-----END PRIVATE KEY-----\n"
-}
-JSON
-}
-
 resource "trocco_job_definition" "yahoo_ads_stats_to_bigquery" {
   name                     = "Yahoo Ads Campaign Stats to BigQuery"
   description              = "Campaign stats data from Yahoo Ads YDN synced to BigQuery"
@@ -62,7 +46,7 @@ resource "trocco_job_definition" "yahoo_ads_stats_to_bigquery" {
 
   output_option = {
     bigquery_output_option = {
-      bigquery_connection_id                   = trocco_connection.test_bq_yahoo_stats.id
+      bigquery_connection_id                   = trocco_connection.bigquery.id
       dataset                                  = "yahoo_ads"
       table                                    = "campaign_stats"
       mode                                     = "replace"

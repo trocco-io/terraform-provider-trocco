@@ -1,12 +1,3 @@
-resource "trocco_connection" "test_mysql" {
-  connection_type = "mysql"
-  name            = "MySQL Example"
-  host            = "db.example.com"
-  port            = 3306
-  user_name       = "root"
-  password        = "password"
-}
-
 resource "trocco_connection" "test_s3" {
   connection_type = "s3"
   name            = "S3 Example"
@@ -52,7 +43,7 @@ resource "trocco_job_definition" "mysql_to_s3_csv" {
   input_option_type = "mysql"
   input_option = {
     mysql_input_option = {
-      mysql_connection_id         = trocco_connection.test_mysql.id
+      mysql_connection_id         = trocco_connection.mysql.id
       database                    = "test_database"
       table                       = "test_table"
       connect_timeout             = 300

@@ -12,20 +12,6 @@ resource "trocco_connection" "google_drive" {
   JSON
 }
 
-resource "trocco_connection" "bigquery" {
-  connection_type          = "bigquery"
-  name                     = "BigQuery for Input"
-  project_id               = "example"
-  service_account_json_key = <<JSON
-  {
-    "type": "service_account",
-    "project_id": "example-project-id",
-    "private_key_id": "example-private-key-id",
-    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
-  }
-  JSON
-}
-
 resource "trocco_job_definition" "bigquery_to_google_drive" {
   name                     = "BigQuery to Google Drive CSV Export"
   description              = "Export BigQuery data to Google Drive in CSV format"

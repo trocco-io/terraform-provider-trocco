@@ -1,13 +1,3 @@
-resource "trocco_connection" "bigquery" {
-  connection_type = "bigquery"
-  name            = "BigQuery Example"
-  project_id      = "example"
-  service_account_json_key = jsonencode({
-    type       = "service_account"
-    project_id = "example"
-  })
-}
-
 resource "trocco_connection" "pagerduty_test" {
   connection_type = "pagerduty"
   name            = "Test Pagerduty Connection"
