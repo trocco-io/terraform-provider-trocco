@@ -9,23 +9,6 @@ resource "trocco_connection" "marketo_test" {
   api_max_call_count = 5000
 }
 
-resource "trocco_connection" "bigquery_test" {
-  connection_type = "bigquery"
-  name            = "Test BigQuery Connection"
-  project_id      = "test-project"
-  service_account_json_key = jsonencode({
-    type                        = "service_account"
-    project_id                  = "test-project"
-    private_key_id              = "test-key-id"
-    private_key                 = "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7W8jN\n-----END PRIVATE KEY-----\n"
-    client_email                = "test@test-project.iam.gserviceaccount.com"
-    client_id                   = "123456789"
-    auth_uri                    = "https://accounts.google.com/o/oauth2/auth"
-    token_uri                   = "https://oauth2.googleapis.com/token"
-    auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"
-  })
-}
-
 # Example 1: Lead Transfer with Date Filter
 resource "trocco_job_definition" "marketo_lead_with_date_filter" {
   name        = "Marketo to BigQuery - Lead with Date Filter"
@@ -75,7 +58,7 @@ resource "trocco_job_definition" "marketo_lead_with_date_filter" {
 
   output_option = {
     bigquery_output_option = {
-      bigquery_connection_id            = trocco_connection.bigquery_test.id
+      bigquery_connection_id            = trocco_connection.bigquery.id
       dataset                           = "marketing_data"
       table                             = "marketo_leads"
       mode                              = "merge"
@@ -131,7 +114,7 @@ resource "trocco_job_definition" "marketo_activity_with_type_filter" {
 
   output_option = {
     bigquery_output_option = {
-      bigquery_connection_id            = trocco_connection.bigquery_test.id
+      bigquery_connection_id            = trocco_connection.bigquery.id
       dataset                           = "marketing_data"
       table                             = "marketo_activities"
       mode                              = "merge"
@@ -202,7 +185,7 @@ resource "trocco_job_definition" "marketo_custom_object_with_filter" {
 
   output_option = {
     bigquery_output_option = {
-      bigquery_connection_id            = trocco_connection.bigquery_test.id
+      bigquery_connection_id            = trocco_connection.bigquery.id
       dataset                           = "marketing_data"
       table                             = "marketo_custom_objects"
       mode                              = "merge"
@@ -261,7 +244,7 @@ resource "trocco_job_definition" "marketo_folder_transfer" {
 
   output_option = {
     bigquery_output_option = {
-      bigquery_connection_id            = trocco_connection.bigquery_test.id
+      bigquery_connection_id            = trocco_connection.bigquery.id
       dataset                           = "marketing_data"
       table                             = "marketo_folders"
       mode                              = "merge"
@@ -337,7 +320,7 @@ resource "trocco_job_definition" "marketo_with_custom_variables_to_bigquery" {
 
   output_option = {
     bigquery_output_option = {
-      bigquery_connection_id            = trocco_connection.bigquery_test.id
+      bigquery_connection_id            = trocco_connection.bigquery.id
       dataset                           = "marketing_data"
       table                             = "marketo_leads_dynamic"
       mode                              = "merge"

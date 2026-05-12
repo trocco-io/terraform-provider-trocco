@@ -12,20 +12,6 @@ resource "trocco_connection" "test_google_drive" {
   JSON
 }
 
-resource "trocco_connection" "test_bq" {
-  connection_type          = "bigquery"
-  name                     = "BigQuery Example"
-  project_id               = "example"
-  service_account_json_key = <<JSON
-  {
-    "type": "service_account",
-    "project_id": "example-project-id",
-    "private_key_id": "example-private-key-id",
-    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
-  }
-  JSON
-}
-
 resource "trocco_job_definition" "google_drive_to_bigquery" {
   name                     = "Google Drive to BigQuery Test"
   description              = "Test job definition for transferring data from Google Drive to BigQuery"
@@ -101,7 +87,7 @@ resource "trocco_job_definition" "google_drive_to_bigquery" {
   output_option = {
     bigquery_output_option = {
       auto_create_dataset                      = true
-      bigquery_connection_id                   = trocco_connection.test_bq.id
+      bigquery_connection_id                   = trocco_connection.bigquery.id
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []
       bigquery_output_option_merge_keys        = []

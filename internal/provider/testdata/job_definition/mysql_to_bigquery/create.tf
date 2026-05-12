@@ -1,24 +1,3 @@
-resource "trocco_connection" "test_mysql" {
-  connection_type = "mysql"
-  name            = "MySQL Example"
-  host            = "db.example.com"
-  port            = 65535
-  user_name       = "root"
-  password        = "password"
-}
-resource "trocco_connection" "test_bq" {
-  connection_type          = "bigquery"
-  name                     = "BigQuery Example"
-  project_id               = "example"
-  service_account_json_key = <<JSON
-  {
-    "type": "service_account",
-    "project_id": "example-project-id",
-    "private_key_id": "example-private-key-id",
-    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
-  }
-  JSON
-}
 resource "trocco_team" "test" {
   name = "test"
   members = [
@@ -201,7 +180,7 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
           type = "timestamp"
         },
       ]
-      mysql_connection_id = trocco_connection.test_mysql.id
+      mysql_connection_id = trocco_connection.mysql.id
       query               = <<-EOT
                 select
                     *
@@ -223,7 +202,7 @@ resource "trocco_job_definition" "mysql_to_bigquery" {
       read_timeout_sec                         = 300
       send_timeout_sec                         = 300
       retries                                  = 2
-      bigquery_connection_id                   = trocco_connection.test_bq.id
+      bigquery_connection_id                   = trocco_connection.bigquery.id
       location                                 = "us-west1"
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []

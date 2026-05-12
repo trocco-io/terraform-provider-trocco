@@ -60,23 +60,6 @@ resource "trocco_job_definition" "bigquery_to_sftp_jsonl" {
   }
 }
 
-# BigQuery source connection
-resource "trocco_connection" "bigquery" {
-  connection_type = "bigquery"
-  name            = "Analytics BigQuery"
-  description     = "BigQuery connection for analytics data"
-
-  project_id               = "my-analytics-project"
-  service_account_json_key = <<JSON
-  {
-    "type": "service_account",
-    "project_id": "example-project-id",
-    "private_key_id": "example-private-key-id",
-    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
-  }
-  JSON
-}
-
 # SFTP destination connection
 resource "trocco_connection" "sftp" {
   connection_type = "sftp"
