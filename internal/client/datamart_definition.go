@@ -89,18 +89,31 @@ type DatamartDefinition struct {
 }
 
 type DatamartBigqueryOption struct {
-	BigqueryConnectionID int64    `json:"bigquery_connection_id"`
-	QueryMode            string   `json:"query_mode"`
-	Query                string   `json:"query"`
-	DestinationDataset   *string  `json:"destination_dataset"`
-	DestinationTable     *string  `json:"destination_table"`
-	WriteDisposition     *string  `json:"write_disposition"`
-	BeforeLoad           *string  `json:"before_load"`
-	Partitioning         *string  `json:"partitioning"`
-	PartitioningTime     *string  `json:"partitioning_time"`
-	PartitioningField    *string  `json:"partitioning_field"`
-	ClusteringFields     []string `json:"clustering_fields"`
-	Location             *string  `json:"location"`
+	BigqueryConnectionID    int64    `json:"bigquery_connection_id"`
+	QueryMode               string   `json:"query_mode"`
+	Query                   string   `json:"query"`
+	DestinationDataset      *string  `json:"destination_dataset"`
+	DestinationTable        *string  `json:"destination_table"`
+	WriteDisposition        *string  `json:"write_disposition"`
+	BeforeLoad              *string  `json:"before_load"`
+	Partitioning            *string  `json:"partitioning"`
+	PartitioningTime        *string  `json:"partitioning_time"`
+	PartitioningField       *string  `json:"partitioning_field"`
+	ClusteringFields        []string `json:"clustering_fields"`
+	Location                *string  `json:"location"`
+	MergeKeys               []string `json:"merge_keys"`
+	OnMatchedAction         *string  `json:"on_matched_action"`
+	IncrementalColumn       *string  `json:"incremental_column"`
+	ValidFromColumn         *string  `json:"valid_from_column"`
+	ValidToColumn           *string  `json:"valid_to_column"`
+	IsCurrentColumn         *string  `json:"is_current_column"`
+	SchemaEvolutionMode     *string  `json:"schema_evolution_mode"`
+	LookbackPeriodColumn     *string  `json:"lookback_period_column"`
+	LookbackPeriodColumnType *string  `json:"lookback_period_column_type"`
+	LookbackPeriodTimezone   *string  `json:"lookback_period_timezone"`
+	LookbackPeriodFrom       *int64   `json:"lookback_period_from"`
+	LookbackPeriodTo         *int64   `json:"lookback_period_to"`
+	LookbackPeriodUnit       *string  `json:"lookback_period_unit"`
 }
 
 type ResourceGroup struct {
@@ -261,18 +274,28 @@ func NewTimestampTypeCustomVariableSettingInput(
 }
 
 type CreateDatamartBigqueryOptionInput struct {
-	BigqueryConnectionID int64     `json:"bigquery_connection_id"`
-	QueryMode            string    `json:"query_mode"`
-	Query                string    `json:"query"`
-	DestinationDataset   *string   `json:"destination_dataset,omitempty"`
-	DestinationTable     *string   `json:"destination_table,omitempty"`
-	WriteDisposition     *string   `json:"write_disposition,omitempty"`
-	BeforeLoad           *string   `json:"before_load,omitempty"`
-	Partitioning         *string   `json:"partitioning,omitempty"`
-	PartitioningTime     *string   `json:"partitioning_time,omitempty"`
-	PartitioningField    *string   `json:"partitioning_field,omitempty"`
-	ClusteringFields     *[]string `json:"clustering_fields,omitempty"`
-	Location             *string   `json:"location,omitempty"`
+	BigqueryConnectionID     int64     `json:"bigquery_connection_id"`
+	QueryMode                string    `json:"query_mode"`
+	Query                    string    `json:"query"`
+	DestinationDataset       *string   `json:"destination_dataset,omitempty"`
+	DestinationTable         *string   `json:"destination_table,omitempty"`
+	WriteDisposition         *string   `json:"write_disposition,omitempty"`
+	BeforeLoad               *string   `json:"before_load,omitempty"`
+	Partitioning             *string   `json:"partitioning,omitempty"`
+	PartitioningTime         *string   `json:"partitioning_time,omitempty"`
+	PartitioningField        *string   `json:"partitioning_field,omitempty"`
+	ClusteringFields         *[]string `json:"clustering_fields,omitempty"`
+	Location                 *string   `json:"location,omitempty"`
+	MergeKeys                *[]string `json:"merge_keys,omitempty"`
+	OnMatchedAction          *string   `json:"on_matched_action,omitempty"`
+	IncrementalColumn        *string   `json:"incremental_column,omitempty"`
+	SchemaEvolutionMode      *string   `json:"schema_evolution_mode,omitempty"`
+	LookbackPeriodColumn     *string   `json:"lookback_period_column,omitempty"`
+	LookbackPeriodColumnType *string   `json:"lookback_period_column_type,omitempty"`
+	LookbackPeriodTimezone   *string   `json:"lookback_period_timezone,omitempty"`
+	LookbackPeriodFrom       *int64    `json:"lookback_period_from,omitempty"`
+	LookbackPeriodTo         *int64    `json:"lookback_period_to,omitempty"`
+	LookbackPeriodUnit       *string   `json:"lookback_period_unit,omitempty"`
 }
 
 func NewInsertModeCreateDatamartBigqueryOptionInput(
@@ -325,6 +348,46 @@ func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetClusteringFi
 
 func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetLocation(location string) {
 	datamartBigqueryOption.Location = &location
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetMergeKeys(mergeKeys []string) {
+	datamartBigqueryOption.MergeKeys = &mergeKeys
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetOnMatchedAction(onMatchedAction string) {
+	datamartBigqueryOption.OnMatchedAction = &onMatchedAction
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetIncrementalColumn(incrementalColumn string) {
+	datamartBigqueryOption.IncrementalColumn = &incrementalColumn
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetSchemaEvolutionMode(schemaEvolutionMode string) {
+	datamartBigqueryOption.SchemaEvolutionMode = &schemaEvolutionMode
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetLookbackPeriodColumn(lookbackPeriodColumn string) {
+	datamartBigqueryOption.LookbackPeriodColumn = &lookbackPeriodColumn
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetLookbackPeriodColumnType(lookbackPeriodColumnType string) {
+	datamartBigqueryOption.LookbackPeriodColumnType = &lookbackPeriodColumnType
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetLookbackPeriodTimezone(lookbackPeriodTimezone string) {
+	datamartBigqueryOption.LookbackPeriodTimezone = &lookbackPeriodTimezone
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetLookbackPeriodFrom(lookbackPeriodFrom int64) {
+	datamartBigqueryOption.LookbackPeriodFrom = &lookbackPeriodFrom
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetLookbackPeriodTo(lookbackPeriodTo int64) {
+	datamartBigqueryOption.LookbackPeriodTo = &lookbackPeriodTo
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetLookbackPeriodUnit(lookbackPeriodUnit string) {
+	datamartBigqueryOption.LookbackPeriodUnit = &lookbackPeriodUnit
 }
 
 type CreateDatamartDefinitionOutput struct {
@@ -402,18 +465,28 @@ func (input *UpdateDatamartDefinitionInput) SetLabels(labels []string) {
 }
 
 type UpdateDatamartBigqueryOptionInput struct {
-	BigqueryConnectionID *int64                    `json:"bigquery_connection_id,omitempty"`
-	QueryMode            *string                   `json:"query_mode,omitempty"`
-	Query                *string                   `json:"query,omitempty"`
-	DestinationDataset   *string                   `json:"destination_dataset,omitempty"`
-	DestinationTable     *string                   `json:"destination_table,omitempty"`
-	WriteDisposition     *string                   `json:"write_disposition,omitempty"`
-	BeforeLoad           *parameter.NullableString `json:"before_load,omitempty"`
-	Partitioning         *parameter.NullableString `json:"partitioning,omitempty"`
-	PartitioningTime     *string                   `json:"partitioning_time,omitempty"`
-	PartitioningField    *string                   `json:"partitioning_field,omitempty"`
-	ClusteringFields     *[]string                 `json:"clustering_fields,omitempty"`
-	Location             *parameter.NullableString `json:"location,omitempty"`
+	BigqueryConnectionID     *int64                    `json:"bigquery_connection_id,omitempty"`
+	QueryMode                *string                   `json:"query_mode,omitempty"`
+	Query                    *string                   `json:"query,omitempty"`
+	DestinationDataset       *string                   `json:"destination_dataset,omitempty"`
+	DestinationTable         *string                   `json:"destination_table,omitempty"`
+	WriteDisposition         *string                   `json:"write_disposition,omitempty"`
+	BeforeLoad               *parameter.NullableString `json:"before_load,omitempty"`
+	Partitioning             *parameter.NullableString `json:"partitioning,omitempty"`
+	PartitioningTime         *string                   `json:"partitioning_time,omitempty"`
+	PartitioningField        *string                   `json:"partitioning_field,omitempty"`
+	ClusteringFields         *[]string                 `json:"clustering_fields,omitempty"`
+	Location                 *parameter.NullableString `json:"location,omitempty"`
+	MergeKeys                *[]string                 `json:"merge_keys,omitempty"`
+	OnMatchedAction          *parameter.NullableString `json:"on_matched_action,omitempty"`
+	IncrementalColumn        *parameter.NullableString `json:"incremental_column,omitempty"`
+	SchemaEvolutionMode      *parameter.NullableString `json:"schema_evolution_mode,omitempty"`
+	LookbackPeriodColumn     *parameter.NullableString `json:"lookback_period_column,omitempty"`
+	LookbackPeriodColumnType *parameter.NullableString `json:"lookback_period_column_type,omitempty"`
+	LookbackPeriodTimezone   *parameter.NullableString `json:"lookback_period_timezone,omitempty"`
+	LookbackPeriodFrom       *parameter.NullableInt64  `json:"lookback_period_from,omitempty"`
+	LookbackPeriodTo         *parameter.NullableInt64  `json:"lookback_period_to,omitempty"`
+	LookbackPeriodUnit       *parameter.NullableString `json:"lookback_period_unit,omitempty"`
 }
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetBigqueryConnectionID(bigqueryConnectionID int64) {
@@ -474,6 +547,82 @@ func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLocation(loc
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLocationEmpty() {
 	datamartBigqueryOption.Location = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetMergeKeys(mergeKeys []string) {
+	datamartBigqueryOption.MergeKeys = &mergeKeys
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetOnMatchedAction(onMatchedAction string) {
+	datamartBigqueryOption.OnMatchedAction = &parameter.NullableString{Value: onMatchedAction, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetOnMatchedActionEmpty() {
+	datamartBigqueryOption.OnMatchedAction = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetIncrementalColumn(incrementalColumn string) {
+	datamartBigqueryOption.IncrementalColumn = &parameter.NullableString{Value: incrementalColumn, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetIncrementalColumnEmpty() {
+	datamartBigqueryOption.IncrementalColumn = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetSchemaEvolutionMode(schemaEvolutionMode string) {
+	datamartBigqueryOption.SchemaEvolutionMode = &parameter.NullableString{Value: schemaEvolutionMode, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetSchemaEvolutionModeEmpty() {
+	datamartBigqueryOption.SchemaEvolutionMode = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodColumn(lookbackPeriodColumn string) {
+	datamartBigqueryOption.LookbackPeriodColumn = &parameter.NullableString{Value: lookbackPeriodColumn, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodColumnEmpty() {
+	datamartBigqueryOption.LookbackPeriodColumn = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodColumnType(lookbackPeriodColumnType string) {
+	datamartBigqueryOption.LookbackPeriodColumnType = &parameter.NullableString{Value: lookbackPeriodColumnType, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodColumnTypeEmpty() {
+	datamartBigqueryOption.LookbackPeriodColumnType = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodTimezone(lookbackPeriodTimezone string) {
+	datamartBigqueryOption.LookbackPeriodTimezone = &parameter.NullableString{Value: lookbackPeriodTimezone, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodTimezoneEmpty() {
+	datamartBigqueryOption.LookbackPeriodTimezone = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodFrom(lookbackPeriodFrom int64) {
+	datamartBigqueryOption.LookbackPeriodFrom = &parameter.NullableInt64{Value: lookbackPeriodFrom, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodFromEmpty() {
+	datamartBigqueryOption.LookbackPeriodFrom = &parameter.NullableInt64{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodTo(lookbackPeriodTo int64) {
+	datamartBigqueryOption.LookbackPeriodTo = &parameter.NullableInt64{Value: lookbackPeriodTo, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodToEmpty() {
+	datamartBigqueryOption.LookbackPeriodTo = &parameter.NullableInt64{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodUnit(lookbackPeriodUnit string) {
+	datamartBigqueryOption.LookbackPeriodUnit = &parameter.NullableString{Value: lookbackPeriodUnit, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodUnitEmpty() {
+	datamartBigqueryOption.LookbackPeriodUnit = &parameter.NullableString{Valid: false}
 }
 
 type ScheduleInput struct {

@@ -46,14 +46,27 @@ type bigqueryDatamartDefinitionModel struct {
 	Query                  custom_type.TrimmedStringValue `tfsdk:"query"`
 	DestinationDataset     types.String                   `tfsdk:"destination_dataset"`
 	DestinationTable       types.String                   `tfsdk:"destination_table"`
-	WriteDisposition       types.String                   `tfsdk:"write_disposition"`
-	BeforeLoad             custom_type.TrimmedStringValue `tfsdk:"before_load"`
-	Partitioning           types.String                   `tfsdk:"partitioning"`
-	PartitioningTime       types.String                   `tfsdk:"partitioning_time"`
-	PartitioningField      types.String                   `tfsdk:"partitioning_field"`
-	ClusteringFields       types.List                     `tfsdk:"clustering_fields"`
-	Location               types.String                   `tfsdk:"location"`
-	Notifications          types.Set                      `tfsdk:"notifications"`
+	WriteDisposition         types.String                   `tfsdk:"write_disposition"`
+	BeforeLoad               custom_type.TrimmedStringValue `tfsdk:"before_load"`
+	Partitioning             types.String                   `tfsdk:"partitioning"`
+	PartitioningTime         types.String                   `tfsdk:"partitioning_time"`
+	PartitioningField        types.String                   `tfsdk:"partitioning_field"`
+	ClusteringFields         types.List                     `tfsdk:"clustering_fields"`
+	Location                 types.String                   `tfsdk:"location"`
+	MergeKeys                types.List                     `tfsdk:"merge_keys"`
+	OnMatchedAction          types.String                   `tfsdk:"on_matched_action"`
+	IncrementalColumn        types.String                   `tfsdk:"incremental_column"`
+	ValidFromColumn          types.String                   `tfsdk:"valid_from_column"`
+	ValidToColumn            types.String                   `tfsdk:"valid_to_column"`
+	IsCurrentColumn          types.String                   `tfsdk:"is_current_column"`
+	SchemaEvolutionMode      types.String                   `tfsdk:"schema_evolution_mode"`
+	LookbackPeriodColumn     types.String                   `tfsdk:"lookback_period_column"`
+	LookbackPeriodColumnType types.String                   `tfsdk:"lookback_period_column_type"`
+	LookbackPeriodTimezone   types.String                   `tfsdk:"lookback_period_timezone"`
+	LookbackPeriodFrom       types.Int64                    `tfsdk:"lookback_period_from"`
+	LookbackPeriodTo         types.Int64                    `tfsdk:"lookback_period_to"`
+	LookbackPeriodUnit       types.String                   `tfsdk:"lookback_period_unit"`
+	Notifications            types.Set                      `tfsdk:"notifications"`
 	Schedules              types.Set                      `tfsdk:"schedules"`
 	Labels                 types.Set                      `tfsdk:"labels"`
 }
@@ -235,9 +248,9 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 			"write_disposition": schema.StringAttribute{
 				Optional: true,
 				Validators: []validator.String{
-					stringvalidator.OneOf("append", "truncate"),
+					stringvalidator.OneOf("append", "truncate", "incremental", "scd_type_2"),
 				},
-				MarkdownDescription: "The following write dispositions are supported: `append`, `truncate`. In the case of `append`, the result of the query execution is appended after the records of the existing table. In the case of `truncate`, records in the existing table are deleted and replaced with the results of the query execution. Required in `insert` mode",
+				MarkdownDescription: "The following write dispositions are supported: `append`, `truncate`, `incremental`, `scd_type_2`. Required in `insert` mode",
 			},
 			"before_load": schema.StringAttribute{
 				Optional:            true,
@@ -273,6 +286,72 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 			"location": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "The location where the query will be executed. If not specified, the location is automatically determined by Google BigQuery. Available only in `query` mode",
+			},
+			"merge_keys": schema.ListAttribute{
+				Optional:    true,
+				ElementType: types.StringType,
+				MarkdownDescription: "Key columns to uniquely identify records. Required when `write_disposition` is `incremental` or `scd_type_2`",
+			},
+			"on_matched_action": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("upsert", "skip"),
+				},
+				MarkdownDescription: "Behavior when a record with a matching key exists. The following actions are supported: `upsert`, `skip`. Required when `write_disposition` is `incremental`",
+			},
+			"incremental_column": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Incremental reference column. Required when `write_disposition` is `scd_type_2`",
+			},
+			"valid_from_column": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "SCD Type 2 valid-from column name. Fixed value: `trocco_valid_from`",
+			},
+			"valid_to_column": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "SCD Type 2 valid-to column name. Fixed value: `trocco_valid_to`",
+			},
+			"is_current_column": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "SCD Type 2 is-current flag column name. Fixed value: `trocco_is_current`",
+			},
+			"schema_evolution_mode": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("detect_only", "auto_add_column"),
+				},
+				MarkdownDescription: "Schema evolution mode. The following modes are supported: `detect_only`, `auto_add_column`. Available when `write_disposition` is `incremental` or `scd_type_2`",
+			},
+			"lookback_period_column": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Column name for the lookback period. Available when `write_disposition` is `incremental` or `scd_type_2`",
+			},
+			"lookback_period_column_type": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("TIMESTAMP", "DATETIME", "DATE"),
+				},
+				MarkdownDescription: "Data type of the lookback period column. The following types are supported: `TIMESTAMP`, `DATETIME`, `DATE`",
+			},
+			"lookback_period_timezone": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Timezone for the lookback period",
+			},
+			"lookback_period_from": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Start value of the lookback period",
+			},
+			"lookback_period_to": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "End value of the lookback period",
+			},
+			"lookback_period_unit": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("days", "hours"),
+				},
+				MarkdownDescription: "Unit of the lookback period. The following units are supported: `days`, `hours`",
 			},
 			"schedules": schema.SetNestedAttribute{
 				Optional: true,
@@ -452,6 +531,36 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		if clusteringFields := utils.ConvertStringList(ctx, plan.ClusteringFields); len(clusteringFields) > 0 {
 			optionInput.SetClusteringFields(clusteringFields)
+		}
+		if mergeKeys := utils.ConvertStringList(ctx, plan.MergeKeys); len(mergeKeys) > 0 {
+			optionInput.SetMergeKeys(mergeKeys)
+		}
+		if !plan.OnMatchedAction.IsNull() {
+			optionInput.SetOnMatchedAction(plan.OnMatchedAction.ValueString())
+		}
+		if !plan.IncrementalColumn.IsNull() {
+			optionInput.SetIncrementalColumn(plan.IncrementalColumn.ValueString())
+		}
+		if !plan.SchemaEvolutionMode.IsNull() && !plan.SchemaEvolutionMode.IsUnknown() {
+			optionInput.SetSchemaEvolutionMode(plan.SchemaEvolutionMode.ValueString())
+		}
+		if !plan.LookbackPeriodColumn.IsNull() {
+			optionInput.SetLookbackPeriodColumn(plan.LookbackPeriodColumn.ValueString())
+		}
+		if !plan.LookbackPeriodColumnType.IsNull() {
+			optionInput.SetLookbackPeriodColumnType(plan.LookbackPeriodColumnType.ValueString())
+		}
+		if !plan.LookbackPeriodTimezone.IsNull() {
+			optionInput.SetLookbackPeriodTimezone(plan.LookbackPeriodTimezone.ValueString())
+		}
+		if !plan.LookbackPeriodFrom.IsNull() {
+			optionInput.SetLookbackPeriodFrom(plan.LookbackPeriodFrom.ValueInt64())
+		}
+		if !plan.LookbackPeriodTo.IsNull() {
+			optionInput.SetLookbackPeriodTo(plan.LookbackPeriodTo.ValueInt64())
+		}
+		if !plan.LookbackPeriodUnit.IsNull() {
+			optionInput.SetLookbackPeriodUnit(plan.LookbackPeriodUnit.ValueString())
 		}
 		if resp.Diagnostics.HasError() {
 			return
@@ -707,6 +816,66 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 		optionInput.SetLocation(plan.Location.ValueString())
 	} else {
 		optionInput.SetLocationEmpty()
+	}
+	if !plan.MergeKeys.IsNull() {
+		var mergeKeysValues []types.String
+		diags := plan.MergeKeys.ElementsAs(ctx, &mergeKeysValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		mergeKeys := make([]string, len(mergeKeysValues))
+		for i, v := range mergeKeysValues {
+			mergeKeys[i] = v.ValueString()
+		}
+		optionInput.SetMergeKeys(mergeKeys)
+	} else {
+		optionInput.SetMergeKeys([]string{})
+	}
+	if !plan.OnMatchedAction.IsNull() {
+		optionInput.SetOnMatchedAction(plan.OnMatchedAction.ValueString())
+	} else {
+		optionInput.SetOnMatchedActionEmpty()
+	}
+	if !plan.IncrementalColumn.IsNull() {
+		optionInput.SetIncrementalColumn(plan.IncrementalColumn.ValueString())
+	} else {
+		optionInput.SetIncrementalColumnEmpty()
+	}
+	if !plan.SchemaEvolutionMode.IsNull() && !plan.SchemaEvolutionMode.IsUnknown() {
+		optionInput.SetSchemaEvolutionMode(plan.SchemaEvolutionMode.ValueString())
+	} else if plan.SchemaEvolutionMode.IsNull() {
+		optionInput.SetSchemaEvolutionModeEmpty()
+	}
+	if !plan.LookbackPeriodColumn.IsNull() {
+		optionInput.SetLookbackPeriodColumn(plan.LookbackPeriodColumn.ValueString())
+	} else {
+		optionInput.SetLookbackPeriodColumnEmpty()
+	}
+	if !plan.LookbackPeriodColumnType.IsNull() {
+		optionInput.SetLookbackPeriodColumnType(plan.LookbackPeriodColumnType.ValueString())
+	} else {
+		optionInput.SetLookbackPeriodColumnTypeEmpty()
+	}
+	if !plan.LookbackPeriodTimezone.IsNull() {
+		optionInput.SetLookbackPeriodTimezone(plan.LookbackPeriodTimezone.ValueString())
+	} else {
+		optionInput.SetLookbackPeriodTimezoneEmpty()
+	}
+	if !plan.LookbackPeriodFrom.IsNull() {
+		optionInput.SetLookbackPeriodFrom(plan.LookbackPeriodFrom.ValueInt64())
+	} else {
+		optionInput.SetLookbackPeriodFromEmpty()
+	}
+	if !plan.LookbackPeriodTo.IsNull() {
+		optionInput.SetLookbackPeriodTo(plan.LookbackPeriodTo.ValueInt64())
+	} else {
+		optionInput.SetLookbackPeriodToEmpty()
+	}
+	if !plan.LookbackPeriodUnit.IsNull() {
+		optionInput.SetLookbackPeriodUnit(plan.LookbackPeriodUnit.ValueString())
+	} else {
+		optionInput.SetLookbackPeriodUnitEmpty()
 	}
 	input.SetDatamartBigqueryOption(optionInput)
 	if !plan.Schedules.IsNull() && !plan.Schedules.IsUnknown() {
@@ -1027,6 +1196,55 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 		}
 		if response.DatamartBigqueryOption.Location != nil {
 			model.Location = types.StringValue(*response.DatamartBigqueryOption.Location)
+		}
+		if response.DatamartBigqueryOption.MergeKeys != nil {
+			mergeKeys := make([]types.String, len(response.DatamartBigqueryOption.MergeKeys))
+			for i, v := range response.DatamartBigqueryOption.MergeKeys {
+				mergeKeys[i] = types.StringValue(v)
+			}
+			listValue, diags := types.ListValueFrom(ctx, types.StringType, mergeKeys)
+			if diags.HasError() {
+				return nil, fmt.Errorf("failed to convert merge_keys to ListValue")
+			}
+			model.MergeKeys = listValue
+		} else {
+			model.MergeKeys = types.ListNull(types.StringType)
+		}
+		if response.DatamartBigqueryOption.OnMatchedAction != nil {
+			model.OnMatchedAction = types.StringValue(*response.DatamartBigqueryOption.OnMatchedAction)
+		}
+		if response.DatamartBigqueryOption.IncrementalColumn != nil {
+			model.IncrementalColumn = types.StringValue(*response.DatamartBigqueryOption.IncrementalColumn)
+		}
+		if response.DatamartBigqueryOption.ValidFromColumn != nil {
+			model.ValidFromColumn = types.StringValue(*response.DatamartBigqueryOption.ValidFromColumn)
+		}
+		if response.DatamartBigqueryOption.ValidToColumn != nil {
+			model.ValidToColumn = types.StringValue(*response.DatamartBigqueryOption.ValidToColumn)
+		}
+		if response.DatamartBigqueryOption.IsCurrentColumn != nil {
+			model.IsCurrentColumn = types.StringValue(*response.DatamartBigqueryOption.IsCurrentColumn)
+		}
+		if response.DatamartBigqueryOption.SchemaEvolutionMode != nil {
+			model.SchemaEvolutionMode = types.StringValue(*response.DatamartBigqueryOption.SchemaEvolutionMode)
+		}
+		if response.DatamartBigqueryOption.LookbackPeriodColumn != nil {
+			model.LookbackPeriodColumn = types.StringValue(*response.DatamartBigqueryOption.LookbackPeriodColumn)
+		}
+		if response.DatamartBigqueryOption.LookbackPeriodColumnType != nil {
+			model.LookbackPeriodColumnType = types.StringValue(*response.DatamartBigqueryOption.LookbackPeriodColumnType)
+		}
+		if response.DatamartBigqueryOption.LookbackPeriodTimezone != nil {
+			model.LookbackPeriodTimezone = types.StringValue(*response.DatamartBigqueryOption.LookbackPeriodTimezone)
+		}
+		if response.DatamartBigqueryOption.LookbackPeriodFrom != nil {
+			model.LookbackPeriodFrom = types.Int64Value(*response.DatamartBigqueryOption.LookbackPeriodFrom)
+		}
+		if response.DatamartBigqueryOption.LookbackPeriodTo != nil {
+			model.LookbackPeriodTo = types.Int64Value(*response.DatamartBigqueryOption.LookbackPeriodTo)
+		}
+		if response.DatamartBigqueryOption.LookbackPeriodUnit != nil {
+			model.LookbackPeriodUnit = types.StringValue(*response.DatamartBigqueryOption.LookbackPeriodUnit)
 		}
 	} else {
 		return nil, fmt.Errorf("datamartBigqueryOption is nil")

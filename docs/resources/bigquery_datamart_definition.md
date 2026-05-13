@@ -208,19 +208,32 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 - `description` (String) Description of the datamart definition. It must be at least 1 character
 - `destination_dataset` (String) Destination dataset where the query result will be inserted. Required in `insert` mode
 - `destination_table` (String) Destination table where the query result will be inserted. Required in `insert` mode
+- `incremental_column` (String) Incremental reference column. Required when `write_disposition` is `scd_type_2`
 - `labels` (Attributes Set) Labels to be attached to the datamart definition (see [below for nested schema](#nestedatt--labels))
 - `location` (String) The location where the query will be executed. If not specified, the location is automatically determined by Google BigQuery. Available only in `query` mode
+- `lookback_period_column` (String) Column name for the lookback period. Available when `write_disposition` is `incremental` or `scd_type_2`
+- `lookback_period_column_type` (String) Data type of the lookback period column. The following types are supported: `TIMESTAMP`, `DATETIME`, `DATE`
+- `lookback_period_from` (Number) Start value of the lookback period
+- `lookback_period_timezone` (String) Timezone for the lookback period
+- `lookback_period_to` (Number) End value of the lookback period
+- `lookback_period_unit` (String) Unit of the lookback period. The following units are supported: `days`, `hours`
+- `merge_keys` (List of String) Key columns to uniquely identify records. Required when `write_disposition` is `incremental` or `scd_type_2`
 - `notifications` (Attributes Set) Notifications to be attached to the datamart definition (see [below for nested schema](#nestedatt--notifications))
+- `on_matched_action` (String) Behavior when a record with a matching key exists. The following actions are supported: `upsert`, `skip`. Required when `write_disposition` is `incremental`
 - `partitioning` (String) The following partitioning types are supported: `ingestion_time`, `time_unit_column`. In the case of `ingestion_time`, partitions are cut based on TROCCO's job execution time. In the case of `time_unit_column`, partitioning is done based on the reference column. Available only in `insert` mode
 - `partitioning_field` (String) Column name to be used for partitioning. Required when `partitioning` is `time_unit_column`
 - `partitioning_time` (String) The granularity of table partitioning. The following units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Required when `partitioning` is set
 - `resource_group_id` (Number) ID of the resource group to which the datamart definition belongs
 - `schedules` (Attributes Set) Schedules to be attached to the datamart definition (see [below for nested schema](#nestedatt--schedules))
-- `write_disposition` (String) The following write dispositions are supported: `append`, `truncate`. In the case of `append`, the result of the query execution is appended after the records of the existing table. In the case of `truncate`, records in the existing table are deleted and replaced with the results of the query execution. Required in `insert` mode
+- `schema_evolution_mode` (String) Schema evolution mode. The following modes are supported: `detect_only`, `auto_add_column`. Available when `write_disposition` is `incremental` or `scd_type_2`
+- `write_disposition` (String) The following write dispositions are supported: `append`, `truncate`, `incremental`, `scd_type_2`. Required in `insert` mode
 
 ### Read-Only
 
 - `id` (Number) The ID of the datamart definition
+- `is_current_column` (String) SCD Type 2 is-current flag column name. Fixed value: `trocco_is_current`
+- `valid_from_column` (String) SCD Type 2 valid-from column name. Fixed value: `trocco_valid_from`
+- `valid_to_column` (String) SCD Type 2 valid-to column name. Fixed value: `trocco_valid_to`
 
 <a id="nestedatt--custom_variable_settings"></a>
 ### Nested Schema for `custom_variable_settings`

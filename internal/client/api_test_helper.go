@@ -21,7 +21,7 @@ func testCases(t *testing.T, cases []Case) {
 			}
 			continue
 		}
-		if reflect.ValueOf(value).Kind() == reflect.Ptr {
+		if reflect.ValueOf(value).Kind() == reflect.Pointer {
 			value = reflect.ValueOf(value).Elem().Interface()
 		}
 		if c.expected != value {
