@@ -107,7 +107,7 @@ type DatamartBigqueryOption struct {
 	ValidFromColumn         *string  `json:"valid_from_column"`
 	ValidToColumn           *string  `json:"valid_to_column"`
 	IsCurrentColumn         *string  `json:"is_current_column"`
-	SchemaEvolutionMode     *string  `json:"schema_evolution_mode"`
+	SchemaEvolutionMode      *string  `json:"schema_evolution_mode"`
 	LookbackPeriodColumn     *string  `json:"lookback_period_column"`
 	LookbackPeriodColumnType *string  `json:"lookback_period_column_type"`
 	LookbackPeriodTimezone   *string  `json:"lookback_period_timezone"`
