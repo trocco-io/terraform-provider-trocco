@@ -1100,6 +1100,54 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 			}
 		}
 	}
+
+	writeDisposition := data.WriteDisposition.ValueString()
+
+	// Validate incremental write disposition
+	if writeDisposition == "incremental" {
+		if data.MergeKeys.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("merge_keys"),
+				"Missing Merge Keys",
+				"merge_keys is required when write_disposition is incremental",
+			)
+		}
+		if data.OnMatchedAction.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("on_matched_action"),
+				"Missing On Matched Action",
+				"on_matched_action is required when write_disposition is incremental",
+			)
+		}
+	}
+
+	// Validate scd_type_2 write disposition
+	if writeDisposition == "scd_type_2" {
+		if data.MergeKeys.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("merge_keys"),
+				"Missing Merge Keys",
+				"merge_keys is required when write_disposition is scd_type_2",
+			)
+		}
+		if data.IncrementalColumn.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("incremental_column"),
+				"Missing Incremental Column",
+				"incremental_column is required when write_disposition is scd_type_2",
+			)
+		}
+	}
+
+	// Validate is_runnable_concurrently for incremental/scd_type_2
+	if (writeDisposition == "incremental" || writeDisposition == "scd_type_2") &&
+		!data.IsRunnableConcurrently.IsNull() && data.IsRunnableConcurrently.ValueBool() {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("is_runnable_concurrently"),
+			"Invalid Concurrent Execution Setting",
+			"is_runnable_concurrently must be false when write_disposition is incremental or scd_type_2",
+		)
+	}
 }
 
 func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition) (*bigqueryDatamartDefinitionModel, error) {
