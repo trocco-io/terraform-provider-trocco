@@ -290,6 +290,9 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 			"merge_keys": schema.ListAttribute{
 				Optional:    true,
 				ElementType: types.StringType,
+				Validators: []validator.List{
+					listvalidator.SizeAtLeast(1),
+				},
 				MarkdownDescription: "Key columns to uniquely identify records. Required when `write_disposition` is `incremental` or `scd_type_2`",
 			},
 			"on_matched_action": schema.StringAttribute{
@@ -339,11 +342,17 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 				MarkdownDescription: "Timezone for the lookback period",
 			},
 			"lookback_period_from": schema.Int64Attribute{
-				Optional:            true,
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+				},
 				MarkdownDescription: "Start value of the lookback period",
 			},
 			"lookback_period_to": schema.Int64Attribute{
-				Optional:            true,
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+				},
 				MarkdownDescription: "End value of the lookback period",
 			},
 			"lookback_period_unit": schema.StringAttribute{
@@ -1147,6 +1156,67 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 			"Invalid Concurrent Execution Setting",
 			"is_runnable_concurrently must be false when write_disposition is incremental or scd_type_2",
 		)
+	}
+
+	// Validate lookback_period consistency for incremental/scd_type_2
+	if writeDisposition == "incremental" || writeDisposition == "scd_type_2" {
+		columnSet := !data.LookbackPeriodColumn.IsNull()
+		fromSet := !data.LookbackPeriodFrom.IsNull()
+		toSet := !data.LookbackPeriodTo.IsNull()
+		fromOrToSet := fromSet || toSet
+
+		if !columnSet && fromOrToSet {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("lookback_period_column"),
+				"Missing Lookback Period Column",
+				"lookback_period_column is required when lookback_period_from or lookback_period_to is set",
+			)
+		}
+
+		if columnSet {
+			if data.LookbackPeriodColumnType.IsNull() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("lookback_period_column_type"),
+					"Missing Lookback Period Column Type",
+					"lookback_period_column_type is required when lookback_period_column is set",
+				)
+			}
+			if !fromOrToSet {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("lookback_period_from"),
+					"Missing Lookback Period Range",
+					"lookback_period_from or lookback_period_to is required when lookback_period_column is set",
+				)
+			}
+		}
+
+		if fromOrToSet {
+			if data.LookbackPeriodUnit.IsNull() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("lookback_period_unit"),
+					"Missing Lookback Period Unit",
+					"lookback_period_unit is required when lookback_period_from or lookback_period_to is set",
+				)
+			}
+			if data.LookbackPeriodTimezone.IsNull() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("lookback_period_timezone"),
+					"Missing Lookback Period Timezone",
+					"lookback_period_timezone is required when lookback_period_from or lookback_period_to is set",
+				)
+			}
+		}
+
+		// Validate lookback_period_from >= lookback_period_to
+		if fromSet && toSet {
+			if data.LookbackPeriodFrom.ValueInt64() < data.LookbackPeriodTo.ValueInt64() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("lookback_period_from"),
+					"Invalid Lookback Period Range",
+					"lookback_period_from must be greater than or equal to lookback_period_to",
+				)
+			}
+		}
 	}
 }
 
