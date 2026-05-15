@@ -1,20 +1,3 @@
-resource "trocco_connection" "test_bq" {
-  connection_type = "bigquery"
-
-  name        = "BigQuery Example"
-  description = "This is a BigQuery connection example"
-
-  project_id               = "system-playground"
-  service_account_json_key = <<JSON
-  {
-    "type": "service_account",
-    "project_id": "example-project-id",
-    "private_key_id": "example-private-key-id",
-    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
-  }
-  JSON
-}
-
 resource "trocco_job_definition" "facebook_ads_insights_to_bigquery" {
   name                     = "Facebook Ads Insights to BigQuery Test"
   description              = "Test job definition for transferring data from Facebook Ads Insights to BigQuery"
@@ -107,7 +90,7 @@ resource "trocco_job_definition" "facebook_ads_insights_to_bigquery" {
       table                                    = "facebook_ads_insights_test"
       mode                                     = "append"
       auto_create_dataset                      = false
-      bigquery_connection_id                   = trocco_connection.test_bq.id
+      bigquery_connection_id                   = trocco_connection.bigquery.id
       location                                 = "US"
       bigquery_output_option_clustering_fields = []
       bigquery_output_option_column_options    = []

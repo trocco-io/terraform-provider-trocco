@@ -10,15 +10,6 @@ resource "trocco_connection" "kintone" {
   basic_auth_password = "basic_auth_password"
 }
 
-resource "trocco_connection" "mysql" {
-  connection_type = "mysql"
-  name            = "MySQL Example"
-  host            = "db.example.com"
-  port            = 3306
-  user_name       = "root"
-  password        = "password"
-}
-
 resource "trocco_job_definition" "kintone_to_mysql" {
   name                     = "Kintone to Mysql Test"
   description              = "Test job definition for Kintone to Mysql transfer"

@@ -1,12 +1,3 @@
-resource "trocco_connection" "test_mysql" {
-  connection_type = "mysql"
-  name            = "MySQL Example"
-  host            = "db.example.com"
-  port            = 65535
-  user_name       = "root"
-  password        = "password"
-}
-
 resource "trocco_connection" "test_postgresql" {
   connection_type = "postgresql"
   name            = "PostgreSQL Example"
@@ -79,7 +70,7 @@ resource "trocco_job_definition" "mysql_to_postgresql" {
           type = "timestamp"
         },
       ]
-      mysql_connection_id = trocco_connection.test_mysql.id
+      mysql_connection_id = trocco_connection.mysql.id
       query               = <<-EOT
                 select
                     *

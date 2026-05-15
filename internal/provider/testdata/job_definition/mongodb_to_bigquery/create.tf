@@ -12,20 +12,6 @@ resource "trocco_connection" "test_mongodb" {
   read_preference          = "primary"
 }
 
-resource "trocco_connection" "test_bq" {
-  connection_type          = "bigquery"
-  name                     = "BigQuery Example"
-  project_id               = "example"
-  service_account_json_key = <<JSON
-  {
-    "type": "service_account",
-    "project_id": "example-project-id",
-    "private_key_id": "example-private-key-id",
-    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
-  }
-  JSON
-}
-
 resource "trocco_team" "test" {
   name = "test"
   members = [
@@ -108,7 +94,7 @@ resource "trocco_job_definition" "mongodb_to_bigquery" {
       table                  = "mongodb_test_table"
       mode                   = "append"
       auto_create_dataset    = false
-      bigquery_connection_id = trocco_connection.test_bq.id
+      bigquery_connection_id = trocco_connection.bigquery.id
       location               = "US"
     }
   }

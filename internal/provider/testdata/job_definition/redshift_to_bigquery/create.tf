@@ -1,17 +1,3 @@
-resource "trocco_connection" "test_bq" {
-  connection_type          = "bigquery"
-  name                     = "BigQuery Example"
-  project_id               = "example"
-  service_account_json_key = <<JSON
-  {
-    "type": "service_account",
-    "project_id": "example-project-id",
-    "private_key_id": "example-private-key-id",
-    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
-  }
-  JSON
-}
-
 resource "trocco_job_definition" "redshift_to_bigquery" {
   name                     = "Redshift to BigQuery Test"
   description              = "Test job definition for transferring data from Redshift to BigQuery"
@@ -60,7 +46,7 @@ resource "trocco_job_definition" "redshift_to_bigquery" {
       table                  = "redshift_test_table"
       mode                   = "append"
       auto_create_dataset    = false
-      bigquery_connection_id = trocco_connection.test_bq.id
+      bigquery_connection_id = trocco_connection.bigquery.id
       location               = "US"
     }
   }

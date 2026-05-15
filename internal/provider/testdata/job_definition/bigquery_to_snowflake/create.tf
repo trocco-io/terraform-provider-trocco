@@ -1,17 +1,3 @@
-resource "trocco_connection" "test_bq" {
-  connection_type          = "bigquery"
-  name                     = "BigQuery Example"
-  project_id               = "example"
-  service_account_json_key = <<JSON
-  {
-    "type": "service_account",
-    "project_id": "example-project-id",
-    "private_key_id": "example-private-key-id",
-    "private_key":"-----BEGIN PRIVATE KEY-----\n..."
-  }
-  JSON
-}
-
 resource "trocco_connection" "test_snowflake" {
   connection_type = "snowflake"
   name            = "Snowflake Example"
@@ -54,7 +40,7 @@ resource "trocco_job_definition" "bigquery_to_snowflake" {
   input_option_type = "bigquery"
   input_option = {
     bigquery_input_option = {
-      bigquery_connection_id   = trocco_connection.test_bq.id
+      bigquery_connection_id   = trocco_connection.bigquery.id
       gcs_uri                  = "test_bucket"
       gcs_uri_format           = "bucket"
       query                    = "SELECT id, name, email, created_at FROM `test_dataset.test_table`"
