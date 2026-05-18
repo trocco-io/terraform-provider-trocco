@@ -1,3 +1,13 @@
+## 0.32.0
+
+FEATURES:
+- `trocco_bigquery_datamart_definition` resource:
+  - Added support for `incremental` write disposition
+  - Added support for `scd_type_2` write disposition
+
+CHORE:
+- Split job definition resource tests into per-connector files for improved maintainability
+
 ## 0.31.0
 
 FEATURES:
