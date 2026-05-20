@@ -4,6 +4,7 @@ resource "trocco_dbt_git_repository" "example" {
   adapter_type = "bigquery"
   dbt_version  = "1.11"
   url          = "git@github.com:example/repo.git"
+  ref_type     = "branch"
   branch       = "main"
   subdirectory = "dbt/"
 }

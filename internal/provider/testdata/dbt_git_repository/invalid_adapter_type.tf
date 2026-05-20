@@ -3,5 +3,6 @@ resource "trocco_dbt_git_repository" "test" {
   adapter_type = "mysql"
   dbt_version  = "1.11"
   url          = "git@github.com:example/repo.git"
+  ref_type     = "branch"
   branch       = "main"
 }

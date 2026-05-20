@@ -18,6 +18,7 @@ resource "trocco_dbt_git_repository" "example" {
   adapter_type = "bigquery"
   dbt_version  = "1.11"
   url          = "git@github.com:example/repo.git"
+  ref_type     = "branch"
   branch       = "main"
   subdirectory = "dbt/"
 }
@@ -49,6 +50,7 @@ resource "trocco_dbt_git_repository" "example_commit_hash" {
 - `adapter_type` (String) The adapter type. Must be one of `bigquery`, `snowflake`, `redshift`. Cannot be changed after creation.
 - `dbt_version` (String) The dbt version (e.g., `1.11`). Supported values follow what TROCCO currently allows; refer to the TROCCO documentation for the latest list.
 - `name` (String) The name of the dbt Git repository.
+- `ref_type` (String) The Git reference type. Must be one of `branch`, `tag`, `commit_hash`. Exactly the matching attribute (`branch` / `tag` / `commit_hash`) must be set; the others must be left unset.
 - `url` (String) The URL of the Git repository.
 
 ### Optional
@@ -56,7 +58,6 @@ resource "trocco_dbt_git_repository" "example_commit_hash" {
 - `branch` (String) The branch of the Git repository to sync from. Required when `ref_type` is `branch`.
 - `commit_hash` (String) The commit hash of the Git repository to sync from (40-character lowercase hex). Required when `ref_type` is `commit_hash`.
 - `description` (String) The description of the dbt Git repository.
-- `ref_type` (String) The Git reference type. Must be one of `branch`, `tag`, `commit_hash`. Defaults to `branch`. Exactly the matching attribute (`branch` / `tag` / `commit_hash`) must be set; the others must be left unset.
 - `resource_group_id` (Number) The ID of the resource group that the dbt Git repository belongs to.
 - `subdirectory` (String) The subdirectory where the dbt project is located in the Git repository.
 - `tag` (String) The tag of the Git repository to sync from. Required when `ref_type` is `tag`.

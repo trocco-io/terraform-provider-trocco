@@ -15,7 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -25,8 +24,6 @@ var (
 	supportedDbtAdapterTypes = []string{"bigquery", "snowflake", "redshift"}
 	supportedDbtRefTypes     = []string{"branch", "tag", "commit_hash"}
 )
-
-const defaultDbtRefType = "branch"
 
 var (
 	_ resource.Resource                = &dbtGitRepositoryResource{}
@@ -110,13 +107,11 @@ func (r *dbtGitRepositoryResource) Schema(ctx context.Context, req resource.Sche
 				MarkdownDescription: "The URL of the Git repository.",
 			},
 			"ref_type": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				Default:  stringdefault.StaticString(defaultDbtRefType),
+				Required: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf(supportedDbtRefTypes...),
 				},
-				MarkdownDescription: "The Git reference type. Must be one of `branch`, `tag`, `commit_hash`. Defaults to `branch`. Exactly the matching attribute (`branch` / `tag` / `commit_hash`) must be set; the others must be left unset.",
+				MarkdownDescription: "The Git reference type. Must be one of `branch`, `tag`, `commit_hash`. Exactly the matching attribute (`branch` / `tag` / `commit_hash`) must be set; the others must be left unset.",
 			},
 			"branch": schema.StringAttribute{
 				Optional: true,

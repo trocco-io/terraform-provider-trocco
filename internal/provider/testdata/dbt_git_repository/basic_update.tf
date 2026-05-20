@@ -14,6 +14,7 @@ resource "trocco_dbt_git_repository" "test_minimal" {
   adapter_type = "snowflake"
   dbt_version  = "1.10"
   url          = "git@github.com:example/minimal.git"
+  ref_type     = "branch"
   branch       = "main"
 }
 
@@ -22,6 +23,7 @@ resource "trocco_dbt_git_repository" "test_with_subdirectory" {
   adapter_type = "redshift"
   dbt_version  = "1.9"
   url          = "git@github.com:example/subdir.git"
+  ref_type     = "branch"
   branch       = "develop"
   subdirectory = "dbt/"
 }
