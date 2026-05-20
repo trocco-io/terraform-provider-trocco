@@ -24,7 +24,7 @@ type Notification struct {
 	SlackConfig     *SlackNotificationConfig `tfsdk:"slack_config"`
 }
 
-func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Notification, previousIsNull bool) types.Set {
+func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Notification, previousIsNull bool, refNotifs []*Notification) types.List {
 	objectType := types.ObjectType{
 		AttrTypes: map[string]attr.Type{
 			"type":             types.StringType,
@@ -47,11 +47,11 @@ func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Not
 	}
 
 	if ens == nil {
-		return types.SetNull(objectType)
+		return types.ListNull(objectType)
 	}
 
 	if previousIsNull && len(ens) == 0 {
-		return types.SetNull(objectType)
+		return types.ListNull(objectType)
 	}
 
 	mds := []*Notification{}
@@ -59,12 +59,14 @@ func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Not
 		mds = append(mds, NewNotification(en))
 	}
 
-	setValue, diags := types.SetValueFrom(ctx, objectType, mds)
+	mds = matchPipelineNotificationsToReference(mds, refNotifs)
+
+	listValue, diags := types.ListValueFrom(ctx, objectType, mds)
 	if diags.HasError() {
-		return types.SetNull(objectType)
+		return types.ListNull(objectType)
 	}
 
-	return setValue
+	return listValue
 }
 
 func NewNotification(en *pipelineDefinitionEntities.Notification) *Notification {
@@ -148,4 +150,28 @@ func (c *SlackNotificationConfig) ToInput() *pipelineDefinitionParameters.SlackN
 		NotificationID: c.NotificationID.ValueInt64(),
 		Message:        c.Message.ValueString(),
 	}
+}
+
+func matchPipelineNotificationsToReference(apiNotifs []*Notification, refNotifs []*Notification) []*Notification {
+	if len(refNotifs) == 0 {
+		return apiNotifs
+	}
+	result := make([]*Notification, 0, len(apiNotifs))
+	used := make([]bool, len(apiNotifs))
+	for _, ref := range refNotifs {
+		refKey := ref.Type.ValueString() + "_" + ref.DestinationType.ValueString()
+		for i, api := range apiNotifs {
+			if !used[i] && api.Type.ValueString()+"_"+api.DestinationType.ValueString() == refKey {
+				result = append(result, api)
+				used[i] = true
+				break
+			}
+		}
+	}
+	for i, api := range apiNotifs {
+		if !used[i] {
+			result = append(result, api)
+		}
+	}
+	return result
 }

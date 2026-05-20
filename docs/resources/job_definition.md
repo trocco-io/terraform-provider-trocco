@@ -1518,7 +1518,7 @@ resource "trocco_job_definition" "schedules" {
 - `filter_unixtime_conversions` (Attributes List) UNIX time conversion (see [below for nested schema](#nestedatt--filter_unixtime_conversions))
 - `is_runnable_concurrently` (Boolean) Specifies whether or not to run a job if another job with the same job definition is running at the time the job is run
 - `labels` (Attributes Set) Labels to be attached to the job definition (see [below for nested schema](#nestedatt--labels))
-- `notifications` (Attributes Set) Notifications to be attached to the job definition (see [below for nested schema](#nestedatt--notifications))
+- `notifications` (Attributes List) Notifications to be attached to the job definition (see [below for nested schema](#nestedatt--notifications))
 - `resource_enhancement` (String) Resource size to be used when executing the job. If not specified, the resource size specified in the transfer settings is applied. The value that can be specified varies depending on the connector. (This parameter is available only in the Professional plan.
 - `resource_group_id` (Number) ID of the resource group to which the job definition belongs
 - `retry_limit` (Number) Maximum number of retries. if set 0, the job will not be retried

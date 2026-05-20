@@ -199,7 +199,7 @@ type jobDefinitionResourceModel struct {
 	FilterStringTransforms    types.List                       `tfsdk:"filter_string_transforms"`
 	FilterHashes              types.List                       `tfsdk:"filter_hashes"`
 	FilterUnixTimeConversions types.List                       `tfsdk:"filter_unixtime_conversions"`
-	Notifications             types.Set                        `tfsdk:"notifications"`
+	Notifications             types.List                       `tfsdk:"notifications"`
 	Schedules                 types.Set                        `tfsdk:"schedules"`
 	Labels                    types.Set                        `tfsdk:"labels"`
 }
@@ -215,7 +215,7 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 	}
 
 	// Extract notifications using helper function
-	notifications := utils.ConvertSetToSlice(ctx, m.Notifications,
+	notifications := utils.ConvertListToSlice(ctx, m.Notifications,
 		func(n jobDefinitionModel.JobDefinitionNotification) jobDefinitionParameters.JobDefinitionNotificationInput {
 			return n.ToInput()
 		}, &diags)
@@ -440,13 +440,20 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 
 	if jobDefinition.Notifications != nil {
 		notifications := jobDefinitionModel.NewJobDefinitionNotifications(jobDefinition.Notifications)
-		notificationsValue, diags := types.SetValueFrom(ctx, types.ObjectType{
+		var refNotifs []jobDefinitionModel.JobDefinitionNotification
+		if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
+			if refDiags := plan.Notifications.ElementsAs(ctx, &refNotifs, false); refDiags.HasError() {
+				refNotifs = nil
+			}
+		}
+		notifications = matchJobNotificationsToReference(notifications, refNotifs)
+		notificationsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
 		}, notifications)
 		resp.Diagnostics.Append(diags...)
 		newState.Notifications = notificationsValue
 	} else {
-		newState.Notifications = types.SetNull(types.ObjectType{
+		newState.Notifications = types.ListNull(types.ObjectType{
 			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
 		})
 	}
@@ -491,7 +498,7 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 	}
 
 	// Extract notifications using helper function
-	notifications := utils.ConvertSetToSlice(ctx, m.Notifications,
+	notifications := utils.ConvertListToSlice(ctx, m.Notifications,
 		func(n jobDefinitionModel.JobDefinitionNotification) jobDefinitionParameters.JobDefinitionNotificationInput {
 			return n.ToInput()
 		}, &diags)
@@ -708,13 +715,20 @@ func (r *jobDefinitionResource) Create(
 
 	if jobDefinition.Notifications != nil {
 		notifications := jobDefinitionModel.NewJobDefinitionNotifications(jobDefinition.Notifications)
-		notificationsValue, diags := types.SetValueFrom(ctx, types.ObjectType{
+		var refNotifs []jobDefinitionModel.JobDefinitionNotification
+		if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
+			if refDiags := plan.Notifications.ElementsAs(ctx, &refNotifs, false); refDiags.HasError() {
+				refNotifs = nil
+			}
+		}
+		notifications = matchJobNotificationsToReference(notifications, refNotifs)
+		notificationsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
 		}, notifications)
 		resp.Diagnostics.Append(diags...)
 		newState.Notifications = notificationsValue
 	} else {
-		newState.Notifications = types.SetNull(types.ObjectType{
+		newState.Notifications = types.ListNull(types.ObjectType{
 			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
 		})
 	}
@@ -865,13 +879,20 @@ func (r *jobDefinitionResource) Read(
 
 	if jobDefinition.Notifications != nil {
 		notifications := jobDefinitionModel.NewJobDefinitionNotifications(jobDefinition.Notifications)
-		notificationsValue, diags := types.SetValueFrom(ctx, types.ObjectType{
+		var refNotifs []jobDefinitionModel.JobDefinitionNotification
+		if !state.Notifications.IsNull() && !state.Notifications.IsUnknown() {
+			if refDiags := state.Notifications.ElementsAs(ctx, &refNotifs, false); refDiags.HasError() {
+				refNotifs = nil
+			}
+		}
+		notifications = matchJobNotificationsToReference(notifications, refNotifs)
+		notificationsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
 		}, notifications)
 		resp.Diagnostics.Append(diags...)
 		newState.Notifications = notificationsValue
 	} else {
-		newState.Notifications = types.SetNull(types.ObjectType{
+		newState.Notifications = types.ListNull(types.ObjectType{
 			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
 		})
 	}
@@ -996,4 +1017,31 @@ func validateHttpInputOption(httpInputOption *inputOptionModel.HttpInputOption, 
 			)
 		}
 	}
+}
+
+func matchJobNotificationsToReference(
+	apiNotifs []jobDefinitionModel.JobDefinitionNotification,
+	refNotifs []jobDefinitionModel.JobDefinitionNotification,
+) []jobDefinitionModel.JobDefinitionNotification {
+	if len(refNotifs) == 0 {
+		return apiNotifs
+	}
+	result := make([]jobDefinitionModel.JobDefinitionNotification, 0, len(apiNotifs))
+	used := make([]bool, len(apiNotifs))
+	for _, ref := range refNotifs {
+		refKey := ref.NotificationType.ValueString() + "_" + ref.DestinationType.ValueString()
+		for i, api := range apiNotifs {
+			if !used[i] && api.NotificationType.ValueString()+"_"+api.DestinationType.ValueString() == refKey {
+				result = append(result, api)
+				used[i] = true
+				break
+			}
+		}
+	}
+	for i, api := range apiNotifs {
+		if !used[i] {
+			result = append(result, api)
+		}
+	}
+	return result
 }
