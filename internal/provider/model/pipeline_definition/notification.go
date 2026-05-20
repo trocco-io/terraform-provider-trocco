@@ -2,10 +2,12 @@ package pipeline_definition
 
 import (
 	"context"
+	"fmt"
 	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 	model "terraform-provider-trocco/internal/provider/model"
+	"terraform-provider-trocco/internal/provider/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -59,7 +61,7 @@ func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Not
 		mds = append(mds, NewNotification(en))
 	}
 
-	mds = matchPipelineNotificationsToReference(mds, refNotifs)
+	mds = utils.MatchByKey(mds, refNotifs, pipelineNotificationKey)
 
 	listValue, diags := types.ListValueFrom(ctx, objectType, mds)
 	if diags.HasError() {
@@ -152,26 +154,21 @@ func (c *SlackNotificationConfig) ToInput() *pipelineDefinitionParameters.SlackN
 	}
 }
 
-func matchPipelineNotificationsToReference(apiNotifs []*Notification, refNotifs []*Notification) []*Notification {
-	if len(refNotifs) == 0 {
-		return apiNotifs
-	}
-	result := make([]*Notification, 0, len(apiNotifs))
-	used := make([]bool, len(apiNotifs))
-	for _, ref := range refNotifs {
-		refKey := ref.Type.ValueString() + "_" + ref.DestinationType.ValueString()
-		for i, api := range apiNotifs {
-			if !used[i] && api.Type.ValueString()+"_"+api.DestinationType.ValueString() == refKey {
-				result = append(result, api)
-				used[i] = true
-				break
-			}
+func pipelineNotificationKey(n *Notification) string {
+	var destID int64
+	switch n.DestinationType.ValueString() {
+	case "slack":
+		if n.SlackConfig != nil {
+			destID = n.SlackConfig.NotificationID.ValueInt64()
+		}
+	case "email":
+		if n.EmailConfig != nil {
+			destID = n.EmailConfig.NotificationID.ValueInt64()
 		}
 	}
-	for i, api := range apiNotifs {
-		if !used[i] {
-			result = append(result, api)
-		}
-	}
-	return result
+	return fmt.Sprintf("%s|%s|%d",
+		n.Type.ValueString(),
+		n.DestinationType.ValueString(),
+		destID,
+	)
 }

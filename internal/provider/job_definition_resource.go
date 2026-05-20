@@ -446,7 +446,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 				refNotifs = nil
 			}
 		}
-		notifications = matchJobNotificationsToReference(notifications, refNotifs)
+		notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey)
 		notificationsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
 		}, notifications)
@@ -721,7 +721,7 @@ func (r *jobDefinitionResource) Create(
 				refNotifs = nil
 			}
 		}
-		notifications = matchJobNotificationsToReference(notifications, refNotifs)
+		notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey)
 		notificationsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
 		}, notifications)
@@ -885,7 +885,7 @@ func (r *jobDefinitionResource) Read(
 				refNotifs = nil
 			}
 		}
-		notifications = matchJobNotificationsToReference(notifications, refNotifs)
+		notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey)
 		notificationsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
 		}, notifications)
@@ -1019,29 +1019,17 @@ func validateHttpInputOption(httpInputOption *inputOptionModel.HttpInputOption, 
 	}
 }
 
-func matchJobNotificationsToReference(
-	apiNotifs []jobDefinitionModel.JobDefinitionNotification,
-	refNotifs []jobDefinitionModel.JobDefinitionNotification,
-) []jobDefinitionModel.JobDefinitionNotification {
-	if len(refNotifs) == 0 {
-		return apiNotifs
+func jobNotificationKey(n jobDefinitionModel.JobDefinitionNotification) string {
+	var destID int64
+	switch n.DestinationType.ValueString() {
+	case "slack":
+		destID = n.SlackChannelID.ValueInt64()
+	case "email":
+		destID = n.EmailID.ValueInt64()
 	}
-	result := make([]jobDefinitionModel.JobDefinitionNotification, 0, len(apiNotifs))
-	used := make([]bool, len(apiNotifs))
-	for _, ref := range refNotifs {
-		refKey := ref.NotificationType.ValueString() + "_" + ref.DestinationType.ValueString()
-		for i, api := range apiNotifs {
-			if !used[i] && api.NotificationType.ValueString()+"_"+api.DestinationType.ValueString() == refKey {
-				result = append(result, api)
-				used[i] = true
-				break
-			}
-		}
-	}
-	for i, api := range apiNotifs {
-		if !used[i] {
-			result = append(result, api)
-		}
-	}
-	return result
+	return fmt.Sprintf("%s|%s|%d",
+		n.NotificationType.ValueString(),
+		n.DestinationType.ValueString(),
+		destID,
+	)
 }

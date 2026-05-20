@@ -1411,7 +1411,7 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			}
 		}
 
-		notifications = matchDatamartNotificationsToReference(notifications, refNotifs)
+		notifications = utils.MatchByKey(notifications, refNotifs, datamartNotificationKey)
 
 		objectType := types.ObjectType{
 			AttrTypes: datamartNotificationModel{}.attrTypes(),
@@ -1597,29 +1597,17 @@ func convertLabelsForCreate(ctx context.Context, source types.Set, diags *resour
 	return result
 }
 
-func matchDatamartNotificationsToReference(
-	apiNotifs []datamartNotificationModel,
-	refNotifs []datamartNotificationModel,
-) []datamartNotificationModel {
-	if len(refNotifs) == 0 {
-		return apiNotifs
+func datamartNotificationKey(n datamartNotificationModel) string {
+	var destID int64
+	switch n.DestinationType.ValueString() {
+	case "slack":
+		destID = n.SlackChannelID.ValueInt64()
+	case "email":
+		destID = n.EmailID.ValueInt64()
 	}
-	result := make([]datamartNotificationModel, 0, len(apiNotifs))
-	used := make([]bool, len(apiNotifs))
-	for _, ref := range refNotifs {
-		refKey := ref.NotificationType.ValueString() + "_" + ref.DestinationType.ValueString()
-		for i, api := range apiNotifs {
-			if !used[i] && api.NotificationType.ValueString()+"_"+api.DestinationType.ValueString() == refKey {
-				result = append(result, api)
-				used[i] = true
-				break
-			}
-		}
-	}
-	for i, api := range apiNotifs {
-		if !used[i] {
-			result = append(result, api)
-		}
-	}
-	return result
+	return fmt.Sprintf("%s|%s|%d",
+		n.NotificationType.ValueString(),
+		n.DestinationType.ValueString(),
+		destID,
+	)
 }
