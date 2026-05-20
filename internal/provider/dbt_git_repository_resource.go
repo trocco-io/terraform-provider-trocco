@@ -3,22 +3,30 @@ package provider
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var supportedDbtAdapterTypes = []string{"bigquery", "snowflake", "redshift"}
+var (
+	supportedDbtAdapterTypes = []string{"bigquery", "snowflake", "redshift"}
+	supportedDbtRefTypes     = []string{"branch", "tag", "commit_hash"}
+)
+
+const defaultDbtRefType = "branch"
 
 var (
 	_ resource.Resource                = &dbtGitRepositoryResource{}
@@ -101,12 +109,38 @@ func (r *dbtGitRepositoryResource) Schema(ctx context.Context, req resource.Sche
 				},
 				MarkdownDescription: "The URL of the Git repository.",
 			},
+			"ref_type": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				Default:  stringdefault.StaticString(defaultDbtRefType),
+				Validators: []validator.String{
+					stringvalidator.OneOf(supportedDbtRefTypes...),
+				},
+				MarkdownDescription: "The Git reference type. Must be one of `branch`, `tag`, `commit_hash`. Defaults to `branch`. Exactly the matching attribute (`branch` / `tag` / `commit_hash`) must be set; the others must be left unset.",
+			},
 			"branch": schema.StringAttribute{
-				Required: true,
+				Optional: true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
-				MarkdownDescription: "The branch of the Git repository to sync from.",
+				MarkdownDescription: "The branch of the Git repository to sync from. Required when `ref_type` is `branch`.",
+			},
+			"tag": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+				MarkdownDescription: "The tag of the Git repository to sync from. Required when `ref_type` is `tag`.",
+			},
+			"commit_hash": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.RegexMatches(
+						regexp.MustCompile(`^[0-9a-f]{40}$`),
+						"must be a 40-character lowercase hexadecimal Git commit hash",
+					),
+				},
+				MarkdownDescription: "The commit hash of the Git repository to sync from (40-character lowercase hex). Required when `ref_type` is `commit_hash`.",
 			},
 			"subdirectory": schema.StringAttribute{
 				Optional:            true,
@@ -127,13 +161,22 @@ func (r *dbtGitRepositoryResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
+	validateRefConsistency(&plan, &resp.Diagnostics)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	refType := plan.RefType.ValueString()
 	input := client.CreateDbtGitRepositoryInput{
 		Name:            plan.Name.ValueString(),
 		Description:     plan.Description.ValueStringPointer(),
 		AdapterType:     plan.AdapterType.ValueString(),
 		DbtVersion:      plan.DbtVersion.ValueString(),
 		URL:             plan.URL.ValueString(),
-		Branch:          plan.Branch.ValueString(),
+		RefType:         &refType,
+		Branch:          plan.Branch.ValueStringPointer(),
+		Tag:             plan.Tag.ValueStringPointer(),
+		CommitHash:      plan.CommitHash.ValueStringPointer(),
 		Subdirectory:    plan.Subdirectory.ValueStringPointer(),
 		ResourceGroupID: plan.ResourceGroupID.ValueInt64Pointer(),
 	}
@@ -177,12 +220,20 @@ func (r *dbtGitRepositoryResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
+	validateRefConsistency(&plan, &resp.Diagnostics)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	input := client.UpdateDbtGitRepositoryInput{
 		Name:            plan.Name.ValueStringPointer(),
 		Description:     plan.Description.ValueStringPointer(),
 		DbtVersion:      plan.DbtVersion.ValueStringPointer(),
 		URL:             plan.URL.ValueStringPointer(),
+		RefType:         plan.RefType.ValueStringPointer(),
 		Branch:          plan.Branch.ValueStringPointer(),
+		Tag:             plan.Tag.ValueStringPointer(),
+		CommitHash:      plan.CommitHash.ValueStringPointer(),
 		Subdirectory:    plan.Subdirectory.ValueStringPointer(),
 		ResourceGroupID: plan.ResourceGroupID.ValueInt64Pointer(),
 	}
@@ -236,8 +287,53 @@ func newDbtGitRepositoryModel(repo *client.DbtGitRepository) model.DbtGitReposit
 		AdapterType:     types.StringValue(repo.AdapterType),
 		DbtVersion:      types.StringValue(repo.DbtVersion),
 		URL:             types.StringValue(repo.URL),
-		Branch:          types.StringValue(repo.Branch),
+		RefType:         types.StringValue(repo.RefType),
+		Branch:          types.StringPointerValue(repo.Branch),
+		Tag:             types.StringPointerValue(repo.Tag),
+		CommitHash:      types.StringPointerValue(repo.CommitHash),
 		Subdirectory:    types.StringPointerValue(repo.Subdirectory),
 		ResourceGroupID: types.Int64PointerValue(repo.ResourceGroupID),
+	}
+}
+
+// validateRefConsistency ensures the user sets exactly the ref attribute matching ref_type.
+// The server silently nulls non-matching ref values, which would otherwise cause a drift loop.
+func validateRefConsistency(plan *model.DbtGitRepositoryModel, diags *diag.Diagnostics) {
+	refType := plan.RefType.ValueString()
+	branchSet := !plan.Branch.IsNull() && !plan.Branch.IsUnknown()
+	tagSet := !plan.Tag.IsNull() && !plan.Tag.IsUnknown()
+	commitSet := !plan.CommitHash.IsNull() && !plan.CommitHash.IsUnknown()
+
+	switch refType {
+	case "branch":
+		if !branchSet {
+			diags.AddAttributeError(path.Root("branch"), "Missing branch", "`branch` is required when `ref_type` is `branch`.")
+		}
+		if tagSet {
+			diags.AddAttributeError(path.Root("tag"), "Unexpected tag", "`tag` must not be set when `ref_type` is `branch`.")
+		}
+		if commitSet {
+			diags.AddAttributeError(path.Root("commit_hash"), "Unexpected commit_hash", "`commit_hash` must not be set when `ref_type` is `branch`.")
+		}
+	case "tag":
+		if !tagSet {
+			diags.AddAttributeError(path.Root("tag"), "Missing tag", "`tag` is required when `ref_type` is `tag`.")
+		}
+		if branchSet {
+			diags.AddAttributeError(path.Root("branch"), "Unexpected branch", "`branch` must not be set when `ref_type` is `tag`.")
+		}
+		if commitSet {
+			diags.AddAttributeError(path.Root("commit_hash"), "Unexpected commit_hash", "`commit_hash` must not be set when `ref_type` is `tag`.")
+		}
+	case "commit_hash":
+		if !commitSet {
+			diags.AddAttributeError(path.Root("commit_hash"), "Missing commit_hash", "`commit_hash` is required when `ref_type` is `commit_hash`.")
+		}
+		if branchSet {
+			diags.AddAttributeError(path.Root("branch"), "Unexpected branch", "`branch` must not be set when `ref_type` is `commit_hash`.")
+		}
+		if tagSet {
+			diags.AddAttributeError(path.Root("tag"), "Unexpected tag", "`tag` must not be set when `ref_type` is `commit_hash`.")
+		}
 	}
 }

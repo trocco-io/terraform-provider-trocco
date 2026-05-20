@@ -4,7 +4,8 @@ resource "trocco_dbt_git_repository" "test" {
   adapter_type = "bigquery"
   dbt_version  = "1.10"
   url          = "git@github.com:example/repo-new.git"
-  branch       = "develop"
+  ref_type     = "tag"
+  tag          = "v2.0.0"
   subdirectory = "dbt/"
 }
 
@@ -23,4 +24,22 @@ resource "trocco_dbt_git_repository" "test_with_subdirectory" {
   url          = "git@github.com:example/subdir.git"
   branch       = "develop"
   subdirectory = "dbt/"
+}
+
+resource "trocco_dbt_git_repository" "test_with_tag" {
+  name         = "test_repo_tag"
+  adapter_type = "bigquery"
+  dbt_version  = "1.11"
+  url          = "git@github.com:example/tag.git"
+  ref_type     = "tag"
+  tag          = "v1.0.0"
+}
+
+resource "trocco_dbt_git_repository" "test_with_commit_hash" {
+  name         = "test_repo_commit"
+  adapter_type = "bigquery"
+  dbt_version  = "1.11"
+  url          = "git@github.com:example/commit.git"
+  ref_type     = "commit_hash"
+  commit_hash  = "0123456789abcdef0123456789abcdef01234567"
 }

@@ -7,7 +7,10 @@ type DbtGitRepository struct {
 	AdapterType     string  `json:"adapter_type"`
 	DbtVersion      string  `json:"dbt_version"`
 	URL             string  `json:"url"`
-	Branch          string  `json:"branch"`
+	RefType         string  `json:"ref_type"`
+	Branch          *string `json:"branch"`
+	Tag             *string `json:"tag"`
+	CommitHash      *string `json:"commit_hash"`
 	Subdirectory    *string `json:"subdirectory"`
 	ResourceGroupID *int64  `json:"resource_group_id"`
 	CreatedAt       string  `json:"created_at"`

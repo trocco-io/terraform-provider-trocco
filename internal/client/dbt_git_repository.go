@@ -29,7 +29,10 @@ type CreateDbtGitRepositoryInput struct {
 	AdapterType     string  `json:"adapter_type"`
 	DbtVersion      string  `json:"dbt_version"`
 	URL             string  `json:"url"`
-	Branch          string  `json:"branch"`
+	RefType         *string `json:"ref_type,omitempty"`
+	Branch          *string `json:"branch,omitempty"`
+	Tag             *string `json:"tag,omitempty"`
+	CommitHash      *string `json:"commit_hash,omitempty"`
 	Subdirectory    *string `json:"subdirectory,omitempty"`
 	ResourceGroupID *int64  `json:"resource_group_id,omitempty"`
 }
@@ -50,7 +53,10 @@ type UpdateDbtGitRepositoryInput struct {
 	Description     *string `json:"description,omitempty"`
 	DbtVersion      *string `json:"dbt_version,omitempty"`
 	URL             *string `json:"url,omitempty"`
+	RefType         *string `json:"ref_type,omitempty"`
 	Branch          *string `json:"branch,omitempty"`
+	Tag             *string `json:"tag,omitempty"`
+	CommitHash      *string `json:"commit_hash,omitempty"`
 	Subdirectory    *string `json:"subdirectory,omitempty"`
 	ResourceGroupID *int64  `json:"resource_group_id,omitempty"`
 }
