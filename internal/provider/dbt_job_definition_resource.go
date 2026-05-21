@@ -18,7 +18,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -190,9 +189,8 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 			},
 			"commands": schema.ListNestedAttribute{
 				Optional: true,
-				Computed: true,
 				PlanModifiers: []planmodifier.List{
-					listplanmodifier.UseStateForUnknown(),
+					troccoPlanModifier.EmptyListForNull(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -209,9 +207,8 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 						},
 						"options": schema.ListNestedAttribute{
 							Optional: true,
-							Computed: true,
 							PlanModifiers: []planmodifier.List{
-								listplanmodifier.UseStateForUnknown(),
+								troccoPlanModifier.EmptyListForNull(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -225,7 +222,7 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 									},
 								},
 							},
-							MarkdownDescription: "Command options. Set to `[]` to clear.",
+							MarkdownDescription: "Command options. Omitting the attribute or setting it to `[]` both clear the options.",
 						},
 					},
 				},
@@ -233,9 +230,8 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 			},
 			"custom_variable_settings": schema.ListNestedAttribute{
 				Optional: true,
-				Computed: true,
 				PlanModifiers: []planmodifier.List{
-					listplanmodifier.UseStateForUnknown(),
+					troccoPlanModifier.EmptyListForNull(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{

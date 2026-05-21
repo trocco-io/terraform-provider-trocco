@@ -90,7 +90,7 @@ Required:
 
 Optional:
 
-- `options` (Attributes List) Command options. Set to `[]` to clear. (see [below for nested schema](#nestedatt--commands--options))
+- `options` (Attributes List) Command options. Omitting the attribute or setting it to `[]` both clear the options. (see [below for nested schema](#nestedatt--commands--options))
 - `value` (String) Argument for the subcommand (e.g. model selector for `run`).
 
 <a id="nestedatt--commands--options"></a>
