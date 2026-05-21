@@ -209,6 +209,10 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 						},
 						"options": schema.ListNestedAttribute{
 							Optional: true,
+							Computed: true,
+							PlanModifiers: []planmodifier.List{
+								listplanmodifier.UseStateForUnknown(),
+							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
@@ -221,7 +225,7 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 									},
 								},
 							},
-							MarkdownDescription: "Command options.",
+							MarkdownDescription: "Command options. Set to `[]` to clear.",
 						},
 					},
 				},
@@ -480,9 +484,14 @@ func extractDbtCommandInputs(ctx context.Context, list types.List) ([]parameter.
 		if !c.Value.IsNull() && !c.Value.IsUnknown() {
 			cmd.SetValue(c.Value.ValueString())
 		}
-		if len(c.Options) > 0 {
-			opts := make([]parameter.DbtCommandOptionInput, 0, len(c.Options))
-			for _, opt := range c.Options {
+		if !c.Options.IsNull() && !c.Options.IsUnknown() {
+			var options []model.DbtCommandOptionModel
+			optDiags := c.Options.ElementsAs(ctx, &options, false)
+			if optDiags.HasError() {
+				return nil, optDiags
+			}
+			opts := make([]parameter.DbtCommandOptionInput, 0, len(options))
+			for _, opt := range options {
 				o := parameter.DbtCommandOptionInput{
 					Key: opt.Key.ValueString(),
 				}

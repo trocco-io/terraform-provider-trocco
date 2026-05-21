@@ -45,9 +45,9 @@ type DbtRedshiftSettingModel struct {
 }
 
 type DbtCommandModel struct {
-	Command types.String            `tfsdk:"command"`
-	Value   types.String            `tfsdk:"value"`
-	Options []DbtCommandOptionModel `tfsdk:"options"`
+	Command types.String `tfsdk:"command"`
+	Value   types.String `tfsdk:"value"`
+	Options types.List   `tfsdk:"options"`
 }
 
 type DbtCommandOptionModel struct {
@@ -109,25 +109,25 @@ func NewDbtJobDefinitionModel(ctx context.Context, def *entity.DbtJobDefinition)
 		}
 	}
 
+	optionObjType := types.ObjectType{AttrTypes: DbtCommandOptionAttrTypes()}
 	commands := make([]DbtCommandModel, 0, len(def.Commands))
 	for _, c := range def.Commands {
 		cm := DbtCommandModel{
 			Command: types.StringValue(c.Command),
 			Value:   types.StringPointerValue(c.Value),
 		}
-		// Keep Options nil (= null List in TF) when the server has no options.
-		// Materialising an empty slice here would diverge from the typical
-		// user-side `options` omission (plan = null) and cause an inconsistent
-		// result on apply.
-		if len(c.Options) > 0 {
-			cm.Options = make([]DbtCommandOptionModel, 0, len(c.Options))
-			for _, opt := range c.Options {
-				cm.Options = append(cm.Options, DbtCommandOptionModel{
-					Key:   types.StringValue(opt.Key),
-					Value: types.StringPointerValue(opt.Value),
-				})
-			}
+		opts := make([]DbtCommandOptionModel, 0, len(c.Options))
+		for _, opt := range c.Options {
+			opts = append(opts, DbtCommandOptionModel{
+				Key:   types.StringValue(opt.Key),
+				Value: types.StringPointerValue(opt.Value),
+			})
 		}
+		optsList, diags := types.ListValueFrom(ctx, optionObjType, opts)
+		if diags.HasError() {
+			return m, fmt.Errorf("failed to convert command options to ListValue: %v", diags)
+		}
+		cm.Options = optsList
 		commands = append(commands, cm)
 	}
 	commandsList, diags := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: DbtCommandAttrTypes()}, commands)
