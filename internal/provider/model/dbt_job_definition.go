@@ -115,12 +115,18 @@ func NewDbtJobDefinitionModel(ctx context.Context, def *entity.DbtJobDefinition)
 			Command: types.StringValue(c.Command),
 			Value:   types.StringPointerValue(c.Value),
 		}
-		cm.Options = make([]DbtCommandOptionModel, 0, len(c.Options))
-		for _, opt := range c.Options {
-			cm.Options = append(cm.Options, DbtCommandOptionModel{
-				Key:   types.StringValue(opt.Key),
-				Value: types.StringPointerValue(opt.Value),
-			})
+		// Keep Options nil (= null List in TF) when the server has no options.
+		// Materialising an empty slice here would diverge from the typical
+		// user-side `options` omission (plan = null) and cause an inconsistent
+		// result on apply.
+		if len(c.Options) > 0 {
+			cm.Options = make([]DbtCommandOptionModel, 0, len(c.Options))
+			for _, opt := range c.Options {
+				cm.Options = append(cm.Options, DbtCommandOptionModel{
+					Key:   types.StringValue(opt.Key),
+					Value: types.StringPointerValue(opt.Value),
+				})
+			}
 		}
 		commands = append(commands, cm)
 	}
