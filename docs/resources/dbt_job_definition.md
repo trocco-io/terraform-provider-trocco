@@ -55,11 +55,11 @@ resource "trocco_dbt_job_definition" "example" {
 ### Optional
 
 - `bigquery_setting` (Attributes) BigQuery adapter setting. Exactly one of `bigquery_setting` / `snowflake_setting` / `redshift_setting` must be set, matching the adapter type of the linked dbt Git repository. (see [below for nested schema](#nestedatt--bigquery_setting))
-- `commands` (Attributes List) Ordered list of dbt commands to run. (see [below for nested schema](#nestedatt--commands))
-- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--custom_variable_settings))
-- `description` (String) The description of the dbt job definition. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.
+- `commands` (Attributes List) Ordered list of dbt commands to run. Set to `[]` to clear. (see [below for nested schema](#nestedatt--commands))
+- `custom_variable_settings` (Attributes List) Custom variable settings. Set to `[]` to clear. (see [below for nested schema](#nestedatt--custom_variable_settings))
+- `description` (String) The description of the dbt job definition.
 - `redshift_setting` (Attributes) Redshift adapter setting. (see [below for nested schema](#nestedatt--redshift_setting))
-- `resource_group_id` (Number) The ID of the resource group that the dbt job definition belongs to. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.
+- `resource_group_id` (Number) The ID of the resource group that the dbt job definition belongs to.
 - `snowflake_setting` (Attributes) Snowflake adapter setting. (see [below for nested schema](#nestedatt--snowflake_setting))
 - `target` (String) dbt profile target name. When omitted, the server applies its default.
 - `threads` (Number) Number of dbt threads (1-16). When omitted, the server applies its default.
@@ -78,7 +78,7 @@ Required:
 
 Optional:
 
-- `location` (String) BigQuery location. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.
+- `location` (String) BigQuery location.
 
 
 <a id="nestedatt--commands"></a>
@@ -112,16 +112,16 @@ Optional:
 Required:
 
 - `name` (String) Custom variable name. It must start and end with `$`
-- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+- `type` (String) Custom variable type.
 
 Optional:
 
-- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
-- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
-- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
-- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
-- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
-- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+- `direction` (String) Direction. Required when `type` is timestamp/timestamp_runtime.
+- `format` (String) Format. Required when `type` is timestamp/timestamp_runtime.
+- `quantity` (Number) Quantity. Required when `type` is timestamp/timestamp_runtime.
+- `time_zone` (String) Time zone. Required when `type` is timestamp/timestamp_runtime.
+- `unit` (String) Time unit. Required when `type` is timestamp/timestamp_runtime.
+- `value` (String) Fixed string. Required when `type` is `string`.
 
 
 <a id="nestedatt--redshift_setting"></a>
@@ -146,7 +146,7 @@ Required:
 
 Optional:
 
-- `role` (String) Snowflake role name. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.
+- `role` (String) Snowflake role name.
 
 ## Import
 

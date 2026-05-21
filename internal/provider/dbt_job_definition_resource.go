@@ -7,18 +7,22 @@ import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/client/parameter"
 	"terraform-provider-trocco/internal/provider/model"
-	jobdefschema "terraform-provider-trocco/internal/provider/schema/job_definition"
+	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
+	troccoValidator "terraform-provider-trocco/internal/provider/validator"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 var (
@@ -74,20 +78,12 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 				MarkdownDescription: "The name of the dbt job definition.",
 			},
 			"description": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-				MarkdownDescription: "The description of the dbt job definition. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.",
+				Optional:            true,
+				MarkdownDescription: "The description of the dbt job definition.",
 			},
 			"resource_group_id": schema.Int64Attribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
-				},
-				MarkdownDescription: "The ID of the resource group that the dbt job definition belongs to. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.",
+				Optional:            true,
+				MarkdownDescription: "The ID of the resource group that the dbt job definition belongs to.",
 			},
 			"dbt_git_repository_id": schema.Int64Attribute{
 				Required:            true,
@@ -130,12 +126,8 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 						MarkdownDescription: "BigQuery dataset.",
 					},
 					"location": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
-						},
-						MarkdownDescription: "BigQuery location. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.",
+						Optional:            true,
+						MarkdownDescription: "BigQuery location.",
 					},
 				},
 				MarkdownDescription: "BigQuery adapter setting. Exactly one of `bigquery_setting` / `snowflake_setting` / `redshift_setting` must be set, matching the adapter type of the linked dbt Git repository.",
@@ -166,12 +158,8 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 						MarkdownDescription: "Snowflake schema name.",
 					},
 					"role": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
-						},
-						MarkdownDescription: "Snowflake role name. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.",
+						Optional:            true,
+						MarkdownDescription: "Snowflake role name.",
 					},
 				},
 				MarkdownDescription: "Snowflake adapter setting.",
@@ -202,6 +190,10 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 			},
 			"commands": schema.ListNestedAttribute{
 				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
+				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"command": schema.StringAttribute{
@@ -233,9 +225,70 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 						},
 					},
 				},
-				MarkdownDescription: "Ordered list of dbt commands to run.",
+				MarkdownDescription: "Ordered list of dbt commands to run. Set to `[]` to clear.",
 			},
-			"custom_variable_settings": jobdefschema.CustomVariableSettingsSchema(),
+			"custom_variable_settings": schema.ListNestedAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.List{
+					listplanmodifier.UseStateForUnknown(),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"name": schema.StringAttribute{
+							Required: true,
+							Validators: []validator.String{
+								troccoValidator.WrappingDollarValidator{},
+							},
+							MarkdownDescription: "Custom variable name. It must start and end with `$`",
+						},
+						"type": schema.StringAttribute{
+							Required: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("string", "timestamp", "timestamp_runtime"),
+							},
+							MarkdownDescription: "Custom variable type.",
+						},
+						"value": schema.StringAttribute{
+							Optional:            true,
+							MarkdownDescription: "Fixed string. Required when `type` is `string`.",
+						},
+						"quantity": schema.Int64Attribute{
+							Optional: true,
+							Validators: []validator.Int64{
+								int64validator.AtLeast(0),
+							},
+							MarkdownDescription: "Quantity. Required when `type` is timestamp/timestamp_runtime.",
+						},
+						"unit": schema.StringAttribute{
+							Optional: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("hour", "date", "month"),
+							},
+							MarkdownDescription: "Time unit. Required when `type` is timestamp/timestamp_runtime.",
+						},
+						"direction": schema.StringAttribute{
+							Optional: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("ago", "later"),
+							},
+							MarkdownDescription: "Direction. Required when `type` is timestamp/timestamp_runtime.",
+						},
+						"format": schema.StringAttribute{
+							Optional:            true,
+							MarkdownDescription: "Format. Required when `type` is timestamp/timestamp_runtime.",
+						},
+						"time_zone": schema.StringAttribute{
+							Optional:            true,
+							MarkdownDescription: "Time zone. Required when `type` is timestamp/timestamp_runtime.",
+						},
+					},
+					PlanModifiers: []planmodifier.Object{
+						&troccoPlanModifier.CustomVariableSettingPlanModifier{},
+					},
+				},
+				MarkdownDescription: "Custom variable settings. Set to `[]` to clear.",
+			},
 		},
 	}
 }
@@ -247,17 +300,21 @@ func (r *dbtJobDefinitionResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
+	commands, diags := extractDbtCommandInputs(ctx, plan.Commands)
+	resp.Diagnostics.Append(diags...)
+	cvSettings, diags := extractDbtCustomVariableSettingInputs(ctx, plan.CustomVariableSettings)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	input := parameter.CreateDbtJobDefinitionInput{
 		Name:                   plan.Name.ValueString(),
+		Description:            model.NewNullableString(plan.Description),
+		ResourceGroupID:        model.NewNullableInt64(plan.ResourceGroupID),
 		DbtGitRepositoryID:     plan.DbtGitRepositoryID.ValueInt64(),
-		Commands:               buildDbtCommandInputs(plan.Commands),
-		CustomVariableSettings: buildDbtCustomVariableSettingInputs(plan.CustomVariableSettings),
-	}
-	if !plan.Description.IsNull() && !plan.Description.IsUnknown() {
-		input.SetDescription(plan.Description.ValueString())
-	}
-	if !plan.ResourceGroupID.IsNull() && !plan.ResourceGroupID.IsUnknown() {
-		input.SetResourceGroupID(plan.ResourceGroupID.ValueInt64())
+		Commands:               commands,
+		CustomVariableSettings: cvSettings,
 	}
 	if !plan.Threads.IsNull() && !plan.Threads.IsUnknown() {
 		input.SetThreads(plan.Threads.ValueInt64())
@@ -284,7 +341,11 @@ func (r *dbtJobDefinitionResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	state := model.NewDbtJobDefinitionModel(def)
+	state, err := model.NewDbtJobDefinitionModel(ctx, def)
+	if err != nil {
+		resp.Diagnostics.AddError("Converting dbt job definition", err.Error())
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
@@ -304,7 +365,11 @@ func (r *dbtJobDefinitionResource) Read(ctx context.Context, req resource.ReadRe
 		return
 	}
 
-	state := model.NewDbtJobDefinitionModel(def)
+	state, err := model.NewDbtJobDefinitionModel(ctx, def)
+	if err != nil {
+		resp.Diagnostics.AddError("Converting dbt job definition", err.Error())
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
@@ -316,18 +381,22 @@ func (r *dbtJobDefinitionResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
+	commands, diags := extractDbtCommandInputs(ctx, plan.Commands)
+	resp.Diagnostics.Append(diags...)
+	cvSettings, diags := extractDbtCustomVariableSettingInputs(ctx, plan.CustomVariableSettings)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	input := parameter.UpdateDbtJobDefinitionInput{
-		Commands:               buildDbtCommandInputs(plan.Commands),
-		CustomVariableSettings: buildDbtCustomVariableSettingInputs(plan.CustomVariableSettings),
+		Description:            model.NewNullableString(plan.Description),
+		ResourceGroupID:        model.NewNullableInt64(plan.ResourceGroupID),
+		Commands:               commands,
+		CustomVariableSettings: cvSettings,
 	}
 	if !plan.Name.IsNull() && !plan.Name.IsUnknown() {
 		input.SetName(plan.Name.ValueString())
-	}
-	if !plan.Description.IsNull() && !plan.Description.IsUnknown() {
-		input.SetDescription(plan.Description.ValueString())
-	}
-	if !plan.ResourceGroupID.IsNull() && !plan.ResourceGroupID.IsUnknown() {
-		input.SetResourceGroupID(plan.ResourceGroupID.ValueInt64())
 	}
 	if !plan.DbtGitRepositoryID.IsNull() && !plan.DbtGitRepositoryID.IsUnknown() {
 		input.SetDbtGitRepositoryID(plan.DbtGitRepositoryID.ValueInt64())
@@ -357,32 +426,30 @@ func (r *dbtJobDefinitionResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	state := model.NewDbtJobDefinitionModel(def)
+	state, err := model.NewDbtJobDefinitionModel(ctx, def)
+	if err != nil {
+		resp.Diagnostics.AddError("Converting dbt job definition", err.Error())
+		return
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
 func buildDbtBigquerySettingInput(s *model.DbtBigquerySettingModel) parameter.DbtBigquerySettingInput {
-	out := parameter.DbtBigquerySettingInput{
+	return parameter.DbtBigquerySettingInput{
 		ConnectionID: s.ConnectionID.ValueInt64(),
 		Dataset:      s.Dataset.ValueString(),
+		Location:     model.NewNullableString(s.Location),
 	}
-	if !s.Location.IsNull() && !s.Location.IsUnknown() {
-		out.SetLocation(s.Location.ValueString())
-	}
-	return out
 }
 
 func buildDbtSnowflakeSettingInput(s *model.DbtSnowflakeSettingModel) parameter.DbtSnowflakeSettingInput {
-	out := parameter.DbtSnowflakeSettingInput{
+	return parameter.DbtSnowflakeSettingInput{
 		ConnectionID: s.ConnectionID.ValueInt64(),
 		Warehouse:    s.Warehouse.ValueString(),
 		Database:     s.Database.ValueString(),
 		Schema:       s.Schema.ValueString(),
+		Role:         model.NewNullableString(s.Role),
 	}
-	if !s.Role.IsNull() && !s.Role.IsUnknown() {
-		out.SetRole(s.Role.ValueString())
-	}
-	return out
 }
 
 func buildDbtRedshiftSettingInput(s *model.DbtRedshiftSettingModel) parameter.DbtRedshiftSettingInput {
@@ -393,7 +460,18 @@ func buildDbtRedshiftSettingInput(s *model.DbtRedshiftSettingModel) parameter.Db
 	}
 }
 
-func buildDbtCommandInputs(commands []model.DbtCommandModel) []parameter.DbtCommandInput {
+// extractDbtCommandInputs converts the plan's types.List into a request payload.
+// Null/Unknown plans (e.g. first apply with the attribute omitted) are mapped to
+// an empty slice so the JSON payload always carries `commands: []`.
+func extractDbtCommandInputs(ctx context.Context, list types.List) ([]parameter.DbtCommandInput, diag.Diagnostics) {
+	if list.IsNull() || list.IsUnknown() {
+		return []parameter.DbtCommandInput{}, nil
+	}
+	var commands []model.DbtCommandModel
+	diags := list.ElementsAs(ctx, &commands, false)
+	if diags.HasError() {
+		return nil, diags
+	}
 	out := make([]parameter.DbtCommandInput, 0, len(commands))
 	for _, c := range commands {
 		cmd := parameter.DbtCommandInput{
@@ -417,18 +495,23 @@ func buildDbtCommandInputs(commands []model.DbtCommandModel) []parameter.DbtComm
 		}
 		out = append(out, cmd)
 	}
-	return out
+	return out, nil
 }
 
-func buildDbtCustomVariableSettingInputs(settings *[]model.CustomVariableSetting) []parameter.CustomVariableSettingInput {
-	if settings == nil {
-		return []parameter.CustomVariableSettingInput{}
+func extractDbtCustomVariableSettingInputs(ctx context.Context, list types.List) ([]parameter.CustomVariableSettingInput, diag.Diagnostics) {
+	if list.IsNull() || list.IsUnknown() {
+		return []parameter.CustomVariableSettingInput{}, nil
 	}
-	inputs := model.ToCustomVariableSettingInputs(settings)
+	var settings []model.CustomVariableSetting
+	diags := list.ElementsAs(ctx, &settings, false)
+	if diags.HasError() {
+		return nil, diags
+	}
+	inputs := model.ToCustomVariableSettingInputs(&settings)
 	if inputs == nil {
-		return []parameter.CustomVariableSettingInput{}
+		return []parameter.CustomVariableSettingInput{}, nil
 	}
-	return *inputs
+	return *inputs, nil
 }
 
 func (r *dbtJobDefinitionResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

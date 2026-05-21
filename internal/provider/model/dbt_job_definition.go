@@ -1,8 +1,11 @@
 package model
 
 import (
+	"context"
+	"fmt"
 	"terraform-provider-trocco/internal/client/entity"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -17,8 +20,8 @@ type DbtJobDefinitionModel struct {
 	BigquerySetting        *DbtBigquerySettingModel  `tfsdk:"bigquery_setting"`
 	SnowflakeSetting       *DbtSnowflakeSettingModel `tfsdk:"snowflake_setting"`
 	RedshiftSetting        *DbtRedshiftSettingModel  `tfsdk:"redshift_setting"`
-	Commands               []DbtCommandModel         `tfsdk:"commands"`
-	CustomVariableSettings *[]CustomVariableSetting  `tfsdk:"custom_variable_settings"`
+	Commands               types.List                `tfsdk:"commands"`
+	CustomVariableSettings types.List                `tfsdk:"custom_variable_settings"`
 }
 
 type DbtBigquerySettingModel struct {
@@ -52,8 +55,26 @@ type DbtCommandOptionModel struct {
 	Value types.String `tfsdk:"value"`
 }
 
+func DbtCommandOptionAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	}
+}
+
+func DbtCommandAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"command": types.StringType,
+		"value":   types.StringType,
+		"options": types.ListType{ElemType: types.ObjectType{AttrTypes: DbtCommandOptionAttrTypes()}},
+	}
+}
+
 // NewDbtJobDefinitionModel hydrates the TF model from the API entity.
-func NewDbtJobDefinitionModel(def *entity.DbtJobDefinition) DbtJobDefinitionModel {
+// Pass-through of empty arrays as empty lists is intentional: the schema is
+// Optional+Computed and UseStateForUnknown propagates the value, so distinguishing
+// empty from null only matters when the user explicitly wrote `= []`.
+func NewDbtJobDefinitionModel(ctx context.Context, def *entity.DbtJobDefinition) (DbtJobDefinitionModel, error) {
 	m := DbtJobDefinitionModel{
 		ID:                 types.Int64Value(def.ID),
 		Name:               types.StringValue(def.Name),
@@ -88,33 +109,59 @@ func NewDbtJobDefinitionModel(def *entity.DbtJobDefinition) DbtJobDefinitionMode
 		}
 	}
 
-	// Leave Commands as nil when the server has none. With Optional (no Computed),
-	// user-omitted maps to nil; setting an empty slice here would diverge from the
-	// plan and create a permanent drift on subsequent applies.
-	if len(def.Commands) > 0 {
-		m.Commands = make([]DbtCommandModel, 0, len(def.Commands))
-		for _, c := range def.Commands {
-			cm := DbtCommandModel{
-				Command: types.StringValue(c.Command),
-				Value:   types.StringPointerValue(c.Value),
-			}
-			if len(c.Options) > 0 {
-				cm.Options = make([]DbtCommandOptionModel, 0, len(c.Options))
-				for _, opt := range c.Options {
-					cm.Options = append(cm.Options, DbtCommandOptionModel{
-						Key:   types.StringValue(opt.Key),
-						Value: types.StringPointerValue(opt.Value),
-					})
-				}
-			}
-			m.Commands = append(m.Commands, cm)
+	commands := make([]DbtCommandModel, 0, len(def.Commands))
+	for _, c := range def.Commands {
+		cm := DbtCommandModel{
+			Command: types.StringValue(c.Command),
+			Value:   types.StringPointerValue(c.Value),
 		}
+		cm.Options = make([]DbtCommandOptionModel, 0, len(c.Options))
+		for _, opt := range c.Options {
+			cm.Options = append(cm.Options, DbtCommandOptionModel{
+				Key:   types.StringValue(opt.Key),
+				Value: types.StringPointerValue(opt.Value),
+			})
+		}
+		commands = append(commands, cm)
 	}
-
-	// Same null-vs-empty drift consideration for custom_variable_settings.
-	if len(def.CustomVariableSettings) > 0 {
-		m.CustomVariableSettings = NewCustomVariableSettings(&def.CustomVariableSettings)
+	commandsList, diags := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: DbtCommandAttrTypes()}, commands)
+	if diags.HasError() {
+		return m, fmt.Errorf("failed to convert commands to ListValue: %v", diags)
 	}
+	m.Commands = commandsList
 
-	return m
+	cvSettings := make([]CustomVariableSetting, 0, len(def.CustomVariableSettings))
+	for _, s := range def.CustomVariableSettings {
+		setting := CustomVariableSetting{
+			Name:      types.StringValue(s.Name),
+			Type:      types.StringValue(s.Type),
+			Value:     types.StringPointerValue(s.Value),
+			Quantity:  types.Int64PointerValue(s.Quantity),
+			Unit:      types.StringPointerValue(s.Unit),
+			Direction: types.StringPointerValue(s.Direction),
+			Format:    types.StringPointerValue(s.Format),
+			TimeZone:  types.StringPointerValue(s.TimeZone),
+		}
+		cvSettings = append(cvSettings, setting)
+	}
+	cvList, diags := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: CustomVariableSettingAttrTypes()}, cvSettings)
+	if diags.HasError() {
+		return m, fmt.Errorf("failed to convert custom_variable_settings to ListValue: %v", diags)
+	}
+	m.CustomVariableSettings = cvList
+
+	return m, nil
+}
+
+func CustomVariableSettingAttrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":      types.StringType,
+		"type":      types.StringType,
+		"value":     types.StringType,
+		"quantity":  types.Int64Type,
+		"unit":      types.StringType,
+		"direction": types.StringType,
+		"format":    types.StringType,
+		"time_zone": types.StringType,
+	}
 }
