@@ -14,29 +14,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
-
-const (
-	dbtJobDefinitionDefaultThreads = 1
-	dbtJobDefinitionDefaultTarget  = "trocco_default"
-)
-
-var dbtCommandValues = []string{
-	"build",
-	"deps",
-	"run",
-	"run-operation",
-	"seed",
-	"snapshot",
-	"source-freshness",
-	"test",
-}
 
 var (
 	_ resource.Resource                = &dbtJobDefinitionResource{}
@@ -112,17 +94,21 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 			"threads": schema.Int64Attribute{
 				Optional: true,
 				Computed: true,
-				Default:  int64default.StaticInt64(dbtJobDefinitionDefaultThreads),
 				Validators: []validator.Int64{
 					int64validator.Between(1, 16),
 				},
-				MarkdownDescription: "Number of dbt threads (1-16). Defaults to `1`.",
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
+				MarkdownDescription: "Number of dbt threads (1-16). When omitted, the server applies its default.",
 			},
 			"target": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				Default:             stringdefault.StaticString(dbtJobDefinitionDefaultTarget),
-				MarkdownDescription: "dbt profile target name. Defaults to `trocco_default`.",
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				MarkdownDescription: "dbt profile target name. When omitted, the server applies its default.",
 			},
 			"bigquery_setting": schema.SingleNestedAttribute{
 				Optional: true,
@@ -212,9 +198,9 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 						"command": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
-								stringvalidator.OneOf(dbtCommandValues...),
+								stringvalidator.UTF8LengthAtLeast(1),
 							},
-							MarkdownDescription: fmt.Sprintf("The dbt subcommand. One of %v.", dbtCommandValues),
+							MarkdownDescription: "The dbt subcommand (e.g. `run`, `test`, `build`). Refer to the TROCCO documentation for the currently supported values.",
 						},
 						"value": schema.StringAttribute{
 							Optional:            true,

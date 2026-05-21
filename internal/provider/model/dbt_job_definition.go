@@ -62,7 +62,7 @@ func NewDbtJobDefinitionModel(def *entity.DbtJobDefinition) DbtJobDefinitionMode
 		Description:        types.StringPointerValue(def.Description),
 		ResourceGroupID:    types.Int64PointerValue(def.ResourceGroupID),
 		AdapterType:        types.StringValue(def.AdapterType),
-		DbtGitRepositoryID: types.Int64PointerValue(def.DbtGitRepositoryID),
+		DbtGitRepositoryID: types.Int64Value(def.DbtGitRepositoryID),
 		Threads:            types.Int64Value(def.Threads),
 		Target:             types.StringValue(def.Target),
 	}
@@ -136,17 +136,13 @@ func (m *DbtJobDefinitionModel) ToCreateInput() parameter.CreateDbtJobDefinition
 // Always sends every field so that Terraform state is the single source of truth
 // (the API otherwise falls back to the previous revision for missing keys).
 func (m *DbtJobDefinitionModel) ToUpdateInput() parameter.UpdateDbtJobDefinitionInput {
-	name := m.Name.ValueString()
-	threads := m.Threads.ValueInt64()
-	target := m.Target.ValueString()
-	gitRepoID := m.DbtGitRepositoryID.ValueInt64()
 	input := parameter.UpdateDbtJobDefinitionInput{
-		Name:                   &name,
+		Name:                   m.Name.ValueStringPointer(),
 		Description:            m.Description.ValueStringPointer(),
 		ResourceGroupID:        m.ResourceGroupID.ValueInt64Pointer(),
-		DbtGitRepositoryID:     &gitRepoID,
-		Threads:                &threads,
-		Target:                 &target,
+		DbtGitRepositoryID:     m.DbtGitRepositoryID.ValueInt64Pointer(),
+		Threads:                m.Threads.ValueInt64Pointer(),
+		Target:                 m.Target.ValueStringPointer(),
 		BigquerySetting:        bigquerySettingToInput(m.BigquerySetting),
 		SnowflakeSetting:       snowflakeSettingToInput(m.SnowflakeSetting),
 		RedshiftSetting:        redshiftSettingToInput(m.RedshiftSetting),

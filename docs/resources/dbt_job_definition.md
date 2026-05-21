@@ -61,8 +61,8 @@ resource "trocco_dbt_job_definition" "example" {
 - `redshift_setting` (Attributes) Redshift adapter setting. (see [below for nested schema](#nestedatt--redshift_setting))
 - `resource_group_id` (Number) The ID of the resource group that the dbt job definition belongs to.
 - `snowflake_setting` (Attributes) Snowflake adapter setting. (see [below for nested schema](#nestedatt--snowflake_setting))
-- `target` (String) dbt profile target name. Defaults to `trocco_default`.
-- `threads` (Number) Number of dbt threads (1-16). Defaults to `1`.
+- `target` (String) dbt profile target name. When omitted, the server applies its default.
+- `threads` (Number) Number of dbt threads (1-16). When omitted, the server applies its default.
 
 ### Read-Only
 
@@ -87,7 +87,7 @@ Optional:
 
 Required:
 
-- `command` (String) The dbt subcommand. One of [build deps run run-operation seed snapshot source-freshness test].
+- `command` (String) The dbt subcommand (e.g. `run`, `test`, `build`). Refer to the TROCCO documentation for the currently supported values.
 
 Optional:
 

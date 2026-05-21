@@ -73,11 +73,6 @@ func TestAccDbtJobDefinitionResourceInvalidConfig(t *testing.T) {
 			configFile:  "testdata/dbt_job_definition/invalid_threads.tf",
 			expectError: `Attribute threads value must be between 1 and 16`,
 		},
-		{
-			name:        "command_enum",
-			configFile:  "testdata/dbt_job_definition/invalid_command.tf",
-			expectError: `Attribute commands\[\d+\].command value must be one of`,
-		},
 	}
 
 	for _, tc := range testCases {
