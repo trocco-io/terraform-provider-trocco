@@ -186,7 +186,6 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 			},
 			"commands": schema.ListNestedAttribute{
 				Optional: true,
-				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"command": schema.StringAttribute{

@@ -88,25 +88,33 @@ func NewDbtJobDefinitionModel(def *entity.DbtJobDefinition) DbtJobDefinitionMode
 		}
 	}
 
-	m.Commands = make([]DbtCommandModel, 0, len(def.Commands))
-	for _, c := range def.Commands {
-		cm := DbtCommandModel{
-			Command: types.StringValue(c.Command),
-			Value:   types.StringPointerValue(c.Value),
-		}
-		if len(c.Options) > 0 {
-			cm.Options = make([]DbtCommandOptionModel, 0, len(c.Options))
-			for _, opt := range c.Options {
-				cm.Options = append(cm.Options, DbtCommandOptionModel{
-					Key:   types.StringValue(opt.Key),
-					Value: types.StringPointerValue(opt.Value),
-				})
+	// Leave Commands as nil when the server has none. With Optional (no Computed),
+	// user-omitted maps to nil; setting an empty slice here would diverge from the
+	// plan and create a permanent drift on subsequent applies.
+	if len(def.Commands) > 0 {
+		m.Commands = make([]DbtCommandModel, 0, len(def.Commands))
+		for _, c := range def.Commands {
+			cm := DbtCommandModel{
+				Command: types.StringValue(c.Command),
+				Value:   types.StringPointerValue(c.Value),
 			}
+			if len(c.Options) > 0 {
+				cm.Options = make([]DbtCommandOptionModel, 0, len(c.Options))
+				for _, opt := range c.Options {
+					cm.Options = append(cm.Options, DbtCommandOptionModel{
+						Key:   types.StringValue(opt.Key),
+						Value: types.StringPointerValue(opt.Value),
+					})
+				}
+			}
+			m.Commands = append(m.Commands, cm)
 		}
-		m.Commands = append(m.Commands, cm)
 	}
 
-	m.CustomVariableSettings = NewCustomVariableSettings(&def.CustomVariableSettings)
+	// Same null-vs-empty drift consideration for custom_variable_settings.
+	if len(def.CustomVariableSettings) > 0 {
+		m.CustomVariableSettings = NewCustomVariableSettings(&def.CustomVariableSettings)
+	}
 
 	return m
 }
