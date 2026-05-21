@@ -2,10 +2,12 @@ package pipeline_definition
 
 import (
 	"context"
+	"fmt"
 	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 	model "terraform-provider-trocco/internal/provider/model"
+	"terraform-provider-trocco/internal/provider/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -24,7 +26,7 @@ type Notification struct {
 	SlackConfig     *SlackNotificationConfig `tfsdk:"slack_config"`
 }
 
-func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Notification, previousIsNull bool) types.Set {
+func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Notification, previousIsNull bool, refNotifs []*Notification) types.List {
 	objectType := types.ObjectType{
 		AttrTypes: map[string]attr.Type{
 			"type":             types.StringType,
@@ -47,11 +49,11 @@ func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Not
 	}
 
 	if ens == nil {
-		return types.SetNull(objectType)
+		return types.ListNull(objectType)
 	}
 
 	if previousIsNull && len(ens) == 0 {
-		return types.SetNull(objectType)
+		return types.ListNull(objectType)
 	}
 
 	mds := []*Notification{}
@@ -59,12 +61,14 @@ func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Not
 		mds = append(mds, NewNotification(en))
 	}
 
-	setValue, diags := types.SetValueFrom(ctx, objectType, mds)
+	mds = utils.MatchByKey(mds, refNotifs, pipelineNotificationKey)
+
+	listValue, diags := types.ListValueFrom(ctx, objectType, mds)
 	if diags.HasError() {
-		return types.SetNull(objectType)
+		return types.ListNull(objectType)
 	}
 
-	return setValue
+	return listValue
 }
 
 func NewNotification(en *pipelineDefinitionEntities.Notification) *Notification {
@@ -148,4 +152,23 @@ func (c *SlackNotificationConfig) ToInput() *pipelineDefinitionParameters.SlackN
 		NotificationID: c.NotificationID.ValueInt64(),
 		Message:        c.Message.ValueString(),
 	}
+}
+
+func pipelineNotificationKey(n *Notification) string {
+	var destID int64
+	switch n.DestinationType.ValueString() {
+	case "slack":
+		if n.SlackConfig != nil {
+			destID = n.SlackConfig.NotificationID.ValueInt64()
+		}
+	case "email":
+		if n.EmailConfig != nil {
+			destID = n.EmailConfig.NotificationID.ValueInt64()
+		}
+	}
+	return fmt.Sprintf("%s|%s|%d",
+		n.Type.ValueString(),
+		n.DestinationType.ValueString(),
+		destID,
+	)
 }

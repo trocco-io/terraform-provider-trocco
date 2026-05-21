@@ -24,18 +24,24 @@ type PipelineDefinition struct {
 	IsConcurrentExecutionSkipped types.Bool                     `tfsdk:"is_concurrent_execution_skipped"`
 	IsStoppedOnErrors            types.Bool                     `tfsdk:"is_stopped_on_errors"`
 	Labels                       types.Set                      `tfsdk:"labels"`
-	Notifications                types.Set                      `tfsdk:"notifications"`
+	Notifications                types.List                     `tfsdk:"notifications"`
 	Schedules                    types.Set                      `tfsdk:"schedules"`
 	Tasks                        types.Set                      `tfsdk:"tasks"`
 	TaskDependencies             types.Set                      `tfsdk:"task_dependencies"`
 }
 
 func NewPipelineDefinition(ctx context.Context, en *entity.PipelineDefinition, keys map[int64]types.String, previous *PipelineDefinition) *PipelineDefinition {
-	var notifications types.Set
+	var refNotifs []*Notification
+	if previous != nil && !previous.Notifications.IsNull() && !previous.Notifications.IsUnknown() {
+		if refDiags := previous.Notifications.ElementsAs(ctx, &refNotifs, false); refDiags.HasError() {
+			refNotifs = nil
+		}
+	}
+	var notifications types.List
 	if previous == nil {
-		notifications = NewNotifications(ctx, en.Notifications, true)
+		notifications = NewNotifications(ctx, en.Notifications, true, refNotifs)
 	} else {
-		notifications = NewNotifications(ctx, en.Notifications, previous.Notifications.IsNull())
+		notifications = NewNotifications(ctx, en.Notifications, previous.Notifications.IsNull(), refNotifs)
 	}
 
 	var labels types.Set
@@ -66,7 +72,7 @@ func NewPipelineDefinition(ctx context.Context, en *entity.PipelineDefinition, k
 
 func (m *PipelineDefinition) ToCreateInput(ctx context.Context) *client.CreatePipelineDefinitionInput {
 	labels, labelsOk := convertStringSet(ctx, m.Labels)
-	notifications, notificationsOk := convertNotificationSet(ctx, m.Notifications)
+	notifications, notificationsOk := convertNotificationList(ctx, m.Notifications)
 	schedules, schedulesOk := convertScheduleSet(ctx, m.Schedules)
 	taskDependencies, taskDepsOk := convertTaskDependencySet(ctx, m.TaskDependencies)
 
@@ -107,7 +113,7 @@ func (m *PipelineDefinition) ToCreateInput(ctx context.Context) *client.CreatePi
 
 func (m *PipelineDefinition) ToUpdateWorkflowInput(ctx context.Context, state *PipelineDefinition) *client.UpdatePipelineDefinitionInput {
 	labels, labelsOk := convertStringSet(ctx, m.Labels)
-	notifications, notificationsOk := convertNotificationSet(ctx, m.Notifications)
+	notifications, notificationsOk := convertNotificationList(ctx, m.Notifications)
 	schedules, schedulesOk := convertScheduleSet(ctx, m.Schedules)
 	taskDependencies, taskDepsOk := convertTaskDependencySet(ctx, m.TaskDependencies)
 
@@ -177,8 +183,8 @@ func convertStringSet(ctx context.Context, source types.Set) ([]string, bool) {
 	return []string{}, false
 }
 
-// convertNotificationSet converts notification set.
-func convertNotificationSet(ctx context.Context, source types.Set) ([]*pdp.Notification, bool) {
+// convertNotificationList converts notification list.
+func convertNotificationList(ctx context.Context, source types.List) ([]*pdp.Notification, bool) {
 	if source.IsNull() || source.IsUnknown() {
 		return []*pdp.Notification{}, true
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 func NotificationsSchema() schema.Attribute {
-	return schema.SetNestedAttribute{
+	return schema.ListNestedAttribute{
 		Optional: true,
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{

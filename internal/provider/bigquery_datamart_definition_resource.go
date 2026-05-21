@@ -35,17 +35,17 @@ type bigqueryDatamartDefinitionResource struct {
 }
 
 type bigqueryDatamartDefinitionModel struct {
-	ID                     types.Int64                    `tfsdk:"id"`
-	Name                   types.String                   `tfsdk:"name"`
-	Description            types.String                   `tfsdk:"description"`
-	IsRunnableConcurrently types.Bool                     `tfsdk:"is_runnable_concurrently"`
-	ResourceGroupID        types.Int64                    `tfsdk:"resource_group_id"`
-	CustomVariableSettings types.List                     `tfsdk:"custom_variable_settings"`
-	BigqueryConnectionID   types.Int64                    `tfsdk:"bigquery_connection_id"`
-	QueryMode              types.String                   `tfsdk:"query_mode"`
-	Query                  custom_type.TrimmedStringValue `tfsdk:"query"`
-	DestinationDataset     types.String                   `tfsdk:"destination_dataset"`
-	DestinationTable       types.String                   `tfsdk:"destination_table"`
+	ID                       types.Int64                    `tfsdk:"id"`
+	Name                     types.String                   `tfsdk:"name"`
+	Description              types.String                   `tfsdk:"description"`
+	IsRunnableConcurrently   types.Bool                     `tfsdk:"is_runnable_concurrently"`
+	ResourceGroupID          types.Int64                    `tfsdk:"resource_group_id"`
+	CustomVariableSettings   types.List                     `tfsdk:"custom_variable_settings"`
+	BigqueryConnectionID     types.Int64                    `tfsdk:"bigquery_connection_id"`
+	QueryMode                types.String                   `tfsdk:"query_mode"`
+	Query                    custom_type.TrimmedStringValue `tfsdk:"query"`
+	DestinationDataset       types.String                   `tfsdk:"destination_dataset"`
+	DestinationTable         types.String                   `tfsdk:"destination_table"`
 	WriteDisposition         types.String                   `tfsdk:"write_disposition"`
 	BeforeLoad               custom_type.TrimmedStringValue `tfsdk:"before_load"`
 	Partitioning             types.String                   `tfsdk:"partitioning"`
@@ -66,9 +66,9 @@ type bigqueryDatamartDefinitionModel struct {
 	LookbackPeriodFrom       types.Int64                    `tfsdk:"lookback_period_from"`
 	LookbackPeriodTo         types.Int64                    `tfsdk:"lookback_period_to"`
 	LookbackPeriodUnit       types.String                   `tfsdk:"lookback_period_unit"`
-	Notifications            types.Set                      `tfsdk:"notifications"`
-	Schedules              types.Set                      `tfsdk:"schedules"`
-	Labels                 types.Set                      `tfsdk:"labels"`
+	Notifications            types.List                     `tfsdk:"notifications"`
+	Schedules                types.Set                      `tfsdk:"schedules"`
+	Labels                   types.Set                      `tfsdk:"labels"`
 }
 
 type customVariableSettingModel struct {
@@ -412,7 +412,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 				},
 				MarkdownDescription: "Schedules to be attached to the datamart definition",
 			},
-			"notifications": schema.SetNestedAttribute{
+			"notifications": schema.ListNestedAttribute{
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -692,7 +692,13 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		return
 	}
 
-	data, err := parseToBigqueryDatamartDefinitionModel(ctx, res.DatamartDefinition)
+	var planNotifs []datamartNotificationModel
+	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
+		if refDiags := plan.Notifications.ElementsAs(ctx, &planNotifs, false); refDiags.HasError() {
+			planNotifs = nil
+		}
+	}
+	data, err := parseToBigqueryDatamartDefinitionModel(ctx, res.DatamartDefinition, planNotifs)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Reading datamart_definition",
@@ -712,7 +718,13 @@ func (r *bigqueryDatamartDefinitionResource) Read(ctx context.Context, req resou
 	}
 
 	id := state.ID.ValueInt64()
-	data, err := r.fetchModel(ctx, id)
+	var stateNotifs []datamartNotificationModel
+	if !state.Notifications.IsNull() && !state.Notifications.IsUnknown() {
+		if refDiags := state.Notifications.ElementsAs(ctx, &stateNotifs, false); refDiags.HasError() {
+			stateNotifs = nil
+		}
+	}
+	data, err := r.fetchModel(ctx, id, stateNotifs)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Reading datamart_definition",
@@ -1009,7 +1021,13 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 		)
 		return
 	}
-	model, err := parseToBigqueryDatamartDefinitionModel(ctx, data.DatamartDefinition)
+	var planNotifs []datamartNotificationModel
+	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
+		if refDiags := plan.Notifications.ElementsAs(ctx, &planNotifs, false); refDiags.HasError() {
+			planNotifs = nil
+		}
+	}
+	model, err := parseToBigqueryDatamartDefinitionModel(ctx, data.DatamartDefinition, planNotifs)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parsing datamart definition",
@@ -1218,9 +1236,10 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 			}
 		}
 	}
+
 }
 
-func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition) (*bigqueryDatamartDefinitionModel, error) {
+func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition, refNotifs []datamartNotificationModel) (*bigqueryDatamartDefinitionModel, error) {
 	model := bigqueryDatamartDefinitionModel{
 		ID:                     types.Int64Value(response.ID),
 		Name:                   types.StringValue(response.Name),
@@ -1392,17 +1411,19 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			}
 		}
 
+		notifications = utils.MatchByKey(notifications, refNotifs, datamartNotificationKey)
+
 		objectType := types.ObjectType{
 			AttrTypes: datamartNotificationModel{}.attrTypes(),
 		}
 
-		setValue, diags := types.SetValueFrom(ctx, objectType, notifications)
+		listValue, diags := types.ListValueFrom(ctx, objectType, notifications)
 		if diags.HasError() {
-			return nil, fmt.Errorf("failed to convert notifications to SetValue")
+			return nil, fmt.Errorf("failed to convert notifications to ListValue")
 		}
-		model.Notifications = setValue
+		model.Notifications = listValue
 	} else {
-		model.Notifications = types.SetNull(types.ObjectType{
+		model.Notifications = types.ListNull(types.ObjectType{
 			AttrTypes: datamartNotificationModel{}.attrTypes(),
 		})
 	}
@@ -1466,12 +1487,12 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 	return &model, nil
 }
 
-func (r *bigqueryDatamartDefinitionResource) fetchModel(ctx context.Context, id int64) (*bigqueryDatamartDefinitionModel, error) {
+func (r *bigqueryDatamartDefinitionResource) fetchModel(ctx context.Context, id int64, refNotifs []datamartNotificationModel) (*bigqueryDatamartDefinitionModel, error) {
 	datamartDefinition, err := r.client.GetDatamartDefinition(id)
 	if err != nil {
 		return nil, err
 	}
-	model, _ := parseToBigqueryDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition)
+	model, _ := parseToBigqueryDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition, refNotifs)
 	return model, nil
 }
 
@@ -1574,4 +1595,19 @@ func convertLabelsForCreate(ctx context.Context, source types.Set, diags *resour
 		result = append(result, v.Name.ValueString())
 	}
 	return result
+}
+
+func datamartNotificationKey(n datamartNotificationModel) string {
+	var destID int64
+	switch n.DestinationType.ValueString() {
+	case "slack":
+		destID = n.SlackChannelID.ValueInt64()
+	case "email":
+		destID = n.EmailID.ValueInt64()
+	}
+	return fmt.Sprintf("%s|%s|%d",
+		n.NotificationType.ValueString(),
+		n.DestinationType.ValueString(),
+		destID,
+	)
 }

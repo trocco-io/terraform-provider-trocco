@@ -218,7 +218,7 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 - `lookback_period_to` (Number) End value of the lookback period
 - `lookback_period_unit` (String) Unit of the lookback period. The following units are supported: `days`, `hours`
 - `merge_keys` (List of String) Key columns to uniquely identify records. Required when `write_disposition` is `incremental` or `scd_type_2`
-- `notifications` (Attributes Set) Notifications to be attached to the datamart definition (see [below for nested schema](#nestedatt--notifications))
+- `notifications` (Attributes List) Notifications to be attached to the datamart definition (see [below for nested schema](#nestedatt--notifications))
 - `on_matched_action` (String) Behavior when a record with a matching key exists. The following actions are supported: `upsert`, `skip`. Required when `write_disposition` is `incremental`
 - `partitioning` (String) The following partitioning types are supported: `ingestion_time`, `time_unit_column`. In the case of `ingestion_time`, partitions are cut based on TROCCO's job execution time. In the case of `time_unit_column`, partitioning is done based on the reference column. Available only in `insert` mode
 - `partitioning_field` (String) Column name to be used for partitioning. Required when `partitioning` is `time_unit_column`
