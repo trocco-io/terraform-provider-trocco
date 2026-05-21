@@ -74,12 +74,20 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 				MarkdownDescription: "The name of the dbt job definition.",
 			},
 			"description": schema.StringAttribute{
-				Optional:            true,
-				MarkdownDescription: "The description of the dbt job definition.",
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				MarkdownDescription: "The description of the dbt job definition. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.",
 			},
 			"resource_group_id": schema.Int64Attribute{
-				Optional:            true,
-				MarkdownDescription: "The ID of the resource group that the dbt job definition belongs to.",
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
+				MarkdownDescription: "The ID of the resource group that the dbt job definition belongs to. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.",
 			},
 			"dbt_git_repository_id": schema.Int64Attribute{
 				Required:            true,
@@ -122,8 +130,12 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 						MarkdownDescription: "BigQuery dataset.",
 					},
 					"location": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: "BigQuery location.",
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
+						},
+						MarkdownDescription: "BigQuery location. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.",
 					},
 				},
 				MarkdownDescription: "BigQuery adapter setting. Exactly one of `bigquery_setting` / `snowflake_setting` / `redshift_setting` must be set, matching the adapter type of the linked dbt Git repository.",
@@ -154,8 +166,12 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 						MarkdownDescription: "Snowflake schema name.",
 					},
 					"role": schema.StringAttribute{
-						Optional:            true,
-						MarkdownDescription: "Snowflake role name.",
+						Optional: true,
+						Computed: true,
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
+						},
+						MarkdownDescription: "Snowflake role name. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.",
 					},
 				},
 				MarkdownDescription: "Snowflake adapter setting.",

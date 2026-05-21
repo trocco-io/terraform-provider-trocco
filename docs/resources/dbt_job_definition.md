@@ -57,9 +57,9 @@ resource "trocco_dbt_job_definition" "example" {
 - `bigquery_setting` (Attributes) BigQuery adapter setting. Exactly one of `bigquery_setting` / `snowflake_setting` / `redshift_setting` must be set, matching the adapter type of the linked dbt Git repository. (see [below for nested schema](#nestedatt--bigquery_setting))
 - `commands` (Attributes List) Ordered list of dbt commands to run. (see [below for nested schema](#nestedatt--commands))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--custom_variable_settings))
-- `description` (String) The description of the dbt job definition.
+- `description` (String) The description of the dbt job definition. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.
 - `redshift_setting` (Attributes) Redshift adapter setting. (see [below for nested schema](#nestedatt--redshift_setting))
-- `resource_group_id` (Number) The ID of the resource group that the dbt job definition belongs to.
+- `resource_group_id` (Number) The ID of the resource group that the dbt job definition belongs to. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.
 - `snowflake_setting` (Attributes) Snowflake adapter setting. (see [below for nested schema](#nestedatt--snowflake_setting))
 - `target` (String) dbt profile target name. When omitted, the server applies its default.
 - `threads` (Number) Number of dbt threads (1-16). When omitted, the server applies its default.
@@ -78,7 +78,7 @@ Required:
 
 Optional:
 
-- `location` (String) BigQuery location.
+- `location` (String) BigQuery location. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.
 
 
 <a id="nestedatt--commands"></a>
@@ -146,7 +146,7 @@ Required:
 
 Optional:
 
-- `role` (String) Snowflake role name.
+- `role` (String) Snowflake role name. Removing the attribute from the configuration retains the previous server-side value; recreate the resource to clear it.
 
 ## Import
 
