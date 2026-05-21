@@ -2,24 +2,23 @@ package model
 
 import (
 	"terraform-provider-trocco/internal/client/entity"
-	"terraform-provider-trocco/internal/client/parameter"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type DbtJobDefinitionModel struct {
-	ID                     types.Int64                  `tfsdk:"id"`
-	Name                   types.String                 `tfsdk:"name"`
-	Description            types.String                 `tfsdk:"description"`
-	ResourceGroupID        types.Int64                  `tfsdk:"resource_group_id"`
-	DbtGitRepositoryID     types.Int64                  `tfsdk:"dbt_git_repository_id"`
-	Threads                types.Int64                  `tfsdk:"threads"`
-	Target                 types.String                 `tfsdk:"target"`
-	BigquerySetting        *DbtBigquerySettingModel     `tfsdk:"bigquery_setting"`
-	SnowflakeSetting       *DbtSnowflakeSettingModel    `tfsdk:"snowflake_setting"`
-	RedshiftSetting        *DbtRedshiftSettingModel     `tfsdk:"redshift_setting"`
-	Commands               []DbtCommandModel            `tfsdk:"commands"`
-	CustomVariableSettings *[]CustomVariableSetting     `tfsdk:"custom_variable_settings"`
+	ID                     types.Int64               `tfsdk:"id"`
+	Name                   types.String              `tfsdk:"name"`
+	Description            types.String              `tfsdk:"description"`
+	ResourceGroupID        types.Int64               `tfsdk:"resource_group_id"`
+	DbtGitRepositoryID     types.Int64               `tfsdk:"dbt_git_repository_id"`
+	Threads                types.Int64               `tfsdk:"threads"`
+	Target                 types.String              `tfsdk:"target"`
+	BigquerySetting        *DbtBigquerySettingModel  `tfsdk:"bigquery_setting"`
+	SnowflakeSetting       *DbtSnowflakeSettingModel `tfsdk:"snowflake_setting"`
+	RedshiftSetting        *DbtRedshiftSettingModel  `tfsdk:"redshift_setting"`
+	Commands               []DbtCommandModel         `tfsdk:"commands"`
+	CustomVariableSettings *[]CustomVariableSetting  `tfsdk:"custom_variable_settings"`
 }
 
 type DbtBigquerySettingModel struct {
@@ -111,109 +110,3 @@ func NewDbtJobDefinitionModel(def *entity.DbtJobDefinition) DbtJobDefinitionMode
 
 	return m
 }
-
-// ToCreateInput converts a plan into a Create request payload.
-func (m *DbtJobDefinitionModel) ToCreateInput() parameter.CreateDbtJobDefinitionInput {
-	input := parameter.CreateDbtJobDefinitionInput{
-		Name:                   m.Name.ValueString(),
-		Description:            m.Description.ValueStringPointer(),
-		ResourceGroupID:        m.ResourceGroupID.ValueInt64Pointer(),
-		DbtGitRepositoryID:     m.DbtGitRepositoryID.ValueInt64(),
-		Threads:                m.Threads.ValueInt64Pointer(),
-		Target:                 m.Target.ValueStringPointer(),
-		BigquerySetting:        bigquerySettingToInput(m.BigquerySetting),
-		SnowflakeSetting:       snowflakeSettingToInput(m.SnowflakeSetting),
-		RedshiftSetting:        redshiftSettingToInput(m.RedshiftSetting),
-		Commands:               commandsToInput(m.Commands),
-		CustomVariableSettings: customVariableSettingsToInput(m.CustomVariableSettings),
-	}
-	return input
-}
-
-// ToUpdateInput converts a plan into a Update request payload.
-// Always sends every field so that Terraform state is the single source of truth
-// (the API otherwise falls back to the previous revision for missing keys).
-func (m *DbtJobDefinitionModel) ToUpdateInput() parameter.UpdateDbtJobDefinitionInput {
-	input := parameter.UpdateDbtJobDefinitionInput{
-		Name:                   m.Name.ValueStringPointer(),
-		Description:            m.Description.ValueStringPointer(),
-		ResourceGroupID:        m.ResourceGroupID.ValueInt64Pointer(),
-		DbtGitRepositoryID:     m.DbtGitRepositoryID.ValueInt64Pointer(),
-		Threads:                m.Threads.ValueInt64Pointer(),
-		Target:                 m.Target.ValueStringPointer(),
-		BigquerySetting:        bigquerySettingToInput(m.BigquerySetting),
-		SnowflakeSetting:       snowflakeSettingToInput(m.SnowflakeSetting),
-		RedshiftSetting:        redshiftSettingToInput(m.RedshiftSetting),
-		Commands:               commandsToInput(m.Commands),
-		CustomVariableSettings: customVariableSettingsToInput(m.CustomVariableSettings),
-	}
-	return input
-}
-
-func bigquerySettingToInput(s *DbtBigquerySettingModel) *parameter.DbtBigquerySettingInput {
-	if s == nil {
-		return nil
-	}
-	return &parameter.DbtBigquerySettingInput{
-		ConnectionID: s.ConnectionID.ValueInt64(),
-		Dataset:      s.Dataset.ValueString(),
-		Location:     s.Location.ValueStringPointer(),
-	}
-}
-
-func snowflakeSettingToInput(s *DbtSnowflakeSettingModel) *parameter.DbtSnowflakeSettingInput {
-	if s == nil {
-		return nil
-	}
-	return &parameter.DbtSnowflakeSettingInput{
-		ConnectionID: s.ConnectionID.ValueInt64(),
-		Warehouse:    s.Warehouse.ValueString(),
-		Database:     s.Database.ValueString(),
-		Schema:       s.Schema.ValueString(),
-		Role:         s.Role.ValueStringPointer(),
-	}
-}
-
-func redshiftSettingToInput(s *DbtRedshiftSettingModel) *parameter.DbtRedshiftSettingInput {
-	if s == nil {
-		return nil
-	}
-	return &parameter.DbtRedshiftSettingInput{
-		ConnectionID: s.ConnectionID.ValueInt64(),
-		Database:     s.Database.ValueString(),
-		Schema:       s.Schema.ValueString(),
-	}
-}
-
-func commandsToInput(commands []DbtCommandModel) []parameter.DbtCommandInput {
-	out := make([]parameter.DbtCommandInput, 0, len(commands))
-	for _, c := range commands {
-		cmd := parameter.DbtCommandInput{
-			Command: c.Command.ValueString(),
-			Value:   c.Value.ValueStringPointer(),
-		}
-		if len(c.Options) > 0 {
-			cmd.Options = make([]parameter.DbtCommandOptionInput, 0, len(c.Options))
-			for _, opt := range c.Options {
-				cmd.Options = append(cmd.Options, parameter.DbtCommandOptionInput{
-					Key:   opt.Key.ValueString(),
-					Value: opt.Value.ValueStringPointer(),
-				})
-			}
-		}
-		out = append(out, cmd)
-	}
-	return out
-}
-
-func customVariableSettingsToInput(settings *[]CustomVariableSetting) []parameter.CustomVariableSettingInput {
-	if settings == nil {
-		return []parameter.CustomVariableSettingInput{}
-	}
-	inputs := ToCustomVariableSettingInputs(settings)
-	if inputs == nil {
-		return []parameter.CustomVariableSettingInput{}
-	}
-	return *inputs
-}
-

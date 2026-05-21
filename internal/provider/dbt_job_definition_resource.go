@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
+	"terraform-provider-trocco/internal/client/parameter"
 	"terraform-provider-trocco/internal/provider/model"
 	jobdefschema "terraform-provider-trocco/internal/provider/schema/job_definition"
 
@@ -231,7 +232,34 @@ func (r *dbtJobDefinitionResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	input := plan.ToCreateInput()
+	input := parameter.CreateDbtJobDefinitionInput{
+		Name:                   plan.Name.ValueString(),
+		DbtGitRepositoryID:     plan.DbtGitRepositoryID.ValueInt64(),
+		Commands:               buildDbtCommandInputs(plan.Commands),
+		CustomVariableSettings: buildDbtCustomVariableSettingInputs(plan.CustomVariableSettings),
+	}
+	if !plan.Description.IsNull() && !plan.Description.IsUnknown() {
+		input.SetDescription(plan.Description.ValueString())
+	}
+	if !plan.ResourceGroupID.IsNull() && !plan.ResourceGroupID.IsUnknown() {
+		input.SetResourceGroupID(plan.ResourceGroupID.ValueInt64())
+	}
+	if !plan.Threads.IsNull() && !plan.Threads.IsUnknown() {
+		input.SetThreads(plan.Threads.ValueInt64())
+	}
+	if !plan.Target.IsNull() && !plan.Target.IsUnknown() {
+		input.SetTarget(plan.Target.ValueString())
+	}
+	if plan.BigquerySetting != nil {
+		input.SetBigquerySetting(buildDbtBigquerySettingInput(plan.BigquerySetting))
+	}
+	if plan.SnowflakeSetting != nil {
+		input.SetSnowflakeSetting(buildDbtSnowflakeSettingInput(plan.SnowflakeSetting))
+	}
+	if plan.RedshiftSetting != nil {
+		input.SetRedshiftSetting(buildDbtRedshiftSettingInput(plan.RedshiftSetting))
+	}
+
 	def, err := r.client.CreateDbtJobDefinition(&input)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -273,7 +301,38 @@ func (r *dbtJobDefinitionResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	input := plan.ToUpdateInput()
+	input := parameter.UpdateDbtJobDefinitionInput{
+		Commands:               buildDbtCommandInputs(plan.Commands),
+		CustomVariableSettings: buildDbtCustomVariableSettingInputs(plan.CustomVariableSettings),
+	}
+	if !plan.Name.IsNull() && !plan.Name.IsUnknown() {
+		input.SetName(plan.Name.ValueString())
+	}
+	if !plan.Description.IsNull() && !plan.Description.IsUnknown() {
+		input.SetDescription(plan.Description.ValueString())
+	}
+	if !plan.ResourceGroupID.IsNull() && !plan.ResourceGroupID.IsUnknown() {
+		input.SetResourceGroupID(plan.ResourceGroupID.ValueInt64())
+	}
+	if !plan.DbtGitRepositoryID.IsNull() && !plan.DbtGitRepositoryID.IsUnknown() {
+		input.SetDbtGitRepositoryID(plan.DbtGitRepositoryID.ValueInt64())
+	}
+	if !plan.Threads.IsNull() && !plan.Threads.IsUnknown() {
+		input.SetThreads(plan.Threads.ValueInt64())
+	}
+	if !plan.Target.IsNull() && !plan.Target.IsUnknown() {
+		input.SetTarget(plan.Target.ValueString())
+	}
+	if plan.BigquerySetting != nil {
+		input.SetBigquerySetting(buildDbtBigquerySettingInput(plan.BigquerySetting))
+	}
+	if plan.SnowflakeSetting != nil {
+		input.SetSnowflakeSetting(buildDbtSnowflakeSettingInput(plan.SnowflakeSetting))
+	}
+	if plan.RedshiftSetting != nil {
+		input.SetRedshiftSetting(buildDbtRedshiftSettingInput(plan.RedshiftSetting))
+	}
+
 	def, err := r.client.UpdateDbtJobDefinition(prior.ID.ValueInt64(), &input)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -285,6 +344,79 @@ func (r *dbtJobDefinitionResource) Update(ctx context.Context, req resource.Upda
 
 	state := model.NewDbtJobDefinitionModel(def)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
+}
+
+func buildDbtBigquerySettingInput(s *model.DbtBigquerySettingModel) parameter.DbtBigquerySettingInput {
+	out := parameter.DbtBigquerySettingInput{
+		ConnectionID: s.ConnectionID.ValueInt64(),
+		Dataset:      s.Dataset.ValueString(),
+	}
+	if !s.Location.IsNull() && !s.Location.IsUnknown() {
+		v := s.Location.ValueString()
+		out.Location = &v
+	}
+	return out
+}
+
+func buildDbtSnowflakeSettingInput(s *model.DbtSnowflakeSettingModel) parameter.DbtSnowflakeSettingInput {
+	out := parameter.DbtSnowflakeSettingInput{
+		ConnectionID: s.ConnectionID.ValueInt64(),
+		Warehouse:    s.Warehouse.ValueString(),
+		Database:     s.Database.ValueString(),
+		Schema:       s.Schema.ValueString(),
+	}
+	if !s.Role.IsNull() && !s.Role.IsUnknown() {
+		v := s.Role.ValueString()
+		out.Role = &v
+	}
+	return out
+}
+
+func buildDbtRedshiftSettingInput(s *model.DbtRedshiftSettingModel) parameter.DbtRedshiftSettingInput {
+	return parameter.DbtRedshiftSettingInput{
+		ConnectionID: s.ConnectionID.ValueInt64(),
+		Database:     s.Database.ValueString(),
+		Schema:       s.Schema.ValueString(),
+	}
+}
+
+func buildDbtCommandInputs(commands []model.DbtCommandModel) []parameter.DbtCommandInput {
+	out := make([]parameter.DbtCommandInput, 0, len(commands))
+	for _, c := range commands {
+		cmd := parameter.DbtCommandInput{
+			Command: c.Command.ValueString(),
+		}
+		if !c.Value.IsNull() && !c.Value.IsUnknown() {
+			v := c.Value.ValueString()
+			cmd.Value = &v
+		}
+		if len(c.Options) > 0 {
+			cmd.Options = make([]parameter.DbtCommandOptionInput, 0, len(c.Options))
+			for _, opt := range c.Options {
+				o := parameter.DbtCommandOptionInput{
+					Key: opt.Key.ValueString(),
+				}
+				if !opt.Value.IsNull() && !opt.Value.IsUnknown() {
+					v := opt.Value.ValueString()
+					o.Value = &v
+				}
+				cmd.Options = append(cmd.Options, o)
+			}
+		}
+		out = append(out, cmd)
+	}
+	return out
+}
+
+func buildDbtCustomVariableSettingInputs(settings *[]model.CustomVariableSetting) []parameter.CustomVariableSettingInput {
+	if settings == nil {
+		return []parameter.CustomVariableSettingInput{}
+	}
+	inputs := model.ToCustomVariableSettingInputs(settings)
+	if inputs == nil {
+		return []parameter.CustomVariableSettingInput{}
+	}
+	return *inputs
 }
 
 func (r *dbtJobDefinitionResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
