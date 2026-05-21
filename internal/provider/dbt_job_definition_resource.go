@@ -189,6 +189,7 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 			},
 			"commands": schema.ListNestedAttribute{
 				Optional: true,
+				Computed: true,
 				PlanModifiers: []planmodifier.List{
 					troccoPlanModifier.EmptyListForNull(),
 				},
@@ -207,6 +208,7 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 						},
 						"options": schema.ListNestedAttribute{
 							Optional: true,
+							Computed: true,
 							PlanModifiers: []planmodifier.List{
 								troccoPlanModifier.EmptyListForNull(),
 							},
@@ -230,6 +232,7 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 			},
 			"custom_variable_settings": schema.ListNestedAttribute{
 				Optional: true,
+				Computed: true,
 				PlanModifiers: []planmodifier.List{
 					troccoPlanModifier.EmptyListForNull(),
 				},
