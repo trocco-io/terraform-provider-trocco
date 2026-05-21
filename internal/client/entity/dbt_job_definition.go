@@ -5,7 +5,6 @@ type DbtJobDefinition struct {
 	Name                   string                      `json:"name"`
 	Description            *string                     `json:"description"`
 	ResourceGroupID        *int64                      `json:"resource_group_id"`
-	AdapterType            string                      `json:"adapter_type"`
 	DbtGitRepositoryID     int64                       `json:"dbt_git_repository_id"`
 	Threads                int64                       `json:"threads"`
 	Target                 string                      `json:"target"`

@@ -18,7 +18,6 @@ func TestAccDbtJobDefinitionResource(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "dbt-job-test"),
 					resource.TestCheckResourceAttr(resourceName, "description", "test dbt job"),
-					resource.TestCheckResourceAttr(resourceName, "adapter_type", "bigquery"),
 					resource.TestCheckResourceAttr(resourceName, "threads", "4"),
 					resource.TestCheckResourceAttr(resourceName, "target", "prod"),
 					resource.TestCheckResourceAttr(resourceName, "bigquery_setting.dataset", "analytics"),

@@ -12,7 +12,6 @@ type DbtJobDefinitionModel struct {
 	Name                   types.String                 `tfsdk:"name"`
 	Description            types.String                 `tfsdk:"description"`
 	ResourceGroupID        types.Int64                  `tfsdk:"resource_group_id"`
-	AdapterType            types.String                 `tfsdk:"adapter_type"`
 	DbtGitRepositoryID     types.Int64                  `tfsdk:"dbt_git_repository_id"`
 	Threads                types.Int64                  `tfsdk:"threads"`
 	Target                 types.String                 `tfsdk:"target"`
@@ -61,7 +60,6 @@ func NewDbtJobDefinitionModel(def *entity.DbtJobDefinition) DbtJobDefinitionMode
 		Name:               types.StringValue(def.Name),
 		Description:        types.StringPointerValue(def.Description),
 		ResourceGroupID:    types.Int64PointerValue(def.ResourceGroupID),
-		AdapterType:        types.StringValue(def.AdapterType),
 		DbtGitRepositoryID: types.Int64Value(def.DbtGitRepositoryID),
 		Threads:            types.Int64Value(def.Threads),
 		Target:             types.StringValue(def.Target),

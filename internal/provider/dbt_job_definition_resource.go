@@ -80,13 +80,6 @@ func (r *dbtJobDefinitionResource) Schema(ctx context.Context, req resource.Sche
 				Optional:            true,
 				MarkdownDescription: "The ID of the resource group that the dbt job definition belongs to.",
 			},
-			"adapter_type": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The adapter type derived from the linked dbt Git repository (one of `bigquery`, `snowflake`, `redshift`).",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
 			"dbt_git_repository_id": schema.Int64Attribute{
 				Required:            true,
 				MarkdownDescription: "The ID of the dbt Git repository to associate with this job definition. Changing it to a repository with a different adapter type is rejected by the server.",

@@ -66,7 +66,6 @@ resource "trocco_dbt_job_definition" "example" {
 
 ### Read-Only
 
-- `adapter_type` (String) The adapter type derived from the linked dbt Git repository (one of `bigquery`, `snowflake`, `redshift`).
 - `id` (Number) The ID of the dbt job definition.
 
 <a id="nestedatt--bigquery_setting"></a>
