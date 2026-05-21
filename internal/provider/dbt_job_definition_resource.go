@@ -352,8 +352,7 @@ func buildDbtBigquerySettingInput(s *model.DbtBigquerySettingModel) parameter.Db
 		Dataset:      s.Dataset.ValueString(),
 	}
 	if !s.Location.IsNull() && !s.Location.IsUnknown() {
-		v := s.Location.ValueString()
-		out.Location = &v
+		out.SetLocation(s.Location.ValueString())
 	}
 	return out
 }
@@ -366,8 +365,7 @@ func buildDbtSnowflakeSettingInput(s *model.DbtSnowflakeSettingModel) parameter.
 		Schema:       s.Schema.ValueString(),
 	}
 	if !s.Role.IsNull() && !s.Role.IsUnknown() {
-		v := s.Role.ValueString()
-		out.Role = &v
+		out.SetRole(s.Role.ValueString())
 	}
 	return out
 }
@@ -387,21 +385,20 @@ func buildDbtCommandInputs(commands []model.DbtCommandModel) []parameter.DbtComm
 			Command: c.Command.ValueString(),
 		}
 		if !c.Value.IsNull() && !c.Value.IsUnknown() {
-			v := c.Value.ValueString()
-			cmd.Value = &v
+			cmd.SetValue(c.Value.ValueString())
 		}
 		if len(c.Options) > 0 {
-			cmd.Options = make([]parameter.DbtCommandOptionInput, 0, len(c.Options))
+			opts := make([]parameter.DbtCommandOptionInput, 0, len(c.Options))
 			for _, opt := range c.Options {
 				o := parameter.DbtCommandOptionInput{
 					Key: opt.Key.ValueString(),
 				}
 				if !opt.Value.IsNull() && !opt.Value.IsUnknown() {
-					v := opt.Value.ValueString()
-					o.Value = &v
+					o.SetValue(opt.Value.ValueString())
 				}
-				cmd.Options = append(cmd.Options, o)
+				opts = append(opts, o)
 			}
+			cmd.SetOptions(opts)
 		}
 		out = append(out, cmd)
 	}

@@ -72,6 +72,8 @@ type DbtBigquerySettingInput struct {
 	Location     *string `json:"location,omitempty"`
 }
 
+func (s *DbtBigquerySettingInput) SetLocation(v string) { s.Location = &v }
+
 type DbtSnowflakeSettingInput struct {
 	ConnectionID int64   `json:"connection_id"`
 	Warehouse    string  `json:"warehouse"`
@@ -79,6 +81,8 @@ type DbtSnowflakeSettingInput struct {
 	Schema       string  `json:"schema"`
 	Role         *string `json:"role,omitempty"`
 }
+
+func (s *DbtSnowflakeSettingInput) SetRole(v string) { s.Role = &v }
 
 type DbtRedshiftSettingInput struct {
 	ConnectionID int64  `json:"connection_id"`
@@ -92,7 +96,12 @@ type DbtCommandInput struct {
 	Options []DbtCommandOptionInput `json:"options,omitempty"`
 }
 
+func (c *DbtCommandInput) SetValue(v string)                     { c.Value = &v }
+func (c *DbtCommandInput) SetOptions(v []DbtCommandOptionInput)  { c.Options = v }
+
 type DbtCommandOptionInput struct {
 	Key   string  `json:"key"`
 	Value *string `json:"value,omitempty"`
 }
+
+func (o *DbtCommandOptionInput) SetValue(v string) { o.Value = &v }
