@@ -143,6 +143,33 @@ func TestAccPipelineDefinitionResourceForNotifications(t *testing.T) {
 					return pipelineDefinitionID, nil
 				},
 			},
+			// Reordering the notifications in config should be reflected in state
+			// without leaving a perpetual diff after refresh.
+			{
+				Config: providerConfig + LoadTextFile("testdata/pipeline_definition/notifications/reorder.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.type", "job_time_alert"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "email"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.type", "job_execution"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "slack"),
+				),
+			},
+			// Multiple notifications sharing the same (type, destination_type)
+			// must keep their distinct destination IDs without being swapped.
+			{
+				Config: providerConfig + LoadTextFile("testdata/pipeline_definition/notifications/multiple_slack.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.type", "job_execution"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "finished"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.0.slack_config.notification_id", "trocco_notification_destination.slack", "id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.type", "job_execution"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notify_when", "failed"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.slack_config.notification_id", "trocco_notification_destination.slack_b", "id"),
+				),
+			},
 		},
 	})
 }
