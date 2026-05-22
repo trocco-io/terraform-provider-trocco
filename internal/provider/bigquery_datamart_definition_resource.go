@@ -18,6 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -83,6 +84,7 @@ type customVariableSettingModel struct {
 }
 
 type datamartNotificationModel struct {
+	ID               types.Int64                    `tfsdk:"id"`
 	DestinationType  types.String                   `tfsdk:"destination_type"`
 	SlackChannelID   types.Int64                    `tfsdk:"slack_channel_id"`
 	EmailID          types.Int64                    `tfsdk:"email_id"`
@@ -416,6 +418,13 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
+						"id": schema.Int64Attribute{
+							Computed: true,
+							PlanModifiers: []planmodifier.Int64{
+								int64planmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: "Server-assigned ID of the notification. Unique within `(notification_type, destination_type)` for matching across API responses.",
+						},
 						"destination_type": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
@@ -1390,6 +1399,7 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 		notifications := make([]datamartNotificationModel, len(response.Notifications))
 		for i, v := range response.Notifications {
 			notifications[i] = datamartNotificationModel{
+				ID:               types.Int64Value(v.ID),
 				DestinationType:  types.StringValue(v.DestinationType),
 				NotificationType: types.StringValue(v.NotificationType),
 				Message:          custom_type.TrimmedStringValue{StringValue: types.StringValue(v.Message)},
@@ -1511,6 +1521,7 @@ func (c customVariableSettingModel) attrTypes() map[string]attr.Type {
 
 func (n datamartNotificationModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
+		"id":                types.Int64Type,
 		"destination_type":  types.StringType,
 		"slack_channel_id":  types.Int64Type,
 		"email_id":          types.Int64Type,
@@ -1598,16 +1609,9 @@ func convertLabelsForCreate(ctx context.Context, source types.Set, diags *resour
 }
 
 func datamartNotificationKey(n datamartNotificationModel) string {
-	var destID int64
-	switch n.DestinationType.ValueString() {
-	case "slack":
-		destID = n.SlackChannelID.ValueInt64()
-	case "email":
-		destID = n.EmailID.ValueInt64()
-	}
 	return fmt.Sprintf("%s|%s|%d",
 		n.NotificationType.ValueString(),
 		n.DestinationType.ValueString(),
-		destID,
+		n.ID.ValueInt64(),
 	)
 }

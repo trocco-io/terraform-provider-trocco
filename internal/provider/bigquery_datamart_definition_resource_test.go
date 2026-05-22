@@ -41,12 +41,14 @@ func TestAccDatamartDefinitionResourceForBigqueryNotifications(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "job"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "finished"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.0.id"),
 					// Verify that the email notification message is correctly set
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.message", "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  \n"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "email"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "record"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.record_count", "100"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.record_operator", "above"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.1.id"),
 				),
 			},
 			// Reordering the notifications in config should be reflected in state

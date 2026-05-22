@@ -18,6 +18,7 @@ import (
 //
 
 type Notification struct {
+	ID              types.Int64              `tfsdk:"id"`
 	Type            types.String             `tfsdk:"type"`
 	DestinationType types.String             `tfsdk:"destination_type"`
 	NotifyWhen      types.String             `tfsdk:"notify_when"`
@@ -29,6 +30,7 @@ type Notification struct {
 func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Notification, previousIsNull bool, refNotifs []*Notification) types.List {
 	objectType := types.ObjectType{
 		AttrTypes: map[string]attr.Type{
+			"id":               types.Int64Type,
 			"type":             types.StringType,
 			"destination_type": types.StringType,
 			"notify_when":      types.StringType,
@@ -73,6 +75,7 @@ func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Not
 
 func NewNotification(en *pipelineDefinitionEntities.Notification) *Notification {
 	return &Notification{
+		ID:              types.Int64Value(en.ID),
 		Type:            types.StringValue(en.Type),
 		DestinationType: types.StringValue(en.DestinationType),
 		NotifyWhen:      types.StringPointerValue(en.NotifyWhen),
@@ -155,20 +158,9 @@ func (c *SlackNotificationConfig) ToInput() *pipelineDefinitionParameters.SlackN
 }
 
 func pipelineNotificationKey(n *Notification) string {
-	var destID int64
-	switch n.DestinationType.ValueString() {
-	case "slack":
-		if n.SlackConfig != nil {
-			destID = n.SlackConfig.NotificationID.ValueInt64()
-		}
-	case "email":
-		if n.EmailConfig != nil {
-			destID = n.EmailConfig.NotificationID.ValueInt64()
-		}
-	}
 	return fmt.Sprintf("%s|%s|%d",
 		n.Type.ValueString(),
 		n.DestinationType.ValueString(),
-		destID,
+		n.ID.ValueInt64(),
 	)
 }

@@ -23,11 +23,13 @@ func TestAccJobDefinitionResourceNotifications(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "job"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "finished"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.0.id"),
 					// Email message
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.message", "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  \n"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "email"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "job"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.notify_when", "finished"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.1.id"),
 				),
 			},
 			// Import testing

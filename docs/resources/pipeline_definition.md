@@ -724,6 +724,10 @@ Optional:
 - `slack_config` (Attributes) The slack configuration of the notification (see [below for nested schema](#nestedatt--notifications--slack_config))
 - `time` (Number) The time of the notification
 
+Read-Only:
+
+- `id` (Number) Server-assigned ID of the notification. Unique within `(type, destination_type)` for matching across API responses.
+
 <a id="nestedatt--notifications--email_config"></a>
 ### Nested Schema for `notifications.email_config`
 

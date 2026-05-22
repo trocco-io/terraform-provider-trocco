@@ -4,6 +4,8 @@ import (
 	"terraform-provider-trocco/internal/provider/custom_type"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 )
 
 func NotificationsSchema() schema.Attribute {
@@ -12,6 +14,13 @@ func NotificationsSchema() schema.Attribute {
 		Optional:            true,
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
+				"id": schema.Int64Attribute{
+					Computed: true,
+					PlanModifiers: []planmodifier.Int64{
+						int64planmodifier.UseStateForUnknown(),
+					},
+					MarkdownDescription: "Server-assigned ID of the notification. Unique within `(type, destination_type)` for matching across API responses.",
+				},
 				"type": schema.StringAttribute{
 					MarkdownDescription: "The type of the notification",
 					Required:            true,

@@ -1020,16 +1020,9 @@ func validateHttpInputOption(httpInputOption *inputOptionModel.HttpInputOption, 
 }
 
 func jobNotificationKey(n jobDefinitionModel.JobDefinitionNotification) string {
-	var destID int64
-	switch n.DestinationType.ValueString() {
-	case "slack":
-		destID = n.SlackChannelID.ValueInt64()
-	case "email":
-		destID = n.EmailID.ValueInt64()
-	}
 	return fmt.Sprintf("%s|%s|%d",
 		n.NotificationType.ValueString(),
 		n.DestinationType.ValueString(),
-		destID,
+		n.ID.ValueInt64(),
 	)
 }

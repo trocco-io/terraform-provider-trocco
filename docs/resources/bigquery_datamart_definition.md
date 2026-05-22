@@ -282,6 +282,10 @@ Optional:
 - `record_operator` (String) Operator to be used for condition. The following operators are supported: `above`, `below`. Required when `notification_type` is `record`
 - `slack_channel_id` (Number) ID of the slack channel used to send notifications. Required when `destination_type` is `slack`
 
+Read-Only:
+
+- `id` (Number) Server-assigned ID of the notification. Unique within `(notification_type, destination_type)` for matching across API responses.
+
 
 <a id="nestedatt--schedules"></a>
 ### Nested Schema for `schedules`
