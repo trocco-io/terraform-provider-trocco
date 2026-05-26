@@ -63,7 +63,7 @@ func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Not
 		mds = append(mds, NewNotification(en))
 	}
 
-	mds = utils.MatchByKey(mds, refNotifs, pipelineNotificationKey)
+	mds = utils.MatchByKey(mds, refNotifs, pipelineNotificationKey, pipelineNotificationFallbackKey)
 
 	listValue, diags := types.ListValueFrom(ctx, objectType, mds)
 	if diags.HasError() {
@@ -162,5 +162,12 @@ func pipelineNotificationKey(n *Notification) string {
 		n.Type.ValueString(),
 		n.DestinationType.ValueString(),
 		n.ID.ValueInt64(),
+	)
+}
+
+func pipelineNotificationFallbackKey(n *Notification) string {
+	return fmt.Sprintf("%s|%s",
+		n.Type.ValueString(),
+		n.DestinationType.ValueString(),
 	)
 }

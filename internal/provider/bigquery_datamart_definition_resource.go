@@ -1421,7 +1421,7 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			}
 		}
 
-		notifications = utils.MatchByKey(notifications, refNotifs, datamartNotificationKey)
+		notifications = utils.MatchByKey(notifications, refNotifs, datamartNotificationKey, datamartNotificationFallbackKey)
 
 		objectType := types.ObjectType{
 			AttrTypes: datamartNotificationModel{}.attrTypes(),
@@ -1613,5 +1613,12 @@ func datamartNotificationKey(n datamartNotificationModel) string {
 		n.NotificationType.ValueString(),
 		n.DestinationType.ValueString(),
 		n.ID.ValueInt64(),
+	)
+}
+
+func datamartNotificationFallbackKey(n datamartNotificationModel) string {
+	return fmt.Sprintf("%s|%s",
+		n.NotificationType.ValueString(),
+		n.DestinationType.ValueString(),
 	)
 }

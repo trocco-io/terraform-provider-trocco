@@ -446,7 +446,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 				refNotifs = nil
 			}
 		}
-		notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey)
+		notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey, jobNotificationFallbackKey)
 		notificationsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
 		}, notifications)
@@ -721,7 +721,7 @@ func (r *jobDefinitionResource) Create(
 				refNotifs = nil
 			}
 		}
-		notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey)
+		notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey, jobNotificationFallbackKey)
 		notificationsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
 		}, notifications)
@@ -885,7 +885,7 @@ func (r *jobDefinitionResource) Read(
 				refNotifs = nil
 			}
 		}
-		notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey)
+		notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey, jobNotificationFallbackKey)
 		notificationsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
 			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
 		}, notifications)
@@ -1024,5 +1024,12 @@ func jobNotificationKey(n jobDefinitionModel.JobDefinitionNotification) string {
 		n.NotificationType.ValueString(),
 		n.DestinationType.ValueString(),
 		n.ID.ValueInt64(),
+	)
+}
+
+func jobNotificationFallbackKey(n jobDefinitionModel.JobDefinitionNotification) string {
+	return fmt.Sprintf("%s|%s",
+		n.NotificationType.ValueString(),
+		n.DestinationType.ValueString(),
 	)
 }
