@@ -111,7 +111,7 @@ func TestAccResourceGroupDuplicateRoles(t *testing.T) {
 					  ]
 					}
 				`,
-				ExpectError: regexp.MustCompile(`Team ID "<unknown>" is duplicated in the list.`),
+				ExpectError: regexp.MustCompile(`Team ID "\d+" is duplicated in the list\.`),
 			},
 		},
 	})
