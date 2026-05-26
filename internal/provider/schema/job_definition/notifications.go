@@ -6,8 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -17,10 +15,7 @@ func NotificationsSchema() schema.Attribute {
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
 				"id": schema.Int64Attribute{
-					Computed: true,
-					PlanModifiers: []planmodifier.Int64{
-						int64planmodifier.UseStateForUnknown(),
-					},
+					Computed:            true,
 					MarkdownDescription: "Server-assigned ID of the notification. Unique within `(notification_type, destination_type)` for matching across API responses.",
 				},
 				"destination_type": schema.StringAttribute{
