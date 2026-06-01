@@ -78,7 +78,7 @@ func TestAccDbtGitRepositoryResourceInvalidConfig(t *testing.T) {
 		{
 			name:        "invalid_commit_hash",
 			configFile:  "testdata/dbt_git_repository/invalid_commit_hash.tf",
-			expectError: `must be a 40-character lowercase hexadecimal Git commit hash`,
+			expectError: `must be a 40-character lowercase hexadecimal Git commit`,
 		},
 	}
 
