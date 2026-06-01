@@ -35,17 +35,17 @@ type bigqueryDatamartDefinitionResource struct {
 }
 
 type bigqueryDatamartDefinitionModel struct {
-	ID                     types.Int64                    `tfsdk:"id"`
-	Name                   types.String                   `tfsdk:"name"`
-	Description            types.String                   `tfsdk:"description"`
-	IsRunnableConcurrently types.Bool                     `tfsdk:"is_runnable_concurrently"`
-	ResourceGroupID        types.Int64                    `tfsdk:"resource_group_id"`
-	CustomVariableSettings types.List                     `tfsdk:"custom_variable_settings"`
-	BigqueryConnectionID   types.Int64                    `tfsdk:"bigquery_connection_id"`
-	QueryMode              types.String                   `tfsdk:"query_mode"`
-	Query                  custom_type.TrimmedStringValue `tfsdk:"query"`
-	DestinationDataset     types.String                   `tfsdk:"destination_dataset"`
-	DestinationTable       types.String                   `tfsdk:"destination_table"`
+	ID                       types.Int64                    `tfsdk:"id"`
+	Name                     types.String                   `tfsdk:"name"`
+	Description              types.String                   `tfsdk:"description"`
+	IsRunnableConcurrently   types.Bool                     `tfsdk:"is_runnable_concurrently"`
+	ResourceGroupID          types.Int64                    `tfsdk:"resource_group_id"`
+	CustomVariableSettings   types.List                     `tfsdk:"custom_variable_settings"`
+	BigqueryConnectionID     types.Int64                    `tfsdk:"bigquery_connection_id"`
+	QueryMode                types.String                   `tfsdk:"query_mode"`
+	Query                    custom_type.TrimmedStringValue `tfsdk:"query"`
+	DestinationDataset       types.String                   `tfsdk:"destination_dataset"`
+	DestinationTable         types.String                   `tfsdk:"destination_table"`
 	WriteDisposition         types.String                   `tfsdk:"write_disposition"`
 	BeforeLoad               custom_type.TrimmedStringValue `tfsdk:"before_load"`
 	Partitioning             types.String                   `tfsdk:"partitioning"`
@@ -67,8 +67,8 @@ type bigqueryDatamartDefinitionModel struct {
 	LookbackPeriodTo         types.Int64                    `tfsdk:"lookback_period_to"`
 	LookbackPeriodUnit       types.String                   `tfsdk:"lookback_period_unit"`
 	Notifications            types.Set                      `tfsdk:"notifications"`
-	Schedules              types.Set                      `tfsdk:"schedules"`
-	Labels                 types.Set                      `tfsdk:"labels"`
+	Schedules                types.Set                      `tfsdk:"schedules"`
+	Labels                   types.Set                      `tfsdk:"labels"`
 }
 
 type customVariableSettingModel struct {
