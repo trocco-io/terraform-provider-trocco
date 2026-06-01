@@ -49,9 +49,9 @@ The Terraform Provider for TROCCO enables the management of TROCCO resources usi
 			},
 			"region": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "The region of TROCCO. This can also be set using the `TROCCO_REGION` environment variable. The following regions are available: `japan`, `india`, `korea`.",
+				MarkdownDescription: "The region of TROCCO. This can also be set using the `TROCCO_REGION` environment variable. The following regions are available: `japan`.",
 				Validators: []validator.String{
-					stringvalidator.OneOf("japan", "india", "korea"),
+					stringvalidator.OneOf("japan"),
 				},
 			},
 			"dev_base_url": schema.StringAttribute{
