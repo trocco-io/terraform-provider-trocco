@@ -1,0 +1,1 @@
+terraform import trocco_dbt_git_repository.example <dbt_git_repository_id>
