@@ -89,24 +89,24 @@ type DatamartDefinition struct {
 }
 
 type DatamartBigqueryOption struct {
-	BigqueryConnectionID    int64    `json:"bigquery_connection_id"`
-	QueryMode               string   `json:"query_mode"`
-	Query                   string   `json:"query"`
-	DestinationDataset      *string  `json:"destination_dataset"`
-	DestinationTable        *string  `json:"destination_table"`
-	WriteDisposition        *string  `json:"write_disposition"`
-	BeforeLoad              *string  `json:"before_load"`
-	Partitioning            *string  `json:"partitioning"`
-	PartitioningTime        *string  `json:"partitioning_time"`
-	PartitioningField       *string  `json:"partitioning_field"`
-	ClusteringFields        []string `json:"clustering_fields"`
-	Location                *string  `json:"location"`
-	MergeKeys               []string `json:"merge_keys"`
-	OnMatchedAction         *string  `json:"on_matched_action"`
-	IncrementalColumn       *string  `json:"incremental_column"`
-	ValidFromColumn         *string  `json:"valid_from_column"`
-	ValidToColumn           *string  `json:"valid_to_column"`
-	IsCurrentColumn         *string  `json:"is_current_column"`
+	BigqueryConnectionID     int64    `json:"bigquery_connection_id"`
+	QueryMode                string   `json:"query_mode"`
+	Query                    string   `json:"query"`
+	DestinationDataset       *string  `json:"destination_dataset"`
+	DestinationTable         *string  `json:"destination_table"`
+	WriteDisposition         *string  `json:"write_disposition"`
+	BeforeLoad               *string  `json:"before_load"`
+	Partitioning             *string  `json:"partitioning"`
+	PartitioningTime         *string  `json:"partitioning_time"`
+	PartitioningField        *string  `json:"partitioning_field"`
+	ClusteringFields         []string `json:"clustering_fields"`
+	Location                 *string  `json:"location"`
+	MergeKeys                []string `json:"merge_keys"`
+	OnMatchedAction          *string  `json:"on_matched_action"`
+	IncrementalColumn        *string  `json:"incremental_column"`
+	ValidFromColumn          *string  `json:"valid_from_column"`
+	ValidToColumn            *string  `json:"valid_to_column"`
+	IsCurrentColumn          *string  `json:"is_current_column"`
 	SchemaEvolutionMode      *string  `json:"schema_evolution_mode"`
 	LookbackPeriodColumn     *string  `json:"lookback_period_column"`
 	LookbackPeriodColumnType *string  `json:"lookback_period_column_type"`
