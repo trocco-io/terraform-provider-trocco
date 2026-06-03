@@ -1,3 +1,14 @@
+## 0.33.0
+
+FEATURES:
+- `trocco_dbt_git_repository` resource:
+  - Added new resource to manage dbt Git repositories
+- `trocco_dbt_job_definition` resource:
+  - Added new resource to manage dbt job definitions
+
+BUG FIXES:
+- Improved Unknown value handling in `UniqueTeamValidator` to avoid false validation errors
+
 ## 0.32.0
 
 FEATURES:
