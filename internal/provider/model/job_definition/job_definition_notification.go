@@ -10,6 +10,7 @@ import (
 )
 
 type JobDefinitionNotification struct {
+	ID               types.Int64                    `tfsdk:"id"`
 	DestinationType  types.String                   `tfsdk:"destination_type"`
 	SlackChannelID   types.Int64                    `tfsdk:"slack_channel_id"`
 	EmailID          types.Int64                    `tfsdk:"email_id"`
@@ -29,6 +30,7 @@ func NewJobDefinitionNotifications(jobDefinitionNotifications []jobDefinitionEnt
 	notifications := make([]JobDefinitionNotification, 0, len(jobDefinitionNotifications))
 	for _, input := range jobDefinitionNotifications {
 		notification := JobDefinitionNotification{
+			ID:               types.Int64Value(input.ID),
 			DestinationType:  types.StringValue(input.DestinationType),
 			SlackChannelID:   types.Int64PointerValue(input.SlackChannelID),
 			EmailID:          types.Int64PointerValue(input.EmailID),
@@ -63,6 +65,7 @@ func (notification JobDefinitionNotification) ToInput() jobDefinitionParameters.
 
 func (n JobDefinitionNotification) AttrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
+		"id":                types.Int64Type,
 		"destination_type":  types.StringType,
 		"slack_channel_id":  types.Int64Type,
 		"email_id":          types.Int64Type,

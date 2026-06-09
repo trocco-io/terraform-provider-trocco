@@ -36,17 +36,44 @@ func TestAccDatamartDefinitionResourceForBigqueryNotifications(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "test_bigquery_datamart_notifications"),
 					resource.TestCheckResourceAttr(resourceName, "query", "    SELECT * FROM examples\n"),
-					// Verify that the email notification message is correctly set
-					resource.TestCheckResourceAttr(resourceName, "notifications.0.message", "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  \n"),
-					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "email"),
-					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "record"),
-					resource.TestCheckResourceAttr(resourceName, "notifications.0.record_count", "100"),
-					resource.TestCheckResourceAttr(resourceName, "notifications.0.record_operator", "above"),
 					// Verify that the slack notification message is correctly set
-					resource.TestCheckResourceAttr(resourceName, "notifications.1.message", "This is a multi-line message\nwith several lines\n  and some indentation\n    to test TrimmedStringType\n"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.message", "This is a multi-line message\nwith several lines\n  and some indentation\n    to test TrimmedStringType\n"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "job"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "finished"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.0.id"),
+					// Verify that the email notification message is correctly set
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.message", "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  \n"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "email"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "record"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.record_count", "100"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.record_operator", "above"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.1.id"),
+				),
+			},
+			// Reordering the notifications in config should be reflected in state
+			// without leaving a perpetual diff after refresh.
+			{
+				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/notifications/reorder.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "email"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "slack"),
+				),
+			},
+			// Multiple notifications sharing the same (type, destination_type)
+			// must keep their distinct destination IDs without being swapped.
+			{
+				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/notifications/multiple_slack.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "job"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "finished"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.0.slack_channel_id", "trocco_notification_destination.slack", "id"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "slack"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "job"),
-					resource.TestCheckResourceAttr(resourceName, "notifications.1.notify_when", "finished"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notify_when", "failed"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.slack_channel_id", "trocco_notification_destination.slack_b", "id"),
 				),
 			},
 		},
