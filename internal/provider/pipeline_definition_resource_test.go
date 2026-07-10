@@ -115,20 +115,14 @@ func TestAccPipelineDefinitionResourceForNotifications(t *testing.T) {
 				ExpectError: nil,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "notifications_test"),
-
-					// Check slack notification
-					resource.TestCheckTypeSetElemNestedAttrs(resourceName, "notifications.*", map[string]string{
-						"type":                 "job_execution",
-						"destination_type":     "slack",
-						"slack_config.message": "This is a multi-line message\nwith several lines\n  and some indentation\n    to test TrimmedStringType\n",
-					}),
-
-					// Check email notification
-					resource.TestCheckTypeSetElemNestedAttrs(resourceName, "notifications.*", map[string]string{
-						"type":                 "job_time_alert",
-						"destination_type":     "email",
-						"email_config.message": "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  \n",
-					}),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.type", "job_execution"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.0.id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.slack_config.message", "This is a multi-line message\nwith several lines\n  and some indentation\n    to test TrimmedStringType\n"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.type", "job_time_alert"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "email"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.1.id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.email_config.message", "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  \n"),
 				),
 			},
 			// Import testing
@@ -141,10 +135,7 @@ func TestAccPipelineDefinitionResourceForNotifications(t *testing.T) {
 					// therefore there is no value for it during import.
 					"tasks.0.key",
 					// INFO: The message attributes are trimmed and set in state, so different from the resource config.
-					// Explicitly specify all possible indices for both message types
 					"notifications.0.slack_config.message",
-					"notifications.1.slack_config.message",
-					"notifications.0.email_config.message",
 					"notifications.1.email_config.message",
 					// INFO: The `query` attribute is trimmed and set in state, so different from the resource config.
 					"tasks.0.bigquery_data_check_config.query",
@@ -153,6 +144,33 @@ func TestAccPipelineDefinitionResourceForNotifications(t *testing.T) {
 					pipelineDefinitionID := s.RootModule().Resources[resourceName].Primary.ID
 					return pipelineDefinitionID, nil
 				},
+			},
+			// Reordering the notifications in config should be reflected in state
+			// without leaving a perpetual diff after refresh.
+			{
+				Config: providerConfig + LoadTextFile("testdata/pipeline_definition/notifications/reorder.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.type", "job_time_alert"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "email"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.type", "job_execution"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "slack"),
+				),
+			},
+			// Multiple notifications sharing the same (type, destination_type)
+			// must keep their distinct destination IDs without being swapped.
+			{
+				Config: providerConfig + LoadTextFile("testdata/pipeline_definition/notifications/multiple_slack.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.type", "job_execution"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "finished"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.0.slack_config.notification_id", "trocco_notification_destination.slack", "id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.type", "job_execution"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notify_when", "failed"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.slack_config.notification_id", "trocco_notification_destination.slack_b", "id"),
+				),
 			},
 		},
 	})
