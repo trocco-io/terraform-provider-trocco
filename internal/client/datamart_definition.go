@@ -73,19 +73,20 @@ type UpdateDatamartDefinitionOutput struct {
 }
 
 type DatamartDefinition struct {
-	ID                     int64                   `json:"id"`
-	Name                   string                  `json:"name"`
-	Description            *string                 `json:"description"`
-	DataWarehouseType      string                  `json:"data_warehouse_type"`
-	IsRunnableConcurrently bool                    `json:"is_runnable_concurrently"`
-	ResourceGroup          *ResourceGroup          `json:"resource_group"`
-	CustomVariableSettings []CustomVariableSetting `json:"custom_variable_settings"`
-	DatamartBigqueryOption *DatamartBigqueryOption `json:"datamart_bigquery_option"`
-	CreatedAt              string                  `json:"created_at"`
-	UpdatedAt              string                  `json:"updated_at"`
-	Notifications          []DatamartNotification  `json:"notifications"`
-	Schedules              []Schedule              `json:"schedules"`
-	Labels                 []entity.Label          `json:"labels"`
+	ID                      int64                    `json:"id"`
+	Name                    string                   `json:"name"`
+	Description             *string                  `json:"description"`
+	DataWarehouseType       string                   `json:"data_warehouse_type"`
+	IsRunnableConcurrently  bool                     `json:"is_runnable_concurrently"`
+	ResourceGroup           *ResourceGroup           `json:"resource_group"`
+	CustomVariableSettings  []CustomVariableSetting  `json:"custom_variable_settings"`
+	DatamartBigqueryOption  *DatamartBigqueryOption  `json:"datamart_bigquery_option"`
+	DatamartSnowflakeSetting *DatamartSnowflakeSetting `json:"datamart_snowflake_setting"`
+	CreatedAt               string                   `json:"created_at"`
+	UpdatedAt               string                   `json:"updated_at"`
+	Notifications           []DatamartNotification   `json:"notifications"`
+	Schedules               []Schedule               `json:"schedules"`
+	Labels                  []entity.Label           `json:"labels"`
 }
 
 type DatamartBigqueryOption struct {
@@ -114,6 +115,18 @@ type DatamartBigqueryOption struct {
 	LookbackPeriodFrom       *int64   `json:"lookback_period_from"`
 	LookbackPeriodTo         *int64   `json:"lookback_period_to"`
 	LookbackPeriodUnit       *string  `json:"lookback_period_unit"`
+}
+
+type DatamartSnowflakeSetting struct {
+	SnowflakeConnectionID int64   `json:"snowflake_connection_id"`
+	QueryMode             string  `json:"query_mode"`
+	Query                 string  `json:"query"`
+	Warehouse             string  `json:"warehouse"`
+	StatementTimeout      *int64  `json:"statement_timeout"`
+	DestinationDatabase   *string `json:"destination_database"`
+	DestinationSchema     *string `json:"destination_schema"`
+	DestinationTable      *string `json:"destination_table"`
+	WriteDisposition      *string `json:"write_disposition"`
 }
 
 type ResourceGroup struct {
@@ -180,16 +193,17 @@ func (output *DatamartDefinition) sanitize() {
 // ref: https://documents.trocco.io/apidocs/post-datamart-definition
 
 type CreateDatamartDefinitionInput struct {
-	Name                   string                             `json:"name"`
-	DatawarehouseType      string                             `json:"data_warehouse_type"`
-	Description            *string                            `json:"description,omitempty"`
-	IsRunnableConcurrently bool                               `json:"is_runnable_concurrently"`
-	ResourceGroupID        *int64                             `json:"resource_group_id,omitempty"`
-	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
-	DatamartBigqueryOption *CreateDatamartBigqueryOptionInput `json:"datamart_bigquery_option,omitempty"`
-	Schedules              *[]ScheduleInput                   `json:"schedules,omitempty"`
-	Notifications          *[]DatamartNotificationInput       `json:"notifications,omitempty"`
-	Labels                 *[]string                          `json:"labels,omitempty"`
+	Name                    string                              `json:"name"`
+	DatawarehouseType       string                              `json:"data_warehouse_type"`
+	Description             *string                             `json:"description,omitempty"`
+	IsRunnableConcurrently  bool                                `json:"is_runnable_concurrently"`
+	ResourceGroupID         *int64                              `json:"resource_group_id,omitempty"`
+	CustomVariableSettings  *[]CustomVariableSettingInput       `json:"custom_variable_settings,omitempty"`
+	DatamartBigqueryOption  *CreateDatamartBigqueryOptionInput  `json:"datamart_bigquery_option,omitempty"`
+	DatamartSnowflakeSetting *CreateDatamartSnowflakeSettingInput `json:"datamart_snowflake_setting,omitempty"`
+	Schedules               *[]ScheduleInput                    `json:"schedules,omitempty"`
+	Notifications           *[]DatamartNotificationInput        `json:"notifications,omitempty"`
+	Labels                  *[]string                           `json:"labels,omitempty"`
 }
 
 func NewCreateDatamartDefinitionInput(
@@ -218,6 +232,10 @@ func (input *CreateDatamartDefinitionInput) SetCustomVariableSettings(customVari
 
 func (input *CreateDatamartDefinitionInput) SetDatamartBigqueryOption(datamartBigqueryOption CreateDatamartBigqueryOptionInput) {
 	input.DatamartBigqueryOption = &datamartBigqueryOption
+}
+
+func (input *CreateDatamartDefinitionInput) SetDatamartSnowflakeSetting(datamartSnowflakeSetting CreateDatamartSnowflakeSettingInput) {
+	input.DatamartSnowflakeSetting = &datamartSnowflakeSetting
 }
 
 func (input *CreateDatamartDefinitionInput) SetSchedules(schedules []ScheduleInput) {
@@ -391,6 +409,72 @@ func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetLookbackPeri
 	datamartBigqueryOption.LookbackPeriodUnit = &lookbackPeriodUnit
 }
 
+type CreateDatamartSnowflakeSettingInput struct {
+	SnowflakeConnectionID int64   `json:"snowflake_connection_id"`
+	QueryMode             string  `json:"query_mode"`
+	Query                 string  `json:"query"`
+	Warehouse             string  `json:"warehouse"`
+	StatementTimeout      *int64  `json:"statement_timeout,omitempty"`
+	DestinationDatabase   *string `json:"destination_database,omitempty"`
+	DestinationSchema     *string `json:"destination_schema,omitempty"`
+	DestinationTable      *string `json:"destination_table,omitempty"`
+	WriteDisposition      *string `json:"write_disposition,omitempty"`
+}
+
+func NewInsertModeCreateDatamartSnowflakeSettingInput(
+	snowflakeConnectionID int64,
+	query string,
+	warehouse string,
+	destinationDatabase string,
+	destinationSchema string,
+	destinationTable string,
+	writeDisposition string,
+) CreateDatamartSnowflakeSettingInput {
+	return CreateDatamartSnowflakeSettingInput{
+		SnowflakeConnectionID: snowflakeConnectionID,
+		QueryMode:             "insert",
+		Query:                 query,
+		Warehouse:             warehouse,
+		DestinationDatabase:   &destinationDatabase,
+		DestinationSchema:     &destinationSchema,
+		DestinationTable:      &destinationTable,
+		WriteDisposition:      &writeDisposition,
+	}
+}
+
+func NewQueryModeCreateDatamartSnowflakeSettingInput(
+	snowflakeConnectionID int64,
+	query string,
+	warehouse string,
+) CreateDatamartSnowflakeSettingInput {
+	return CreateDatamartSnowflakeSettingInput{
+		SnowflakeConnectionID: snowflakeConnectionID,
+		QueryMode:             "query",
+		Query:                 query,
+		Warehouse:             warehouse,
+	}
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetStatementTimeout(statementTimeout int64) {
+	o.StatementTimeout = &statementTimeout
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetDestinationDatabase(destinationDatabase string) {
+	o.DestinationDatabase = &destinationDatabase
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetDestinationSchema(destinationSchema string) {
+	o.DestinationSchema = &destinationSchema
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetDestinationTable(destinationTable string) {
+	o.DestinationTable = &destinationTable
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetWriteDisposition(writeDisposition string) {
+	o.WriteDisposition = &writeDisposition
+}
+
 type CreateDatamartDefinitionOutput struct {
 	DatamartDefinition
 }
@@ -409,15 +493,16 @@ func (client *TroccoClient) CreateDatamartDefinition(input *CreateDatamartDefini
 // ref: https://documents.trocco.io/apidocs/patch-datamart-definition
 
 type UpdateDatamartDefinitionInput struct {
-	Name                   *string                            `json:"name,omitempty"`
-	Description            *string                            `json:"description,omitempty"`
-	IsRunnableConcurrently *bool                              `json:"is_runnable_concurrently,omitempty"`
-	ResourceGroupID        *parameter.NullableInt64           `json:"resource_group_id,omitempty"`
-	CustomVariableSettings *[]CustomVariableSettingInput      `json:"custom_variable_settings,omitempty"`
-	DatamartBigqueryOption *UpdateDatamartBigqueryOptionInput `json:"datamart_bigquery_option,omitempty"`
-	Schedules              *[]ScheduleInput                   `json:"schedules,omitempty"`
-	Notifications          *[]DatamartNotificationInput       `json:"notifications,omitempty"`
-	Labels                 *[]string                          `json:"labels,omitempty"`
+	Name                    *string                             `json:"name,omitempty"`
+	Description             *string                             `json:"description,omitempty"`
+	IsRunnableConcurrently  *bool                               `json:"is_runnable_concurrently,omitempty"`
+	ResourceGroupID         *parameter.NullableInt64            `json:"resource_group_id,omitempty"`
+	CustomVariableSettings  *[]CustomVariableSettingInput       `json:"custom_variable_settings,omitempty"`
+	DatamartBigqueryOption  *UpdateDatamartBigqueryOptionInput  `json:"datamart_bigquery_option,omitempty"`
+	DatamartSnowflakeSetting *UpdateDatamartSnowflakeSettingInput `json:"datamart_snowflake_setting,omitempty"`
+	Schedules               *[]ScheduleInput                    `json:"schedules,omitempty"`
+	Notifications           *[]DatamartNotificationInput        `json:"notifications,omitempty"`
+	Labels                  *[]string                           `json:"labels,omitempty"`
 }
 
 func (input *UpdateDatamartDefinitionInput) SetName(name string) {
@@ -451,6 +536,10 @@ func (input *UpdateDatamartDefinitionInput) SetCustomVariableSettings(customVari
 
 func (input *UpdateDatamartDefinitionInput) SetDatamartBigqueryOption(datamartBigqueryOption UpdateDatamartBigqueryOptionInput) {
 	input.DatamartBigqueryOption = &datamartBigqueryOption
+}
+
+func (input *UpdateDatamartDefinitionInput) SetDatamartSnowflakeSetting(datamartSnowflakeSetting UpdateDatamartSnowflakeSettingInput) {
+	input.DatamartSnowflakeSetting = &datamartSnowflakeSetting
 }
 
 func (input *UpdateDatamartDefinitionInput) SetSchedules(schedules []ScheduleInput) {
@@ -624,6 +713,58 @@ func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeri
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeriodUnitEmpty() {
 	datamartBigqueryOption.LookbackPeriodUnit = &parameter.NullableString{Valid: false}
+}
+
+type UpdateDatamartSnowflakeSettingInput struct {
+	SnowflakeConnectionID *int64                   `json:"snowflake_connection_id,omitempty"`
+	QueryMode             *string                  `json:"query_mode,omitempty"`
+	Query                 *string                  `json:"query,omitempty"`
+	Warehouse             *string                  `json:"warehouse,omitempty"`
+	StatementTimeout      *parameter.NullableInt64 `json:"statement_timeout,omitempty"`
+	DestinationDatabase   *string                  `json:"destination_database,omitempty"`
+	DestinationSchema     *string                  `json:"destination_schema,omitempty"`
+	DestinationTable      *string                  `json:"destination_table,omitempty"`
+	WriteDisposition      *string                  `json:"write_disposition,omitempty"`
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetSnowflakeConnectionID(snowflakeConnectionID int64) {
+	o.SnowflakeConnectionID = &snowflakeConnectionID
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQueryMode(queryMode string) {
+	o.QueryMode = &queryMode
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQuery(query string) {
+	o.Query = &query
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetWarehouse(warehouse string) {
+	o.Warehouse = &warehouse
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetStatementTimeout(statementTimeout int64) {
+	o.StatementTimeout = &parameter.NullableInt64{Value: statementTimeout, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetStatementTimeoutEmpty() {
+	o.StatementTimeout = &parameter.NullableInt64{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetDestinationDatabase(destinationDatabase string) {
+	o.DestinationDatabase = &destinationDatabase
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetDestinationSchema(destinationSchema string) {
+	o.DestinationSchema = &destinationSchema
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetDestinationTable(destinationTable string) {
+	o.DestinationTable = &destinationTable
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetWriteDisposition(writeDisposition string) {
+	o.WriteDisposition = &writeDisposition
 }
 
 type ScheduleInput struct {
