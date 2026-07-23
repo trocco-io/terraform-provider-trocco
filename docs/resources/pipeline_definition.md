@@ -445,6 +445,67 @@ resource "trocco_pipeline_definition" "bigquery_data_check_with_custom_variables
 }
 ```
 
+##### Databricks
+
+```terraform
+resource "trocco_pipeline_definition" "databricks_data_check" {
+  name = "databricks_data_check"
+
+  tasks = [
+    {
+      key  = "databricks_data_check"
+      type = "databricks_data_check"
+
+      databricks_data_check_config = {
+        name          = "Example"
+        connection_id = 1
+        query         = "SELECT COUNT(id) FROM examples"
+        operator      = "equal"
+        query_result  = 1
+        accepts_null  = false
+      }
+    }
+  ]
+}
+
+resource "trocco_pipeline_definition" "databricks_data_check_with_custom_variables" {
+  name = "databricks_data_check_with_custom_variables"
+
+  tasks = [
+    {
+      key  = "databricks_data_check_with_custom_variables"
+      type = "databricks_data_check"
+
+      databricks_data_check_config = {
+        name          = "Example"
+        connection_id = 1
+        query         = "SELECT COUNT(id) FROM examples"
+        operator      = "equal"
+        query_result  = 1
+        accepts_null  = false
+
+        custom_variables = [
+          {
+            name  = "$string$"
+            type  = "string"
+            value = "foo"
+          },
+          {
+            name      = "$timestamp$"
+            type      = "timestamp"
+            quantity  = 1,
+            unit      = "hour"
+            direction = "ago"
+            format    = "%Y-%m-%d %H:%M:%S"
+            time_zone = "Asia/Tokyo"
+          },
+        ]
+      }
+    }
+  ]
+}
+```
+
 ##### Redshift
 
 ```terraform
@@ -779,6 +840,7 @@ Required:
 Optional:
 
 - `bigquery_data_check_config` (Attributes) The datacheck task config of the pipeline definition (see [below for nested schema](#nestedatt--tasks--bigquery_data_check_config))
+- `databricks_data_check_config` (Attributes) The datacheck task config of the pipeline definition (see [below for nested schema](#nestedatt--tasks--databricks_data_check_config))
 - `http_request_config` (Attributes) The task configuration for the HTTP request task. (see [below for nested schema](#nestedatt--tasks--http_request_config))
 - `if_else_config` (Attributes) The task configuration for the if-else task. (see [below for nested schema](#nestedatt--tasks--if_else_config))
 - `redshift_data_check_config` (Attributes) The task configuration for the datacheck task. (see [below for nested schema](#nestedatt--tasks--redshift_data_check_config))
@@ -816,6 +878,41 @@ Optional:
 
 <a id="nestedatt--tasks--bigquery_data_check_config--custom_variables"></a>
 ### Nested Schema for `tasks.bigquery_data_check_config.custom_variables`
+
+Required:
+
+- `name` (String) The name of the custom variable
+- `type` (String) The type of the custom variable
+
+Optional:
+
+- `direction` (String) The direction of the custom variable
+- `format` (String) The format of the custom variable
+- `quantity` (Number) The quantity of the custom variable
+- `time_zone` (String) The time zone of the custom variable
+- `unit` (String) The unit of the custom variable
+- `value` (String) The value of the custom variable
+
+
+
+<a id="nestedatt--tasks--databricks_data_check_config"></a>
+### Nested Schema for `tasks.databricks_data_check_config`
+
+Required:
+
+- `accepts_null` (Boolean) Whether the datacheck task accepts null
+- `connection_id` (Number) The connection id of the datacheck task
+- `name` (String) The name of the datacheck task
+- `operator` (String) The operator of the datacheck task
+- `query_result` (Number) The query result of the datacheck task
+
+Optional:
+
+- `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--databricks_data_check_config--custom_variables))
+- `query` (String) The query of the datacheck task
+
+<a id="nestedatt--tasks--databricks_data_check_config--custom_variables"></a>
+### Nested Schema for `tasks.databricks_data_check_config.custom_variables`
 
 Required:
 
