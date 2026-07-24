@@ -7,11 +7,15 @@ import (
 )
 
 func NotificationsSchema() schema.Attribute {
-	return schema.SetNestedAttribute{
+	return schema.ListNestedAttribute{
 		MarkdownDescription: "The notifications of the pipeline definition",
 		Optional:            true,
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
+				"id": schema.Int64Attribute{
+					Computed:            true,
+					MarkdownDescription: "Server-assigned ID of the notification. Unique within `(type, destination_type)` for matching across API responses.",
+				},
 				"type": schema.StringAttribute{
 					MarkdownDescription: "The type of the notification",
 					Required:            true,

@@ -218,7 +218,7 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 - `lookback_period_to` (Number) End value of the lookback period
 - `lookback_period_unit` (String) Unit of the lookback period. The following units are supported: `days`, `hours`
 - `merge_keys` (List of String) Key columns to uniquely identify records. Required when `write_disposition` is `incremental` or `scd_type_2`
-- `notifications` (Attributes Set) Notifications to be attached to the datamart definition (see [below for nested schema](#nestedatt--notifications))
+- `notifications` (Attributes List) Notifications to be attached to the datamart definition (see [below for nested schema](#nestedatt--notifications))
 - `on_matched_action` (String) Behavior when a record with a matching key exists. The following actions are supported: `upsert`, `skip`. Required when `write_disposition` is `incremental`
 - `partitioning` (String) The following partitioning types are supported: `ingestion_time`, `time_unit_column`. In the case of `ingestion_time`, partitions are cut based on TROCCO's job execution time. In the case of `time_unit_column`, partitioning is done based on the reference column. Available only in `insert` mode
 - `partitioning_field` (String) Column name to be used for partitioning. Required when `partitioning` is `time_unit_column`
@@ -281,6 +281,10 @@ Optional:
 - `record_count` (Number) The number of records to be used for condition. Required when `notification_type` is `record`
 - `record_operator` (String) Operator to be used for condition. The following operators are supported: `above`, `below`. Required when `notification_type` is `record`
 - `slack_channel_id` (Number) ID of the slack channel used to send notifications. Required when `destination_type` is `slack`
+
+Read-Only:
+
+- `id` (Number) Server-assigned ID of the notification. Unique within `(notification_type, destination_type)` for matching across API responses.
 
 
 <a id="nestedatt--schedules"></a>
