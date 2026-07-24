@@ -25,6 +25,7 @@ var taskConfigKeys = map[string]string{
 	"bigquery_data_check":                     "bigquery_data_check_config",
 	"snowflake_data_check":                    "snowflake_data_check_config",
 	"redshift_data_check":                     "redshift_data_check_config",
+	"databricks_data_check":                   "databricks_data_check_config",
 	"http_request":                            "http_request_config",
 	"if_else":                                 "if_else_config",
 }
