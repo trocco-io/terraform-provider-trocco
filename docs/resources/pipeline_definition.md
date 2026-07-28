@@ -463,6 +463,7 @@ resource "trocco_pipeline_definition" "databricks_data_check" {
         operator      = "equal"
         query_result  = 1
         accepts_null  = false
+        ignore_result = true
       }
     }
   ]
@@ -874,6 +875,7 @@ Required:
 Optional:
 
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--bigquery_data_check_config--custom_variables))
+- `ignore_result` (Boolean) Whether to use the query result for branching. When true, the task is treated as successful even if the datacheck matches the error condition, and the check result can be referenced from subsequent if_else tasks. Defaults to `false`
 - `query` (String) The query of the datacheck task
 
 <a id="nestedatt--tasks--bigquery_data_check_config--custom_variables"></a>
@@ -909,6 +911,7 @@ Required:
 Optional:
 
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--databricks_data_check_config--custom_variables))
+- `ignore_result` (Boolean) Whether to use the query result for branching. When true, the task is treated as successful even if the datacheck matches the error condition, and the check result can be referenced from subsequent if_else tasks. Defaults to `false`
 - `query` (String) The query of the datacheck task
 
 <a id="nestedatt--tasks--databricks_data_check_config--custom_variables"></a>
@@ -1049,6 +1052,7 @@ Optional:
 
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--redshift_data_check_config--custom_variables))
 - `database` (String) The database to use for the datacheck task
+- `ignore_result` (Boolean) Whether to use the query result for branching. When true, the task is treated as successful even if the datacheck matches the error condition, and the check result can be referenced from subsequent if_else tasks. Defaults to `false`
 - `query` (String) The query to run for the datacheck task
 
 <a id="nestedatt--tasks--redshift_data_check_config--custom_variables"></a>
@@ -1095,6 +1099,7 @@ Required:
 Optional:
 
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--snowflake_data_check_config--custom_variables))
+- `ignore_result` (Boolean) Whether to use the query result for branching. When true, the task is treated as successful even if the datacheck matches the error condition, and the check result can be referenced from subsequent if_else tasks. Defaults to `false`
 - `query` (String) The query to run for the datacheck task
 - `warehouse` (String) The warehouse to use for the datacheck task
 
