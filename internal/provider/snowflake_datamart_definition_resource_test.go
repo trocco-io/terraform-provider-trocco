@@ -25,6 +25,16 @@ func TestAccSnowflakeDatamartDefinitionResourceInsertMode(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "write_disposition", "truncate"),
 				),
 			},
+			// Import testing
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateVerifyIgnore: []string{
+					// The query attribute is trimmed and set in state, so different from the resource config.
+					"query",
+				},
+			},
 		},
 	})
 }
@@ -104,6 +114,16 @@ func TestAccSnowflakeDatamartDefinitionResourceSCDType2(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "valid_to_column", "trocco_valid_to"),
 					resource.TestCheckResourceAttr(resourceName, "is_current_column", "trocco_is_current"),
 				),
+			},
+			// Import testing: SCD Type 2 specific attributes must be restored on import.
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateVerifyIgnore: []string{
+					// The query attribute is trimmed and set in state, so different from the resource config.
+					"query",
+				},
 			},
 		},
 	})
