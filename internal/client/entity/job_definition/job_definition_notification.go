@@ -1,6 +1,7 @@
 package job_definitions
 
 type JobDefinitionNotification struct {
+	ID               int64   `json:"id"`
 	DestinationType  string  `json:"destination_type"`
 	SlackChannelID   *int64  `json:"slack_channel_id"`
 	EmailID          *int64  `json:"email_id"`

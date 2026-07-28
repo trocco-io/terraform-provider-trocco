@@ -1,6 +1,7 @@
 package pipeline_definition
 
 type Notification struct {
+	ID              int64                    `json:"id"`
 	Type            string                   `json:"type"`
 	DestinationType string                   `json:"destination_type"`
 	NotifyWhen      *string                  `json:"notify_when"`
