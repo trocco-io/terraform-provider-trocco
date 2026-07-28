@@ -217,6 +217,10 @@ func TestAccSnowflakeDatamartDefinitionResourceWriteDispositionTransition(t *tes
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "write_disposition", "append"),
 					resource.TestCheckNoResourceAttr(resourceName, "schema_evolution_mode"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "email"),
+					resource.TestCheckResourceAttr(resourceName, "schedules.#", "3"),
 				),
 			},
 			{
@@ -233,6 +237,10 @@ func TestAccSnowflakeDatamartDefinitionResourceWriteDispositionTransition(t *tes
 					resource.TestCheckResourceAttr(resourceName, "on_matched_action", "skip"),
 					resource.TestCheckResourceAttr(resourceName, "schema_evolution_mode", "auto_add_column"),
 					resource.TestCheckNoResourceAttr(resourceName, "valid_from_column"),
+					// Notifications must keep their configured order across updates.
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "email"),
+					resource.TestCheckResourceAttr(resourceName, "schedules.#", "3"),
 				),
 			},
 			{
@@ -261,6 +269,13 @@ func TestAccSnowflakeDatamartDefinitionResourceWriteDispositionTransition(t *tes
 					resource.TestCheckNoResourceAttr(resourceName, "valid_from_column"),
 					resource.TestCheckNoResourceAttr(resourceName, "valid_to_column"),
 					resource.TestCheckNoResourceAttr(resourceName, "is_current_column"),
+					// Notifications and schedules must survive the transitions unchanged.
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "job"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "email"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "record"),
+					resource.TestCheckResourceAttr(resourceName, "schedules.#", "3"),
 				),
 			},
 		},
