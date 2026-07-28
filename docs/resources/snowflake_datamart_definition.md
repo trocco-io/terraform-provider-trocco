@@ -96,6 +96,90 @@ resource "trocco_snowflake_datamart_definition" "query_mode" {
 }
 ```
 
+### Incremental Write Disposition
+
+```terraform
+resource "trocco_snowflake_datamart_definition" "incremental" {
+  name                     = "example_incremental"
+  is_runnable_concurrently = false
+  snowflake_connection_id  = 1
+  query_mode               = "insert"
+  query                    = "SELECT * FROM EXAMPLE_DATABASE.EXAMPLE_SCHEMA.EXAMPLE_TABLE"
+  warehouse                = "EXAMPLE_WH"
+  destination_database     = "DEST_DATABASE"
+  destination_schema       = "DEST_SCHEMA"
+  destination_table        = "DEST_TABLE"
+
+  write_disposition           = "incremental"
+  merge_keys                  = ["id"]
+  on_matched_action           = "upsert"
+  schema_evolution_mode       = "detect_only"
+  lookback_period_column      = "updated_at"
+  lookback_period_column_type = "TIMESTAMP_NTZ"
+  lookback_period_timezone    = "Asia/Tokyo"
+  lookback_period_from        = 3
+  lookback_period_to          = 0
+  lookback_period_unit        = "days"
+}
+```
+
+### SCD Type 2 Write Disposition
+
+```terraform
+resource "trocco_snowflake_datamart_definition" "scd_type_2" {
+  name                     = "example_scd_type_2"
+  is_runnable_concurrently = false
+  snowflake_connection_id  = 1
+  query_mode               = "insert"
+  query                    = "SELECT * FROM EXAMPLE_DATABASE.EXAMPLE_SCHEMA.EXAMPLE_TABLE"
+  warehouse                = "EXAMPLE_WH"
+  destination_database     = "DEST_DATABASE"
+  destination_schema       = "DEST_SCHEMA"
+  destination_table        = "DEST_TABLE"
+
+  write_disposition     = "scd_type_2"
+  merge_keys            = ["id"]
+  incremental_column    = "updated_at"
+  schema_evolution_mode = "detect_only"
+}
+```
+
+### With Quality Checks
+
+```terraform
+resource "trocco_snowflake_datamart_definition" "with_quality_checks" {
+  name                     = "example_with_quality_checks"
+  is_runnable_concurrently = false
+  snowflake_connection_id  = 1
+  query_mode               = "insert"
+  query                    = "SELECT * FROM EXAMPLE_DATABASE.EXAMPLE_SCHEMA.EXAMPLE_TABLE"
+  warehouse                = "EXAMPLE_WH"
+  destination_database     = "DEST_DATABASE"
+  destination_schema       = "DEST_SCHEMA"
+  destination_table        = "DEST_TABLE"
+  write_disposition        = "append"
+
+  quality_check_enabled                     = true
+  quality_check_on_violation                = "fail"
+  quality_check_lookback_period_column      = "updated_at"
+  quality_check_lookback_period_column_type = "TIMESTAMP_NTZ"
+  quality_check_lookback_period_timezone    = "Asia/Tokyo"
+  quality_check_lookback_period_from        = 3
+  quality_check_lookback_period_to          = 0
+  quality_check_lookback_period_unit        = "days"
+  quality_checks = [
+    {
+      check_type   = "not_null"
+      column_names = ["id"]
+    },
+    {
+      check_type   = "composite_unique"
+      column_names = ["id", "updated_at"]
+    },
+  ]
+}
+```
+
 ### With Schedules
 
 ```terraform
@@ -218,16 +302,38 @@ resource "trocco_snowflake_datamart_definition" "with_labels" {
 - `destination_database` (String) Destination database where the query result will be inserted. Required in `insert` mode
 - `destination_schema` (String) Destination schema where the query result will be inserted. Required in `insert` mode
 - `destination_table` (String) Destination table where the query result will be inserted. Required in `insert` mode
+- `incremental_column` (String) Incremental reference column. Required when `write_disposition` is `scd_type_2`
 - `labels` (Attributes Set) Labels to be attached to the datamart definition (see [below for nested schema](#nestedatt--labels))
-- `notifications` (Attributes Set) Notifications to be attached to the datamart definition (see [below for nested schema](#nestedatt--notifications))
+- `lookback_period_column` (String) Column name for the lookback period. Available when `write_disposition` is `incremental` or `scd_type_2`
+- `lookback_period_column_type` (String) Data type of the lookback period column. The following types are supported: `TIMESTAMP_NTZ`, `TIMESTAMP_TZ`, `TIMESTAMP_LTZ`, `DATE`
+- `lookback_period_from` (Number) Start value of the lookback period
+- `lookback_period_timezone` (String) Timezone for the lookback period
+- `lookback_period_to` (Number) End value of the lookback period
+- `lookback_period_unit` (String) Unit of the lookback period. The following units are supported: `days`, `hours`
+- `merge_keys` (List of String) Key columns to uniquely identify records. Required when `write_disposition` is `incremental` or `scd_type_2`
+- `notifications` (Attributes List) Notifications to be attached to the datamart definition (see [below for nested schema](#nestedatt--notifications))
+- `on_matched_action` (String) Behavior when a record with a matching key exists. The following actions are supported: `upsert`, `skip`. Required when `write_disposition` is `incremental`
+- `quality_check_enabled` (Boolean) Specifies whether to enable quality checks. Defaults to `false`
+- `quality_check_lookback_period_column` (String) Column name for the quality check lookback period. Available when `quality_check_enabled` is `true`
+- `quality_check_lookback_period_column_type` (String) Data type of the quality check lookback period column. The following types are supported: `TIMESTAMP_NTZ`, `TIMESTAMP_TZ`, `TIMESTAMP_LTZ`, `DATE`
+- `quality_check_lookback_period_from` (Number) Start value of the quality check lookback period
+- `quality_check_lookback_period_timezone` (String) Timezone for the quality check lookback period
+- `quality_check_lookback_period_to` (Number) End value of the quality check lookback period
+- `quality_check_lookback_period_unit` (String) Unit of the quality check lookback period. The following units are supported: `days`, `hours`
+- `quality_check_on_violation` (String) Behavior when a quality check is violated. The following behaviors are supported: `fail`, `warn`. Required when `quality_check_enabled` is `true`
+- `quality_checks` (Attributes List) Quality check items. Required when `quality_check_enabled` is `true` (see [below for nested schema](#nestedatt--quality_checks))
 - `resource_group_id` (Number) ID of the resource group to which the datamart definition belongs
 - `schedules` (Attributes Set) Schedules to be attached to the datamart definition (see [below for nested schema](#nestedatt--schedules))
+- `schema_evolution_mode` (String) Schema evolution mode. The following modes are supported: `detect_only`, `auto_add_column`. Available when `write_disposition` is `incremental` or `scd_type_2`
 - `statement_timeout` (Number) Query timeout in seconds. If 0 is specified, Snowflake's STATEMENT_TIMEOUT_IN_SECONDS is used
-- `write_disposition` (String) The following write dispositions are supported: `append`, `truncate`, `replace`. In the case of `append`, the result of the query execution is appended after the records of the existing table. In the case of `truncate`, records in the existing table are deleted and replaced with the results of the query execution. In the case of `replace`, the entire table is replaced. Required in `insert` mode
+- `write_disposition` (String) The following write dispositions are supported: `append`, `truncate`, `replace`, `incremental`, `scd_type_2`. In the case of `append`, the result of the query execution is appended after the records of the existing table. In the case of `truncate`, records in the existing table are deleted and replaced with the results of the query execution. In the case of `replace`, the entire table is replaced. In the case of `incremental`, records are merged into the existing table based on `merge_keys`. In the case of `scd_type_2`, changes are recorded as SCD Type 2 history rows. Required in `insert` mode
 
 ### Read-Only
 
 - `id` (Number) The ID of the datamart definition
+- `is_current_column` (String) SCD Type 2 is-current flag column name. Fixed value: `trocco_is_current`
+- `valid_from_column` (String) SCD Type 2 valid-from column name. Fixed value: `trocco_valid_from`
+- `valid_to_column` (String) SCD Type 2 valid-to column name. Fixed value: `trocco_valid_to`
 
 <a id="nestedatt--custom_variable_settings"></a>
 ### Nested Schema for `custom_variable_settings`
@@ -275,6 +381,19 @@ Optional:
 - `record_count` (Number) The number of records to be used for condition. Required when `notification_type` is `record`
 - `record_operator` (String) Operator to be used for condition. The following operators are supported: `above`, `below`. Required when `notification_type` is `record`
 - `slack_channel_id` (Number) ID of the slack channel used to send notifications. Required when `destination_type` is `slack`
+
+Read-Only:
+
+- `id` (Number) Server-assigned ID of the notification. Unique within `(notification_type, destination_type)` for matching across API responses.
+
+
+<a id="nestedatt--quality_checks"></a>
+### Nested Schema for `quality_checks`
+
+Required:
+
+- `check_type` (String) Type of the quality check. The following types are supported: `not_null`, `unique`, `composite_unique`
+- `column_names` (List of String) Column names to be checked
 
 
 <a id="nestedatt--schedules"></a>

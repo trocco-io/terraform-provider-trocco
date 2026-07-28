@@ -8,10 +8,14 @@ import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/custom_type"
 	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
+	"terraform-provider-trocco/internal/provider/utils"
 	troccoValidator "terraform-provider-trocco/internal/provider/validator"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -32,24 +36,58 @@ type snowflakeDatamartDefinitionResource struct {
 }
 
 type snowflakeDatamartDefinitionModel struct {
-	ID                     types.Int64                    `tfsdk:"id"`
-	Name                   types.String                   `tfsdk:"name"`
-	Description            types.String                   `tfsdk:"description"`
-	IsRunnableConcurrently types.Bool                     `tfsdk:"is_runnable_concurrently"`
-	ResourceGroupID        types.Int64                    `tfsdk:"resource_group_id"`
-	CustomVariableSettings types.List                     `tfsdk:"custom_variable_settings"`
-	SnowflakeConnectionID  types.Int64                    `tfsdk:"snowflake_connection_id"`
-	QueryMode              types.String                   `tfsdk:"query_mode"`
-	Query                  custom_type.TrimmedStringValue `tfsdk:"query"`
-	Warehouse              types.String                   `tfsdk:"warehouse"`
-	StatementTimeout       types.Int64                    `tfsdk:"statement_timeout"`
-	DestinationDatabase    types.String                   `tfsdk:"destination_database"`
-	DestinationSchema      types.String                   `tfsdk:"destination_schema"`
-	DestinationTable       types.String                   `tfsdk:"destination_table"`
-	WriteDisposition       types.String                   `tfsdk:"write_disposition"`
-	Notifications          types.Set                      `tfsdk:"notifications"`
-	Schedules              types.Set                      `tfsdk:"schedules"`
-	Labels                 types.Set                      `tfsdk:"labels"`
+	ID                                   types.Int64                    `tfsdk:"id"`
+	Name                                 types.String                   `tfsdk:"name"`
+	Description                          types.String                   `tfsdk:"description"`
+	IsRunnableConcurrently               types.Bool                     `tfsdk:"is_runnable_concurrently"`
+	ResourceGroupID                      types.Int64                    `tfsdk:"resource_group_id"`
+	CustomVariableSettings               types.List                     `tfsdk:"custom_variable_settings"`
+	SnowflakeConnectionID                types.Int64                    `tfsdk:"snowflake_connection_id"`
+	QueryMode                            types.String                   `tfsdk:"query_mode"`
+	Query                                custom_type.TrimmedStringValue `tfsdk:"query"`
+	Warehouse                            types.String                   `tfsdk:"warehouse"`
+	StatementTimeout                     types.Int64                    `tfsdk:"statement_timeout"`
+	DestinationDatabase                  types.String                   `tfsdk:"destination_database"`
+	DestinationSchema                    types.String                   `tfsdk:"destination_schema"`
+	DestinationTable                     types.String                   `tfsdk:"destination_table"`
+	WriteDisposition                     types.String                   `tfsdk:"write_disposition"`
+	MergeKeys                            types.List                     `tfsdk:"merge_keys"`
+	OnMatchedAction                      types.String                   `tfsdk:"on_matched_action"`
+	IncrementalColumn                    types.String                   `tfsdk:"incremental_column"`
+	ValidFromColumn                      types.String                   `tfsdk:"valid_from_column"`
+	ValidToColumn                        types.String                   `tfsdk:"valid_to_column"`
+	IsCurrentColumn                      types.String                   `tfsdk:"is_current_column"`
+	SchemaEvolutionMode                  types.String                   `tfsdk:"schema_evolution_mode"`
+	LookbackPeriodColumn                 types.String                   `tfsdk:"lookback_period_column"`
+	LookbackPeriodColumnType             types.String                   `tfsdk:"lookback_period_column_type"`
+	LookbackPeriodTimezone               types.String                   `tfsdk:"lookback_period_timezone"`
+	LookbackPeriodFrom                   types.Int64                    `tfsdk:"lookback_period_from"`
+	LookbackPeriodTo                     types.Int64                    `tfsdk:"lookback_period_to"`
+	LookbackPeriodUnit                   types.String                   `tfsdk:"lookback_period_unit"`
+	QualityCheckEnabled                  types.Bool                     `tfsdk:"quality_check_enabled"`
+	QualityCheckOnViolation              types.String                   `tfsdk:"quality_check_on_violation"`
+	QualityCheckLookbackPeriodColumn     types.String                   `tfsdk:"quality_check_lookback_period_column"`
+	QualityCheckLookbackPeriodColumnType types.String                   `tfsdk:"quality_check_lookback_period_column_type"`
+	QualityCheckLookbackPeriodTimezone   types.String                   `tfsdk:"quality_check_lookback_period_timezone"`
+	QualityCheckLookbackPeriodFrom       types.Int64                    `tfsdk:"quality_check_lookback_period_from"`
+	QualityCheckLookbackPeriodTo         types.Int64                    `tfsdk:"quality_check_lookback_period_to"`
+	QualityCheckLookbackPeriodUnit       types.String                   `tfsdk:"quality_check_lookback_period_unit"`
+	QualityChecks                        types.List                     `tfsdk:"quality_checks"`
+	Notifications                        types.List                     `tfsdk:"notifications"`
+	Schedules                            types.Set                      `tfsdk:"schedules"`
+	Labels                               types.Set                      `tfsdk:"labels"`
+}
+
+type snowflakeDatamartQualityCheckModel struct {
+	CheckType   types.String `tfsdk:"check_type"`
+	ColumnNames types.List   `tfsdk:"column_names"`
+}
+
+func (m snowflakeDatamartQualityCheckModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"check_type":   types.StringType,
+		"column_names": types.ListType{ElemType: types.StringType},
+	}
 }
 
 func (r *snowflakeDatamartDefinitionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -210,9 +248,158 @@ func (r *snowflakeDatamartDefinitionResource) Schema(ctx context.Context, req re
 				Optional: true,
 				Computed: true,
 				Validators: []validator.String{
-					stringvalidator.OneOf("append", "truncate", "replace"),
+					stringvalidator.OneOf("append", "truncate", "replace", "incremental", "scd_type_2"),
 				},
-				MarkdownDescription: "The following write dispositions are supported: `append`, `truncate`, `replace`. In the case of `append`, the result of the query execution is appended after the records of the existing table. In the case of `truncate`, records in the existing table are deleted and replaced with the results of the query execution. In the case of `replace`, the entire table is replaced. Required in `insert` mode",
+				MarkdownDescription: "The following write dispositions are supported: `append`, `truncate`, `replace`, `incremental`, `scd_type_2`. In the case of `append`, the result of the query execution is appended after the records of the existing table. In the case of `truncate`, records in the existing table are deleted and replaced with the results of the query execution. In the case of `replace`, the entire table is replaced. In the case of `incremental`, records are merged into the existing table based on `merge_keys`. In the case of `scd_type_2`, changes are recorded as SCD Type 2 history rows. Required in `insert` mode",
+			},
+			"merge_keys": schema.ListAttribute{
+				Optional:    true,
+				ElementType: types.StringType,
+				Validators: []validator.List{
+					listvalidator.SizeAtLeast(1),
+				},
+				MarkdownDescription: "Key columns to uniquely identify records. Required when `write_disposition` is `incremental` or `scd_type_2`",
+			},
+			"on_matched_action": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("upsert", "skip"),
+				},
+				MarkdownDescription: "Behavior when a record with a matching key exists. The following actions are supported: `upsert`, `skip`. Required when `write_disposition` is `incremental`",
+			},
+			"incremental_column": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Incremental reference column. Required when `write_disposition` is `scd_type_2`",
+			},
+			"valid_from_column": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "SCD Type 2 valid-from column name. Fixed value: `trocco_valid_from`",
+			},
+			"valid_to_column": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "SCD Type 2 valid-to column name. Fixed value: `trocco_valid_to`",
+			},
+			"is_current_column": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "SCD Type 2 is-current flag column name. Fixed value: `trocco_is_current`",
+			},
+			"schema_evolution_mode": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("detect_only", "auto_add_column"),
+				},
+				MarkdownDescription: "Schema evolution mode. The following modes are supported: `detect_only`, `auto_add_column`. Available when `write_disposition` is `incremental` or `scd_type_2`",
+			},
+			"lookback_period_column": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Column name for the lookback period. Available when `write_disposition` is `incremental` or `scd_type_2`",
+			},
+			"lookback_period_column_type": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("TIMESTAMP_NTZ", "TIMESTAMP_TZ", "TIMESTAMP_LTZ", "DATE"),
+				},
+				MarkdownDescription: "Data type of the lookback period column. The following types are supported: `TIMESTAMP_NTZ`, `TIMESTAMP_TZ`, `TIMESTAMP_LTZ`, `DATE`",
+			},
+			"lookback_period_timezone": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Timezone for the lookback period",
+			},
+			"lookback_period_from": schema.Int64Attribute{
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+				},
+				MarkdownDescription: "Start value of the lookback period",
+			},
+			"lookback_period_to": schema.Int64Attribute{
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+				},
+				MarkdownDescription: "End value of the lookback period",
+			},
+			"lookback_period_unit": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("days", "hours"),
+				},
+				MarkdownDescription: "Unit of the lookback period. The following units are supported: `days`, `hours`",
+			},
+			"quality_check_enabled": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: "Specifies whether to enable quality checks. Defaults to `false`",
+			},
+			"quality_check_on_violation": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("fail", "warn"),
+				},
+				MarkdownDescription: "Behavior when a quality check is violated. The following behaviors are supported: `fail`, `warn`. Required when `quality_check_enabled` is `true`",
+			},
+			"quality_check_lookback_period_column": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Column name for the quality check lookback period. Available when `quality_check_enabled` is `true`",
+			},
+			"quality_check_lookback_period_column_type": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("TIMESTAMP_NTZ", "TIMESTAMP_TZ", "TIMESTAMP_LTZ", "DATE"),
+				},
+				MarkdownDescription: "Data type of the quality check lookback period column. The following types are supported: `TIMESTAMP_NTZ`, `TIMESTAMP_TZ`, `TIMESTAMP_LTZ`, `DATE`",
+			},
+			"quality_check_lookback_period_timezone": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Timezone for the quality check lookback period",
+			},
+			"quality_check_lookback_period_from": schema.Int64Attribute{
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+				},
+				MarkdownDescription: "Start value of the quality check lookback period",
+			},
+			"quality_check_lookback_period_to": schema.Int64Attribute{
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+				},
+				MarkdownDescription: "End value of the quality check lookback period",
+			},
+			"quality_check_lookback_period_unit": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("days", "hours"),
+				},
+				MarkdownDescription: "Unit of the quality check lookback period. The following units are supported: `days`, `hours`",
+			},
+			"quality_checks": schema.ListNestedAttribute{
+				Optional: true,
+				Validators: []validator.List{
+					listvalidator.SizeAtLeast(1),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"check_type": schema.StringAttribute{
+							Required: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("not_null", "unique", "composite_unique"),
+							},
+							MarkdownDescription: "Type of the quality check. The following types are supported: `not_null`, `unique`, `composite_unique`",
+						},
+						"column_names": schema.ListAttribute{
+							Required:    true,
+							ElementType: types.StringType,
+							Validators: []validator.List{
+								listvalidator.SizeAtLeast(1),
+							},
+							MarkdownDescription: "Column names to be checked",
+						},
+					},
+				},
+				MarkdownDescription: "Quality check items. Required when `quality_check_enabled` is `true`",
 			},
 			"schedules": schema.SetNestedAttribute{
 				Optional: true,
@@ -264,10 +451,14 @@ func (r *snowflakeDatamartDefinitionResource) Schema(ctx context.Context, req re
 				},
 				MarkdownDescription: "Schedules to be attached to the datamart definition",
 			},
-			"notifications": schema.SetNestedAttribute{
+			"notifications": schema.ListNestedAttribute{
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
+						"id": schema.Int64Attribute{
+							Computed:            true,
+							MarkdownDescription: "Server-assigned ID of the notification. Unique within `(notification_type, destination_type)` for matching across API responses.",
+						},
 						"destination_type": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
@@ -371,8 +562,9 @@ func (r *snowflakeDatamartDefinitionResource) Create(ctx context.Context, req re
 		return
 	}
 
+	var optionInput client.CreateDatamartSnowflakeSettingInput
 	if plan.QueryMode.ValueString() == "insert" {
-		optionInput := client.NewInsertModeCreateDatamartSnowflakeSettingInput(
+		optionInput = client.NewInsertModeCreateDatamartSnowflakeSettingInput(
 			plan.SnowflakeConnectionID.ValueInt64(),
 			plan.Query.ValueString(),
 			plan.Warehouse.ValueString(),
@@ -381,21 +573,79 @@ func (r *snowflakeDatamartDefinitionResource) Create(ctx context.Context, req re
 			plan.DestinationTable.ValueString(),
 			plan.WriteDisposition.ValueString(),
 		)
-		if !plan.StatementTimeout.IsNull() {
-			optionInput.SetStatementTimeout(plan.StatementTimeout.ValueInt64())
+		if mergeKeys := utils.ConvertStringList(ctx, plan.MergeKeys); len(mergeKeys) > 0 {
+			optionInput.SetMergeKeys(mergeKeys)
 		}
-		input.SetDatamartSnowflakeSetting(optionInput)
+		if !plan.OnMatchedAction.IsNull() {
+			optionInput.SetOnMatchedAction(plan.OnMatchedAction.ValueString())
+		}
+		if !plan.IncrementalColumn.IsNull() {
+			optionInput.SetIncrementalColumn(plan.IncrementalColumn.ValueString())
+		}
+		if !plan.SchemaEvolutionMode.IsNull() && !plan.SchemaEvolutionMode.IsUnknown() {
+			optionInput.SetSchemaEvolutionMode(plan.SchemaEvolutionMode.ValueString())
+		}
+		if !plan.LookbackPeriodColumn.IsNull() {
+			optionInput.SetLookbackPeriodColumn(plan.LookbackPeriodColumn.ValueString())
+		}
+		if !plan.LookbackPeriodColumnType.IsNull() {
+			optionInput.SetLookbackPeriodColumnType(plan.LookbackPeriodColumnType.ValueString())
+		}
+		if !plan.LookbackPeriodTimezone.IsNull() {
+			optionInput.SetLookbackPeriodTimezone(plan.LookbackPeriodTimezone.ValueString())
+		}
+		if !plan.LookbackPeriodFrom.IsNull() {
+			optionInput.SetLookbackPeriodFrom(plan.LookbackPeriodFrom.ValueInt64())
+		}
+		if !plan.LookbackPeriodTo.IsNull() {
+			optionInput.SetLookbackPeriodTo(plan.LookbackPeriodTo.ValueInt64())
+		}
+		if !plan.LookbackPeriodUnit.IsNull() {
+			optionInput.SetLookbackPeriodUnit(plan.LookbackPeriodUnit.ValueString())
+		}
 	} else {
-		optionInput := client.NewQueryModeCreateDatamartSnowflakeSettingInput(
+		optionInput = client.NewQueryModeCreateDatamartSnowflakeSettingInput(
 			plan.SnowflakeConnectionID.ValueInt64(),
 			plan.Query.ValueString(),
 			plan.Warehouse.ValueString(),
 		)
-		if !plan.StatementTimeout.IsNull() {
-			optionInput.SetStatementTimeout(plan.StatementTimeout.ValueInt64())
-		}
-		input.SetDatamartSnowflakeSetting(optionInput)
 	}
+	if !plan.StatementTimeout.IsNull() {
+		optionInput.SetStatementTimeout(plan.StatementTimeout.ValueInt64())
+	}
+	if !plan.QualityCheckEnabled.IsNull() && !plan.QualityCheckEnabled.IsUnknown() {
+		optionInput.SetQualityCheckEnabled(plan.QualityCheckEnabled.ValueBool())
+	}
+	if !plan.QualityCheckOnViolation.IsNull() {
+		optionInput.SetQualityCheckOnViolation(plan.QualityCheckOnViolation.ValueString())
+	}
+	if !plan.QualityCheckLookbackPeriodColumn.IsNull() {
+		optionInput.SetQualityCheckLookbackPeriodColumn(plan.QualityCheckLookbackPeriodColumn.ValueString())
+	}
+	if !plan.QualityCheckLookbackPeriodColumnType.IsNull() {
+		optionInput.SetQualityCheckLookbackPeriodColumnType(plan.QualityCheckLookbackPeriodColumnType.ValueString())
+	}
+	if !plan.QualityCheckLookbackPeriodTimezone.IsNull() {
+		optionInput.SetQualityCheckLookbackPeriodTimezone(plan.QualityCheckLookbackPeriodTimezone.ValueString())
+	}
+	if !plan.QualityCheckLookbackPeriodFrom.IsNull() {
+		optionInput.SetQualityCheckLookbackPeriodFrom(plan.QualityCheckLookbackPeriodFrom.ValueInt64())
+	}
+	if !plan.QualityCheckLookbackPeriodTo.IsNull() {
+		optionInput.SetQualityCheckLookbackPeriodTo(plan.QualityCheckLookbackPeriodTo.ValueInt64())
+	}
+	if !plan.QualityCheckLookbackPeriodUnit.IsNull() {
+		optionInput.SetQualityCheckLookbackPeriodUnit(plan.QualityCheckLookbackPeriodUnit.ValueString())
+	}
+	if !plan.QualityChecks.IsNull() && !plan.QualityChecks.IsUnknown() {
+		qualityCheckInputs, diags := convertSnowflakeQualityChecks(ctx, plan.QualityChecks)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		optionInput.SetQualityChecks(qualityCheckInputs)
+	}
+	input.SetDatamartSnowflakeSetting(optionInput)
 
 	if !plan.Schedules.IsNull() && !plan.Schedules.IsUnknown() {
 		var scheduleValues []scheduleModel
@@ -499,7 +749,13 @@ func (r *snowflakeDatamartDefinitionResource) Create(ctx context.Context, req re
 		return
 	}
 
-	data, err := parseToSnowflakeDatamartDefinitionModel(ctx, res.DatamartDefinition)
+	var planNotifs []datamartNotificationModel
+	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
+		if refDiags := plan.Notifications.ElementsAs(ctx, &planNotifs, false); refDiags.HasError() {
+			planNotifs = nil
+		}
+	}
+	data, err := parseToSnowflakeDatamartDefinitionModel(ctx, res.DatamartDefinition, planNotifs)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Reading datamart_definition",
@@ -519,7 +775,13 @@ func (r *snowflakeDatamartDefinitionResource) Read(ctx context.Context, req reso
 	}
 
 	id := state.ID.ValueInt64()
-	data, err := r.fetchSnowflakeModel(ctx, id)
+	var stateNotifs []datamartNotificationModel
+	if !state.Notifications.IsNull() && !state.Notifications.IsUnknown() {
+		if refDiags := state.Notifications.ElementsAs(ctx, &stateNotifs, false); refDiags.HasError() {
+			stateNotifs = nil
+		}
+	}
+	data, err := r.fetchSnowflakeModel(ctx, id, stateNotifs)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Reading datamart_definition",
@@ -605,6 +867,106 @@ func (r *snowflakeDatamartDefinitionResource) Update(ctx context.Context, req re
 	}
 	if !plan.WriteDisposition.IsNull() {
 		optionInput.SetWriteDisposition(plan.WriteDisposition.ValueString())
+	}
+	if !plan.MergeKeys.IsNull() {
+		optionInput.SetMergeKeys(utils.ConvertStringList(ctx, plan.MergeKeys))
+	} else {
+		optionInput.SetMergeKeys([]string{})
+	}
+	if !plan.OnMatchedAction.IsNull() {
+		optionInput.SetOnMatchedAction(plan.OnMatchedAction.ValueString())
+	} else {
+		optionInput.SetOnMatchedActionEmpty()
+	}
+	if !plan.IncrementalColumn.IsNull() {
+		optionInput.SetIncrementalColumn(plan.IncrementalColumn.ValueString())
+	} else {
+		optionInput.SetIncrementalColumnEmpty()
+	}
+	if !plan.SchemaEvolutionMode.IsNull() && !plan.SchemaEvolutionMode.IsUnknown() {
+		optionInput.SetSchemaEvolutionMode(plan.SchemaEvolutionMode.ValueString())
+	} else if plan.SchemaEvolutionMode.IsNull() {
+		optionInput.SetSchemaEvolutionModeEmpty()
+	}
+	if !plan.LookbackPeriodColumn.IsNull() {
+		optionInput.SetLookbackPeriodColumn(plan.LookbackPeriodColumn.ValueString())
+	} else {
+		optionInput.SetLookbackPeriodColumnEmpty()
+	}
+	if !plan.LookbackPeriodColumnType.IsNull() {
+		optionInput.SetLookbackPeriodColumnType(plan.LookbackPeriodColumnType.ValueString())
+	} else {
+		optionInput.SetLookbackPeriodColumnTypeEmpty()
+	}
+	if !plan.LookbackPeriodTimezone.IsNull() {
+		optionInput.SetLookbackPeriodTimezone(plan.LookbackPeriodTimezone.ValueString())
+	} else {
+		optionInput.SetLookbackPeriodTimezoneEmpty()
+	}
+	if !plan.LookbackPeriodFrom.IsNull() {
+		optionInput.SetLookbackPeriodFrom(plan.LookbackPeriodFrom.ValueInt64())
+	} else {
+		optionInput.SetLookbackPeriodFromEmpty()
+	}
+	if !plan.LookbackPeriodTo.IsNull() {
+		optionInput.SetLookbackPeriodTo(plan.LookbackPeriodTo.ValueInt64())
+	} else {
+		optionInput.SetLookbackPeriodToEmpty()
+	}
+	if !plan.LookbackPeriodUnit.IsNull() {
+		optionInput.SetLookbackPeriodUnit(plan.LookbackPeriodUnit.ValueString())
+	} else {
+		optionInput.SetLookbackPeriodUnitEmpty()
+	}
+	if !plan.QualityCheckEnabled.IsNull() && !plan.QualityCheckEnabled.IsUnknown() {
+		optionInput.SetQualityCheckEnabled(plan.QualityCheckEnabled.ValueBool())
+	} else {
+		optionInput.SetQualityCheckEnabled(false)
+	}
+	if !plan.QualityCheckOnViolation.IsNull() {
+		optionInput.SetQualityCheckOnViolation(plan.QualityCheckOnViolation.ValueString())
+	} else {
+		optionInput.SetQualityCheckOnViolationEmpty()
+	}
+	if !plan.QualityCheckLookbackPeriodColumn.IsNull() {
+		optionInput.SetQualityCheckLookbackPeriodColumn(plan.QualityCheckLookbackPeriodColumn.ValueString())
+	} else {
+		optionInput.SetQualityCheckLookbackPeriodColumnEmpty()
+	}
+	if !plan.QualityCheckLookbackPeriodColumnType.IsNull() {
+		optionInput.SetQualityCheckLookbackPeriodColumnType(plan.QualityCheckLookbackPeriodColumnType.ValueString())
+	} else {
+		optionInput.SetQualityCheckLookbackPeriodColumnTypeEmpty()
+	}
+	if !plan.QualityCheckLookbackPeriodTimezone.IsNull() {
+		optionInput.SetQualityCheckLookbackPeriodTimezone(plan.QualityCheckLookbackPeriodTimezone.ValueString())
+	} else {
+		optionInput.SetQualityCheckLookbackPeriodTimezoneEmpty()
+	}
+	if !plan.QualityCheckLookbackPeriodFrom.IsNull() {
+		optionInput.SetQualityCheckLookbackPeriodFrom(plan.QualityCheckLookbackPeriodFrom.ValueInt64())
+	} else {
+		optionInput.SetQualityCheckLookbackPeriodFromEmpty()
+	}
+	if !plan.QualityCheckLookbackPeriodTo.IsNull() {
+		optionInput.SetQualityCheckLookbackPeriodTo(plan.QualityCheckLookbackPeriodTo.ValueInt64())
+	} else {
+		optionInput.SetQualityCheckLookbackPeriodToEmpty()
+	}
+	if !plan.QualityCheckLookbackPeriodUnit.IsNull() {
+		optionInput.SetQualityCheckLookbackPeriodUnit(plan.QualityCheckLookbackPeriodUnit.ValueString())
+	} else {
+		optionInput.SetQualityCheckLookbackPeriodUnitEmpty()
+	}
+	if !plan.QualityChecks.IsNull() && !plan.QualityChecks.IsUnknown() {
+		qualityCheckInputs, diags := convertSnowflakeQualityChecks(ctx, plan.QualityChecks)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		optionInput.SetQualityChecks(qualityCheckInputs)
+	} else {
+		optionInput.SetQualityChecks([]client.DatamartSnowflakeQualityCheckInput{})
 	}
 	input.SetDatamartSnowflakeSetting(optionInput)
 
@@ -724,7 +1086,13 @@ func (r *snowflakeDatamartDefinitionResource) Update(ctx context.Context, req re
 		return
 	}
 
-	model, err := parseToSnowflakeDatamartDefinitionModel(ctx, data.DatamartDefinition)
+	var planNotifs []datamartNotificationModel
+	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
+		if refDiags := plan.Notifications.ElementsAs(ctx, &planNotifs, false); refDiags.HasError() {
+			planNotifs = nil
+		}
+	}
+	model, err := parseToSnowflakeDatamartDefinitionModel(ctx, data.DatamartDefinition, planNotifs)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parsing datamart definition",
@@ -805,9 +1173,217 @@ func (r snowflakeDatamartDefinitionResource) ValidateConfig(ctx context.Context,
 			)
 		}
 	}
+
+	writeDisposition := data.WriteDisposition.ValueString()
+
+	// Validate incremental write disposition
+	if writeDisposition == "incremental" {
+		if data.MergeKeys.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("merge_keys"),
+				"Missing Merge Keys",
+				"merge_keys is required when write_disposition is incremental",
+			)
+		}
+		if data.OnMatchedAction.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("on_matched_action"),
+				"Missing On Matched Action",
+				"on_matched_action is required when write_disposition is incremental",
+			)
+		}
+	}
+
+	// Validate scd_type_2 write disposition
+	if writeDisposition == "scd_type_2" {
+		if data.MergeKeys.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("merge_keys"),
+				"Missing Merge Keys",
+				"merge_keys is required when write_disposition is scd_type_2",
+			)
+		}
+		if data.IncrementalColumn.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("incremental_column"),
+				"Missing Incremental Column",
+				"incremental_column is required when write_disposition is scd_type_2",
+			)
+		}
+	}
+
+	// Validate is_runnable_concurrently for incremental/scd_type_2
+	if (writeDisposition == "incremental" || writeDisposition == "scd_type_2") &&
+		!data.IsRunnableConcurrently.IsNull() && data.IsRunnableConcurrently.ValueBool() {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("is_runnable_concurrently"),
+			"Invalid Concurrent Execution Setting",
+			"is_runnable_concurrently must be false when write_disposition is incremental or scd_type_2",
+		)
+	}
+
+	// Validate lookback_period consistency for incremental/scd_type_2
+	if writeDisposition == "incremental" || writeDisposition == "scd_type_2" {
+		columnSet := !data.LookbackPeriodColumn.IsNull()
+		fromSet := !data.LookbackPeriodFrom.IsNull()
+		toSet := !data.LookbackPeriodTo.IsNull()
+		fromOrToSet := fromSet || toSet
+
+		if !columnSet && fromOrToSet {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("lookback_period_column"),
+				"Missing Lookback Period Column",
+				"lookback_period_column is required when lookback_period_from or lookback_period_to is set",
+			)
+		}
+
+		if columnSet {
+			if data.LookbackPeriodColumnType.IsNull() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("lookback_period_column_type"),
+					"Missing Lookback Period Column Type",
+					"lookback_period_column_type is required when lookback_period_column is set",
+				)
+			}
+			if !fromOrToSet {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("lookback_period_from"),
+					"Missing Lookback Period Range",
+					"lookback_period_from or lookback_period_to is required when lookback_period_column is set",
+				)
+			}
+		}
+
+		if fromOrToSet {
+			if data.LookbackPeriodUnit.IsNull() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("lookback_period_unit"),
+					"Missing Lookback Period Unit",
+					"lookback_period_unit is required when lookback_period_from or lookback_period_to is set",
+				)
+			}
+			if data.LookbackPeriodTimezone.IsNull() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("lookback_period_timezone"),
+					"Missing Lookback Period Timezone",
+					"lookback_period_timezone is required when lookback_period_from or lookback_period_to is set",
+				)
+			}
+		}
+
+		// Validate lookback_period_from >= lookback_period_to
+		if fromSet && toSet {
+			if data.LookbackPeriodFrom.ValueInt64() < data.LookbackPeriodTo.ValueInt64() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("lookback_period_from"),
+					"Invalid Lookback Period Range",
+					"lookback_period_from must be greater than or equal to lookback_period_to",
+				)
+			}
+		}
+	}
+
+	// Validate quality check settings
+	qualityCheckEnabled := !data.QualityCheckEnabled.IsNull() && !data.QualityCheckEnabled.IsUnknown() && data.QualityCheckEnabled.ValueBool()
+	if qualityCheckEnabled {
+		if data.QualityCheckOnViolation.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("quality_check_on_violation"),
+				"Missing Quality Check On Violation",
+				"quality_check_on_violation is required when quality_check_enabled is true",
+			)
+		}
+		if data.QualityChecks.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("quality_checks"),
+				"Missing Quality Checks",
+				"quality_checks is required when quality_check_enabled is true",
+			)
+		}
+
+		columnSet := !data.QualityCheckLookbackPeriodColumn.IsNull()
+		fromSet := !data.QualityCheckLookbackPeriodFrom.IsNull()
+		toSet := !data.QualityCheckLookbackPeriodTo.IsNull()
+		fromOrToSet := fromSet || toSet
+
+		if !columnSet && fromOrToSet {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("quality_check_lookback_period_column"),
+				"Missing Quality Check Lookback Period Column",
+				"quality_check_lookback_period_column is required when quality_check_lookback_period_from or quality_check_lookback_period_to is set",
+			)
+		}
+
+		if columnSet {
+			if data.QualityCheckLookbackPeriodColumnType.IsNull() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("quality_check_lookback_period_column_type"),
+					"Missing Quality Check Lookback Period Column Type",
+					"quality_check_lookback_period_column_type is required when quality_check_lookback_period_column is set",
+				)
+			}
+			if !fromOrToSet {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("quality_check_lookback_period_from"),
+					"Missing Quality Check Lookback Period Range",
+					"quality_check_lookback_period_from or quality_check_lookback_period_to is required when quality_check_lookback_period_column is set",
+				)
+			}
+		}
+
+		if fromOrToSet {
+			if data.QualityCheckLookbackPeriodUnit.IsNull() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("quality_check_lookback_period_unit"),
+					"Missing Quality Check Lookback Period Unit",
+					"quality_check_lookback_period_unit is required when quality_check_lookback_period_from or quality_check_lookback_period_to is set",
+				)
+			}
+			if data.QualityCheckLookbackPeriodTimezone.IsNull() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("quality_check_lookback_period_timezone"),
+					"Missing Quality Check Lookback Period Timezone",
+					"quality_check_lookback_period_timezone is required when quality_check_lookback_period_from or quality_check_lookback_period_to is set",
+				)
+			}
+		}
+
+		// Validate quality_check_lookback_period_from >= quality_check_lookback_period_to
+		if fromSet && toSet {
+			if data.QualityCheckLookbackPeriodFrom.ValueInt64() < data.QualityCheckLookbackPeriodTo.ValueInt64() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("quality_check_lookback_period_from"),
+					"Invalid Quality Check Lookback Period Range",
+					"quality_check_lookback_period_from must be greater than or equal to quality_check_lookback_period_to",
+				)
+			}
+		}
+	} else if !data.QualityCheckEnabled.IsUnknown() {
+		// Quality check fields are returned by the API only while quality checks
+		// are enabled, so allowing them here would cause a permanent diff.
+		qualityCheckFields := map[string]bool{
+			"quality_check_on_violation":                !data.QualityCheckOnViolation.IsNull(),
+			"quality_check_lookback_period_column":      !data.QualityCheckLookbackPeriodColumn.IsNull(),
+			"quality_check_lookback_period_column_type": !data.QualityCheckLookbackPeriodColumnType.IsNull(),
+			"quality_check_lookback_period_timezone":    !data.QualityCheckLookbackPeriodTimezone.IsNull(),
+			"quality_check_lookback_period_from":        !data.QualityCheckLookbackPeriodFrom.IsNull(),
+			"quality_check_lookback_period_to":          !data.QualityCheckLookbackPeriodTo.IsNull(),
+			"quality_check_lookback_period_unit":        !data.QualityCheckLookbackPeriodUnit.IsNull(),
+			"quality_checks":                            !data.QualityChecks.IsNull(),
+		}
+		for name, set := range qualityCheckFields {
+			if set {
+				resp.Diagnostics.AddAttributeError(
+					path.Root(name),
+					"Invalid Quality Check Setting",
+					fmt.Sprintf("%s is available only when quality_check_enabled is true", name),
+				)
+			}
+		}
+	}
 }
 
-func parseToSnowflakeDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition) (*snowflakeDatamartDefinitionModel, error) {
+func parseToSnowflakeDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition, refNotifs []datamartNotificationModel) (*snowflakeDatamartDefinitionModel, error) {
 	model := snowflakeDatamartDefinitionModel{
 		ID:                     types.Int64Value(response.ID),
 		Name:                   types.StringValue(response.Name),
@@ -881,6 +1457,101 @@ func parseToSnowflakeDatamartDefinitionModel(ctx context.Context, response clien
 		if response.DatamartSnowflakeSetting.WriteDisposition != nil {
 			model.WriteDisposition = types.StringValue(*response.DatamartSnowflakeSetting.WriteDisposition)
 		}
+		if response.DatamartSnowflakeSetting.MergeKeys != nil {
+			listValue, diags := types.ListValueFrom(ctx, types.StringType, response.DatamartSnowflakeSetting.MergeKeys)
+			if diags.HasError() {
+				return nil, fmt.Errorf("failed to convert merge_keys to ListValue")
+			}
+			model.MergeKeys = listValue
+		} else {
+			model.MergeKeys = types.ListNull(types.StringType)
+		}
+		if response.DatamartSnowflakeSetting.OnMatchedAction != nil {
+			model.OnMatchedAction = types.StringValue(*response.DatamartSnowflakeSetting.OnMatchedAction)
+		}
+		if response.DatamartSnowflakeSetting.IncrementalColumn != nil {
+			model.IncrementalColumn = types.StringValue(*response.DatamartSnowflakeSetting.IncrementalColumn)
+		}
+		if response.DatamartSnowflakeSetting.ValidFromColumn != nil {
+			model.ValidFromColumn = types.StringValue(*response.DatamartSnowflakeSetting.ValidFromColumn)
+		}
+		if response.DatamartSnowflakeSetting.ValidToColumn != nil {
+			model.ValidToColumn = types.StringValue(*response.DatamartSnowflakeSetting.ValidToColumn)
+		}
+		if response.DatamartSnowflakeSetting.IsCurrentColumn != nil {
+			model.IsCurrentColumn = types.StringValue(*response.DatamartSnowflakeSetting.IsCurrentColumn)
+		}
+		if response.DatamartSnowflakeSetting.SchemaEvolutionMode != nil {
+			model.SchemaEvolutionMode = types.StringValue(*response.DatamartSnowflakeSetting.SchemaEvolutionMode)
+		}
+		if response.DatamartSnowflakeSetting.LookbackPeriodColumn != nil {
+			model.LookbackPeriodColumn = types.StringValue(*response.DatamartSnowflakeSetting.LookbackPeriodColumn)
+		}
+		if response.DatamartSnowflakeSetting.LookbackPeriodColumnType != nil {
+			model.LookbackPeriodColumnType = types.StringValue(*response.DatamartSnowflakeSetting.LookbackPeriodColumnType)
+		}
+		if response.DatamartSnowflakeSetting.LookbackPeriodTimezone != nil {
+			model.LookbackPeriodTimezone = types.StringValue(*response.DatamartSnowflakeSetting.LookbackPeriodTimezone)
+		}
+		if response.DatamartSnowflakeSetting.LookbackPeriodFrom != nil {
+			model.LookbackPeriodFrom = types.Int64Value(*response.DatamartSnowflakeSetting.LookbackPeriodFrom)
+		}
+		if response.DatamartSnowflakeSetting.LookbackPeriodTo != nil {
+			model.LookbackPeriodTo = types.Int64Value(*response.DatamartSnowflakeSetting.LookbackPeriodTo)
+		}
+		if response.DatamartSnowflakeSetting.LookbackPeriodUnit != nil {
+			model.LookbackPeriodUnit = types.StringValue(*response.DatamartSnowflakeSetting.LookbackPeriodUnit)
+		}
+		// The API returns quality check fields only while quality checks are enabled.
+		model.QualityCheckEnabled = types.BoolValue(
+			response.DatamartSnowflakeSetting.QualityCheckEnabled != nil && *response.DatamartSnowflakeSetting.QualityCheckEnabled,
+		)
+		if response.DatamartSnowflakeSetting.QualityCheckOnViolation != nil {
+			model.QualityCheckOnViolation = types.StringValue(*response.DatamartSnowflakeSetting.QualityCheckOnViolation)
+		}
+		if response.DatamartSnowflakeSetting.QualityCheckLookbackPeriodColumn != nil {
+			model.QualityCheckLookbackPeriodColumn = types.StringValue(*response.DatamartSnowflakeSetting.QualityCheckLookbackPeriodColumn)
+		}
+		if response.DatamartSnowflakeSetting.QualityCheckLookbackPeriodColumnType != nil {
+			model.QualityCheckLookbackPeriodColumnType = types.StringValue(*response.DatamartSnowflakeSetting.QualityCheckLookbackPeriodColumnType)
+		}
+		if response.DatamartSnowflakeSetting.QualityCheckLookbackPeriodTimezone != nil {
+			model.QualityCheckLookbackPeriodTimezone = types.StringValue(*response.DatamartSnowflakeSetting.QualityCheckLookbackPeriodTimezone)
+		}
+		if response.DatamartSnowflakeSetting.QualityCheckLookbackPeriodFrom != nil {
+			model.QualityCheckLookbackPeriodFrom = types.Int64Value(*response.DatamartSnowflakeSetting.QualityCheckLookbackPeriodFrom)
+		}
+		if response.DatamartSnowflakeSetting.QualityCheckLookbackPeriodTo != nil {
+			model.QualityCheckLookbackPeriodTo = types.Int64Value(*response.DatamartSnowflakeSetting.QualityCheckLookbackPeriodTo)
+		}
+		if response.DatamartSnowflakeSetting.QualityCheckLookbackPeriodUnit != nil {
+			model.QualityCheckLookbackPeriodUnit = types.StringValue(*response.DatamartSnowflakeSetting.QualityCheckLookbackPeriodUnit)
+		}
+		if response.DatamartSnowflakeSetting.QualityChecks != nil {
+			qualityChecks := make([]snowflakeDatamartQualityCheckModel, len(response.DatamartSnowflakeSetting.QualityChecks))
+			for i, v := range response.DatamartSnowflakeSetting.QualityChecks {
+				columnNames, diags := types.ListValueFrom(ctx, types.StringType, v.ColumnNames)
+				if diags.HasError() {
+					return nil, fmt.Errorf("failed to convert quality check column_names to ListValue")
+				}
+				qualityChecks[i] = snowflakeDatamartQualityCheckModel{
+					CheckType:   types.StringValue(v.CheckType),
+					ColumnNames: columnNames,
+				}
+			}
+
+			listValue, diags := types.ListValueFrom(ctx, types.ObjectType{
+				AttrTypes: snowflakeDatamartQualityCheckModel{}.attrTypes(),
+			}, qualityChecks)
+			if diags.HasError() {
+				return nil, fmt.Errorf("failed to convert quality_checks to ListValue")
+			}
+			model.QualityChecks = listValue
+		} else {
+			model.QualityChecks = types.ListNull(types.ObjectType{
+				AttrTypes: snowflakeDatamartQualityCheckModel{}.attrTypes(),
+			})
+		}
 	} else {
 		return nil, fmt.Errorf("datamartSnowflakeSetting is nil")
 	}
@@ -889,6 +1560,7 @@ func parseToSnowflakeDatamartDefinitionModel(ctx context.Context, response clien
 		notifications := make([]datamartNotificationModel, len(response.Notifications))
 		for i, v := range response.Notifications {
 			notifications[i] = datamartNotificationModel{
+				ID:               types.Int64Value(v.ID),
 				DestinationType:  types.StringValue(v.DestinationType),
 				NotificationType: types.StringValue(v.NotificationType),
 				Message:          custom_type.TrimmedStringValue{StringValue: types.StringValue(v.Message)},
@@ -910,17 +1582,19 @@ func parseToSnowflakeDatamartDefinitionModel(ctx context.Context, response clien
 			}
 		}
 
+		notifications = utils.MatchByKey(notifications, refNotifs, datamartNotificationKey, datamartNotificationFallbackKey)
+
 		objectType := types.ObjectType{
 			AttrTypes: datamartNotificationModel{}.attrTypes(),
 		}
 
-		setValue, diags := types.SetValueFrom(ctx, objectType, notifications)
+		listValue, diags := types.ListValueFrom(ctx, objectType, notifications)
 		if diags.HasError() {
-			return nil, fmt.Errorf("failed to convert notifications to SetValue")
+			return nil, fmt.Errorf("failed to convert notifications to ListValue")
 		}
-		model.Notifications = setValue
+		model.Notifications = listValue
 	} else {
-		model.Notifications = types.SetNull(types.ObjectType{
+		model.Notifications = types.ListNull(types.ObjectType{
 			AttrTypes: datamartNotificationModel{}.attrTypes(),
 		})
 	}
@@ -986,13 +1660,30 @@ func parseToSnowflakeDatamartDefinitionModel(ctx context.Context, response clien
 	return &model, nil
 }
 
-func (r *snowflakeDatamartDefinitionResource) fetchSnowflakeModel(ctx context.Context, id int64) (*snowflakeDatamartDefinitionModel, error) {
+func (r *snowflakeDatamartDefinitionResource) fetchSnowflakeModel(ctx context.Context, id int64, refNotifs []datamartNotificationModel) (*snowflakeDatamartDefinitionModel, error) {
 	datamartDefinition, err := r.client.GetDatamartDefinition(id)
 	if err != nil {
 		return nil, err
 	}
-	model, _ := parseToSnowflakeDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition)
+	model, _ := parseToSnowflakeDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition, refNotifs)
 	return model, nil
+}
+
+func convertSnowflakeQualityChecks(ctx context.Context, source types.List) ([]client.DatamartSnowflakeQualityCheckInput, diag.Diagnostics) {
+	var qualityCheckValues []snowflakeDatamartQualityCheckModel
+	diags := source.ElementsAs(ctx, &qualityCheckValues, false)
+	if diags.HasError() {
+		return nil, diags
+	}
+
+	result := make([]client.DatamartSnowflakeQualityCheckInput, 0, len(qualityCheckValues))
+	for _, v := range qualityCheckValues {
+		result = append(result, client.DatamartSnowflakeQualityCheckInput{
+			CheckType:   v.CheckType.ValueString(),
+			ColumnNames: utils.ConvertStringList(ctx, v.ColumnNames),
+		})
+	}
+	return result, diags
 }
 
 func convertSnowflakeCustomVariableSettingsForCreate(ctx context.Context, source types.List, diags *resource.CreateResponse) []client.CustomVariableSettingInput {
@@ -1047,4 +1738,3 @@ func convertSnowflakeLabelsForCreate(ctx context.Context, source types.Set, diag
 	}
 	return result
 }
-

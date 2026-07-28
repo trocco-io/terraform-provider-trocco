@@ -73,20 +73,20 @@ type UpdateDatamartDefinitionOutput struct {
 }
 
 type DatamartDefinition struct {
-	ID                      int64                    `json:"id"`
-	Name                    string                   `json:"name"`
-	Description             *string                  `json:"description"`
-	DataWarehouseType       string                   `json:"data_warehouse_type"`
-	IsRunnableConcurrently  bool                     `json:"is_runnable_concurrently"`
-	ResourceGroup           *ResourceGroup           `json:"resource_group"`
-	CustomVariableSettings  []CustomVariableSetting  `json:"custom_variable_settings"`
-	DatamartBigqueryOption  *DatamartBigqueryOption  `json:"datamart_bigquery_option"`
+	ID                       int64                     `json:"id"`
+	Name                     string                    `json:"name"`
+	Description              *string                   `json:"description"`
+	DataWarehouseType        string                    `json:"data_warehouse_type"`
+	IsRunnableConcurrently   bool                      `json:"is_runnable_concurrently"`
+	ResourceGroup            *ResourceGroup            `json:"resource_group"`
+	CustomVariableSettings   []CustomVariableSetting   `json:"custom_variable_settings"`
+	DatamartBigqueryOption   *DatamartBigqueryOption   `json:"datamart_bigquery_option"`
 	DatamartSnowflakeSetting *DatamartSnowflakeSetting `json:"datamart_snowflake_setting"`
-	CreatedAt               string                   `json:"created_at"`
-	UpdatedAt               string                   `json:"updated_at"`
-	Notifications           []DatamartNotification   `json:"notifications"`
-	Schedules               []Schedule               `json:"schedules"`
-	Labels                  []entity.Label           `json:"labels"`
+	CreatedAt                string                    `json:"created_at"`
+	UpdatedAt                string                    `json:"updated_at"`
+	Notifications            []DatamartNotification    `json:"notifications"`
+	Schedules                []Schedule                `json:"schedules"`
+	Labels                   []entity.Label            `json:"labels"`
 }
 
 type DatamartBigqueryOption struct {
@@ -118,15 +118,42 @@ type DatamartBigqueryOption struct {
 }
 
 type DatamartSnowflakeSetting struct {
-	SnowflakeConnectionID int64   `json:"snowflake_connection_id"`
-	QueryMode             string  `json:"query_mode"`
-	Query                 string  `json:"query"`
-	Warehouse             string  `json:"warehouse"`
-	StatementTimeout      *int64  `json:"statement_timeout"`
-	DestinationDatabase   *string `json:"destination_database"`
-	DestinationSchema     *string `json:"destination_schema"`
-	DestinationTable      *string `json:"destination_table"`
-	WriteDisposition      *string `json:"write_disposition"`
+	SnowflakeConnectionID                int64                           `json:"snowflake_connection_id"`
+	QueryMode                            string                          `json:"query_mode"`
+	Query                                string                          `json:"query"`
+	Warehouse                            string                          `json:"warehouse"`
+	StatementTimeout                     *int64                          `json:"statement_timeout"`
+	DestinationDatabase                  *string                         `json:"destination_database"`
+	DestinationSchema                    *string                         `json:"destination_schema"`
+	DestinationTable                     *string                         `json:"destination_table"`
+	WriteDisposition                     *string                         `json:"write_disposition"`
+	MergeKeys                            []string                        `json:"merge_keys"`
+	OnMatchedAction                      *string                         `json:"on_matched_action"`
+	IncrementalColumn                    *string                         `json:"incremental_column"`
+	ValidFromColumn                      *string                         `json:"valid_from_column"`
+	ValidToColumn                        *string                         `json:"valid_to_column"`
+	IsCurrentColumn                      *string                         `json:"is_current_column"`
+	SchemaEvolutionMode                  *string                         `json:"schema_evolution_mode"`
+	LookbackPeriodColumn                 *string                         `json:"lookback_period_column"`
+	LookbackPeriodColumnType             *string                         `json:"lookback_period_column_type"`
+	LookbackPeriodTimezone               *string                         `json:"lookback_period_timezone"`
+	LookbackPeriodFrom                   *int64                          `json:"lookback_period_from"`
+	LookbackPeriodTo                     *int64                          `json:"lookback_period_to"`
+	LookbackPeriodUnit                   *string                         `json:"lookback_period_unit"`
+	QualityCheckEnabled                  *bool                           `json:"quality_check_enabled"`
+	QualityCheckOnViolation              *string                         `json:"quality_check_on_violation"`
+	QualityCheckLookbackPeriodColumn     *string                         `json:"quality_check_lookback_period_column"`
+	QualityCheckLookbackPeriodColumnType *string                         `json:"quality_check_lookback_period_column_type"`
+	QualityCheckLookbackPeriodTimezone   *string                         `json:"quality_check_lookback_period_timezone"`
+	QualityCheckLookbackPeriodFrom       *int64                          `json:"quality_check_lookback_period_from"`
+	QualityCheckLookbackPeriodTo         *int64                          `json:"quality_check_lookback_period_to"`
+	QualityCheckLookbackPeriodUnit       *string                         `json:"quality_check_lookback_period_unit"`
+	QualityChecks                        []DatamartSnowflakeQualityCheck `json:"quality_checks"`
+}
+
+type DatamartSnowflakeQualityCheck struct {
+	CheckType   string   `json:"check_type"`
+	ColumnNames []string `json:"column_names"`
 }
 
 type ResourceGroup struct {
@@ -193,17 +220,17 @@ func (output *DatamartDefinition) sanitize() {
 // ref: https://documents.trocco.io/apidocs/post-datamart-definition
 
 type CreateDatamartDefinitionInput struct {
-	Name                    string                              `json:"name"`
-	DatawarehouseType       string                              `json:"data_warehouse_type"`
-	Description             *string                             `json:"description,omitempty"`
-	IsRunnableConcurrently  bool                                `json:"is_runnable_concurrently"`
-	ResourceGroupID         *int64                              `json:"resource_group_id,omitempty"`
-	CustomVariableSettings  *[]CustomVariableSettingInput       `json:"custom_variable_settings,omitempty"`
-	DatamartBigqueryOption  *CreateDatamartBigqueryOptionInput  `json:"datamart_bigquery_option,omitempty"`
+	Name                     string                               `json:"name"`
+	DatawarehouseType        string                               `json:"data_warehouse_type"`
+	Description              *string                              `json:"description,omitempty"`
+	IsRunnableConcurrently   bool                                 `json:"is_runnable_concurrently"`
+	ResourceGroupID          *int64                               `json:"resource_group_id,omitempty"`
+	CustomVariableSettings   *[]CustomVariableSettingInput        `json:"custom_variable_settings,omitempty"`
+	DatamartBigqueryOption   *CreateDatamartBigqueryOptionInput   `json:"datamart_bigquery_option,omitempty"`
 	DatamartSnowflakeSetting *CreateDatamartSnowflakeSettingInput `json:"datamart_snowflake_setting,omitempty"`
-	Schedules               *[]ScheduleInput                    `json:"schedules,omitempty"`
-	Notifications           *[]DatamartNotificationInput        `json:"notifications,omitempty"`
-	Labels                  *[]string                           `json:"labels,omitempty"`
+	Schedules                *[]ScheduleInput                     `json:"schedules,omitempty"`
+	Notifications            *[]DatamartNotificationInput         `json:"notifications,omitempty"`
+	Labels                   *[]string                            `json:"labels,omitempty"`
 }
 
 func NewCreateDatamartDefinitionInput(
@@ -410,15 +437,39 @@ func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetLookbackPeri
 }
 
 type CreateDatamartSnowflakeSettingInput struct {
-	SnowflakeConnectionID int64   `json:"snowflake_connection_id"`
-	QueryMode             string  `json:"query_mode"`
-	Query                 string  `json:"query"`
-	Warehouse             string  `json:"warehouse"`
-	StatementTimeout      *int64  `json:"statement_timeout,omitempty"`
-	DestinationDatabase   *string `json:"destination_database,omitempty"`
-	DestinationSchema     *string `json:"destination_schema,omitempty"`
-	DestinationTable      *string `json:"destination_table,omitempty"`
-	WriteDisposition      *string `json:"write_disposition,omitempty"`
+	SnowflakeConnectionID                int64                                 `json:"snowflake_connection_id"`
+	QueryMode                            string                                `json:"query_mode"`
+	Query                                string                                `json:"query"`
+	Warehouse                            string                                `json:"warehouse"`
+	StatementTimeout                     *int64                                `json:"statement_timeout,omitempty"`
+	DestinationDatabase                  *string                               `json:"destination_database,omitempty"`
+	DestinationSchema                    *string                               `json:"destination_schema,omitempty"`
+	DestinationTable                     *string                               `json:"destination_table,omitempty"`
+	WriteDisposition                     *string                               `json:"write_disposition,omitempty"`
+	MergeKeys                            *[]string                             `json:"merge_keys,omitempty"`
+	OnMatchedAction                      *string                               `json:"on_matched_action,omitempty"`
+	IncrementalColumn                    *string                               `json:"incremental_column,omitempty"`
+	SchemaEvolutionMode                  *string                               `json:"schema_evolution_mode,omitempty"`
+	LookbackPeriodColumn                 *string                               `json:"lookback_period_column,omitempty"`
+	LookbackPeriodColumnType             *string                               `json:"lookback_period_column_type,omitempty"`
+	LookbackPeriodTimezone               *string                               `json:"lookback_period_timezone,omitempty"`
+	LookbackPeriodFrom                   *int64                                `json:"lookback_period_from,omitempty"`
+	LookbackPeriodTo                     *int64                                `json:"lookback_period_to,omitempty"`
+	LookbackPeriodUnit                   *string                               `json:"lookback_period_unit,omitempty"`
+	QualityCheckEnabled                  *bool                                 `json:"quality_check_enabled,omitempty"`
+	QualityCheckOnViolation              *string                               `json:"quality_check_on_violation,omitempty"`
+	QualityCheckLookbackPeriodColumn     *string                               `json:"quality_check_lookback_period_column,omitempty"`
+	QualityCheckLookbackPeriodColumnType *string                               `json:"quality_check_lookback_period_column_type,omitempty"`
+	QualityCheckLookbackPeriodTimezone   *string                               `json:"quality_check_lookback_period_timezone,omitempty"`
+	QualityCheckLookbackPeriodFrom       *int64                                `json:"quality_check_lookback_period_from,omitempty"`
+	QualityCheckLookbackPeriodTo         *int64                                `json:"quality_check_lookback_period_to,omitempty"`
+	QualityCheckLookbackPeriodUnit       *string                               `json:"quality_check_lookback_period_unit,omitempty"`
+	QualityChecks                        *[]DatamartSnowflakeQualityCheckInput `json:"quality_checks,omitempty"`
+}
+
+type DatamartSnowflakeQualityCheckInput struct {
+	CheckType   string   `json:"check_type"`
+	ColumnNames []string `json:"column_names"`
 }
 
 func NewInsertModeCreateDatamartSnowflakeSettingInput(
@@ -475,6 +526,82 @@ func (o *CreateDatamartSnowflakeSettingInput) SetWriteDisposition(writeDispositi
 	o.WriteDisposition = &writeDisposition
 }
 
+func (o *CreateDatamartSnowflakeSettingInput) SetMergeKeys(mergeKeys []string) {
+	o.MergeKeys = &mergeKeys
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetOnMatchedAction(onMatchedAction string) {
+	o.OnMatchedAction = &onMatchedAction
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetIncrementalColumn(incrementalColumn string) {
+	o.IncrementalColumn = &incrementalColumn
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetSchemaEvolutionMode(schemaEvolutionMode string) {
+	o.SchemaEvolutionMode = &schemaEvolutionMode
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetLookbackPeriodColumn(lookbackPeriodColumn string) {
+	o.LookbackPeriodColumn = &lookbackPeriodColumn
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetLookbackPeriodColumnType(lookbackPeriodColumnType string) {
+	o.LookbackPeriodColumnType = &lookbackPeriodColumnType
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetLookbackPeriodTimezone(lookbackPeriodTimezone string) {
+	o.LookbackPeriodTimezone = &lookbackPeriodTimezone
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetLookbackPeriodFrom(lookbackPeriodFrom int64) {
+	o.LookbackPeriodFrom = &lookbackPeriodFrom
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetLookbackPeriodTo(lookbackPeriodTo int64) {
+	o.LookbackPeriodTo = &lookbackPeriodTo
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetLookbackPeriodUnit(lookbackPeriodUnit string) {
+	o.LookbackPeriodUnit = &lookbackPeriodUnit
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetQualityCheckEnabled(qualityCheckEnabled bool) {
+	o.QualityCheckEnabled = &qualityCheckEnabled
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetQualityCheckOnViolation(qualityCheckOnViolation string) {
+	o.QualityCheckOnViolation = &qualityCheckOnViolation
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodColumn(qualityCheckLookbackPeriodColumn string) {
+	o.QualityCheckLookbackPeriodColumn = &qualityCheckLookbackPeriodColumn
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodColumnType(qualityCheckLookbackPeriodColumnType string) {
+	o.QualityCheckLookbackPeriodColumnType = &qualityCheckLookbackPeriodColumnType
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodTimezone(qualityCheckLookbackPeriodTimezone string) {
+	o.QualityCheckLookbackPeriodTimezone = &qualityCheckLookbackPeriodTimezone
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodFrom(qualityCheckLookbackPeriodFrom int64) {
+	o.QualityCheckLookbackPeriodFrom = &qualityCheckLookbackPeriodFrom
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodTo(qualityCheckLookbackPeriodTo int64) {
+	o.QualityCheckLookbackPeriodTo = &qualityCheckLookbackPeriodTo
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodUnit(qualityCheckLookbackPeriodUnit string) {
+	o.QualityCheckLookbackPeriodUnit = &qualityCheckLookbackPeriodUnit
+}
+
+func (o *CreateDatamartSnowflakeSettingInput) SetQualityChecks(qualityChecks []DatamartSnowflakeQualityCheckInput) {
+	o.QualityChecks = &qualityChecks
+}
+
 type CreateDatamartDefinitionOutput struct {
 	DatamartDefinition
 }
@@ -493,16 +620,16 @@ func (client *TroccoClient) CreateDatamartDefinition(input *CreateDatamartDefini
 // ref: https://documents.trocco.io/apidocs/patch-datamart-definition
 
 type UpdateDatamartDefinitionInput struct {
-	Name                    *string                             `json:"name,omitempty"`
-	Description             *string                             `json:"description,omitempty"`
-	IsRunnableConcurrently  *bool                               `json:"is_runnable_concurrently,omitempty"`
-	ResourceGroupID         *parameter.NullableInt64            `json:"resource_group_id,omitempty"`
-	CustomVariableSettings  *[]CustomVariableSettingInput       `json:"custom_variable_settings,omitempty"`
-	DatamartBigqueryOption  *UpdateDatamartBigqueryOptionInput  `json:"datamart_bigquery_option,omitempty"`
+	Name                     *string                              `json:"name,omitempty"`
+	Description              *string                              `json:"description,omitempty"`
+	IsRunnableConcurrently   *bool                                `json:"is_runnable_concurrently,omitempty"`
+	ResourceGroupID          *parameter.NullableInt64             `json:"resource_group_id,omitempty"`
+	CustomVariableSettings   *[]CustomVariableSettingInput        `json:"custom_variable_settings,omitempty"`
+	DatamartBigqueryOption   *UpdateDatamartBigqueryOptionInput   `json:"datamart_bigquery_option,omitempty"`
 	DatamartSnowflakeSetting *UpdateDatamartSnowflakeSettingInput `json:"datamart_snowflake_setting,omitempty"`
-	Schedules               *[]ScheduleInput                    `json:"schedules,omitempty"`
-	Notifications           *[]DatamartNotificationInput        `json:"notifications,omitempty"`
-	Labels                  *[]string                           `json:"labels,omitempty"`
+	Schedules                *[]ScheduleInput                     `json:"schedules,omitempty"`
+	Notifications            *[]DatamartNotificationInput         `json:"notifications,omitempty"`
+	Labels                   *[]string                            `json:"labels,omitempty"`
 }
 
 func (input *UpdateDatamartDefinitionInput) SetName(name string) {
@@ -716,15 +843,34 @@ func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLookbackPeri
 }
 
 type UpdateDatamartSnowflakeSettingInput struct {
-	SnowflakeConnectionID *int64                   `json:"snowflake_connection_id,omitempty"`
-	QueryMode             *string                  `json:"query_mode,omitempty"`
-	Query                 *string                  `json:"query,omitempty"`
-	Warehouse             *string                  `json:"warehouse,omitempty"`
-	StatementTimeout      *parameter.NullableInt64 `json:"statement_timeout,omitempty"`
-	DestinationDatabase   *string                  `json:"destination_database,omitempty"`
-	DestinationSchema     *string                  `json:"destination_schema,omitempty"`
-	DestinationTable      *string                  `json:"destination_table,omitempty"`
-	WriteDisposition      *string                  `json:"write_disposition,omitempty"`
+	SnowflakeConnectionID                *int64                                `json:"snowflake_connection_id,omitempty"`
+	QueryMode                            *string                               `json:"query_mode,omitempty"`
+	Query                                *string                               `json:"query,omitempty"`
+	Warehouse                            *string                               `json:"warehouse,omitempty"`
+	StatementTimeout                     *parameter.NullableInt64              `json:"statement_timeout,omitempty"`
+	DestinationDatabase                  *string                               `json:"destination_database,omitempty"`
+	DestinationSchema                    *string                               `json:"destination_schema,omitempty"`
+	DestinationTable                     *string                               `json:"destination_table,omitempty"`
+	WriteDisposition                     *string                               `json:"write_disposition,omitempty"`
+	MergeKeys                            *[]string                             `json:"merge_keys,omitempty"`
+	OnMatchedAction                      *parameter.NullableString             `json:"on_matched_action,omitempty"`
+	IncrementalColumn                    *parameter.NullableString             `json:"incremental_column,omitempty"`
+	SchemaEvolutionMode                  *parameter.NullableString             `json:"schema_evolution_mode,omitempty"`
+	LookbackPeriodColumn                 *parameter.NullableString             `json:"lookback_period_column,omitempty"`
+	LookbackPeriodColumnType             *parameter.NullableString             `json:"lookback_period_column_type,omitempty"`
+	LookbackPeriodTimezone               *parameter.NullableString             `json:"lookback_period_timezone,omitempty"`
+	LookbackPeriodFrom                   *parameter.NullableInt64              `json:"lookback_period_from,omitempty"`
+	LookbackPeriodTo                     *parameter.NullableInt64              `json:"lookback_period_to,omitempty"`
+	LookbackPeriodUnit                   *parameter.NullableString             `json:"lookback_period_unit,omitempty"`
+	QualityCheckEnabled                  *bool                                 `json:"quality_check_enabled,omitempty"`
+	QualityCheckOnViolation              *parameter.NullableString             `json:"quality_check_on_violation,omitempty"`
+	QualityCheckLookbackPeriodColumn     *parameter.NullableString             `json:"quality_check_lookback_period_column,omitempty"`
+	QualityCheckLookbackPeriodColumnType *parameter.NullableString             `json:"quality_check_lookback_period_column_type,omitempty"`
+	QualityCheckLookbackPeriodTimezone   *parameter.NullableString             `json:"quality_check_lookback_period_timezone,omitempty"`
+	QualityCheckLookbackPeriodFrom       *parameter.NullableInt64              `json:"quality_check_lookback_period_from,omitempty"`
+	QualityCheckLookbackPeriodTo         *parameter.NullableInt64              `json:"quality_check_lookback_period_to,omitempty"`
+	QualityCheckLookbackPeriodUnit       *parameter.NullableString             `json:"quality_check_lookback_period_unit,omitempty"`
+	QualityChecks                        *[]DatamartSnowflakeQualityCheckInput `json:"quality_checks,omitempty"`
 }
 
 func (o *UpdateDatamartSnowflakeSettingInput) SetSnowflakeConnectionID(snowflakeConnectionID int64) {
@@ -765,6 +911,146 @@ func (o *UpdateDatamartSnowflakeSettingInput) SetDestinationTable(destinationTab
 
 func (o *UpdateDatamartSnowflakeSettingInput) SetWriteDisposition(writeDisposition string) {
 	o.WriteDisposition = &writeDisposition
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetMergeKeys(mergeKeys []string) {
+	o.MergeKeys = &mergeKeys
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetOnMatchedAction(onMatchedAction string) {
+	o.OnMatchedAction = &parameter.NullableString{Value: onMatchedAction, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetOnMatchedActionEmpty() {
+	o.OnMatchedAction = &parameter.NullableString{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetIncrementalColumn(incrementalColumn string) {
+	o.IncrementalColumn = &parameter.NullableString{Value: incrementalColumn, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetIncrementalColumnEmpty() {
+	o.IncrementalColumn = &parameter.NullableString{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetSchemaEvolutionMode(schemaEvolutionMode string) {
+	o.SchemaEvolutionMode = &parameter.NullableString{Value: schemaEvolutionMode, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetSchemaEvolutionModeEmpty() {
+	o.SchemaEvolutionMode = &parameter.NullableString{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetLookbackPeriodColumn(lookbackPeriodColumn string) {
+	o.LookbackPeriodColumn = &parameter.NullableString{Value: lookbackPeriodColumn, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetLookbackPeriodColumnEmpty() {
+	o.LookbackPeriodColumn = &parameter.NullableString{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetLookbackPeriodColumnType(lookbackPeriodColumnType string) {
+	o.LookbackPeriodColumnType = &parameter.NullableString{Value: lookbackPeriodColumnType, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetLookbackPeriodColumnTypeEmpty() {
+	o.LookbackPeriodColumnType = &parameter.NullableString{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetLookbackPeriodTimezone(lookbackPeriodTimezone string) {
+	o.LookbackPeriodTimezone = &parameter.NullableString{Value: lookbackPeriodTimezone, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetLookbackPeriodTimezoneEmpty() {
+	o.LookbackPeriodTimezone = &parameter.NullableString{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetLookbackPeriodFrom(lookbackPeriodFrom int64) {
+	o.LookbackPeriodFrom = &parameter.NullableInt64{Value: lookbackPeriodFrom, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetLookbackPeriodFromEmpty() {
+	o.LookbackPeriodFrom = &parameter.NullableInt64{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetLookbackPeriodTo(lookbackPeriodTo int64) {
+	o.LookbackPeriodTo = &parameter.NullableInt64{Value: lookbackPeriodTo, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetLookbackPeriodToEmpty() {
+	o.LookbackPeriodTo = &parameter.NullableInt64{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetLookbackPeriodUnit(lookbackPeriodUnit string) {
+	o.LookbackPeriodUnit = &parameter.NullableString{Value: lookbackPeriodUnit, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetLookbackPeriodUnitEmpty() {
+	o.LookbackPeriodUnit = &parameter.NullableString{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckEnabled(qualityCheckEnabled bool) {
+	o.QualityCheckEnabled = &qualityCheckEnabled
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckOnViolation(qualityCheckOnViolation string) {
+	o.QualityCheckOnViolation = &parameter.NullableString{Value: qualityCheckOnViolation, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckOnViolationEmpty() {
+	o.QualityCheckOnViolation = &parameter.NullableString{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodColumn(qualityCheckLookbackPeriodColumn string) {
+	o.QualityCheckLookbackPeriodColumn = &parameter.NullableString{Value: qualityCheckLookbackPeriodColumn, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodColumnEmpty() {
+	o.QualityCheckLookbackPeriodColumn = &parameter.NullableString{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodColumnType(qualityCheckLookbackPeriodColumnType string) {
+	o.QualityCheckLookbackPeriodColumnType = &parameter.NullableString{Value: qualityCheckLookbackPeriodColumnType, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodColumnTypeEmpty() {
+	o.QualityCheckLookbackPeriodColumnType = &parameter.NullableString{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodTimezone(qualityCheckLookbackPeriodTimezone string) {
+	o.QualityCheckLookbackPeriodTimezone = &parameter.NullableString{Value: qualityCheckLookbackPeriodTimezone, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodTimezoneEmpty() {
+	o.QualityCheckLookbackPeriodTimezone = &parameter.NullableString{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodFrom(qualityCheckLookbackPeriodFrom int64) {
+	o.QualityCheckLookbackPeriodFrom = &parameter.NullableInt64{Value: qualityCheckLookbackPeriodFrom, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodFromEmpty() {
+	o.QualityCheckLookbackPeriodFrom = &parameter.NullableInt64{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodTo(qualityCheckLookbackPeriodTo int64) {
+	o.QualityCheckLookbackPeriodTo = &parameter.NullableInt64{Value: qualityCheckLookbackPeriodTo, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodToEmpty() {
+	o.QualityCheckLookbackPeriodTo = &parameter.NullableInt64{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodUnit(qualityCheckLookbackPeriodUnit string) {
+	o.QualityCheckLookbackPeriodUnit = &parameter.NullableString{Value: qualityCheckLookbackPeriodUnit, Valid: true}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodUnitEmpty() {
+	o.QualityCheckLookbackPeriodUnit = &parameter.NullableString{Valid: false}
+}
+
+func (o *UpdateDatamartSnowflakeSettingInput) SetQualityChecks(qualityChecks []DatamartSnowflakeQualityCheckInput) {
+	o.QualityChecks = &qualityChecks
 }
 
 type ScheduleInput struct {
