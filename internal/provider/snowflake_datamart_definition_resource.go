@@ -26,6 +26,7 @@ import (
 
 var _ resource.Resource = &snowflakeDatamartDefinitionResource{}
 var _ resource.ResourceWithImportState = &snowflakeDatamartDefinitionResource{}
+var _ resource.ResourceWithModifyPlan = &snowflakeDatamartDefinitionResource{}
 
 func NewSnowflakeDatamartDefinitionResource() resource.Resource {
 	return &snowflakeDatamartDefinitionResource{}
@@ -1133,6 +1134,40 @@ func (r *snowflakeDatamartDefinitionResource) ImportState(ctx context.Context, r
 	}
 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
+}
+
+// ModifyPlan resets attributes that the API returns only for specific write
+// dispositions. Without this, changing the write disposition away from
+// incremental / scd_type_2 would keep the stale values from the prior state in
+// the plan while the API stops returning them, which makes Terraform report an
+// inconsistent result after apply.
+func (r *snowflakeDatamartDefinitionResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	// Destroy plans have no planned values to adjust.
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+
+	var plan, config snowflakeDatamartDefinitionModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if plan.WriteDisposition.IsUnknown() {
+		return
+	}
+	writeDisposition := plan.WriteDisposition.ValueString()
+
+	if writeDisposition != "scd_type_2" {
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("valid_from_column"), types.StringNull())...)
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("valid_to_column"), types.StringNull())...)
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("is_current_column"), types.StringNull())...)
+	}
+
+	if writeDisposition != "incremental" && writeDisposition != "scd_type_2" && config.SchemaEvolutionMode.IsNull() {
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("schema_evolution_mode"), types.StringNull())...)
+	}
 }
 
 func (r snowflakeDatamartDefinitionResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
