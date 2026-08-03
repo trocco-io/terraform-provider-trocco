@@ -129,6 +129,54 @@ func TestAccDatamartDefinitionResourceForBigquerySCDType2(t *testing.T) {
 	})
 }
 
+func TestAccDatamartDefinitionResourceForBigqueryDescriptions(t *testing.T) {
+	resourceName := "trocco_bigquery_datamart_definition.test_descriptions"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// table_description and column_descriptions are not available in query mode.
+			{
+				Config:      providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/descriptions/query_mode_invalid.tf"),
+				ExpectError: regexp.MustCompile("table_description is only available in insert query mode"),
+			},
+			{
+				Config:      providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/descriptions/create.tf"),
+				ExpectError: nil,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "test_descriptions"),
+					resource.TestCheckResourceAttr(resourceName, "table_description", "Table description"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.0.name", "id"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.0.description", "Primary key"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.1.name", "name"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.1.description", "Name of the record"),
+				),
+			},
+			// Updating the descriptions should replace them while preserving the
+			// configured ordering.
+			{
+				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/descriptions/update.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "table_description", "Updated table description"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.0.name", "name"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.0.description", "Updated name description"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.1.name", "id"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.1.description", "Primary key"),
+				),
+			},
+			// Removing the attributes from the config should clear them on the server.
+			{
+				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/descriptions/remove.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckNoResourceAttr(resourceName, "table_description"),
+					resource.TestCheckNoResourceAttr(resourceName, "column_descriptions"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccDatamartDefinitionResourceForBigqueryTruncateWriteDisposition(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,

@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strconv"
 
 	"terraform-provider-trocco/internal/client"
@@ -53,6 +54,8 @@ type bigqueryDatamartDefinitionModel struct {
 	PartitioningField        types.String                   `tfsdk:"partitioning_field"`
 	ClusteringFields         types.List                     `tfsdk:"clustering_fields"`
 	Location                 types.String                   `tfsdk:"location"`
+	TableDescription         types.String                   `tfsdk:"table_description"`
+	ColumnDescriptions       types.List                     `tfsdk:"column_descriptions"`
 	MergeKeys                types.List                     `tfsdk:"merge_keys"`
 	OnMatchedAction          types.String                   `tfsdk:"on_matched_action"`
 	IncrementalColumn        types.String                   `tfsdk:"incremental_column"`
@@ -80,6 +83,11 @@ type customVariableSettingModel struct {
 	Direction types.String `tfsdk:"direction"`
 	Format    types.String `tfsdk:"format"`
 	TimeZone  types.String `tfsdk:"time_zone"`
+}
+
+type columnDescriptionModel struct {
+	Name        types.String `tfsdk:"name"`
+	Description types.String `tfsdk:"description"`
 }
 
 type datamartNotificationModel struct {
@@ -287,6 +295,42 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 			"location": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "The location where the query will be executed. If not specified, the location is automatically determined by Google BigQuery. Available only in `query` mode",
+			},
+			"table_description": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+					stringvalidator.UTF8LengthAtMost(1024),
+				},
+				MarkdownDescription: "Description of the destination table. It is reflected in the BigQuery table description after the job runs. It must be at most 1024 characters. Available only in `insert` mode",
+			},
+			"column_descriptions": schema.ListNestedAttribute{
+				Optional: true,
+				Validators: []validator.List{
+					listvalidator.SizeAtLeast(1),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"name": schema.StringAttribute{
+							Required: true,
+							Validators: []validator.String{
+								stringvalidator.RegexMatches(
+									regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`),
+									"must start with a letter or underscore and contain only letters, digits, and underscores",
+								),
+							},
+							MarkdownDescription: "Column name. It must start with a letter or underscore and contain only letters, digits, and underscores",
+						},
+						"description": schema.StringAttribute{
+							Required: true,
+							Validators: []validator.String{
+								stringvalidator.UTF8LengthAtMost(1024),
+							},
+							MarkdownDescription: "Description of the column. It must be at most 1024 characters. Specifying an empty string removes the description of the column in BigQuery after the job runs",
+						},
+					},
+				},
+				MarkdownDescription: "Descriptions of the destination table columns. Only the specified columns are reflected in the BigQuery column descriptions after the job runs. The order of the array is preserved. Available only in `insert` mode",
 			},
 			"merge_keys": schema.ListAttribute{
 				Optional:    true,
@@ -545,6 +589,18 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		if clusteringFields := utils.ConvertStringList(ctx, plan.ClusteringFields); len(clusteringFields) > 0 {
 			optionInput.SetClusteringFields(clusteringFields)
+		}
+		if !plan.TableDescription.IsNull() {
+			optionInput.SetTableDescription(plan.TableDescription.ValueString())
+		}
+		if !plan.ColumnDescriptions.IsNull() && !plan.ColumnDescriptions.IsUnknown() {
+			var columnDescriptionValues []columnDescriptionModel
+			diags := plan.ColumnDescriptions.ElementsAs(ctx, &columnDescriptionValues, false)
+			resp.Diagnostics.Append(diags...)
+			if resp.Diagnostics.HasError() {
+				return
+			}
+			optionInput.SetColumnDescriptions(convertColumnDescriptionInputs(columnDescriptionValues))
 		}
 		if mergeKeys := utils.ConvertStringList(ctx, plan.MergeKeys); len(mergeKeys) > 0 {
 			optionInput.SetMergeKeys(mergeKeys)
@@ -843,6 +899,22 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 	} else {
 		optionInput.SetLocationEmpty()
 	}
+	if !plan.TableDescription.IsNull() {
+		optionInput.SetTableDescription(plan.TableDescription.ValueString())
+	} else {
+		optionInput.SetTableDescriptionEmpty()
+	}
+	if !plan.ColumnDescriptions.IsNull() {
+		var columnDescriptionValues []columnDescriptionModel
+		diags := plan.ColumnDescriptions.ElementsAs(ctx, &columnDescriptionValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		optionInput.SetColumnDescriptions(convertColumnDescriptionInputs(columnDescriptionValues))
+	} else {
+		optionInput.SetColumnDescriptions([]client.ColumnDescriptionInput{})
+	}
 	if !plan.MergeKeys.IsNull() {
 		var mergeKeysValues []types.String
 		diags := plan.MergeKeys.ElementsAs(ctx, &mergeKeysValues, false)
@@ -1093,6 +1165,23 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 		}
 	}
 
+	if data.QueryMode.ValueString() == "query" {
+		if !data.TableDescription.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("table_description"),
+				"Invalid Table Description",
+				"table_description is only available in insert query mode",
+			)
+		}
+		if !data.ColumnDescriptions.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("column_descriptions"),
+				"Invalid Column Descriptions",
+				"column_descriptions is only available in insert query mode",
+			)
+		}
+	}
+
 	if data.QueryMode.ValueString() == "insert" {
 		if data.DestinationDataset.IsNull() {
 			resp.Diagnostics.AddAttributeError(
@@ -1339,6 +1428,32 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 		if response.DatamartBigqueryOption.Location != nil {
 			model.Location = types.StringValue(*response.DatamartBigqueryOption.Location)
 		}
+		if response.DatamartBigqueryOption.TableDescription != nil {
+			model.TableDescription = types.StringValue(*response.DatamartBigqueryOption.TableDescription)
+		}
+		if response.DatamartBigqueryOption.ColumnDescriptions != nil {
+			columnDescriptions := make([]columnDescriptionModel, len(response.DatamartBigqueryOption.ColumnDescriptions))
+			for i, v := range response.DatamartBigqueryOption.ColumnDescriptions {
+				columnDescriptions[i] = columnDescriptionModel{
+					Name:        types.StringValue(v.Name),
+					Description: types.StringValue(v.Description),
+				}
+			}
+
+			objectType := types.ObjectType{
+				AttrTypes: columnDescriptionModel{}.attrTypes(),
+			}
+
+			listValue, diags := types.ListValueFrom(ctx, objectType, columnDescriptions)
+			if diags.HasError() {
+				return nil, fmt.Errorf("failed to convert column_descriptions to ListValue")
+			}
+			model.ColumnDescriptions = listValue
+		} else {
+			model.ColumnDescriptions = types.ListNull(types.ObjectType{
+				AttrTypes: columnDescriptionModel{}.attrTypes(),
+			})
+		}
 		if response.DatamartBigqueryOption.MergeKeys != nil {
 			mergeKeys := make([]types.String, len(response.DatamartBigqueryOption.MergeKeys))
 			for i, v := range response.DatamartBigqueryOption.MergeKeys {
@@ -1515,6 +1630,13 @@ func (c customVariableSettingModel) attrTypes() map[string]attr.Type {
 	}
 }
 
+func (c columnDescriptionModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":        types.StringType,
+		"description": types.StringType,
+	}
+}
+
 func (n datamartNotificationModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"id":                types.Int64Type,
@@ -1579,6 +1701,18 @@ func convertCustomVariableSettingsForCreate(ctx context.Context, source types.Li
 				v.Format.ValueString(),
 				v.TimeZone.ValueString(),
 			))
+		}
+	}
+	return result
+}
+
+// convertColumnDescriptionInputs converts column description models to client inputs.
+func convertColumnDescriptionInputs(models []columnDescriptionModel) []client.ColumnDescriptionInput {
+	result := make([]client.ColumnDescriptionInput, len(models))
+	for i, v := range models {
+		result[i] = client.ColumnDescriptionInput{
+			Name:        v.Name.ValueString(),
+			Description: v.Description.ValueString(),
 		}
 	}
 	return result

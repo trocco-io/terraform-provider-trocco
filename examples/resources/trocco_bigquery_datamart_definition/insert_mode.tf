@@ -12,4 +12,15 @@ resource "trocco_bigquery_datamart_definition" "insert_mode" {
   partitioning_time        = "DAY"
   partitioning_field       = "created_at"
   clustering_fields        = ["id", "name"]
+  table_description        = "Table description"
+  column_descriptions = [
+    {
+      name        = "id"
+      description = "Primary key"
+    },
+    {
+      name        = "name"
+      description = "Name of the record"
+    },
+  ]
 }
