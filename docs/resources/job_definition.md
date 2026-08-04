@@ -1219,6 +1219,63 @@ resource "trocco_job_definition" "databricks_to_bigquery" {
 }
 ```
 
+#### CustomConnectorInputOption
+
+```terraform
+resource "trocco_job_definition" "custom_connector_input_example" {
+  input_option_type = "custom_connector"
+  input_option = {
+    custom_connector_input_option = {
+      # Reference the endpoint through the definition resource so Terraform
+      # orders operations correctly (e.g. it won't delete an endpoint that
+      # this job definition still depends on).
+      custom_connector_endpoint_id   = trocco_custom_connector_input.example.endpoints[0].id
+      custom_connector_connection_id = trocco_connection.custom_connector_example.id
+
+      # Omitting `query_parameters`/`headers` keeps their existing values;
+      # specifying `[]` clears them; specifying values fully replaces them.
+      query_parameters = [
+        {
+          name  = "limit"
+          value = "50"
+        },
+      ]
+
+      # request_body_parameters fill in the `{name}` placeholders declared by
+      # the endpoint's request_body_parameters.
+      request_body_parameters = [
+        {
+          name  = "status"
+          value = "pending"
+        },
+      ]
+
+      # path_parameters must include every placeholder in the endpoint's
+      # path, since it's not partially updatable.
+      path_parameters = [
+        {
+          name  = "user_id"
+          value = "12345"
+        },
+      ]
+
+      jsonpath_parser = {
+        columns = [
+          {
+            name = "id"
+            type = "long"
+          },
+          {
+            name = "name"
+            type = "string"
+          },
+        ]
+      }
+    }
+  }
+}
+```
+
 ### OutputOptions
 
 #### BigqueryOutputOption
@@ -1567,6 +1624,7 @@ Optional:
 Optional:
 
 - `bigquery_input_option` (Attributes) Attributes about source bigquery (see [below for nested schema](#nestedatt--input_option--bigquery_input_option))
+- `custom_connector_input_option` (Attributes) Attributes of a source that uses a custom connector definition (`trocco_custom_connector_input`) (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option))
 - `databricks_input_option` (Attributes) Attributes of source databricks (see [below for nested schema](#nestedatt--input_option--databricks_input_option))
 - `facebook_ads_insights_input_option` (Attributes) Attributes about source Facebook Ads Insights (see [below for nested schema](#nestedatt--input_option--facebook_ads_insights_input_option))
 - `gcs_input_option` (Attributes) Attributes about source GCS (see [below for nested schema](#nestedatt--input_option--gcs_input_option))
@@ -1650,6 +1708,193 @@ Optional:
 Optional:
 
 - `match_name` (String) Relative path after decompression (regular expression). If not entered, all data in the compressed file will be transferred.
+
+
+
+<a id="nestedatt--input_option--custom_connector_input_option"></a>
+### Nested Schema for `input_option.custom_connector_input_option`
+
+Required:
+
+- `custom_connector_connection_id` (Number) ID of the custom connector connection (`trocco_connection` with `connection_type = "custom_connector"`)
+- `custom_connector_endpoint_id` (Number) ID of the custom connector endpoint (`trocco_custom_connector_input.<name>.endpoints[N].id`) to use as the transfer source
+- `jsonpath_parser` (Attributes) JSONPath parser settings (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--jsonpath_parser))
+
+Optional:
+
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--custom_variable_settings))
+- `headers` (Attributes List) Request header values. Only headers marked `is_editable = true` on the referenced endpoint can be specified, and a value must be supplied for every header marked `is_required = true`. Omitting this attribute keeps the existing values; specifying `[]` clears them; specifying values fully replaces them. (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--headers))
+- `path_parameters` (Attributes List) Path parameter values. A value must be specified for every placeholder in the referenced endpoint's path. Omitting this attribute keeps the existing values; specifying `[]` clears them; specifying values fully replaces them. (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--path_parameters))
+- `query_parameters` (Attributes List) Query parameter values. Only parameters marked `is_editable = true` on the referenced endpoint can be specified, and a value must be supplied for every parameter marked `is_required = true`. Omitting this attribute keeps the existing values; specifying `[]` clears them; specifying values fully replaces them. (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--query_parameters))
+- `request_body_parameters` (Attributes List) Request body parameter values, substituted into the `{name}` placeholders of the referenced endpoint's request body. Only parameters marked `is_editable = true` on the referenced endpoint can be specified, and a value must be supplied for every parameter marked `is_required = true`. Omitting this attribute keeps the existing values; specifying `[]` clears them; specifying values fully replaces them. (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--request_body_parameters))
+
+Read-Only:
+
+- `auth_header_name` (String) Authentication header name (snapshot from the custom connector definition)
+- `auth_header_scheme` (String) Authentication header scheme (snapshot from the custom connector definition)
+- `auth_type` (String) Authentication method (snapshot from the custom connector definition)
+- `endpoint_method` (String) HTTP method (snapshot from the custom connector definition)
+- `endpoint_path` (String) Endpoint path (snapshot from the custom connector definition)
+- `endpoint_request_body` (String) Request body (snapshot from the custom connector definition)
+- `not_retryable_codes` (String) Status codes excluded from retries (snapshot from the custom connector definition)
+- `paginator` (Attributes) Pagination settings (snapshot from the custom connector definition). `null` if the endpoint has no pagination configured. (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--paginator))
+- `request_timeout_sec` (Number) Seconds to wait for a response before timing out (snapshot from the custom connector definition). `null` for job definitions created before this field existed; treated as 30 in that case.
+- `success_codes` (String) Status codes treated as success (snapshot from the custom connector definition)
+- `url` (String) URL (snapshot from the custom connector definition)
+
+<a id="nestedatt--input_option--custom_connector_input_option--jsonpath_parser"></a>
+### Nested Schema for `input_option.custom_connector_input_option.jsonpath_parser`
+
+Required:
+
+- `columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--jsonpath_parser--columns))
+
+Optional:
+
+- `default_time_zone` (String) Default time zone
+
+Read-Only:
+
+- `root` (String) JSONPath root. Always derived from the referenced endpoint; cannot be set in configuration.
+
+<a id="nestedatt--input_option--custom_connector_input_option--jsonpath_parser--columns"></a>
+### Nested Schema for `input_option.custom_connector_input_option.jsonpath_parser.columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+Optional:
+
+- `format` (String) Format of the column
+- `time_zone` (String) Time zone
+
+
+
+<a id="nestedatt--input_option--custom_connector_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.custom_connector_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--custom_connector_input_option--headers"></a>
+### Nested Schema for `input_option.custom_connector_input_option.headers`
+
+Required:
+
+- `name` (String) Name
+- `value` (String) Value
+
+
+<a id="nestedatt--input_option--custom_connector_input_option--path_parameters"></a>
+### Nested Schema for `input_option.custom_connector_input_option.path_parameters`
+
+Required:
+
+- `name` (String) Name
+- `value` (String) Value
+
+
+<a id="nestedatt--input_option--custom_connector_input_option--query_parameters"></a>
+### Nested Schema for `input_option.custom_connector_input_option.query_parameters`
+
+Required:
+
+- `name` (String) Name
+- `value` (String) Value
+
+
+<a id="nestedatt--input_option--custom_connector_input_option--request_body_parameters"></a>
+### Nested Schema for `input_option.custom_connector_input_option.request_body_parameters`
+
+Required:
+
+- `name` (String) Name
+- `value` (String) Value
+
+
+<a id="nestedatt--input_option--custom_connector_input_option--paginator"></a>
+### Nested Schema for `input_option.custom_connector_input_option.paginator`
+
+Read-Only:
+
+- `cursor_based_strategy` (Attributes) Settings used when `strategy_type` is `cursor_based` (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--paginator--cursor_based_strategy))
+- `inject_into` (String) Where the paging parameter is injected (`query` or `request_body`)
+- `offset_increment_strategy` (Attributes) Settings used when `strategy_type` is `offset_increment` (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--paginator--offset_increment_strategy))
+- `page_increment_strategy` (Attributes) Settings used when `strategy_type` is `page_increment` (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--paginator--page_increment_strategy))
+- `page_size_option` (Attributes) Field used to pass the page size (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--paginator--page_size_option))
+- `page_token_option` (Attributes) Field used to pass the page token (page number/offset/cursor) (see [below for nested schema](#nestedatt--input_option--custom_connector_input_option--paginator--page_token_option))
+- `strategy_type` (String) Pagination strategy (`page_increment`, `offset_increment`, or `cursor_based`)
+
+<a id="nestedatt--input_option--custom_connector_input_option--paginator--cursor_based_strategy"></a>
+### Nested Schema for `input_option.custom_connector_input_option.paginator.cursor_based_strategy`
+
+Read-Only:
+
+- `cursor_value` (String) Cursor value (a literal value or a JSONPath expression)
+- `last_page_size` (String) Size of the last page (a literal number or a JSONPath expression)
+- `page_size` (Number) Page size
+- `stop_on_blank` (String) Whether to stop when the cursor is blank
+
+
+<a id="nestedatt--input_option--custom_connector_input_option--paginator--offset_increment_strategy"></a>
+### Nested Schema for `input_option.custom_connector_input_option.paginator.offset_increment_strategy`
+
+Read-Only:
+
+- `first_offset` (Number) First offset
+- `inject_on_first_request` (Boolean) Whether to inject the paging parameter on the first request
+- `last_page_size` (String) Size of the last page (a literal number or a JSONPath expression)
+- `max_request_count` (Number) Maximum number of requests (used with `last_page_size` to avoid infinite loops)
+- `page_size` (Number) Page size
+- `start_from_offset` (Number) Starting offset
+- `stop_on_offset` (Number) Offset to stop at
+- `total_records` (String) Total number of records (a literal number or a JSONPath expression)
+
+
+<a id="nestedatt--input_option--custom_connector_input_option--paginator--page_increment_strategy"></a>
+### Nested Schema for `input_option.custom_connector_input_option.paginator.page_increment_strategy`
+
+Read-Only:
+
+- `first_page` (Number) First page number
+- `inject_on_first_request` (Boolean) Whether to inject the paging parameter on the first request
+- `last_page_size` (String) Size of the last page (a literal number or a JSONPath expression)
+- `max_request_count` (Number) Maximum number of requests (used with `last_page_size` to avoid infinite loops)
+- `page_size` (Number) Page size
+- `start_from_page` (Number) Starting page number
+- `stop_on_page` (Number) Page number to stop at
+- `total_pages` (String) Total number of pages (a literal number or a JSONPath expression)
+
+
+<a id="nestedatt--input_option--custom_connector_input_option--paginator--page_size_option"></a>
+### Nested Schema for `input_option.custom_connector_input_option.paginator.page_size_option`
+
+Read-Only:
+
+- `field_name` (String) Field name
+
+
+<a id="nestedatt--input_option--custom_connector_input_option--paginator--page_token_option"></a>
+### Nested Schema for `input_option.custom_connector_input_option.paginator.page_token_option`
+
+Read-Only:
+
+- `field_name` (String) Field name
+
 
 
 
