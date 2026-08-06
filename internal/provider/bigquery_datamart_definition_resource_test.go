@@ -80,6 +80,24 @@ func TestAccDatamartDefinitionResourceForBigqueryNotifications(t *testing.T) {
 	})
 }
 
+// Regression test: an explicitly configured `notifications = []` must survive
+// apply as an empty list, not become null.
+func TestAccDatamartDefinitionResourceForBigqueryNotificationsEmptyList(t *testing.T) {
+	resourceName := "trocco_bigquery_datamart_definition.test_notifications_empty"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/notifications/empty.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "test_notifications_empty"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "0"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccDatamartDefinitionResourceForBigqueryIncremental(t *testing.T) {
 	resourceName := "trocco_bigquery_datamart_definition.test_incremental"
 	resource.Test(t, resource.TestCase{

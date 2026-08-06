@@ -753,13 +753,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		return
 	}
 
-	var planNotifs []datamartNotificationModel
-	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
-		if refDiags := plan.Notifications.ElementsAs(ctx, &planNotifs, false); refDiags.HasError() {
-			planNotifs = nil
-		}
-	}
-	data, err := parseToBigqueryDatamartDefinitionModel(ctx, res.DatamartDefinition, planNotifs)
+	data, err := parseToBigqueryDatamartDefinitionModel(ctx, res.DatamartDefinition, plan.Notifications)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Reading datamart_definition",
@@ -779,13 +773,7 @@ func (r *bigqueryDatamartDefinitionResource) Read(ctx context.Context, req resou
 	}
 
 	id := state.ID.ValueInt64()
-	var stateNotifs []datamartNotificationModel
-	if !state.Notifications.IsNull() && !state.Notifications.IsUnknown() {
-		if refDiags := state.Notifications.ElementsAs(ctx, &stateNotifs, false); refDiags.HasError() {
-			stateNotifs = nil
-		}
-	}
-	data, err := r.fetchModel(ctx, id, stateNotifs)
+	data, err := r.fetchModel(ctx, id, state.Notifications)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Reading datamart_definition",
@@ -1098,13 +1086,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 		)
 		return
 	}
-	var planNotifs []datamartNotificationModel
-	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
-		if refDiags := plan.Notifications.ElementsAs(ctx, &planNotifs, false); refDiags.HasError() {
-			planNotifs = nil
-		}
-	}
-	model, err := parseToBigqueryDatamartDefinitionModel(ctx, data.DatamartDefinition, planNotifs)
+	model, err := parseToBigqueryDatamartDefinitionModel(ctx, data.DatamartDefinition, plan.Notifications)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parsing datamart definition",
@@ -1333,7 +1315,7 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 
 }
 
-func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition, refNotifs []datamartNotificationModel) (*bigqueryDatamartDefinitionModel, error) {
+func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition, previousNotifications types.List) (*bigqueryDatamartDefinitionModel, error) {
 	model := bigqueryDatamartDefinitionModel{
 		ID:                     types.Int64Value(response.ID),
 		Name:                   types.StringValue(response.Name),
@@ -1506,7 +1488,23 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 	} else {
 		return nil, fmt.Errorf("datamartBigqueryOption is nil")
 	}
-	if response.Notifications != nil {
+	notificationObjectType := types.ObjectType{
+		AttrTypes: datamartNotificationModel{}.attrTypes(),
+	}
+	if len(response.Notifications) == 0 {
+		// When the response has no notifications, the previous (plan or state)
+		// value decides between null and an empty list so that an explicitly
+		// configured `notifications = []` survives apply.
+		if previousNotifications.IsNull() || previousNotifications.IsUnknown() {
+			model.Notifications = types.ListNull(notificationObjectType)
+		} else {
+			listValue, diags := types.ListValueFrom(ctx, notificationObjectType, []datamartNotificationModel{})
+			if diags.HasError() {
+				return nil, fmt.Errorf("failed to convert notifications to ListValue")
+			}
+			model.Notifications = listValue
+		}
+	} else {
 		notifications := make([]datamartNotificationModel, len(response.Notifications))
 		for i, v := range response.Notifications {
 			notifications[i] = datamartNotificationModel{
@@ -1532,21 +1530,19 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			}
 		}
 
+		var refNotifs []datamartNotificationModel
+		if !previousNotifications.IsNull() && !previousNotifications.IsUnknown() {
+			if refDiags := previousNotifications.ElementsAs(ctx, &refNotifs, false); refDiags.HasError() {
+				refNotifs = nil
+			}
+		}
 		notifications = utils.MatchByKey(notifications, refNotifs, datamartNotificationKey, datamartNotificationFallbackKey)
 
-		objectType := types.ObjectType{
-			AttrTypes: datamartNotificationModel{}.attrTypes(),
-		}
-
-		listValue, diags := types.ListValueFrom(ctx, objectType, notifications)
+		listValue, diags := types.ListValueFrom(ctx, notificationObjectType, notifications)
 		if diags.HasError() {
 			return nil, fmt.Errorf("failed to convert notifications to ListValue")
 		}
 		model.Notifications = listValue
-	} else {
-		model.Notifications = types.ListNull(types.ObjectType{
-			AttrTypes: datamartNotificationModel{}.attrTypes(),
-		})
 	}
 	if response.Schedules != nil {
 		schedules := make([]scheduleModel, len(response.Schedules))
@@ -1608,12 +1604,12 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 	return &model, nil
 }
 
-func (r *bigqueryDatamartDefinitionResource) fetchModel(ctx context.Context, id int64, refNotifs []datamartNotificationModel) (*bigqueryDatamartDefinitionModel, error) {
+func (r *bigqueryDatamartDefinitionResource) fetchModel(ctx context.Context, id int64, previousNotifications types.List) (*bigqueryDatamartDefinitionModel, error) {
 	datamartDefinition, err := r.client.GetDatamartDefinition(id)
 	if err != nil {
 		return nil, err
 	}
-	model, _ := parseToBigqueryDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition, refNotifs)
+	model, _ := parseToBigqueryDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition, previousNotifications)
 	return model, nil
 }
 
