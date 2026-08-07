@@ -5,6 +5,8 @@ import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
 	outputOptionModel "terraform-provider-trocco/internal/provider/model/job_definition/output_option"
+
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 )
 
 type OutputOption struct {
@@ -24,7 +26,9 @@ type OutputOption struct {
 	RedshiftOutputOption           *outputOptionModel.RedshiftOutputOption           `tfsdk:"redshift_output_option"`
 }
 
-func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *OutputOption {
+func NewOutputOption(ctx context.Context, outputOption client.OutputOption) (*OutputOption, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
 	return &OutputOption{
 		BigQueryOutputOption:           outputOptionModel.NewBigQueryOutputOption(ctx, outputOption.BigQueryOutputOption),
 		SnowflakeOutputOption:          outputOptionModel.NewSnowflakeOutputOption(ctx, outputOption.SnowflakeOutputOption),
@@ -40,10 +44,12 @@ func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *Out
 		GoogleDriveOutputOption:        outputOptionModel.NewGoogleDriveOutputOption(ctx, outputOption.GoogleDriveOutputOption),
 		GcsOutputOption:                outputOptionModel.NewGcsOutputOption(ctx, outputOption.GcsOutputOption),
 		RedshiftOutputOption:           outputOptionModel.NewRedshiftOutputOption(ctx, outputOption.RedshiftOutputOption),
-	}
+	}, diags
 }
 
-func (o OutputOption) ToInput(ctx context.Context) client.OutputOptionInput {
+func (o OutputOption) ToInput(ctx context.Context) (client.OutputOptionInput, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
 	return client.OutputOptionInput{
 		BigQueryOutputOption:           model.WrapObject(o.BigQueryOutputOption.ToInput(ctx)),
 		SnowflakeOutputOption:          model.WrapObject(o.SnowflakeOutputOption.ToInput(ctx)),
@@ -59,10 +65,12 @@ func (o OutputOption) ToInput(ctx context.Context) client.OutputOptionInput {
 		GoogleDriveOutputOption:        model.WrapObject(o.GoogleDriveOutputOption.ToInput(ctx)),
 		GcsOutputOption:                model.WrapObject(o.GcsOutputOption.ToInput(ctx)),
 		RedshiftOutputOption:           model.WrapObject(o.RedshiftOutputOption.ToInput(ctx)),
-	}
+	}, diags
 }
 
-func (o OutputOption) ToUpdateInput(ctx context.Context) *client.UpdateOutputOptionInput {
+func (o OutputOption) ToUpdateInput(ctx context.Context) (*client.UpdateOutputOptionInput, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
 	return &client.UpdateOutputOptionInput{
 		BigQueryOutputOption:           model.WrapObject(o.BigQueryOutputOption.ToUpdateInput(ctx)),
 		SnowflakeOutputOption:          model.WrapObject(o.SnowflakeOutputOption.ToUpdateInput(ctx)),
@@ -78,5 +86,5 @@ func (o OutputOption) ToUpdateInput(ctx context.Context) *client.UpdateOutputOpt
 		GoogleDriveOutputOption:        model.WrapObject(o.GoogleDriveOutputOption.ToUpdateInput(ctx)),
 		GcsOutputOption:                model.WrapObject(o.GcsOutputOption.ToUpdateInput(ctx)),
 		RedshiftOutputOption:           model.WrapObject(o.RedshiftOutputOption.ToUpdateInput(ctx)),
-	}
+	}, diags
 }
