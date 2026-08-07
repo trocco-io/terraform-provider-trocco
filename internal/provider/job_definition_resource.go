@@ -409,7 +409,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	outputOption, diags := jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption)
+	outputOption, diags := jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption, plan.OutputOption)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -696,7 +696,7 @@ func (r *jobDefinitionResource) Create(
 		return
 	}
 
-	outputOption, diags := jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption)
+	outputOption, diags := jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption, plan.OutputOption)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -866,7 +866,7 @@ func (r *jobDefinitionResource) Read(
 		return
 	}
 
-	outputOption, diags := jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption)
+	outputOption, diags := jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption, state.OutputOption)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
