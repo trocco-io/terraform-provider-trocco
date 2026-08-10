@@ -10,10 +10,14 @@ import (
 )
 
 func NotificationsSchema() schema.Attribute {
-	return schema.SetNestedAttribute{
+	return schema.ListNestedAttribute{
 		Optional: true,
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
+				"id": schema.Int64Attribute{
+					Computed:            true,
+					MarkdownDescription: "Server-assigned ID of the notification. Unique within `(notification_type, destination_type)` for matching across API responses.",
+				},
 				"destination_type": schema.StringAttribute{
 					Required: true,
 					Validators: []validator.String{

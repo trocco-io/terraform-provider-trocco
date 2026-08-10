@@ -1,3 +1,19 @@
+## 0.34.0
+
+BREAKING CHANGES:
+- `notifications` changed from a set to a list in `trocco_pipeline_definition`, `trocco_job_definition`, and `trocco_bigquery_datamart_definition`:
+  - This changes the internal state representation of `notifications`. After upgrading, resources that manage `notifications` require a state re-import:
+    ```sh
+    terraform state rm <resource_address>
+    terraform import <resource_address> <id>
+    terraform plan  # should report no changes
+    ```
+  - No action is required if `notifications` is not managed in your Terraform configuration.
+
+BUG FIXES:
+- `trocco_pipeline_definition`, `trocco_job_definition`, and `trocco_bigquery_datamart_definition` resources:
+  - Fixed `Provider produced inconsistent result after apply` on `notifications` by changing the attribute from a set to a list and aligning state with the configured ordering
+
 ## 0.33.0
 
 FEATURES:
