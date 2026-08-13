@@ -29,9 +29,14 @@ type SftpInputOption struct {
 	XmlParser                 *parser.XmlParser      `tfsdk:"xml_parser"`
 }
 
-func NewSftpInputOption(ctx context.Context, sftpInputOption *inputOptionEntities.SftpInputOption) *SftpInputOption {
+func NewSftpInputOption(ctx context.Context, sftpInputOption *inputOptionEntities.SftpInputOption, previous *SftpInputOption) *SftpInputOption {
 	if sftpInputOption == nil {
 		return nil
+	}
+
+	var previousDecoder *Decoder
+	if previous != nil {
+		previousDecoder = previous.Decoder
 	}
 
 	result := &SftpInputOption{
@@ -42,7 +47,7 @@ func NewSftpInputOption(ctx context.Context, sftpInputOption *inputOptionEntitie
 		LastPath:                  types.StringPointerValue(sftpInputOption.LastPath),
 		StopWhenFileNotFound:      types.BoolValue(sftpInputOption.StopWhenFileNotFound),
 		DecompressionType:         types.StringValue(sftpInputOption.DecompressionType),
-		Decoder:                   NewDecoder(sftpInputOption.Decoder),
+		Decoder:                   NewDecoder(sftpInputOption.Decoder, previousDecoder),
 		CsvParser:                 parser.NewCsvParser(ctx, sftpInputOption.CsvParser),
 		JsonlParser:               parser.NewJsonlParser(ctx, sftpInputOption.JsonlParser),
 		JsonpathParser:            parser.NewJsonPathParser(ctx, sftpInputOption.JsonpathParser),

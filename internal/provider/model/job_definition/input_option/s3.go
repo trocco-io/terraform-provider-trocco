@@ -32,9 +32,14 @@ type S3InputOption struct {
 	Decoder                   *Decoder               `tfsdk:"decoder"`
 }
 
-func NewS3InputOption(ctx context.Context, s3InputOption *inputOptionEntities.S3InputOption) *S3InputOption {
+func NewS3InputOption(ctx context.Context, s3InputOption *inputOptionEntities.S3InputOption, previous *S3InputOption) *S3InputOption {
 	if s3InputOption == nil {
 		return nil
+	}
+
+	var previousDecoder *Decoder
+	if previous != nil {
+		previousDecoder = previous.Decoder
 	}
 
 	result := &S3InputOption{
@@ -54,7 +59,7 @@ func NewS3InputOption(ctx context.Context, s3InputOption *inputOptionEntities.S3
 		ExcelParser:               parser.NewExcelParser(ctx, s3InputOption.ExcelParser),
 		XmlParser:                 parser.NewXmlParser(ctx, s3InputOption.XmlParser),
 		ParquetParser:             parser.NewParquetParser(ctx, s3InputOption.ParquetParser),
-		Decoder:                   NewDecoder(s3InputOption.Decoder),
+		Decoder:                   NewDecoder(s3InputOption.Decoder, previousDecoder),
 	}
 
 	customVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, s3InputOption.CustomVariableSettings)

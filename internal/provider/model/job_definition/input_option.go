@@ -40,17 +40,25 @@ type InputOption struct {
 
 func NewInputOption(ctx context.Context, inputOption client.InputOption, previous *InputOption) (*InputOption, diag.Diagnostics) {
 	var previousHttpInputOption *inputOptionModel.HttpInputOption
+	var previousGcsInputOption *inputOptionModel.GcsInputOption
+	var previousS3InputOption *inputOptionModel.S3InputOption
+	var previousSftpInputOption *inputOptionModel.SftpInputOption
+	var previousGoogleDriveInputOption *inputOptionModel.GoogleDriveInputOption
 	if previous != nil {
 		previousHttpInputOption = previous.HttpInputOption
+		previousGcsInputOption = previous.GcsInputOption
+		previousS3InputOption = previous.S3InputOption
+		previousSftpInputOption = previous.SftpInputOption
+		previousGoogleDriveInputOption = previous.GoogleDriveInputOption
 	}
 	httpInputOption, diags := inputOptionModel.NewHttpInputOption(ctx, inputOption.HttpInputOption, previousHttpInputOption)
 	return &InputOption{
-		GcsInputOption:                 inputOptionModel.NewGcsInputOption(ctx, inputOption.GcsInputOption),
+		GcsInputOption:                 inputOptionModel.NewGcsInputOption(ctx, inputOption.GcsInputOption, previousGcsInputOption),
 		MySQLInputOption:               inputOptionModel.NewMysqlInputOption(ctx, inputOption.MySQLInputOption),
 		SnowflakeInputOption:           inputOptionModel.NewSnowflakeInputOption(ctx, inputOption.SnowflakeInputOption),
 		SalesforceInputOption:          inputOptionModel.NewSalesforceInputOption(ctx, inputOption.SalesforceInputOption),
 		GoogleSpreadsheetsInputOption:  inputOptionModel.NewGoogleSpreadsheetsInputOption(ctx, inputOption.GoogleSpreadsheetsInputOption),
-		S3InputOption:                  inputOptionModel.NewS3InputOption(ctx, inputOption.S3InputOption),
+		S3InputOption:                  inputOptionModel.NewS3InputOption(ctx, inputOption.S3InputOption, previousS3InputOption),
 		BigqueryInputOption:            inputOptionModel.NewBigqueryInputOption(ctx, inputOption.BigqueryInputOption),
 		PostgreSQLInputOption:          inputOptionModel.NewPostgreSQLInputOption(ctx, inputOption.PostgreSQLInputOption),
 		GoogleAnalytics4InputOption:    inputOptionModel.NewGoogleAnalytics4InputOption(ctx, inputOption.GoogleAnalytics4InputOption),
@@ -58,12 +66,12 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		KintoneInputOption:             inputOptionModel.NewKintoneInputOption(ctx, inputOption.KintoneInputOption),
 		YahooAdsApiYssInputOption:      inputOptionModel.NewYahooAdsApiYssInputOption(ctx, inputOption.YahooAdsApiYssInputOption),
 		YahooAdsApiYdnInputOption:      inputOptionModel.NewYahooAdsApiYdnInputOption(ctx, inputOption.YahooAdsApiYdnInputOption),
-		SftpInputOption:                inputOptionModel.NewSftpInputOption(ctx, inputOption.SftpInputOption),
+		SftpInputOption:                inputOptionModel.NewSftpInputOption(ctx, inputOption.SftpInputOption, previousSftpInputOption),
 		HubspotInputOption:             inputOptionModel.NewHubspotInputOption(ctx, inputOption.HubspotInputOption),
 		DatabricksInputOption:          inputOptionModel.NewDatabricksInputOption(ctx, inputOption.DatabricksInputOption),
 		MongoDBInputOption:             inputOptionModel.NewMongodbInputOption(ctx, inputOption.MongoDBInputOption),
 		GoogleAdsInputOption:           inputOptionModel.NewGoogleAdsInputOption(ctx, inputOption.GoogleAdsInputOption),
-		GoogleDriveInputOption:         inputOptionModel.NewGoogleDriveInputOption(ctx, inputOption.GoogleDriveInputOption),
+		GoogleDriveInputOption:         inputOptionModel.NewGoogleDriveInputOption(ctx, inputOption.GoogleDriveInputOption, previousGoogleDriveInputOption),
 		RedshiftInputOption:            inputOptionModel.NewRedshiftInputOption(ctx, inputOption.RedshiftInputOption),
 		FacebookAdsInsightsInputOption: inputOptionModel.NewFacebookAdsInsightsInputOption(ctx, inputOption.FacebookAdsInsightsInputOption),
 		MarketoInputOption:             inputOptionModel.NewMarketoInputOption(ctx, inputOption.MarketoInputOption),

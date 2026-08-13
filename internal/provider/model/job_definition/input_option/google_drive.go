@@ -28,9 +28,14 @@ type GoogleDriveInputOption struct {
 	Decoder                 *Decoder               `tfsdk:"decoder"`
 }
 
-func NewGoogleDriveInputOption(ctx context.Context, googleDriveInputOption *inputOptionEntities.GoogleDriveInputOption) *GoogleDriveInputOption {
+func NewGoogleDriveInputOption(ctx context.Context, googleDriveInputOption *inputOptionEntities.GoogleDriveInputOption, previous *GoogleDriveInputOption) *GoogleDriveInputOption {
 	if googleDriveInputOption == nil {
 		return nil
+	}
+
+	var previousDecoder *Decoder
+	if previous != nil {
+		previousDecoder = previous.Decoder
 	}
 
 	result := &GoogleDriveInputOption{
@@ -46,7 +51,7 @@ func NewGoogleDriveInputOption(ctx context.Context, googleDriveInputOption *inpu
 		LtsvParser:              parser.NewLtsvParser(ctx, googleDriveInputOption.LtsvParser),
 		ExcelParser:             parser.NewExcelParser(ctx, googleDriveInputOption.ExcelParser),
 		XmlParser:               parser.NewXmlParser(ctx, googleDriveInputOption.XmlParser),
-		Decoder:                 NewDecoder(googleDriveInputOption.Decoder),
+		Decoder:                 NewDecoder(googleDriveInputOption.Decoder, previousDecoder),
 	}
 
 	customVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, googleDriveInputOption.CustomVariableSettings)

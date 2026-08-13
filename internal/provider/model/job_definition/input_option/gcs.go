@@ -30,9 +30,14 @@ type GcsInputOption struct {
 	Decoder                   *Decoder               `tfsdk:"decoder"`
 }
 
-func NewGcsInputOption(ctx context.Context, gcsInputOption *inputOptionEntities.GcsInputOption) *GcsInputOption {
+func NewGcsInputOption(ctx context.Context, gcsInputOption *inputOptionEntities.GcsInputOption, previous *GcsInputOption) *GcsInputOption {
 	if gcsInputOption == nil {
 		return nil
+	}
+
+	var previousDecoder *Decoder
+	if previous != nil {
+		previousDecoder = previous.Decoder
 	}
 
 	result := &GcsInputOption{
@@ -50,7 +55,7 @@ func NewGcsInputOption(ctx context.Context, gcsInputOption *inputOptionEntities.
 		ExcelParser:               parser.NewExcelParser(ctx, gcsInputOption.ExcelParser),
 		XmlParser:                 parser.NewXmlParser(ctx, gcsInputOption.XmlParser),
 		ParquetParser:             parser.NewParquetParser(ctx, gcsInputOption.ParquetParser),
-		Decoder:                   NewDecoder(gcsInputOption.Decoder),
+		Decoder:                   NewDecoder(gcsInputOption.Decoder, previousDecoder),
 	}
 
 	CustomVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, gcsInputOption.CustomVariableSettings)
