@@ -1,3 +1,10 @@
+## 0.35.0
+
+FEATURES:
+- `trocco_pipeline_definition` resource:
+  - Added support for `databricks_data_check` task type
+  - Added `ignore_result` attribute to `bigquery_data_check_config`, `snowflake_data_check_config`, `redshift_data_check_config`, and `databricks_data_check_config`
+
 ## 0.34.0
 
 BREAKING CHANGES:
