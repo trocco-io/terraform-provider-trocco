@@ -18,6 +18,7 @@ type DatabricksDataCheckTaskConfig struct {
 	Operator        types.String                   `tfsdk:"operator"`
 	QueryResult     types.Int64                    `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
+	IgnoreResult    types.Bool                     `tfsdk:"ignore_result"`
 	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
@@ -33,6 +34,7 @@ func NewDatabricksDataCheckTaskConfig(ctx context.Context, c *pipelineDefinition
 		Operator:        types.StringValue(c.Operator),
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
+		IgnoreResult:    types.BoolValue(c.IgnoreResult),
 		CustomVariables: NewCustomVariables(ctx, c.CustomVariables),
 	}
 }
@@ -56,6 +58,7 @@ func (c *DatabricksDataCheckTaskConfig) ToInput(ctx context.Context) *pipelineDe
 		Operator:        c.Operator.ValueString(),
 		QueryResult:     &parameter.NullableInt64{Valid: !c.QueryResult.IsNull(), Value: c.QueryResult.ValueInt64()},
 		AcceptsNull:     &parameter.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
+		IgnoreResult:    &parameter.NullableBool{Valid: !c.IgnoreResult.IsNull(), Value: c.IgnoreResult.ValueBool()},
 		CustomVariables: customVariables,
 	}
 }
@@ -68,6 +71,7 @@ func DatabricksDataCheckTaskConfigAttrTypes() map[string]attr.Type {
 		"operator":         types.StringType,
 		"query_result":     types.Int64Type,
 		"accepts_null":     types.BoolType,
+		"ignore_result":    types.BoolType,
 		"custom_variables": types.SetType{ElemType: types.ObjectType{AttrTypes: CustomVariableAttrTypes()}},
 	}
 }

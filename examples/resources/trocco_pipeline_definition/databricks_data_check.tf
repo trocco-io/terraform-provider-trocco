@@ -13,6 +13,7 @@ resource "trocco_pipeline_definition" "databricks_data_check" {
         operator      = "equal"
         query_result  = 1
         accepts_null  = false
+        ignore_result = true
       }
     }
   ]

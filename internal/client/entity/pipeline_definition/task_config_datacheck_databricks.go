@@ -7,5 +7,6 @@ type DatabricksDataCheckTaskConfig struct {
 	Operator        string           `json:"operator"`
 	QueryResult     int64            `json:"query_result"`
 	AcceptsNull     bool             `json:"accepts_null"`
+	IgnoreResult    bool             `json:"ignore_result"`
 	CustomVariables []CustomVariable `json:"custom_variables"`
 }

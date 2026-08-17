@@ -1,21 +1,21 @@
 package entity
 
 type DbtJobDefinition struct {
-	ID                     int64                       `json:"id"`
-	Name                   string                      `json:"name"`
-	Description            *string                     `json:"description"`
-	ResourceGroupID        *int64                      `json:"resource_group_id"`
-	DbtGitRepositoryID     int64                       `json:"dbt_git_repository_id"`
-	Threads                int64                       `json:"threads"`
-	Target                 string                      `json:"target"`
-	BigquerySetting        *DbtBigquerySetting         `json:"bigquery_setting,omitempty"`
-	SnowflakeSetting       *DbtSnowflakeSetting        `json:"snowflake_setting,omitempty"`
-	RedshiftSetting        *DbtRedshiftSetting         `json:"redshift_setting,omitempty"`
-	Commands               []DbtCommand                `json:"commands"`
-	CustomVariableSettings []CustomVariableSetting     `json:"custom_variable_settings"`
-	CreatedAt              string                      `json:"created_at"`
-	UpdatedAt              string                      `json:"updated_at"`
-	CreatedBy              *DbtJobDefinitionCreatedBy  `json:"created_by"`
+	ID                     int64                      `json:"id"`
+	Name                   string                     `json:"name"`
+	Description            *string                    `json:"description"`
+	ResourceGroupID        *int64                     `json:"resource_group_id"`
+	DbtGitRepositoryID     int64                      `json:"dbt_git_repository_id"`
+	Threads                int64                      `json:"threads"`
+	Target                 string                     `json:"target"`
+	BigquerySetting        *DbtBigquerySetting        `json:"bigquery_setting,omitempty"`
+	SnowflakeSetting       *DbtSnowflakeSetting       `json:"snowflake_setting,omitempty"`
+	RedshiftSetting        *DbtRedshiftSetting        `json:"redshift_setting,omitempty"`
+	Commands               []DbtCommand               `json:"commands"`
+	CustomVariableSettings []CustomVariableSetting    `json:"custom_variable_settings"`
+	CreatedAt              string                     `json:"created_at"`
+	UpdatedAt              string                     `json:"updated_at"`
+	CreatedBy              *DbtJobDefinitionCreatedBy `json:"created_by"`
 }
 
 type DbtBigquerySetting struct {
