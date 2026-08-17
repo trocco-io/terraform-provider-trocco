@@ -737,6 +737,8 @@ resource "trocco_job_definition" "decoder_example" {
   input_option = {
     # The example is gcs, but it can be applied to file-based input.
     gcs_input_option = {
+      # `decoder` only configures the relative path inside zip / tar.gz archives.
+      # To decompress gzip or bzip2 files, set `decompression_type` instead.
       decoder = {
         match_name = "regex"
       }
@@ -928,6 +930,9 @@ resource "trocco_job_definition" "s3_input_example" {
   input_option = {
     s3_input_option = {
       bucket = "test_bucket"
+      # Specify the compression type explicitly. Auto-detection of gzip/bzip2
+      # only runs when data settings are generated in the TROCCO UI.
+      decompression_type = "gzip"
       csv_parser = {
         allow_extra_columns    = false
         allow_optional_columns = false
@@ -3121,7 +3126,7 @@ Optional:
 - `csv_parser` (Attributes) For files in CSV format, this parameter is required (see [below for nested schema](#nestedatt--input_option--s3_input_option--csv_parser))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--s3_input_option--custom_variable_settings))
 - `decoder` (Attributes) (see [below for nested schema](#nestedatt--input_option--s3_input_option--decoder))
-- `decompression_type` (String) Decompression type
+- `decompression_type` (String) Compression type of file. Valid values: default (auto-detect), zip, targz, gzip, bzip2. Auto-detection of gzip/bzip2 only runs when data settings are generated in the TROCCO UI, so specify `gzip` or `bzip2` explicitly for job definitions managed by Terraform.
 - `excel_parser` (Attributes) For files in excel format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--s3_input_option--excel_parser))
 - `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
 - `is_skip_header_line` (Boolean) Flag whether or not to skip header columns For CSV/TSV files that do not contain header columns, a temporary header name generated on the TROCCO side is assigned.
