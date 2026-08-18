@@ -60,8 +60,7 @@ resource "trocco_job_definition" "s3_test" {
   ]
   input_option = {
     s3_input_option = {
-      bucket             = "test_bucket"
-      decompression_type = "gzip"
+      bucket = "test_bucket"
       csv_parser = {
         allow_extra_columns    = false
         allow_optional_columns = false
@@ -99,7 +98,7 @@ resource "trocco_job_definition" "s3_test" {
         stop_on_invalid_record  = true
         trim_if_not_quoted      = false
       }
-      decompression_type          = "default"
+      decompression_type          = "gzip"
       incremental_loading_enabled = false
       is_skip_header_line         = false
       path_match_pattern          = ""
