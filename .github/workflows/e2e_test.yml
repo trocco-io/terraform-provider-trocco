@@ -1,7 +1,7 @@
 name: E2E tests
 
 on:
-  pull_request:
+  push:
     paths-ignore:
       - "README.md"
       - "CHANGELOG.md"
