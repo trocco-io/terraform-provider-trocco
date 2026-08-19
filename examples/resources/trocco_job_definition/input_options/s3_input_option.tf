@@ -42,7 +42,12 @@ resource "trocco_job_definition" "s3_input_example" {
       }
       # Specify the compression type explicitly. Auto-detection of gzip/bzip2
       # only runs when data settings are generated in the TROCCO UI.
-      decompression_type          = "gzip"
+      decompression_type = "gzip"
+      # When `decompression_type` is gzip or bzip2, TROCCO creates a decoder for it.
+      # Declare `decoder` explicitly so that the plan matches the applied state.
+      decoder = {
+        match_name = ""
+      }
       incremental_loading_enabled = false
       is_skip_header_line         = false
       path_match_pattern          = ""

@@ -73,7 +73,10 @@ func S3InputOptionSchema() schema.Attribute {
 				Default:  stringdefault.StaticString("default"),
 				MarkdownDescription: "Compression type of file. Valid values: default (auto-detect), zip, targz, gzip, bzip2. " +
 					"Auto-detection of gzip/bzip2 only runs when data settings are generated in the TROCCO UI, " +
-					"so specify `gzip` or `bzip2` explicitly for job definitions managed by Terraform.",
+					"so specify `gzip` or `bzip2` explicitly for job definitions managed by Terraform. " +
+					"When `gzip` or `bzip2` is specified, TROCCO creates a decoder for it, " +
+					"so the `decoder` attribute must also be declared explicitly (for example `decoder = { match_name = \"\" }`) " +
+					"to keep the plan consistent with the applied state.",
 				Validators: []validator.String{
 					stringvalidator.OneOf("default", "zip", "targz", "gzip", "bzip2"),
 				},

@@ -969,7 +969,12 @@ resource "trocco_job_definition" "s3_input_example" {
       }
       # Specify the compression type explicitly. Auto-detection of gzip/bzip2
       # only runs when data settings are generated in the TROCCO UI.
-      decompression_type          = "gzip"
+      decompression_type = "gzip"
+      # When `decompression_type` is gzip or bzip2, TROCCO creates a decoder for it.
+      # Declare `decoder` explicitly so that the plan matches the applied state.
+      decoder = {
+        match_name = ""
+      }
       incremental_loading_enabled = false
       is_skip_header_line         = false
       path_match_pattern          = ""
@@ -3125,7 +3130,7 @@ Optional:
 - `csv_parser` (Attributes) For files in CSV format, this parameter is required (see [below for nested schema](#nestedatt--input_option--s3_input_option--csv_parser))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--s3_input_option--custom_variable_settings))
 - `decoder` (Attributes) (see [below for nested schema](#nestedatt--input_option--s3_input_option--decoder))
-- `decompression_type` (String) Compression type of file. Valid values: default (auto-detect), zip, targz, gzip, bzip2. Auto-detection of gzip/bzip2 only runs when data settings are generated in the TROCCO UI, so specify `gzip` or `bzip2` explicitly for job definitions managed by Terraform.
+- `decompression_type` (String) Compression type of file. Valid values: default (auto-detect), zip, targz, gzip, bzip2. Auto-detection of gzip/bzip2 only runs when data settings are generated in the TROCCO UI, so specify `gzip` or `bzip2` explicitly for job definitions managed by Terraform. When `gzip` or `bzip2` is specified, TROCCO creates a decoder for it, so the `decoder` attribute must also be declared explicitly (for example `decoder = { match_name = "" }`) to keep the plan consistent with the applied state.
 - `excel_parser` (Attributes) For files in excel format, this parameter is required. (see [below for nested schema](#nestedatt--input_option--s3_input_option--excel_parser))
 - `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
 - `is_skip_header_line` (Boolean) Flag whether or not to skip header columns For CSV/TSV files that do not contain header columns, a temporary header name generated on the TROCCO side is assigned.
