@@ -20,6 +20,7 @@ func TestAccJobDefinitionResourceS3ToSnowflake(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "input_option_type", "s3"),
 					resource.TestCheckResourceAttr(resourceName, "output_option_type", "snowflake"),
 					resource.TestCheckResourceAttr(resourceName, "resource_enhancement", "custom_spec"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.s3_input_option.decompression_type", "gzip"),
 				),
 			},
 			{
