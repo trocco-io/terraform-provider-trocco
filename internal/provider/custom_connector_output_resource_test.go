@@ -106,6 +106,16 @@ func TestAccCustomConnectorOutputResourceInvalidConfig(t *testing.T) {
 			configFile:  "testdata/custom_connector_output/invalid_oauth2_missing_access_token_uri.tf",
 			expectError: `access_token_uri.*is required when`,
 		},
+		{
+			name:        "api_key_with_oauth2_attributes",
+			configFile:  "testdata/custom_connector_output/invalid_api_key_with_oauth2_attributes.tf",
+			expectError: `can only be set when`,
+		},
+		{
+			name:        "authorization_code_missing_auth_uri",
+			configFile:  "testdata/custom_connector_output/invalid_authorization_code_missing_auth_uri.tf",
+			expectError: `auth_uri.*is required when`,
+		},
 	}
 
 	for _, tc := range testCases {
