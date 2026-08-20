@@ -271,13 +271,13 @@ resource "trocco_custom_connector_input" "oauth2_example" {
 
 ### Optional
 
-- `access_token_uri` (String) OAuth2 token endpoint URI. Required when `auth_type` is `oauth2`.
+- `access_token_uri` (String) OAuth2 token endpoint URI. Can only be set when `auth_type` is `oauth2`, and is required in that case.
 - `auth_header_name` (String) Authentication header name. When omitted, the server applies its default.
 - `auth_header_scheme` (String) Authentication header scheme. When omitted, the server applies its default.
-- `auth_uri` (String) OAuth2 authorization endpoint URI. Required when `grant_type` is `authorization_code`.
+- `auth_uri` (String) OAuth2 authorization endpoint URI. Can only be set when `auth_type` is `oauth2`, and is required when `grant_type` is `authorization_code`.
 - `description` (String) A memo describing the custom connector.
 - `endpoints` (Attributes List) Ordered list of endpoint definitions. Set to `[]` to clear. (see [below for nested schema](#nestedatt--endpoints))
-- `grant_type` (String) OAuth2 grant type. Only meaningful when `auth_type` is `oauth2`; the server discards this (along with `auth_uri`/`access_token_uri`) when `auth_type` is changed away from `oauth2`.
+- `grant_type` (String) OAuth2 grant type. Can only be set when `auth_type` is `oauth2`: the server discards this (along with `auth_uri`/`access_token_uri`) for any other `auth_type`.
 
 ### Read-Only
 

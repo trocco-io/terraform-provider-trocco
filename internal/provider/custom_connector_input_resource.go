@@ -10,6 +10,7 @@ import (
 	"terraform-provider-trocco/internal/client/parameter"
 	"terraform-provider-trocco/internal/provider/model"
 	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
+	troccoValidator "terraform-provider-trocco/internal/provider/validator"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
@@ -290,22 +291,27 @@ func (r *customConnectorInputResource) Schema(ctx context.Context, req resource.
 				Optional: true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("authorization_code", "client_credentials"),
+					troccoValidator.RequiresAttributeValueOneOf(path.Root("auth_type"), "oauth2"),
 				},
-				MarkdownDescription: "OAuth2 grant type. Only meaningful when `auth_type` is `oauth2`; the server discards this (along with `auth_uri`/`access_token_uri`) when `auth_type` is changed away from `oauth2`.",
+				MarkdownDescription: "OAuth2 grant type. Can only be set when `auth_type` is `oauth2`: the server discards this (along with `auth_uri`/`access_token_uri`) for any other `auth_type`.",
 			},
 			"auth_uri": schema.StringAttribute{
 				Optional: true,
 				Validators: []validator.String{
 					stringvalidator.RegexMatches(urlSchemeRegex, "must start with http:// or https://"),
+					troccoValidator.RequiresAttributeValueOneOf(path.Root("auth_type"), "oauth2"),
+					troccoValidator.RequiredIfAttributeValueOneOf(path.Root("grant_type"), "authorization_code"),
 				},
-				MarkdownDescription: "OAuth2 authorization endpoint URI. Required when `grant_type` is `authorization_code`.",
+				MarkdownDescription: "OAuth2 authorization endpoint URI. Can only be set when `auth_type` is `oauth2`, and is required when `grant_type` is `authorization_code`.",
 			},
 			"access_token_uri": schema.StringAttribute{
 				Optional: true,
 				Validators: []validator.String{
 					stringvalidator.RegexMatches(urlSchemeRegex, "must start with http:// or https://"),
+					troccoValidator.RequiresAttributeValueOneOf(path.Root("auth_type"), "oauth2"),
+					troccoValidator.RequiredIfAttributeValueOneOf(path.Root("auth_type"), "oauth2"),
 				},
-				MarkdownDescription: "OAuth2 token endpoint URI. Required when `auth_type` is `oauth2`.",
+				MarkdownDescription: "OAuth2 token endpoint URI. Can only be set when `auth_type` is `oauth2`, and is required in that case.",
 			},
 			"created_at": schema.StringAttribute{
 				Computed:            true,
@@ -469,24 +475,9 @@ func (r *customConnectorInputResource) ValidateConfig(ctx context.Context, req r
 		return
 	}
 
-	if !plan.AuthType.IsNull() && !plan.AuthType.IsUnknown() && plan.AuthType.ValueString() == "oauth2" {
-		if plan.AccessTokenURI.IsNull() {
-			resp.Diagnostics.AddAttributeError(
-				path.Root("access_token_uri"),
-				"Missing Access Token URI",
-				"`access_token_uri` is required when `auth_type` is \"oauth2\".",
-			)
-		}
-	}
-	if !plan.GrantType.IsNull() && !plan.GrantType.IsUnknown() && plan.GrantType.ValueString() == "authorization_code" {
-		if plan.AuthURI.IsNull() {
-			resp.Diagnostics.AddAttributeError(
-				path.Root("auth_uri"),
-				"Missing Auth URI",
-				"`auth_uri` is required when `grant_type` is \"authorization_code\".",
-			)
-		}
-	}
+	// The conditions tying the OAuth2 attributes to `auth_type`/`grant_type` are
+	// declared on the attributes themselves, so that adding an authentication
+	// method only touches the attributes it introduces.
 
 	endpoints, diags := extractCustomConnectorEndpointModels(ctx, plan.Endpoints)
 	resp.Diagnostics.Append(diags...)

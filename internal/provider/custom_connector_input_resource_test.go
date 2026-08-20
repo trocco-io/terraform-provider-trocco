@@ -106,6 +106,16 @@ func TestAccCustomConnectorInputResourceInvalidConfig(t *testing.T) {
 			expectError: `access_token_uri.*is required when`,
 		},
 		{
+			name:        "api_key_with_oauth2_attributes",
+			configFile:  "testdata/custom_connector_input/invalid_api_key_with_oauth2_attributes.tf",
+			expectError: `can only be set when`,
+		},
+		{
+			name:        "authorization_code_missing_auth_uri",
+			configFile:  "testdata/custom_connector_input/invalid_authorization_code_missing_auth_uri.tf",
+			expectError: `auth_uri.*is required when`,
+		},
+		{
 			name:        "last_page_size_missing_max_request_count",
 			configFile:  "testdata/custom_connector_input/invalid_last_page_size_missing_max_request_count.tf",
 			expectError: `must be specified when`,
