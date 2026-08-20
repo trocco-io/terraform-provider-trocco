@@ -49,10 +49,14 @@ func (input *UpdateCustomConnectorInputInput) SetAccessTokenURI(v string) { inpu
 // only when preserving an existing endpoint (resolved by matching `name`
 // against prior state); left nil, the server creates a new endpoint.
 //
-// `request_body` and `paginator` deliberately omit `omitempty`: the API keeps
-// the current value when a key is absent, so a nil pointer has to be sent as an
-// explicit null to clear it. Terraform cannot distinguish "unset" from
-// "explicit null", so a null here always means "remove".
+// `request_body` and `paginator` deliberately omit `omitempty` so that a nil
+// pointer is sent as an explicit null instead of being left out. Both behave
+// identically under the current API, which assigns them unconditionally and
+// therefore clears them on a missing key as well. The explicit null guards
+// against the API ever treating a missing key as "keep the current value":
+// Terraform cannot distinguish "unset" from "explicit null", so leaving the
+// attribute out of the configuration would then be impossible to apply as
+// "remove".
 type CustomConnectorEndpointInput struct {
 	ID                *int64                              `json:"id,omitempty"`
 	Name              string                              `json:"name"`
