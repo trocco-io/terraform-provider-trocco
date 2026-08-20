@@ -100,7 +100,11 @@ func (d *CustomConnectorPaginatorPlanModifier) PlanModifyObject(ctx context.Cont
 			fmt.Sprintf("Attribute %s must be a valid Liquid variable name when paginator.inject_into is \"request_body\"", req.Path.AtName("page_token_option").AtName("field_name")),
 		)
 	}
-	if !pageSizeFieldName.IsNull() && !pageTokenFieldName.IsNull() && pageSizeFieldName.Equal(pageTokenFieldName) {
+	// `Equal` reports true for two unknown values, so unknowns are skipped here
+	// as well: the final values may still differ.
+	if !pageSizeFieldName.IsNull() && !pageSizeFieldName.IsUnknown() &&
+		!pageTokenFieldName.IsNull() && !pageTokenFieldName.IsUnknown() &&
+		pageSizeFieldName.Equal(pageTokenFieldName) {
 		resp.Diagnostics.AddAttributeError(
 			req.Path,
 			"CustomConnector Paginator Validation Error",
