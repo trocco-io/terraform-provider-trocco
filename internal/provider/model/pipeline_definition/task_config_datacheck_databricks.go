@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type SnowflakeDataCheckTaskConfig struct {
+type DatabricksDataCheckTaskConfig struct {
 	Name            types.String                   `tfsdk:"name"`
 	ConnectionID    types.Int64                    `tfsdk:"connection_id"`
 	Query           custom_type.TrimmedStringValue `tfsdk:"query"`
@@ -19,16 +19,15 @@ type SnowflakeDataCheckTaskConfig struct {
 	QueryResult     types.Int64                    `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
 	IgnoreResult    types.Bool                     `tfsdk:"ignore_result"`
-	Warehouse       types.String                   `tfsdk:"warehouse"`
 	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
 
-func NewSnowflakeDataCheckTaskConfig(ctx context.Context, c *pipelineDefinitionEntities.SnowflakeDataCheckTaskConfig) *SnowflakeDataCheckTaskConfig {
+func NewDatabricksDataCheckTaskConfig(ctx context.Context, c *pipelineDefinitionEntities.DatabricksDataCheckTaskConfig) *DatabricksDataCheckTaskConfig {
 	if c == nil {
 		return nil
 	}
 
-	return &SnowflakeDataCheckTaskConfig{
+	return &DatabricksDataCheckTaskConfig{
 		Name:            types.StringValue(c.Name),
 		ConnectionID:    types.Int64Value(c.ConnectionID),
 		Query:           custom_type.TrimmedStringValue{StringValue: types.StringValue(c.Query)},
@@ -36,12 +35,11 @@ func NewSnowflakeDataCheckTaskConfig(ctx context.Context, c *pipelineDefinitionE
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
 		IgnoreResult:    types.BoolValue(c.IgnoreResult),
-		Warehouse:       types.StringValue(c.Warehouse),
 		CustomVariables: NewCustomVariables(ctx, c.CustomVariables),
 	}
 }
 
-func (c *SnowflakeDataCheckTaskConfig) ToInput(ctx context.Context) *pipelineDefinitionParameters.SnowflakeDataCheckTaskConfigInput {
+func (c *DatabricksDataCheckTaskConfig) ToInput(ctx context.Context) *pipelineDefinitionParameters.DatabricksDataCheckTaskConfigInput {
 	customVariables := []pipelineDefinitionParameters.CustomVariable{}
 	if !c.CustomVariables.IsNull() && !c.CustomVariables.IsUnknown() {
 		var customVariableValues []CustomVariable
@@ -53,7 +51,7 @@ func (c *SnowflakeDataCheckTaskConfig) ToInput(ctx context.Context) *pipelineDef
 		}
 	}
 
-	return &pipelineDefinitionParameters.SnowflakeDataCheckTaskConfigInput{
+	return &pipelineDefinitionParameters.DatabricksDataCheckTaskConfigInput{
 		Name:            c.Name.ValueString(),
 		ConnectionID:    c.ConnectionID.ValueInt64(),
 		Query:           c.Query.ValueString(),
@@ -61,12 +59,11 @@ func (c *SnowflakeDataCheckTaskConfig) ToInput(ctx context.Context) *pipelineDef
 		QueryResult:     &parameter.NullableInt64{Valid: !c.QueryResult.IsNull(), Value: c.QueryResult.ValueInt64()},
 		AcceptsNull:     &parameter.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
 		IgnoreResult:    &parameter.NullableBool{Valid: !c.IgnoreResult.IsNull(), Value: c.IgnoreResult.ValueBool()},
-		Warehouse:       c.Warehouse.ValueString(),
 		CustomVariables: customVariables,
 	}
 }
 
-func SnowflakeDataCheckTaskConfigAttrTypes() map[string]attr.Type {
+func DatabricksDataCheckTaskConfigAttrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"name":             types.StringType,
 		"connection_id":    types.Int64Type,
@@ -75,7 +72,6 @@ func SnowflakeDataCheckTaskConfigAttrTypes() map[string]attr.Type {
 		"query_result":     types.Int64Type,
 		"accepts_null":     types.BoolType,
 		"ignore_result":    types.BoolType,
-		"warehouse":        types.StringType,
 		"custom_variables": types.SetType{ElemType: types.ObjectType{AttrTypes: CustomVariableAttrTypes()}},
 	}
 }

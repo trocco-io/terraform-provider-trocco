@@ -10,9 +10,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
-func SnowflakeDatacheckTaskConfigSchema() schema.Attribute {
+func DatabricksDatacheckTaskConfigSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
-		MarkdownDescription: "The task configuration for the datacheck task.",
+		MarkdownDescription: "The datacheck task config of the pipeline definition",
 		Optional:            true,
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
@@ -23,24 +23,24 @@ func SnowflakeDatacheckTaskConfigSchema() schema.Attribute {
 				},
 			},
 			"connection_id": schema.Int64Attribute{
-				MarkdownDescription: "The connection id to use for the datacheck task",
+				MarkdownDescription: "The connection id of the datacheck task",
 				Required:            true,
 			},
 			"query": schema.StringAttribute{
-				MarkdownDescription: "The query to run for the datacheck task",
+				MarkdownDescription: "The query of the datacheck task",
 				Optional:            true,
 				CustomType:          custom_type.TrimmedStringType{},
 			},
 			"operator": schema.StringAttribute{
-				MarkdownDescription: "The operator to use for the datacheck task",
+				MarkdownDescription: "The operator of the datacheck task",
 				Required:            true,
 			},
 			"query_result": schema.Int64Attribute{
-				MarkdownDescription: "The query result to use for the datacheck task",
+				MarkdownDescription: "The query result of the datacheck task",
 				Required:            true,
 			},
 			"accepts_null": schema.BoolAttribute{
-				MarkdownDescription: "Whether the datacheck task accepts null values",
+				MarkdownDescription: "Whether the datacheck task accepts null",
 				Required:            true,
 			},
 			"ignore_result": schema.BoolAttribute{
@@ -50,10 +50,6 @@ func SnowflakeDatacheckTaskConfigSchema() schema.Attribute {
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.UseStateForUnknown(),
 				},
-			},
-			"warehouse": schema.StringAttribute{
-				MarkdownDescription: "The warehouse to use for the datacheck task",
-				Optional:            true,
 			},
 			"custom_variables": CustomVariablesSchema(),
 		},

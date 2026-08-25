@@ -1,6 +1,6 @@
 package pipeline_definition
 
-type RedshiftDataCheckTaskConfig struct {
+type DatabricksDataCheckTaskConfig struct {
 	Name            string           `json:"name"`
 	ConnectionID    int64            `json:"connection_id"`
 	Query           string           `json:"query"`
@@ -8,6 +8,5 @@ type RedshiftDataCheckTaskConfig struct {
 	QueryResult     int64            `json:"query_result"`
 	AcceptsNull     bool             `json:"accepts_null"`
 	IgnoreResult    bool             `json:"ignore_result"`
-	Database        string           `json:"database"`
 	CustomVariables []CustomVariable `json:"custom_variables"`
 }

@@ -18,6 +18,7 @@ type RedshiftDataCheckTaskConfig struct {
 	Operator        types.String                   `tfsdk:"operator"`
 	QueryResult     types.Int64                    `tfsdk:"query_result"`
 	AcceptsNull     types.Bool                     `tfsdk:"accepts_null"`
+	IgnoreResult    types.Bool                     `tfsdk:"ignore_result"`
 	Database        types.String                   `tfsdk:"database"`
 	CustomVariables types.Set                      `tfsdk:"custom_variables"`
 }
@@ -34,6 +35,7 @@ func NewRedshiftDataCheckTaskConfig(ctx context.Context, c *pipelineDefinitionEn
 		Operator:        types.StringValue(c.Operator),
 		QueryResult:     types.Int64Value(c.QueryResult),
 		AcceptsNull:     types.BoolValue(c.AcceptsNull),
+		IgnoreResult:    types.BoolValue(c.IgnoreResult),
 		Database:        types.StringValue(c.Database),
 		CustomVariables: NewCustomVariables(ctx, c.CustomVariables),
 	}
@@ -58,6 +60,7 @@ func (c *RedshiftDataCheckTaskConfig) ToInput(ctx context.Context) *pipelineDefi
 		Operator:        c.Operator.ValueString(),
 		QueryResult:     &parameter.NullableInt64{Valid: !c.QueryResult.IsNull(), Value: c.QueryResult.ValueInt64()},
 		AcceptsNull:     &parameter.NullableBool{Valid: !c.AcceptsNull.IsNull(), Value: c.AcceptsNull.ValueBool()},
+		IgnoreResult:    &parameter.NullableBool{Valid: !c.IgnoreResult.IsNull(), Value: c.IgnoreResult.ValueBool()},
 		Database:        c.Database.ValueString(),
 		CustomVariables: customVariables,
 	}
@@ -71,6 +74,7 @@ func RedshiftDataCheckTaskConfigAttrTypes() map[string]attr.Type {
 		"operator":         types.StringType,
 		"query_result":     types.Int64Type,
 		"accepts_null":     types.BoolType,
+		"ignore_result":    types.BoolType,
 		"database":         types.StringType,
 		"custom_variables": types.SetType{ElemType: types.ObjectType{AttrTypes: CustomVariableAttrTypes()}},
 	}
