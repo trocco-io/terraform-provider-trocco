@@ -102,10 +102,13 @@ resource "trocco_job_definition" "custom_connector_to_bigquery" {
 
   output_option = {
     bigquery_output_option = {
-      bigquery_connection_id = trocco_connection.bigquery.id
-      dataset                = "test_dataset"
-      table                  = "custom_connector_to_bigquery_test_table"
-      mode                   = "append"
+      bigquery_connection_id                   = trocco_connection.bigquery.id
+      dataset                                  = "test_dataset"
+      table                                    = "custom_connector_to_bigquery_test_table"
+      mode                                     = "append"
+      bigquery_output_option_clustering_fields = []
+      bigquery_output_option_column_options    = []
+      bigquery_output_option_merge_keys        = []
     }
   }
 }

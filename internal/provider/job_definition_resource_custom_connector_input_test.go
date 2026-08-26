@@ -40,16 +40,7 @@ func TestAccJobDefinitionResourceCustomConnectorToBigQuery(t *testing.T) {
 				// query_parameters and request_body_parameters are omitted in
 				// update.tf: verify omitting the key keeps the previously
 				// configured values.
-				//
-				// ExpectNonEmptyPlan works around a pre-existing, unrelated
-				// issue in bigquery_output_option: bigquery_output_option_
-				// clustering_fields/column_options/merge_keys are Optional +
-				// Computed lists without a state-preserving plan modifier,
-				// so they show as "(known after apply)" on every plan after
-				// the first. custom_connector_input_option itself produces
-				// an empty plan.
-				Config:             providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/custom_connector_to_bigquery/update.tf"),
-				ExpectNonEmptyPlan: true,
+				Config: providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/custom_connector_to_bigquery/update.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "Custom Connector to BigQuery Test (Updated)"),
 					resource.TestCheckResourceAttr(resourceName, inputOption+".query_parameters.0.name", "limit"),
