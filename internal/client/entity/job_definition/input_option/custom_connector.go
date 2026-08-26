@@ -6,21 +6,25 @@ import (
 	"terraform-provider-trocco/internal/client/entity"
 )
 
+// CustomConnectorInputOption models every snapshot field as a pointer: the
+// underlying columns are all nullable, and job definitions created before the
+// snapshot feature existed carry null in them (the model applies no fallback).
+// Decoding those into plain strings would turn null into "", putting an empty
+// string in state where null is correct.
 type CustomConnectorInputOption struct {
 	CustomConnectorEndpointID   *int64  `json:"custom_connector_endpoint_id"`
 	CustomConnectorConnectionID *int64  `json:"custom_connector_connection_id"`
-	URL                         string  `json:"url"`
-	AuthType                    string  `json:"auth_type"`
+	URL                         *string `json:"url"`
+	AuthType                    *string `json:"auth_type"`
 	AuthHeaderName              *string `json:"auth_header_name"`
 	AuthHeaderScheme            *string `json:"auth_header_scheme"`
-	EndpointPath                string  `json:"endpoint_path"`
-	EndpointMethod              string  `json:"endpoint_method"`
+	EndpointPath                *string `json:"endpoint_path"`
+	EndpointMethod              *string `json:"endpoint_method"`
 	EndpointRequestBody         *string `json:"endpoint_request_body"`
-	SuccessCodes                string  `json:"success_codes"`
-	NotRetryableCodes           string  `json:"not_retryable_codes"`
+	SuccessCodes                *string `json:"success_codes"`
+	NotRetryableCodes           *string `json:"not_retryable_codes"`
 	// RequestTimeoutSec is nullable here (unlike the definition side's
-	// NOT NULL column) because job_definitions created before this field
-	// was introduced have no snapshot value; null is treated as 30s.
+	// NOT NULL column) for the same reason, and null is treated as 30s.
 	RequestTimeoutSec      *int64                                `json:"request_timeout_sec"`
 	QueryParameters        []CustomConnectorNamedValue           `json:"query_parameters"`
 	Headers                []CustomConnectorNamedValue           `json:"headers"`
