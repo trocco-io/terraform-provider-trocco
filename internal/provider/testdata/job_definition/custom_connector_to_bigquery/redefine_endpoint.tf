@@ -63,8 +63,8 @@ resource "trocco_connection" "custom_connector_to_bigquery_test" {
 }
 
 resource "trocco_job_definition" "custom_connector_to_bigquery" {
-  name                     = "Custom Connector to BigQuery Test (Updated)"
-  description              = "Updated test job definition for transferring data from a custom connector to BigQuery"
+  name                     = "Custom Connector to BigQuery Test (Redefined)"
+  description              = "Test job definition updated in the same apply as the endpoint definition it snapshots"
   resource_enhancement     = "medium"
   retry_limit              = 0
   is_runnable_concurrently = false
@@ -78,10 +78,9 @@ resource "trocco_job_definition" "custom_connector_to_bigquery" {
       custom_connector_endpoint_id   = trocco_custom_connector_input.custom_connector_to_bigquery_test.endpoints[0].id
       custom_connector_connection_id = trocco_connection.custom_connector_to_bigquery_test.id
 
-      # An explicit empty list clears previously configured values, unlike
-      # omitting the key entirely (see update.tf).
-      query_parameters        = []
-      request_body_parameters = []
+      # The endpoint definition above changes in this same apply, so the
+      # API rebuilds the snapshot while updating this job definition. The
+      # plan must not pin the snapshot attributes to their prior values.
 
       jsonpath_parser = {
         columns = [

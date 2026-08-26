@@ -1,14 +1,18 @@
 package job_definition
 
 import (
+	"sort"
 	troccoPlanModifier "terraform-provider-trocco/internal/provider/planmodifier"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 // customConnectorComputedString/Int64/Bool build read-only (server-derived)
@@ -51,7 +55,11 @@ func customConnectorComputedBool(description string) schema.Attribute {
 func CustomConnectorInputOptionSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Optional:            true,
-		MarkdownDescription: "Attributes of a source that uses a custom connector definition (`trocco_custom_connector_input`)",
+		MarkdownDescription: "Attributes of a source that uses a custom connector definition (`trocco_custom_connector_input`). " +
+			"The attributes documented as a snapshot are read-only copies of the referenced endpoint, and TROCCO rebuilds all of them " +
+			"every time this job definition is updated. Any update therefore plans them as `(known after apply)`, and changing the " +
+			"endpoint definition - whether through `trocco_custom_connector_input` or the web UI - is reflected here on the next update " +
+			"of this job definition, not when the definition itself changes.",
 		Attributes: map[string]schema.Attribute{
 			"custom_connector_endpoint_id": schema.Int64Attribute{
 				Required: true,
@@ -104,11 +112,113 @@ func CustomConnectorInputOptionSchema() schema.Attribute {
 	}
 }
 
+// CustomConnectorSnapshotAttribute identifies an attribute of
+// custom_connector_input_option whose value the API derives from the custom
+// connector definition rather than from the configuration.
+type CustomConnectorSnapshotAttribute struct {
+	Path path.Path
+	Type attr.Type
+}
+
+// CustomConnectorSnapshotAttributes reports which attributes of the
+// custom_connector_input_option object rooted at base are server-derived for
+// the given configuration, so a plan can mark them unknown before an update.
+//
+// The set is derived from the schema rather than hard-coded: the API rebuilds
+// the whole snapshot on every upsert, so any attribute the configuration does
+// not own is subject to change, and a new snapshot attribute is picked up here
+// without further changes. An attribute qualifies when it is Computed, carries
+// no default (a default is a provider-side value, not a server-derived one)
+// and is absent from the configuration. The last condition matters for the
+// Optional + Computed named value lists: the API only reconciles them against
+// the endpoint definition while they are omitted, and once they are configured
+// Terraform requires the planned value to match the configuration anyway.
+func CustomConnectorSnapshotAttributes(base path.Path, config types.Object) []CustomConnectorSnapshotAttribute {
+	root, ok := CustomConnectorInputOptionSchema().(schema.SingleNestedAttribute)
+	if !ok {
+		return nil
+	}
+
+	attributes := customConnectorSnapshotAttributes(base, root.Attributes, config)
+	sort.Slice(attributes, func(i, j int) bool {
+		return attributes[i].Path.String() < attributes[j].Path.String()
+	})
+	return attributes
+}
+
+func customConnectorSnapshotAttributes(
+	base path.Path,
+	attributes map[string]schema.Attribute,
+	config types.Object,
+) []CustomConnectorSnapshotAttribute {
+	if config.IsNull() || config.IsUnknown() {
+		return nil
+	}
+
+	configAttributes := config.Attributes()
+
+	var snapshotAttributes []CustomConnectorSnapshotAttribute
+	for name, attribute := range attributes {
+		attributePath := base.AtName(name)
+		configValue := configAttributes[name]
+
+		if attribute.IsComputed() && !customConnectorAttributeHasDefault(attribute) {
+			if configValue == nil || configValue.IsNull() {
+				snapshotAttributes = append(snapshotAttributes, CustomConnectorSnapshotAttribute{
+					Path: attributePath,
+					Type: attribute.GetType(),
+				})
+			}
+			continue
+		}
+
+		// Descend into configurable nested objects (jsonpath_parser) to reach
+		// the server-derived attributes they contain.
+		nested, ok := attribute.(schema.SingleNestedAttribute)
+		if !ok {
+			continue
+		}
+		nestedConfig, ok := configValue.(types.Object)
+		if !ok {
+			continue
+		}
+		snapshotAttributes = append(
+			snapshotAttributes,
+			customConnectorSnapshotAttributes(attributePath, nested.Attributes, nestedConfig)...,
+		)
+	}
+	return snapshotAttributes
+}
+
+// customConnectorAttributeHasDefault covers the attribute types used by
+// CustomConnectorInputOptionSchema. An unlisted type simply reports no
+// default, which at worst plans an attribute as unknown unnecessarily.
+func customConnectorAttributeHasDefault(attribute schema.Attribute) bool {
+	switch a := attribute.(type) {
+	case schema.StringAttribute:
+		return a.Default != nil
+	case schema.Int64Attribute:
+		return a.Default != nil
+	case schema.BoolAttribute:
+		return a.Default != nil
+	case schema.ListAttribute:
+		return a.Default != nil
+	case schema.ListNestedAttribute:
+		return a.Default != nil
+	case schema.SingleNestedAttribute:
+		return a.Default != nil
+	default:
+		return false
+	}
+}
+
 func customConnectorNamedValueListSchema(description string) schema.Attribute {
 	return schema.ListNestedAttribute{
-		Optional:            true,
-		Computed:            true,
-		MarkdownDescription: description,
+		Optional: true,
+		Computed: true,
+		MarkdownDescription: description +
+			" When this attribute is omitted and the snapshot is rebuilt, values whose name no longer exists on the referenced " +
+			"endpoint are dropped, so the result of an update is only known after apply.",
 		PlanModifiers: []planmodifier.List{
 			troccoPlanModifier.CustomConnectorSnapshotListPlanModifier{},
 		},

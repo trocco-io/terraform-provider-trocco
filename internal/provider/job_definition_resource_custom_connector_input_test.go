@@ -49,6 +49,21 @@ func TestAccJobDefinitionResourceCustomConnectorToBigQuery(t *testing.T) {
 				),
 			},
 			{
+				// The endpoint definition and the job definition referencing
+				// it change in the same apply: the API rebuilds the snapshot
+				// while updating the job definition, so the plan must not pin
+				// the snapshot attributes to their prior values.
+				Config: providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/custom_connector_to_bigquery/redefine_endpoint.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Custom Connector to BigQuery Test (Redefined)"),
+					resource.TestCheckResourceAttr(resourceName, inputOption+".success_codes", "200,201"),
+					resource.TestCheckResourceAttr(resourceName, inputOption+".request_timeout_sec", "60"),
+					resource.TestCheckResourceAttr(resourceName, inputOption+".paginator.page_increment_strategy.stop_on_page", "20"),
+					// Omitted named value lists survive the rebuilt snapshot.
+					resource.TestCheckResourceAttr(resourceName, inputOption+".query_parameters.0.value", "100"),
+				),
+			},
+			{
 				// query_parameters = [] and request_body_parameters = [] in
 				// clear.tf: verify an explicit empty list clears the previously
 				// configured values.
