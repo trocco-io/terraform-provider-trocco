@@ -299,15 +299,15 @@ func newCustomConnectorJsonpathParser(
 // toJsonpathParserInput converts the jsonpath_parser block to its wire
 // shape. Root is always sent empty: the server overwrites it from the
 // referenced endpoint's jsonpath_root and ignores whatever is submitted.
-func (jsonpathParser *CustomConnectorJsonpathParser) toJsonpathParserInput(ctx context.Context) *jobDefinitionParameters.JsonpathParserInput {
+func (jsonpathParser *CustomConnectorJsonpathParser) toJsonpathParserInput(ctx context.Context) (*jobDefinitionParameters.JsonpathParserInput, diag.Diagnostics) {
 	if jsonpathParser == nil {
-		return nil
+		return nil, nil
 	}
 
 	var columnValues []parser.JsonpathParserColumn
 	diags := jsonpathParser.Columns.ElementsAs(ctx, &columnValues, false)
 	if diags.HasError() {
-		return nil
+		return nil, diags
 	}
 
 	columns := make([]jobDefinitionParameters.JsonpathParserColumnInput, 0, len(columnValues))
@@ -324,7 +324,7 @@ func (jsonpathParser *CustomConnectorJsonpathParser) toJsonpathParserInput(ctx c
 		Root:            "",
 		DefaultTimeZone: jsonpathParser.DefaultTimeZone.ValueString(),
 		Columns:         columns,
-	}
+	}, diags
 }
 
 func newCustomConnectorPaginator(
@@ -410,6 +410,12 @@ func (inputOption *CustomConnectorInputOption) ToInput(ctx context.Context) (*in
 		return nil, diags
 	}
 
+	jsonpathParser, d := inputOption.JsonpathParser.toJsonpathParserInput(ctx)
+	diags.Append(d...)
+	if diags.HasError() {
+		return nil, diags
+	}
+
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, inputOption.CustomVariableSettings)
 
 	return &inputOptionParameters.CustomConnectorInputOptionInput{
@@ -419,7 +425,7 @@ func (inputOption *CustomConnectorInputOption) ToInput(ctx context.Context) (*in
 		Headers:                     headers,
 		PathParameters:              pathParameters,
 		RequestBodyParameters:       requestBodyParameters,
-		JsonpathParser:              inputOption.JsonpathParser.toJsonpathParserInput(ctx),
+		JsonpathParser:              jsonpathParser,
 		CustomVariableSettings:      model.ToCustomVariableSettingInputs(customVarSettings),
 	}, diags
 }
@@ -443,6 +449,12 @@ func (inputOption *CustomConnectorInputOption) ToUpdateInput(ctx context.Context
 		return nil, diags
 	}
 
+	jsonpathParser, d := inputOption.JsonpathParser.toJsonpathParserInput(ctx)
+	diags.Append(d...)
+	if diags.HasError() {
+		return nil, diags
+	}
+
 	customVarSettings := common.ExtractCustomVariableSettings(ctx, inputOption.CustomVariableSettings)
 
 	return &inputOptionParameters.UpdateCustomConnectorInputOptionInput{
@@ -452,7 +464,7 @@ func (inputOption *CustomConnectorInputOption) ToUpdateInput(ctx context.Context
 		Headers:                     headers,
 		PathParameters:              pathParameters,
 		RequestBodyParameters:       requestBodyParameters,
-		JsonpathParser:              inputOption.JsonpathParser.toJsonpathParserInput(ctx),
+		JsonpathParser:              jsonpathParser,
 		CustomVariableSettings:      model.ToCustomVariableSettingInputs(customVarSettings),
 	}, diags
 }
