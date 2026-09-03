@@ -335,6 +335,12 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 		return nil, diags
 	}
 
+	outputOption, d := m.OutputOption.ToInput(ctx)
+	diags.Append(d...)
+	if diags.HasError() {
+		return nil, diags
+	}
+
 	// Only set schedules if not empty to avoid "not allowed to schedule setting" error
 	var schedulesToSet []parameter.ScheduleInput
 	if len(schedules) > 0 {
@@ -359,7 +365,7 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 		InputOptionType:           m.InputOptionType.ValueString(),
 		InputOption:               inputOption,
 		OutputOptionType:          m.OutputOptionType.ValueString(),
-		OutputOption:              m.OutputOption.ToInput(ctx),
+		OutputOption:              outputOption,
 		Labels:                    labels,
 		Schedules:                 schedulesToSet,
 		Notifications:             notifications,
@@ -403,6 +409,12 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
+	outputOption, diags := jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption, plan.OutputOption)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
+
 	newState := jobDefinitionResourceModel{
 		ID:                     types.Int64Value(jobDefinition.ID),
 		Name:                   types.StringValue(jobDefinition.Name),
@@ -414,7 +426,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
 		InputOption:            inputOption,
 		OutputOptionType:       types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:           jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption),
+		OutputOption:           outputOption,
 		FilterRows:             filter.NewFilterRows(ctx, jobDefinition.FilterRows),
 		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
@@ -618,6 +630,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 		return nil, diags
 	}
 
+	outputOption, d := m.OutputOption.ToUpdateInput(ctx)
+	diags.Append(d...)
+	if diags.HasError() {
+		return nil, diags
+	}
+
 	// Only set schedules if not empty to avoid "not allowed to schedule setting" error
 	var schedulesPointer *[]parameter.ScheduleInput
 	if len(schedules) > 0 {
@@ -640,7 +658,7 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 		FilterHashes:              &filterHashes,
 		FilterUnixTimeConversions: &filterUnixTimeconversions,
 		InputOption:               inputOption,
-		OutputOption:              m.OutputOption.ToUpdateInput(ctx),
+		OutputOption:              outputOption,
 		Labels:                    &labels,
 		Schedules:                 schedulesPointer,
 		Notifications:             &notifications,
@@ -678,6 +696,12 @@ func (r *jobDefinitionResource) Create(
 		return
 	}
 
+	outputOption, diags := jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption, plan.OutputOption)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
+
 	newState := jobDefinitionResourceModel{
 		ID:                     types.Int64Value(jobDefinition.ID),
 		Name:                   types.StringValue(jobDefinition.Name),
@@ -689,7 +713,7 @@ func (r *jobDefinitionResource) Create(
 		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
 		InputOption:            inputOption,
 		OutputOptionType:       types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:           jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption),
+		OutputOption:           outputOption,
 		FilterRows:             filter.NewFilterRows(ctx, jobDefinition.FilterRows),
 		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
@@ -842,6 +866,12 @@ func (r *jobDefinitionResource) Read(
 		return
 	}
 
+	outputOption, diags := jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption, state.OutputOption)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
+
 	newState := jobDefinitionResourceModel{
 		ID:                     types.Int64Value(jobDefinition.ID),
 		Name:                   types.StringValue(jobDefinition.Name),
@@ -853,7 +883,7 @@ func (r *jobDefinitionResource) Read(
 		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
 		InputOption:            inputOption,
 		OutputOptionType:       types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:           jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption),
+		OutputOption:           outputOption,
 		FilterRows:             filter.NewFilterRows(ctx, jobDefinition.FilterRows),
 		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}

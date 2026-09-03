@@ -191,6 +191,7 @@ type OutputOption struct {
 	GoogleDriveOutputOption        *outputOptionEntities.GoogleDriveOutputOption        `json:"google_drive_output_option"`
 	GcsOutputOption                *outputOptionEntities.GcsOutputOption                `json:"gcs_output_option"`
 	RedshiftOutputOption           *outputOptionEntities.RedshiftOutputOption           `json:"redshift_output_option"`
+	CustomConnectorOutputOption    *outputOptionEntities.CustomConnectorOutputOption    `json:"custom_connector_output_option"`
 }
 
 type OutputOptionInput struct {
@@ -208,6 +209,7 @@ type OutputOptionInput struct {
 	GoogleDriveOutputOption        *parameter.NullableObject[outputOptionParameters.GoogleDriveOutputOptionInput]        `json:"google_drive_output_option,omitempty"`
 	GcsOutputOption                *parameter.NullableObject[outputOptionParameters.GcsOutputOptionInput]                `json:"gcs_output_option,omitempty"`
 	RedshiftOutputOption           *parameter.NullableObject[outputOptionParameters.RedshiftOutputOptionInput]           `json:"redshift_output_option,omitempty"`
+	CustomConnectorOutputOption    *parameter.NullableObject[outputOptionParameters.CustomConnectorOutputOptionInput]    `json:"custom_connector_output_option,omitempty"`
 }
 
 type UpdateOutputOptionInput struct {
@@ -225,6 +227,7 @@ type UpdateOutputOptionInput struct {
 	GoogleDriveOutputOption        *parameter.NullableObject[outputOptionParameters.UpdateGoogleDriveOutputOptionInput]        `json:"google_drive_output_option,omitempty"`
 	GcsOutputOption                *parameter.NullableObject[outputOptionParameters.UpdateGcsOutputOptionInput]                `json:"gcs_output_option,omitempty"`
 	RedshiftOutputOption           *parameter.NullableObject[outputOptionParameters.UpdateRedshiftOutputOptionInput]           `json:"redshift_output_option,omitempty"`
+	CustomConnectorOutputOption    *parameter.NullableObject[outputOptionParameters.UpdateCustomConnectorOutputOptionInput]    `json:"custom_connector_output_option,omitempty"`
 }
 
 func (c *TroccoClient) CreateJobDefinition(in *CreateJobDefinitionInput) (*JobDefinition, error) {

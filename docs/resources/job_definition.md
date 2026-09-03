@@ -1435,6 +1435,68 @@ resource "trocco_job_definition" "databricks_output_example" {
 }
 ```
 
+#### CustomConnectorOutputOption
+
+```terraform
+resource "trocco_job_definition" "custom_connector_output_insert_example" {
+  output_option_type = "custom_connector"
+  output_option = {
+    custom_connector_output_option = {
+      custom_connector_connection_id = trocco_connection.custom_connector_example.id
+
+      # Reference the endpoint through the definition resource so Terraform
+      # orders operations correctly (e.g. it won't delete an endpoint that
+      # this job definition still depends on).
+      create_custom_connector_output_endpoint_id = trocco_custom_connector_output.example.endpoints[0].id
+
+      # mode defaults to "insert", where every record is sent to the create
+      # endpoint and no update endpoint is involved.
+
+      create_endpoint_settings = {
+        # Omitting a collection keeps its existing values; specifying `[]`
+        # clears them; specifying values fully replaces them. Only headers and
+        # query parameters marked `is_editable = true` on the endpoint can be
+        # set here; non-editable ones always keep their defined default.
+        query_parameters = [
+          {
+            name  = "dry_run"
+            value = "false"
+          },
+        ]
+      }
+    }
+  }
+}
+
+resource "trocco_job_definition" "custom_connector_output_upsert_example" {
+  output_option_type = "custom_connector"
+  output_option = {
+    custom_connector_output_option = {
+      custom_connector_connection_id = trocco_connection.custom_connector_example.id
+
+      # mode = "upsert" sends existing records to the update endpoint instead,
+      # and requires update_key and update_custom_connector_output_endpoint_id.
+      mode       = "upsert"
+      update_key = "id"
+
+      create_custom_connector_output_endpoint_id = trocco_custom_connector_output.example.endpoints[0].id
+      update_custom_connector_output_endpoint_id = trocco_custom_connector_output.example.endpoints[1].id
+
+      update_endpoint_settings = {
+        # Each path parameter is named after the placeholder declared by the
+        # endpoint (its `value`), and holds the column to substitute.
+        path_parameters = [
+          {
+            name  = "user_id"
+            value = "id"
+          },
+        ]
+      }
+    }
+  }
+}
+```
+
 ### Label
 
 ```terraform
@@ -4034,6 +4096,7 @@ Optional:
 Optional:
 
 - `bigquery_output_option` (Attributes) Attributes of destination BigQuery settings (see [below for nested schema](#nestedatt--output_option--bigquery_output_option))
+- `custom_connector_output_option` (Attributes) Attributes of a destination that uses a custom connector definition (`trocco_custom_connector_output`) (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option))
 - `databricks_output_option` (Attributes) Attributes of destination Databricks settings (see [below for nested schema](#nestedatt--output_option--databricks_output_option))
 - `gcs_output_option` (Attributes) Attributes of destination Google Cloud Storage settings (see [below for nested schema](#nestedatt--output_option--gcs_output_option))
 - `google_drive_output_option` (Attributes) Attributes of destination Google Drive settings (see [below for nested schema](#nestedatt--output_option--google_drive_output_option))
@@ -4143,6 +4206,175 @@ Optional:
 - `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--output_option--custom_connector_output_option"></a>
+### Nested Schema for `output_option.custom_connector_output_option`
+
+Required:
+
+- `create_custom_connector_output_endpoint_id` (Number) ID of the custom connector endpoint (`trocco_custom_connector_output.<name>.endpoints[N].id`) used to send new records. Its `operation` must be `create`.
+- `custom_connector_connection_id` (Number) ID of the custom connector connection (`trocco_connection` with `connection_type = "custom_connector"`). It must belong to the same custom connector as the endpoints below.
+
+Optional:
+
+- `create_endpoint_settings` (Attributes) Values submitted to the create endpoint. Only headers and query parameters marked `is_editable = true` on the referenced endpoint can be specified, and a value must be supplied for every one of them marked `is_required = true`. Path parameters may be left unset. Omitting the whole attribute, or one of its collections, keeps the values stored on the server.
+
+This attribute is configuration-only: the API accepts it but never reports it back, and the resulting values are exposed through `endpoints` instead. Two consequences follow. It cannot be recovered on `terraform import`, so an imported job definition shows it as unset until the configuration supplies it again. And removing it from an existing configuration only clears it from the Terraform state: the values already stored on the server are kept, since omitting the attribute is how "keep the current values" is expressed. To actually clear a collection, set it to `[]` rather than removing it. (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--create_endpoint_settings))
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--custom_variable_settings))
+- `mode` (String) Transfer mode. `insert` sends every record to the create endpoint; `upsert` additionally requires `update_key` and `update_custom_connector_output_endpoint_id`. Default is `insert`.
+- `update_custom_connector_output_endpoint_id` (Number) ID of the custom connector endpoint (`trocco_custom_connector_output.<name>.endpoints[N].id`) used to update existing records. Its `operation` must be `update`, and it must belong to the same custom connector as the create endpoint. Required when `mode` is `upsert`, and must not be specified when `mode` is `insert`.
+- `update_endpoint_settings` (Attributes) Values submitted to the update endpoint. Only used when `mode` is `upsert`. Only headers and query parameters marked `is_editable = true` on the referenced endpoint can be specified, and a value must be supplied for every one of them marked `is_required = true`. Path parameters may be left unset. Omitting the whole attribute, or one of its collections, keeps the values stored on the server.
+
+This attribute is configuration-only: the API accepts it but never reports it back, and the resulting values are exposed through `endpoints` instead. Two consequences follow. It cannot be recovered on `terraform import`, so an imported job definition shows it as unset until the configuration supplies it again. And removing it from an existing configuration only clears it from the Terraform state: the values already stored on the server are kept, since omitting the attribute is how "keep the current values" is expressed. To actually clear a collection, set it to `[]` rather than removing it. (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--update_endpoint_settings))
+- `update_key` (String) Column used to decide whether a record already exists. Required when `mode` is `upsert`, and must not be specified when `mode` is `insert`.
+
+Read-Only:
+
+- `auth_header_name` (String) Authentication header name (snapshot from the custom connector definition)
+- `auth_header_scheme` (String) Authentication header scheme (snapshot from the custom connector definition)
+- `auth_type` (String) Authentication method (snapshot from the custom connector definition)
+- `endpoints` (Attributes List) Snapshots of the endpoints this job definition uses, taken from the custom connector definition (in creation order). Each entry is distinguished by `operation`; the `update` entry is absent while `mode` is `insert`. (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--endpoints))
+- `url` (String) URL (snapshot from the custom connector definition)
+
+<a id="nestedatt--output_option--custom_connector_output_option--create_endpoint_settings"></a>
+### Nested Schema for `output_option.custom_connector_output_option.create_endpoint_settings`
+
+Optional:
+
+- `headers` (Attributes List) Request header values. Omitting this attribute keeps the existing values; specifying `[]` clears them; specifying values fully replaces them. (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--create_endpoint_settings--headers))
+- `path_parameters` (Attributes List) Path parameter values, substituted into the placeholders of the referenced endpoint's path. Omitting this attribute keeps the existing values; specifying `[]` clears them; specifying values fully replaces them. (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--create_endpoint_settings--path_parameters))
+- `query_parameters` (Attributes List) Query parameter values. Omitting this attribute keeps the existing values; specifying `[]` clears them; specifying values fully replaces them. (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--create_endpoint_settings--query_parameters))
+
+<a id="nestedatt--output_option--custom_connector_output_option--create_endpoint_settings--headers"></a>
+### Nested Schema for `output_option.custom_connector_output_option.create_endpoint_settings.headers`
+
+Required:
+
+- `name` (String) Name
+- `value` (String) Value
+
+
+<a id="nestedatt--output_option--custom_connector_output_option--create_endpoint_settings--path_parameters"></a>
+### Nested Schema for `output_option.custom_connector_output_option.create_endpoint_settings.path_parameters`
+
+Required:
+
+- `name` (String) Name
+- `value` (String) Value
+
+
+<a id="nestedatt--output_option--custom_connector_output_option--create_endpoint_settings--query_parameters"></a>
+### Nested Schema for `output_option.custom_connector_output_option.create_endpoint_settings.query_parameters`
+
+Required:
+
+- `name` (String) Name
+- `value` (String) Value
+
+
+
+<a id="nestedatt--output_option--custom_connector_output_option--custom_variable_settings"></a>
+### Nested Schema for `output_option.custom_connector_output_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--output_option--custom_connector_output_option--update_endpoint_settings"></a>
+### Nested Schema for `output_option.custom_connector_output_option.update_endpoint_settings`
+
+Optional:
+
+- `headers` (Attributes List) Request header values. Omitting this attribute keeps the existing values; specifying `[]` clears them; specifying values fully replaces them. (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--update_endpoint_settings--headers))
+- `path_parameters` (Attributes List) Path parameter values, substituted into the placeholders of the referenced endpoint's path. Omitting this attribute keeps the existing values; specifying `[]` clears them; specifying values fully replaces them. (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--update_endpoint_settings--path_parameters))
+- `query_parameters` (Attributes List) Query parameter values. Omitting this attribute keeps the existing values; specifying `[]` clears them; specifying values fully replaces them. (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--update_endpoint_settings--query_parameters))
+
+<a id="nestedatt--output_option--custom_connector_output_option--update_endpoint_settings--headers"></a>
+### Nested Schema for `output_option.custom_connector_output_option.update_endpoint_settings.headers`
+
+Required:
+
+- `name` (String) Name
+- `value` (String) Value
+
+
+<a id="nestedatt--output_option--custom_connector_output_option--update_endpoint_settings--path_parameters"></a>
+### Nested Schema for `output_option.custom_connector_output_option.update_endpoint_settings.path_parameters`
+
+Required:
+
+- `name` (String) Name
+- `value` (String) Value
+
+
+<a id="nestedatt--output_option--custom_connector_output_option--update_endpoint_settings--query_parameters"></a>
+### Nested Schema for `output_option.custom_connector_output_option.update_endpoint_settings.query_parameters`
+
+Required:
+
+- `name` (String) Name
+- `value` (String) Value
+
+
+
+<a id="nestedatt--output_option--custom_connector_output_option--endpoints"></a>
+### Nested Schema for `output_option.custom_connector_output_option.endpoints`
+
+Read-Only:
+
+- `batch_size` (Number) Number of records sent per request when `request_type` is `multiple`
+- `headers` (Attributes List) Request header values (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--endpoints--headers))
+- `method` (String) HTTP method
+- `not_retryable_codes` (String) Status codes excluded from retries
+- `operation` (String) Whether this endpoint sends new records (`create`) or updates existing ones (`update`)
+- `path` (String) Endpoint path
+- `path_parameters` (Attributes List) Path parameter values (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--endpoints--path_parameters))
+- `payload_type` (String) Request payload format
+- `query_parameters` (Attributes List) Query parameter values (see [below for nested schema](#nestedatt--output_option--custom_connector_output_option--endpoints--query_parameters))
+- `request_timeout_sec` (Number) Seconds to wait for a response before timing out
+- `request_type` (String) Whether records are sent one per request (`single`) or in batches (`multiple`)
+- `success_codes` (String) Status codes treated as success
+- `template` (String) Request body template
+
+<a id="nestedatt--output_option--custom_connector_output_option--endpoints--headers"></a>
+### Nested Schema for `output_option.custom_connector_output_option.endpoints.headers`
+
+Read-Only:
+
+- `name` (String) Name
+- `value` (String) Value
+
+
+<a id="nestedatt--output_option--custom_connector_output_option--endpoints--path_parameters"></a>
+### Nested Schema for `output_option.custom_connector_output_option.endpoints.path_parameters`
+
+Read-Only:
+
+- `name` (String) Name
+- `value` (String) Value
+
+
+<a id="nestedatt--output_option--custom_connector_output_option--endpoints--query_parameters"></a>
+### Nested Schema for `output_option.custom_connector_output_option.endpoints.query_parameters`
+
+Read-Only:
+
+- `name` (String) Name
+- `value` (String) Value
+
 
 
 
