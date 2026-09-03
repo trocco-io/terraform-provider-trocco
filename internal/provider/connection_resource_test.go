@@ -39,6 +39,12 @@ func TestAccConnectionResource(t *testing.T) {
 		testAccConnectionResourcePagerduty(t)
 	})
 	// END [GENERATOR:CONNECTION_RESOURCE_TEST]
+	t.Run("custom_connector", func(t *testing.T) {
+		testAccConnectionResourceCustomConnector(t)
+	})
+	t.Run("custom_connector_oauth2", func(t *testing.T) {
+		testAccConnectionResourceCustomConnectorOAuth2(t)
+	})
 }
 
 func testAccConnectionResourceBigQuery(t *testing.T) {
@@ -257,6 +263,30 @@ func TestInvalidLoginMethod(t *testing.T) {
 	})
 }
 
+func TestInvalidCustomConnectorMissingID(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:      providerConfig + LoadTextFile("testdata/connection/invalid_custom_connector_missing_id.tf"),
+				ExpectError: regexp.MustCompile("custom_connector_id is required for Custom Connector connection."),
+			},
+		},
+	})
+}
+
+func TestInvalidCustomConnectorIDZero(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:      providerConfig + LoadTextFile("testdata/connection/invalid_custom_connector_id_zero.tf"),
+				ExpectError: regexp.MustCompile("value must be at least 1"),
+			},
+		},
+	})
+}
+
 func testAccConnectionResourceMarketo(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.marketo"
@@ -313,6 +343,94 @@ func testAccConnectionResourcePagerduty(t *testing.T) {
 					connectionID := s.RootModule().Resources[resourceName].Primary.ID
 					return fmt.Sprintf("pagerduty,%s", connectionID), nil
 				},
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceCustomConnector(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.custom_connector_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/custom_connector/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "custom_connector"),
+					resource.TestCheckResourceAttr(resourceName, "name", "Test Custom Connector Connection"),
+					resource.TestCheckResourceAttr(resourceName, "description", "Test custom connector connection for acceptance testing"),
+					resource.TestCheckResourceAttr(resourceName, "auth_type", "api_key"),
+					resource.TestCheckNoResourceAttr(resourceName, "authorized"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+					resource.TestCheckResourceAttrPair(resourceName, "custom_connector_id", "trocco_custom_connector_input.test", "id"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"api_key"},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					connectionID := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("custom_connector,%s", connectionID), nil
+				},
+			},
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/custom_connector/update.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "description", "Updated description"),
+					resource.TestCheckResourceAttr(resourceName, "auth_type", "api_key"),
+				),
+			},
+		},
+	})
+}
+
+// testAccConnectionResourceCustomConnectorOAuth2 covers the oauth2 side of a
+// custom connector connection, where the server serializes `scopes` and
+// `authorized` (both are absent for an api_key definition). The first step
+// deliberately omits `scopes`: the server answers with an empty list, which
+// only round-trips because `scopes` is Optional + Computed.
+func testAccConnectionResourceCustomConnectorOAuth2(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.custom_connector_oauth2_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/custom_connector/oauth2_create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "custom_connector"),
+					resource.TestCheckResourceAttr(resourceName, "auth_type", "oauth2"),
+					resource.TestCheckResourceAttr(resourceName, "scopes.#", "0"),
+					// A connection created through the API is never authorized,
+					// regardless of grant_type.
+					resource.TestCheckResourceAttr(resourceName, "authorized", "false"),
+					resource.TestCheckResourceAttrPair(resourceName, "custom_connector_id", "trocco_custom_connector_input.oauth2_test", "id"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"oauth2_client_secret"},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					connectionID := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("custom_connector,%s", connectionID), nil
+				},
+			},
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/custom_connector/oauth2_update.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "description", "Updated description"),
+					resource.TestCheckResourceAttr(resourceName, "scopes.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "scopes.0", "read"),
+					resource.TestCheckResourceAttr(resourceName, "scopes.1", "write"),
+					// The secret changed in this step, so `authorized` is planned
+					// as unknown and re-derived; the server keeps it false.
+					resource.TestCheckResourceAttr(resourceName, "authorized", "false"),
+				),
 			},
 		},
 	})
