@@ -29,12 +29,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
 
 var (
 	_ resource.Resource                = &jobDefinitionResource{}
 	_ resource.ResourceWithConfigure   = &jobDefinitionResource{}
 	_ resource.ResourceWithImportState = &jobDefinitionResource{}
+	_ resource.ResourceWithModifyPlan  = &jobDefinitionResource{}
 )
 
 func NewJobDefinitionResource() resource.Resource {
@@ -43,6 +45,59 @@ func NewJobDefinitionResource() resource.Resource {
 
 type jobDefinitionResource struct {
 	client *client.TroccoClient
+}
+
+// ModifyPlan marks the custom_connector_input_option snapshot attributes as
+// unknown whenever an update is planned.
+//
+// The API rebuilds the snapshot from the referenced endpoint on every upsert
+// (its create_snapshot_from! runs unconditionally) and the provider always
+// sends custom_connector_input_option on update, so the values the update
+// returns can differ from the ones in state - after switching to another
+// endpoint, or after the endpoint definition itself changed. Carrying the
+// prior state values into the plan, which is what Terraform does for computed
+// attributes by default, would then fail the apply with "Provider produced
+// inconsistent result after apply".
+//
+// Keying off "an update is planned" rather than off the attributes that
+// trigger a new snapshot keeps this correct if the API grows more of them.
+func (r *jobDefinitionResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	// On create every computed attribute is already unknown, and a destroy
+	// has no plan to modify.
+	if req.State.Raw.IsNull() || req.Plan.Raw.IsNull() {
+		return
+	}
+	// Without a change there is no request, hence no new snapshot.
+	if req.Plan.Raw.Equal(req.State.Raw) {
+		return
+	}
+
+	inputOptionPath := path.Root("input_option").AtName("custom_connector_input_option")
+
+	var config types.Object
+	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, inputOptionPath, &config)...)
+	if resp.Diagnostics.HasError() || config.IsNull() || config.IsUnknown() {
+		return
+	}
+
+	for _, attribute := range job_definition.CustomConnectorSnapshotAttributes(inputOptionPath, config) {
+		value, err := attribute.Type.ValueFromTerraform(
+			ctx,
+			tftypes.NewValue(attribute.Type.TerraformType(ctx), tftypes.UnknownValue),
+		)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Planning job definition",
+				fmt.Sprintf("Unable to plan %s as unknown, got error: %s", attribute.Path, err),
+			)
+			return
+		}
+
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, attribute.Path, value)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
 }
 
 func (r *jobDefinitionResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {

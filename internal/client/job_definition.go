@@ -109,6 +109,7 @@ type InputOption struct {
 	RedshiftInputOption            *inputOptionEntities.RedshiftInputOption            `json:"redshift_input_option"`
 	FacebookAdsInsightsInputOption *inputOptionEntities.FacebookAdsInsightsInputOption `json:"facebook_ads_insights_input_option"`
 	MarketoInputOption             *inputOptionEntities.MarketoInputOption             `json:"marketo_input_option"`
+	CustomConnectorInputOption     *inputOptionEntities.CustomConnectorInputOption     `json:"custom_connector_input_option"`
 	// START [GENERATOR:JOB_DEF_INPUT_OPTION_ENTITY]
 	// pagerduty (auto-generated)
 	PagerdutyInputOption *inputOptionEntities.PagerdutyInputOption `json:"pagerduty_input_option"`
@@ -138,6 +139,7 @@ type InputOptionInput struct {
 	RedshiftInputOption            *parameter.NullableObject[inputOptionParameters.RedshiftInputOptionInput]            `json:"redshift_input_option,omitempty"`
 	FacebookAdsInsightsInputOption *parameter.NullableObject[inputOptionParameters.FacebookAdsInsightsInputOptionInput] `json:"facebook_ads_insights_input_option,omitempty"`
 	MarketoInputOption             *parameter.NullableObject[inputOptionParameters.MarketoInputOptionInput]             `json:"marketo_input_option,omitempty"`
+	CustomConnectorInputOption     *parameter.NullableObject[inputOptionParameters.CustomConnectorInputOptionInput]     `json:"custom_connector_input_option,omitempty"`
 	// START [GENERATOR:JOB_DEF_INPUT_OPTION_INPUT]
 	// pagerduty (auto-generated)
 	PagerdutyInputOption *parameter.NullableObject[inputOptionParameters.PagerdutyInputOptionInput] `json:"pagerduty_input_option,omitempty"`
@@ -167,6 +169,7 @@ type UpdateInputOptionInput struct {
 	RedshiftInputOption            *parameter.NullableObject[inputOptionParameters.UpdateRedshiftInputOptionInput]            `json:"redshift_input_option,omitempty"`
 	FacebookAdsInsightsInputOption *parameter.NullableObject[inputOptionParameters.UpdateFacebookAdsInsightsInputOptionInput] `json:"facebook_ads_insights_input_option,omitempty"`
 	MarketoInputOption             *parameter.NullableObject[inputOptionParameters.UpdateMarketoInputOptionInput]             `json:"marketo_input_option,omitempty"`
+	CustomConnectorInputOption     *parameter.NullableObject[inputOptionParameters.UpdateCustomConnectorInputOptionInput]     `json:"custom_connector_input_option,omitempty"`
 	// START [GENERATOR:JOB_DEF_INPUT_OPTION_UPDATE_INPUT]
 	// pagerduty (auto-generated)
 	PagerdutyInputOption *parameter.NullableObject[inputOptionParameters.UpdatePagerdutyInputOptionInput] `json:"pagerduty_input_option,omitempty"`

@@ -32,6 +32,7 @@ type InputOption struct {
 	RedshiftInputOption            *inputOptionModel.RedshiftInputOption            `tfsdk:"redshift_input_option"`
 	FacebookAdsInsightsInputOption *inputOptionModel.FacebookAdsInsightsInputOption `tfsdk:"facebook_ads_insights_input_option"`
 	MarketoInputOption             *inputOptionModel.MarketoInputOption             `tfsdk:"marketo_input_option"`
+	CustomConnectorInputOption     *inputOptionModel.CustomConnectorInputOption     `tfsdk:"custom_connector_input_option"`
 	// START [GENERATOR:INPUT_OPTION_STRUCT_FIELD]
 	// pagerduty (auto-generated)
 	PagerdutyInputOption *inputOptionModel.PagerdutyInputOption `tfsdk:"pagerduty_input_option"`
@@ -44,6 +45,8 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		previousHttpInputOption = previous.HttpInputOption
 	}
 	httpInputOption, diags := inputOptionModel.NewHttpInputOption(ctx, inputOption.HttpInputOption, previousHttpInputOption)
+	customConnectorInputOption, d := inputOptionModel.NewCustomConnectorInputOption(ctx, inputOption.CustomConnectorInputOption)
+	diags.Append(d...)
 	return &InputOption{
 		GcsInputOption:                 inputOptionModel.NewGcsInputOption(ctx, inputOption.GcsInputOption),
 		MySQLInputOption:               inputOptionModel.NewMysqlInputOption(ctx, inputOption.MySQLInputOption),
@@ -67,6 +70,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		RedshiftInputOption:            inputOptionModel.NewRedshiftInputOption(ctx, inputOption.RedshiftInputOption),
 		FacebookAdsInsightsInputOption: inputOptionModel.NewFacebookAdsInsightsInputOption(ctx, inputOption.FacebookAdsInsightsInputOption),
 		MarketoInputOption:             inputOptionModel.NewMarketoInputOption(ctx, inputOption.MarketoInputOption),
+		CustomConnectorInputOption:     customConnectorInputOption,
 		// START [GENERATOR:INPUT_OPTION_NEW]
 		// pagerduty (auto-generated)
 		PagerdutyInputOption: inputOptionModel.NewPagerdutyInputOption(ctx, inputOption.PagerdutyInputOption),
@@ -78,6 +82,9 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 	var diags diag.Diagnostics
 
 	httpInput, d := o.HttpInputOption.ToInput(ctx)
+	diags.Append(d...)
+
+	customConnectorInput, d := o.CustomConnectorInputOption.ToInput(ctx)
 	diags.Append(d...)
 
 	return client.InputOptionInput{
@@ -103,6 +110,7 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 		RedshiftInputOption:            model.WrapObject(o.RedshiftInputOption.ToInput(ctx)),
 		FacebookAdsInsightsInputOption: model.WrapObject(o.FacebookAdsInsightsInputOption.ToInput(ctx)),
 		MarketoInputOption:             model.WrapObject(o.MarketoInputOption.ToInput(ctx)),
+		CustomConnectorInputOption:     model.WrapObject(customConnectorInput),
 		// START [GENERATOR:INPUT_OPTION_TO_INPUT]
 		// pagerduty (auto-generated)
 		PagerdutyInputOption: model.WrapObject(o.PagerdutyInputOption.ToInput(ctx)),
@@ -113,6 +121,9 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOptionInput, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	httpInput, d := o.HttpInputOption.ToUpdateInput(ctx)
+	diags.Append(d...)
+
+	customConnectorInput, d := o.CustomConnectorInputOption.ToUpdateInput(ctx)
 	diags.Append(d...)
 
 	return &client.UpdateInputOptionInput{
@@ -138,6 +149,7 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 		RedshiftInputOption:            model.WrapObject(o.RedshiftInputOption.ToUpdateInput(ctx)),
 		FacebookAdsInsightsInputOption: model.WrapObject(o.FacebookAdsInsightsInputOption.ToUpdateInput(ctx)),
 		MarketoInputOption:             model.WrapObject(o.MarketoInputOption.ToUpdateInput(ctx)),
+		CustomConnectorInputOption:     model.WrapObject(customConnectorInput),
 		// START [GENERATOR:INPUT_OPTION_TO_UPDATE_INPUT]
 		// pagerduty (auto-generated)
 		PagerdutyInputOption: model.WrapObject(o.PagerdutyInputOption.ToUpdateInput(ctx)),
