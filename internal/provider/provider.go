@@ -141,6 +141,7 @@ func (p *TroccoProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewDbtGitRepositoryResource,
 		NewDbtJobDefinitionResource,
 		NewCustomConnectorInputResource,
+		NewCustomConnectorOutputResource,
 	}
 }
 
