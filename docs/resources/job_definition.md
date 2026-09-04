@@ -4406,8 +4406,8 @@ Required:
 
 Optional:
 
-- `timestamp_format` (String) Timestamp format
-- `timezone` (String) Time zone
+- `timestamp_format` (String) Timestamp format (can only be set when `value_type` is `string` or `nstring`, the value types whose embulk column setter reads it)
+- `timezone` (String) Time zone (can only be set when `value_type` is `string`, `nstring`, `date` or `time`, or, with `value_type` omitted, when `type` is `DATE` or `TIMESTAMP`)
 - `value_type` (String) Value type
 
 
