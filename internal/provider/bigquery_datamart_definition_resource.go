@@ -1609,7 +1609,10 @@ func (r *bigqueryDatamartDefinitionResource) fetchModel(ctx context.Context, id 
 	if err != nil {
 		return nil, err
 	}
-	model, _ := parseToBigqueryDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition, previousNotifications)
+	model, err := parseToBigqueryDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition, previousNotifications)
+	if err != nil {
+		return nil, err
+	}
 	return model, nil
 }
 
