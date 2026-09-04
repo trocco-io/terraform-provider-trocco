@@ -1,3 +1,23 @@
+## 0.36.0
+
+FEATURES:
+- `trocco_custom_connector_input` resource:
+  - Added new resource to manage custom connector input definitions
+- `trocco_custom_connector_output` resource:
+  - Added new resource to manage custom connector output definitions
+- `trocco_connection` resource:
+  - Added support for `custom_connector` type
+- `trocco_job_definition` resource:
+  - Added support for `custom_connector` input option
+  - Added support for `custom_connector` output option
+
+BUG FIXES:
+- `trocco_job_definition` resource:
+  - Fixed `Provider produced inconsistent result after apply` on `databricks_output_option` column options by validating `timestamp_format` and `timezone` against `value_type` instead of `type`, mirroring the API's rule
+
+CHORE:
+- Changed E2E tests to run on push to `main` instead of on pull request
+
 ## 0.35.0
 
 FEATURES:
