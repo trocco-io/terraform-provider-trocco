@@ -1,3 +1,10 @@
+## 0.37.0
+
+FEATURES:
+- `trocco_bigquery_datamart_definition` resource:
+  - Added quality check attributes: `quality_check_enabled`, `quality_check_on_violation`, `quality_check_lookback_period_column`, `quality_check_lookback_period_column_type`, `quality_check_lookback_period_timezone`, `quality_check_lookback_period_from`, `quality_check_lookback_period_to`, `quality_check_lookback_period_unit`, and `quality_checks`
+  - Added `quality_check_failed` and `schema_evolution_detected` to `notify_when` in `notifications`
+
 ## 0.36.0
 
 FEATURES:
