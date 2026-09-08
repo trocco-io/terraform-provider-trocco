@@ -80,6 +80,28 @@ func TestAccDatamartDefinitionResourceForBigqueryNotifications(t *testing.T) {
 	})
 }
 
+func TestAccDatamartDefinitionResourceForBigqueryNotificationsNotifyWhen(t *testing.T) {
+	resourceName := "trocco_bigquery_datamart_definition.test_bigquery_datamart_notify_when"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:      providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/notifications/notify_when.tf"),
+				ExpectError: nil,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "test_bigquery_datamart_notify_when"),
+					resource.TestCheckResourceAttr(resourceName, "schema_evolution_mode", "detect_only"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "2"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.0.id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "schema_evolution_detected"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.1.id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notify_when", "quality_check_failed"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccDatamartDefinitionResourceForBigqueryIncremental(t *testing.T) {
 	resourceName := "trocco_bigquery_datamart_definition.test_incremental"
 	resource.Test(t, resource.TestCase{
