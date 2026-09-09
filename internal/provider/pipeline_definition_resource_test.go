@@ -217,6 +217,28 @@ func TestAccPipelineDefinitionResourceForNotifications(t *testing.T) {
 					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.slack_config.notification_id", "trocco_notification_destination.slack_b", "id"),
 				),
 			},
+			// HTTP notification destination for job_execution and job_time_alert notifications.
+			{
+				Config: providerConfig + LoadTextFile("testdata/pipeline_definition/notifications/http.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.type", "job_execution"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "failed"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.0.id"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.0.http_config.notification_id", "trocco_notification_destination.http", "id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.http_config.message", "{\"text\": \"workflow failed\"}"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.type", "job_time_alert"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.time", "5"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.http_config.notification_id", "trocco_notification_destination.http", "id"),
+				),
+			},
+			// Refresh after the HTTP notifications must not produce a diff.
+			{
+				Config:   providerConfig + LoadTextFile("testdata/pipeline_definition/notifications/http.tf"),
+				PlanOnly: true,
+			},
 		},
 	})
 }

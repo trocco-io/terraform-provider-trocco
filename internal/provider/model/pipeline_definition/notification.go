@@ -25,6 +25,7 @@ type Notification struct {
 	Time            types.Int64              `tfsdk:"time"`
 	EmailConfig     *EmailNotificationConfig `tfsdk:"email_config"`
 	SlackConfig     *SlackNotificationConfig `tfsdk:"slack_config"`
+	HTTPConfig      *HTTPNotificationConfig  `tfsdk:"http_config"`
 }
 
 func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Notification, previousIsNull bool, refNotifs []*Notification) types.List {
@@ -42,6 +43,12 @@ func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Not
 				},
 			},
 			"slack_config": types.ObjectType{
+				AttrTypes: map[string]attr.Type{
+					"notification_id": types.Int64Type,
+					"message":         custom_type.TrimmedStringType{},
+				},
+			},
+			"http_config": types.ObjectType{
 				AttrTypes: map[string]attr.Type{
 					"notification_id": types.Int64Type,
 					"message":         custom_type.TrimmedStringType{},
@@ -82,6 +89,7 @@ func NewNotification(en *pipelineDefinitionEntities.Notification) *Notification 
 		Time:            types.Int64PointerValue(en.Time),
 		EmailConfig:     NewEmailNotificationConfig(en.EmailConfig),
 		SlackConfig:     NewSlackNotificationConfig(en.SlackConfig),
+		HTTPConfig:      NewHTTPNotificationConfig(en.HTTPConfig),
 	}
 }
 
@@ -98,6 +106,9 @@ func (n *Notification) ToInput() *pipelineDefinitionParameters.Notification {
 	}
 	if n.SlackConfig != nil {
 		param.SlackConfig = n.SlackConfig.ToInput()
+	}
+	if n.HTTPConfig != nil {
+		param.HTTPConfig = n.HTTPConfig.ToInput()
 	}
 
 	return param
@@ -152,6 +163,33 @@ func NewSlackNotificationConfig(en *pipelineDefinitionEntities.SlackNotification
 
 func (c *SlackNotificationConfig) ToInput() *pipelineDefinitionParameters.SlackNotificationConfig {
 	return &pipelineDefinitionParameters.SlackNotificationConfig{
+		NotificationID: c.NotificationID.ValueInt64(),
+		Message:        c.Message.ValueString(),
+	}
+}
+
+//
+// HTTPNotificationConfig
+//
+
+type HTTPNotificationConfig struct {
+	NotificationID types.Int64                    `tfsdk:"notification_id"`
+	Message        custom_type.TrimmedStringValue `tfsdk:"message"`
+}
+
+func NewHTTPNotificationConfig(en *pipelineDefinitionEntities.HTTPNotificationConfig) *HTTPNotificationConfig {
+	if en == nil {
+		return nil
+	}
+
+	return &HTTPNotificationConfig{
+		NotificationID: types.Int64Value(en.NotificationID),
+		Message:        custom_type.TrimmedStringValue{StringValue: types.StringValue(en.Message)},
+	}
+}
+
+func (c *HTTPNotificationConfig) ToInput() *pipelineDefinitionParameters.HTTPNotificationConfig {
+	return &pipelineDefinitionParameters.HTTPNotificationConfig{
 		NotificationID: c.NotificationID.ValueInt64(),
 		Message:        c.Message.ValueString(),
 	}
