@@ -122,6 +122,62 @@ func TestAccDatamartDefinitionResourceForBigqueryIncremental(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "lookback_period_from", "3"),
 					resource.TestCheckResourceAttr(resourceName, "lookback_period_to", "0"),
 					resource.TestCheckResourceAttr(resourceName, "lookback_period_unit", "days"),
+					resource.TestCheckResourceAttr(resourceName, "quality_check_enabled", "false"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccDatamartDefinitionResourceForBigqueryQualityCheck(t *testing.T) {
+	resourceName := "trocco_bigquery_datamart_definition.test_quality_check"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:      providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/quality_check/create.tf"),
+				ExpectError: nil,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "test_quality_check"),
+					resource.TestCheckResourceAttr(resourceName, "quality_check_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "quality_check_on_violation", "warn"),
+					resource.TestCheckResourceAttr(resourceName, "quality_check_lookback_period_column", "updated_at"),
+					resource.TestCheckResourceAttr(resourceName, "quality_check_lookback_period_column_type", "TIMESTAMP"),
+					resource.TestCheckResourceAttr(resourceName, "quality_check_lookback_period_timezone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "quality_check_lookback_period_from", "3"),
+					resource.TestCheckResourceAttr(resourceName, "quality_check_lookback_period_to", "0"),
+					resource.TestCheckResourceAttr(resourceName, "quality_check_lookback_period_unit", "days"),
+					resource.TestCheckResourceAttr(resourceName, "quality_checks.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "quality_checks.0.check_type", "not_null"),
+					resource.TestCheckResourceAttr(resourceName, "quality_checks.0.column_names.0", "id"),
+					resource.TestCheckResourceAttr(resourceName, "quality_checks.1.check_type", "composite_unique"),
+					resource.TestCheckResourceAttr(resourceName, "quality_checks.1.column_names.1", "updated_at"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "quality_check_failed"),
+				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/quality_check/update.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "quality_check_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "quality_check_on_violation", "fail"),
+					resource.TestCheckNoResourceAttr(resourceName, "quality_check_lookback_period_column"),
+					resource.TestCheckResourceAttr(resourceName, "quality_checks.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "quality_checks.0.check_type", "unique"),
+					resource.TestCheckResourceAttr(resourceName, "quality_checks.0.column_names.0", "email"),
+					resource.TestCheckResourceAttr(resourceName, "quality_checks.1.check_type", "not_null"),
+				),
+			},
+			{
+				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/quality_check/disable.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "quality_check_enabled", "false"),
+					resource.TestCheckNoResourceAttr(resourceName, "quality_check_on_violation"),
+					resource.TestCheckNoResourceAttr(resourceName, "quality_checks.#"),
 				),
 			},
 		},

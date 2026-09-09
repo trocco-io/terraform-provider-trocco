@@ -193,6 +193,50 @@ resource "trocco_bigquery_datamart_definition" "with_schema_evolution_notificati
 }
 ```
 
+### With Quality Checks
+
+```terraform
+resource "trocco_bigquery_datamart_definition" "with_quality_checks" {
+  name                     = "example_with_quality_checks"
+  is_runnable_concurrently = false
+  bigquery_connection_id   = 1
+  query                    = "SELECT * FROM tables"
+  query_mode               = "insert"
+  destination_dataset      = "dist_datasets"
+  destination_table        = "dist_tables"
+  write_disposition        = "append"
+
+  quality_check_enabled                     = true
+  quality_check_on_violation                = "warn"
+  quality_check_lookback_period_column      = "updated_at"
+  quality_check_lookback_period_column_type = "TIMESTAMP"
+  quality_check_lookback_period_timezone    = "Asia/Tokyo"
+  quality_check_lookback_period_from        = 3
+  quality_check_lookback_period_to          = 0
+  quality_check_lookback_period_unit        = "days"
+  quality_checks = [
+    {
+      check_type   = "not_null"
+      column_names = ["id"]
+    },
+    {
+      check_type   = "composite_unique"
+      column_names = ["id", "updated_at"]
+    }
+  ]
+
+  notifications = [
+    {
+      destination_type  = "slack"
+      slack_channel_id  = 1
+      notification_type = "job"
+      notify_when       = "quality_check_failed"
+      message           = "@here A quality check was violated."
+    }
+  ]
+}
+```
+
 ### With Labels
 
 ```terraform
@@ -250,6 +294,15 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 - `partitioning` (String) The following partitioning types are supported: `ingestion_time`, `time_unit_column`. In the case of `ingestion_time`, partitions are cut based on TROCCO's job execution time. In the case of `time_unit_column`, partitioning is done based on the reference column. Available only in `insert` mode
 - `partitioning_field` (String) Column name to be used for partitioning. Required when `partitioning` is `time_unit_column`
 - `partitioning_time` (String) The granularity of table partitioning. The following units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Required when `partitioning` is set
+- `quality_check_enabled` (Boolean) Whether to run quality checks against the destination table after loading. Defaults to `false`. Available only in `insert` mode
+- `quality_check_lookback_period_column` (String) Column name for the lookback period for quality checks. Available when `quality_check_enabled` is `true`
+- `quality_check_lookback_period_column_type` (String) Data type of the lookback period column for quality checks. The following types are supported: `TIMESTAMP`, `DATETIME`, `DATE`
+- `quality_check_lookback_period_from` (Number) Start value of the lookback period for quality checks
+- `quality_check_lookback_period_timezone` (String) Timezone for the lookback period for quality checks
+- `quality_check_lookback_period_to` (Number) End value of the lookback period for quality checks
+- `quality_check_lookback_period_unit` (String) Unit of the lookback period for quality checks. The following units are supported: `days`, `hours`
+- `quality_check_on_violation` (String) Behavior when a quality check is violated. `fail` marks the job as failed; `warn` keeps the job succeeded and triggers `quality_check_failed` notifications. Required when `quality_check_enabled` is `true`
+- `quality_checks` (Attributes List) Quality checks to run against the destination table after loading. The order is preserved. Required when `quality_check_enabled` is `true` (see [below for nested schema](#nestedatt--quality_checks))
 - `resource_group_id` (Number) ID of the resource group to which the datamart definition belongs
 - `schedules` (Attributes Set) Schedules to be attached to the datamart definition (see [below for nested schema](#nestedatt--schedules))
 - `schema_evolution_mode` (String) Schema evolution mode. The following modes are supported: `detect_only`, `auto_add_column`. Available when `write_disposition` is `incremental` or `scd_type_2`
@@ -312,6 +365,15 @@ Optional:
 Read-Only:
 
 - `id` (Number) Server-assigned ID of the notification. Unique within `(notification_type, destination_type)` for matching across API responses.
+
+
+<a id="nestedatt--quality_checks"></a>
+### Nested Schema for `quality_checks`
+
+Required:
+
+- `check_type` (String) Type of the quality check. The following types are supported: `not_null`, `unique`, `composite_unique`
+- `column_names` (List of String) Column names to be checked. At least 1 column must be specified
 
 
 <a id="nestedatt--schedules"></a>
