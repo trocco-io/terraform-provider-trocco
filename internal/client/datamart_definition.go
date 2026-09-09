@@ -136,15 +136,16 @@ type CustomVariableSetting struct {
 }
 
 type DatamartNotification struct {
-	ID               int64   `json:"id"`
-	DestinationType  string  `json:"destination_type"`
-	SlackChannelID   *int64  `json:"slack_channel_id"`
-	EmailID          *int64  `json:"email_id"`
-	NotificationType string  `json:"notification_type"`
-	NotifyWhen       *string `json:"notify_when"`
-	RecordCount      *int64  `json:"record_count"`
-	RecordOperator   *string `json:"record_operator"`
-	Message          string  `json:"message"`
+	ID                            int64   `json:"id"`
+	DestinationType               string  `json:"destination_type"`
+	SlackChannelID                *int64  `json:"slack_channel_id"`
+	EmailID                       *int64  `json:"email_id"`
+	HTTPNotificationDestinationID *int64  `json:"http_notification_destination_id"`
+	NotificationType              string  `json:"notification_type"`
+	NotifyWhen                    *string `json:"notify_when"`
+	RecordCount                   *int64  `json:"record_count"`
+	RecordOperator                *string `json:"record_operator"`
+	Message                       string  `json:"message"`
 }
 
 type Schedule struct {
@@ -690,14 +691,15 @@ func NewMonthlyScheduleInput(
 }
 
 type DatamartNotificationInput struct {
-	DestinationType  string  `json:"destination_type"`
-	SlackChannelID   *int64  `json:"slack_channel_id,omitempty"`
-	EmailID          *int64  `json:"email_id,omitempty"`
-	NotificationType string  `json:"notification_type"`
-	NotifyWhen       *string `json:"notify_when,omitempty"`
-	RecordCount      *int64  `json:"record_count,omitempty"`
-	RecordOperator   *string `json:"record_operator,omitempty"`
-	Message          string  `json:"message"`
+	DestinationType               string  `json:"destination_type"`
+	SlackChannelID                *int64  `json:"slack_channel_id,omitempty"`
+	EmailID                       *int64  `json:"email_id,omitempty"`
+	HTTPNotificationDestinationID *int64  `json:"http_notification_destination_id,omitempty"`
+	NotificationType              string  `json:"notification_type"`
+	NotifyWhen                    *string `json:"notify_when,omitempty"`
+	RecordCount                   *int64  `json:"record_count,omitempty"`
+	RecordOperator                *string `json:"record_operator,omitempty"`
+	Message                       string  `json:"message"`
 }
 
 func NewSlackJobDatamartNotificationInput(
@@ -757,6 +759,36 @@ func NewEmailRecordDatamartNotificationInput(
 		RecordCount:      &recordCount,
 		RecordOperator:   &recordOperator,
 		Message:          message,
+	}
+}
+
+func NewHTTPJobDatamartNotificationInput(
+	httpNotificationDestinationID int64,
+	notifyWhen string,
+	message string,
+) DatamartNotificationInput {
+	return DatamartNotificationInput{
+		DestinationType:               "http",
+		HTTPNotificationDestinationID: &httpNotificationDestinationID,
+		NotificationType:              "job",
+		NotifyWhen:                    &notifyWhen,
+		Message:                       message,
+	}
+}
+
+func NewHTTPRecordDatamartNotificationInput(
+	httpNotificationDestinationID int64,
+	recordCount int64,
+	recordOperator string,
+	message string,
+) DatamartNotificationInput {
+	return DatamartNotificationInput{
+		DestinationType:               "http",
+		HTTPNotificationDestinationID: &httpNotificationDestinationID,
+		NotificationType:              "record",
+		RecordCount:                   &recordCount,
+		RecordOperator:                &recordOperator,
+		Message:                       message,
 	}
 }
 

@@ -83,15 +83,16 @@ type customVariableSettingModel struct {
 }
 
 type datamartNotificationModel struct {
-	ID               types.Int64                    `tfsdk:"id"`
-	DestinationType  types.String                   `tfsdk:"destination_type"`
-	SlackChannelID   types.Int64                    `tfsdk:"slack_channel_id"`
-	EmailID          types.Int64                    `tfsdk:"email_id"`
-	NotificationType types.String                   `tfsdk:"notification_type"`
-	NotifyWhen       types.String                   `tfsdk:"notify_when"`
-	RecordCount      types.Int64                    `tfsdk:"record_count"`
-	RecordOperator   types.String                   `tfsdk:"record_operator"`
-	Message          custom_type.TrimmedStringValue `tfsdk:"message"`
+	ID                            types.Int64                    `tfsdk:"id"`
+	DestinationType               types.String                   `tfsdk:"destination_type"`
+	SlackChannelID                types.Int64                    `tfsdk:"slack_channel_id"`
+	EmailID                       types.Int64                    `tfsdk:"email_id"`
+	HTTPNotificationDestinationID types.Int64                    `tfsdk:"http_notification_destination_id"`
+	NotificationType              types.String                   `tfsdk:"notification_type"`
+	NotifyWhen                    types.String                   `tfsdk:"notify_when"`
+	RecordCount                   types.Int64                    `tfsdk:"record_count"`
+	RecordOperator                types.String                   `tfsdk:"record_operator"`
+	Message                       custom_type.TrimmedStringValue `tfsdk:"message"`
 }
 
 type scheduleModel struct {
@@ -424,9 +425,9 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						"destination_type": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
-								stringvalidator.OneOf("slack", "email"),
+								stringvalidator.OneOf("slack", "email", "http"),
 							},
-							MarkdownDescription: "Destination service where the notification will be sent. The following types are supported: `slack`, `email`",
+							MarkdownDescription: "Destination service where the notification will be sent. The following types are supported: `slack`, `email`, `http`",
 						},
 						"slack_channel_id": schema.Int64Attribute{
 							Optional: true,
@@ -441,6 +442,13 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 								int64validator.AtLeast(1),
 							},
 							MarkdownDescription: "ID of the email used to send notifications. Required when `destination_type` is `email`",
+						},
+						"http_notification_destination_id": schema.Int64Attribute{
+							Optional: true,
+							Validators: []validator.Int64{
+								int64validator.AtLeast(1),
+							},
+							MarkdownDescription: "ID of the HTTP notification destination used to send notifications. Required when `destination_type` is `http`",
 						},
 						"notification_type": schema.StringAttribute{
 							Required: true,
@@ -648,7 +656,8 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 
 		notificationInputs := make([]client.DatamartNotificationInput, len(notificationValues))
 		for i, v := range notificationValues {
-			if v.DestinationType.ValueString() == "slack" {
+			switch v.DestinationType.ValueString() {
+			case "slack":
 				if v.NotificationType.ValueString() == "job" {
 					notificationInputs[i] = client.NewSlackJobDatamartNotificationInput(
 						v.SlackChannelID.ValueInt64(),
@@ -663,7 +672,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 						v.Message.ValueString(),
 					)
 				}
-			} else {
+			case "email":
 				if v.NotificationType.ValueString() == "job" {
 					notificationInputs[i] = client.NewEmailJobDatamartNotificationInput(
 						v.EmailID.ValueInt64(),
@@ -673,6 +682,21 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 				} else {
 					notificationInputs[i] = client.NewEmailRecordDatamartNotificationInput(
 						v.EmailID.ValueInt64(),
+						v.RecordCount.ValueInt64(),
+						v.RecordOperator.ValueString(),
+						v.Message.ValueString(),
+					)
+				}
+			default:
+				if v.NotificationType.ValueString() == "job" {
+					notificationInputs[i] = client.NewHTTPJobDatamartNotificationInput(
+						v.HTTPNotificationDestinationID.ValueInt64(),
+						v.NotifyWhen.ValueString(),
+						v.Message.ValueString(),
+					)
+				} else {
+					notificationInputs[i] = client.NewHTTPRecordDatamartNotificationInput(
+						v.HTTPNotificationDestinationID.ValueInt64(),
 						v.RecordCount.ValueInt64(),
 						v.RecordOperator.ValueString(),
 						v.Message.ValueString(),
@@ -964,7 +988,8 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 
 		notificationInputs := make([]client.DatamartNotificationInput, len(notificationValues))
 		for i, v := range notificationValues {
-			if v.DestinationType.ValueString() == "slack" {
+			switch v.DestinationType.ValueString() {
+			case "slack":
 				if v.NotificationType.ValueString() == "job" {
 					notificationInputs[i] = client.NewSlackJobDatamartNotificationInput(
 						v.SlackChannelID.ValueInt64(),
@@ -979,7 +1004,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 						v.Message.ValueString(),
 					)
 				}
-			} else {
+			case "email":
 				if v.NotificationType.ValueString() == "job" {
 					notificationInputs[i] = client.NewEmailJobDatamartNotificationInput(
 						v.EmailID.ValueInt64(),
@@ -989,6 +1014,21 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 				} else {
 					notificationInputs[i] = client.NewEmailRecordDatamartNotificationInput(
 						v.EmailID.ValueInt64(),
+						v.RecordCount.ValueInt64(),
+						v.RecordOperator.ValueString(),
+						v.Message.ValueString(),
+					)
+				}
+			default:
+				if v.NotificationType.ValueString() == "job" {
+					notificationInputs[i] = client.NewHTTPJobDatamartNotificationInput(
+						v.HTTPNotificationDestinationID.ValueInt64(),
+						v.NotifyWhen.ValueString(),
+						v.Message.ValueString(),
+					)
+				} else {
+					notificationInputs[i] = client.NewHTTPRecordDatamartNotificationInput(
+						v.HTTPNotificationDestinationID.ValueInt64(),
 						v.RecordCount.ValueInt64(),
 						v.RecordOperator.ValueString(),
 						v.Message.ValueString(),
@@ -1406,6 +1446,9 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			if v.EmailID != nil {
 				notifications[i].EmailID = types.Int64Value(*v.EmailID)
 			}
+			if v.HTTPNotificationDestinationID != nil {
+				notifications[i].HTTPNotificationDestinationID = types.Int64Value(*v.HTTPNotificationDestinationID)
+			}
 			if v.NotifyWhen != nil {
 				notifications[i].NotifyWhen = types.StringValue(*v.NotifyWhen)
 			}
@@ -1517,15 +1560,16 @@ func (c customVariableSettingModel) attrTypes() map[string]attr.Type {
 
 func (n datamartNotificationModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"id":                types.Int64Type,
-		"destination_type":  types.StringType,
-		"slack_channel_id":  types.Int64Type,
-		"email_id":          types.Int64Type,
-		"notification_type": types.StringType,
-		"notify_when":       types.StringType,
-		"record_count":      types.Int64Type,
-		"record_operator":   types.StringType,
-		"message":           types.StringType,
+		"id":                               types.Int64Type,
+		"destination_type":                 types.StringType,
+		"slack_channel_id":                 types.Int64Type,
+		"email_id":                         types.Int64Type,
+		"http_notification_destination_id": types.Int64Type,
+		"notification_type":                types.StringType,
+		"notify_when":                      types.StringType,
+		"record_count":                     types.Int64Type,
+		"record_operator":                  types.StringType,
+		"message":                          types.StringType,
 	}
 }
 

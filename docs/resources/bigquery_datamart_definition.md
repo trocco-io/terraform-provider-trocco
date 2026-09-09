@@ -161,6 +161,13 @@ resource "trocco_bigquery_datamart_definition" "with_notifications" {
       record_count      = 100
       record_operator   = "below"
       message           = "Record count is below 100."
+    },
+    {
+      destination_type                 = "http"
+      http_notification_destination_id = 1
+      notification_type                = "job"
+      notify_when                      = "failed"
+      message                          = "{\"text\": \"Job failed.\"}"
     }
   ]
 }
@@ -270,13 +277,14 @@ Read-Only:
 
 Required:
 
-- `destination_type` (String) Destination service where the notification will be sent. The following types are supported: `slack`, `email`
+- `destination_type` (String) Destination service where the notification will be sent. The following types are supported: `slack`, `email`, `http`
 - `message` (String) The message to be sent with the notification
 - `notification_type` (String) Category of condition. The following types are supported: `job`, `record`
 
 Optional:
 
 - `email_id` (Number) ID of the email used to send notifications. Required when `destination_type` is `email`
+- `http_notification_destination_id` (Number) ID of the HTTP notification destination used to send notifications. Required when `destination_type` is `http`
 - `notify_when` (String) Specifies the job status that trigger a notification. The following types are supported: `finished`, `failed`. Required when `notification_type` is `job`
 - `record_count` (Number) The number of records to be used for condition. Required when `notification_type` is `record`
 - `record_operator` (String) Operator to be used for condition. The following operators are supported: `above`, `below`. Required when `notification_type` is `record`

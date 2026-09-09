@@ -273,6 +273,13 @@ func TestGetDatamartDefinitionFull(t *testing.T) {
             "record_count": 100,
             "record_operator": "below",
             "message": "bar"
+          },
+          {
+            "destination_type": "http",
+            "http_notification_destination_id": 3,
+            "notification_type": "job",
+            "notify_when": "failed",
+            "message": "{\"text\": \"baz\"}"
           }
         ],
         "schedules": [
@@ -381,6 +388,11 @@ func TestGetDatamartDefinitionFull(t *testing.T) {
 		{"second notifications's record_count", *output.Notifications[1].RecordCount, int64(100)},
 		{"second notifications's record_operator", *output.Notifications[1].RecordOperator, "below"},
 		{"second notifications's message", output.Notifications[1].Message, "bar"},
+		{"third notifications's destination_type", output.Notifications[2].DestinationType, "http"},
+		{"third notifications's http_notification_destination_id", *output.Notifications[2].HTTPNotificationDestinationID, int64(3)},
+		{"third notifications's notification_type", output.Notifications[2].NotificationType, "job"},
+		{"third notifications's notify_when", *output.Notifications[2].NotifyWhen, "failed"},
+		{"third notifications's message", output.Notifications[2].Message, `{"text": "baz"}`},
 
 		{"first labels's id", output.Labels[0].ID, int64(1)},
 		{"first labels's name", output.Labels[0].Name, "test_label"},
@@ -702,6 +714,36 @@ func TestUpdateDatamartDefinitionWithNotifications(t *testing.T) {
 	input.SetNotifications([]DatamartNotificationInput{
 		NewSlackJobDatamartNotificationInput(1, "finished", "foo"),
 		NewEmailRecordDatamartNotificationInput(1, 100, "below", "bar"),
+	})
+	_, err := client.UpdateDatamartDefinition(1, &input)
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+}
+
+func TestUpdateDatamartDefinitionWithHTTPNotifications(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+		if string(body) != `{"notifications":[{"destination_type":"http","http_notification_destination_id":3,"notification_type":"job","notify_when":"failed","message":"{\"text\": \"job failed\"}"},{"destination_type":"http","http_notification_destination_id":3,"notification_type":"record","record_count":100,"record_operator":"above","message":"{\"text\": \"too many records\"}"}]}` {
+			t.Errorf("Not expected request body: %s", string(body))
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+	}))
+	defer server.Close()
+
+	client := NewDevTroccoClient("1234567890", server.URL)
+	input := UpdateDatamartDefinitionInput{}
+	input.SetNotifications([]DatamartNotificationInput{
+		NewHTTPJobDatamartNotificationInput(3, "failed", `{"text": "job failed"}`),
+		NewHTTPRecordDatamartNotificationInput(3, 100, "above", `{"text": "too many records"}`),
 	})
 	_, err := client.UpdateDatamartDefinition(1, &input)
 	if err != nil {
