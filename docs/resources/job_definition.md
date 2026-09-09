@@ -1575,6 +1575,20 @@ resource "trocco_job_definition" "notifications" {
       notification_type = "exec_time"
       slack_channel_id  = 1 # require your slack id
     },
+    {
+      destination_type                 = "http"
+      http_notification_destination_id = 1                            # require your http notification destination id
+      message                          = "{\"text\": \"job failed\"}" # must be a JSON string for job notifications
+      notification_type                = "job"
+      notify_when                      = "failed"
+    },
+    {
+      destination_type                 = "http"
+      http_notification_destination_id = 1 # require your http notification destination id
+      message                          = "time alert http"
+      minutes                          = 10
+      notification_type                = "exec_time"
+    },
   ]
 }
 ```
@@ -5154,13 +5168,14 @@ Read-Only:
 
 Required:
 
-- `destination_type` (String) Destination service where the notification will be sent. The following types are supported: `slack`, `email`
+- `destination_type` (String) Destination service where the notification will be sent. The following types are supported: `slack`, `email`, `http`
 - `message` (String) The message to be sent with the notification
 - `notification_type` (String) Category of condition. The following types are supported: `job`, `record`, `exec_time`
 
 Optional:
 
 - `email_id` (Number) ID of the email used to send notifications. Required when `destination_type` is `email`
+- `http_notification_destination_id` (Number) ID of the HTTP notification destination used to send notifications. Required when `destination_type` is `http`. For `notification_type` `job`, the `message` must be a valid JSON string because it is sent as the request body
 - `minutes` (Number)
 - `notify_when` (String) Specifies the job status that trigger a notification. The following types are supported: `finished`, `failed`. Required when `notification_type` is `job`
 - `record_count` (Number) The number of records to be used for condition. Required when `notification_type` is `record`
