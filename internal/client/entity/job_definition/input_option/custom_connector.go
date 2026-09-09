@@ -43,17 +43,14 @@ type CustomConnectorNamedValue struct {
 }
 
 // CustomConnectorPaginator is a read-only snapshot of the referenced
-// endpoint's pagination settings, taken at create/update time. As of
-// n-transfer-ui#47352, its wire shape matches the custom connector
-// definition's own paginator (internal/client/entity's
-// CustomConnectorPaginator): the oneOf(page_increment, offset_increment,
-// cursor_based) strategy is flattened into a single discriminated
-// pagination_strategy object rather than three separate nullable keys.
-// This side still carries a superset of fields (first_offset/first_page/
-// inject_on_first_request/stop_on_blank) that the definition side doesn't
-// have, so the type isn't reused as-is.
-// CustomConnectorPaginator is the snapshot of the referenced endpoint's
-// pagination settings.
+// endpoint's pagination settings, taken at create/update time. Its wire shape
+// matches the custom connector definition's own paginator (internal/client/
+// entity's CustomConnectorPaginator): the oneOf(page_increment,
+// offset_increment, cursor_based) strategy is flattened into a single
+// discriminated pagination_strategy object rather than three separate
+// nullable keys. This side still carries a superset of fields
+// (first_offset/first_page/inject_on_first_request/stop_on_blank) that the
+// definition side doesn't have, so the type isn't reused as-is.
 //
 // The API also serializes a `page_end_option` here, which is deliberately not
 // decoded: the custom connector definition API does not expose it, so
