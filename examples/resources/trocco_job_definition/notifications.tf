@@ -60,5 +60,19 @@ resource "trocco_job_definition" "notifications" {
       notification_type = "exec_time"
       slack_channel_id  = 1 # require your slack id
     },
+    {
+      destination_type                 = "http"
+      http_notification_destination_id = 1                            # require your http notification destination id
+      message                          = "{\"text\": \"job failed\"}" # must be a JSON string for job notifications
+      notification_type                = "job"
+      notify_when                      = "failed"
+    },
+    {
+      destination_type                 = "http"
+      http_notification_destination_id = 1 # require your http notification destination id
+      message                          = "time alert http"
+      minutes                          = 10
+      notification_type                = "exec_time"
+    },
   ]
 }

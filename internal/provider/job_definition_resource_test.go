@@ -72,6 +72,33 @@ func TestAccJobDefinitionResourceNotifications(t *testing.T) {
 					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.slack_channel_id", "trocco_notification_destination.slack_b", "id"),
 				),
 			},
+			// HTTP notification destination for job, record and exec_time notifications.
+			{
+				Config: providerConfig + LoadTextFile("testdata/fixtures/mysql_connection.tf") + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/notifications/http.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "3"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "job"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "failed"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.0.http_notification_destination_id", "trocco_notification_destination.http", "id"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.0.id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "record"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.record_count", "10"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.record_operator", "below"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.record_type", "transfer"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.http_notification_destination_id", "trocco_notification_destination.http", "id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.destination_type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.notification_type", "exec_time"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.minutes", "10"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.2.http_notification_destination_id", "trocco_notification_destination.http", "id"),
+				),
+			},
+			// Refresh after the HTTP notifications must not produce a diff.
+			{
+				Config:   providerConfig + LoadTextFile("testdata/fixtures/mysql_connection.tf") + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/notifications/http.tf"),
+				PlanOnly: true,
+			},
 		},
 	})
 }

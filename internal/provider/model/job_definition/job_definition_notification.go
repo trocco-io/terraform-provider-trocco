@@ -10,17 +10,18 @@ import (
 )
 
 type JobDefinitionNotification struct {
-	ID               types.Int64                    `tfsdk:"id"`
-	DestinationType  types.String                   `tfsdk:"destination_type"`
-	SlackChannelID   types.Int64                    `tfsdk:"slack_channel_id"`
-	EmailID          types.Int64                    `tfsdk:"email_id"`
-	NotificationType types.String                   `tfsdk:"notification_type"`
-	NotifyWhen       types.String                   `tfsdk:"notify_when"`
-	Message          custom_type.TrimmedStringValue `tfsdk:"message"`
-	RecordCount      types.Int64                    `tfsdk:"record_count"`
-	RecordOperator   types.String                   `tfsdk:"record_operator"`
-	RecordType       types.String                   `tfsdk:"record_type"`
-	Minutes          types.Int64                    `tfsdk:"minutes"`
+	ID                            types.Int64                    `tfsdk:"id"`
+	DestinationType               types.String                   `tfsdk:"destination_type"`
+	SlackChannelID                types.Int64                    `tfsdk:"slack_channel_id"`
+	EmailID                       types.Int64                    `tfsdk:"email_id"`
+	HTTPNotificationDestinationID types.Int64                    `tfsdk:"http_notification_destination_id"`
+	NotificationType              types.String                   `tfsdk:"notification_type"`
+	NotifyWhen                    types.String                   `tfsdk:"notify_when"`
+	Message                       custom_type.TrimmedStringValue `tfsdk:"message"`
+	RecordCount                   types.Int64                    `tfsdk:"record_count"`
+	RecordOperator                types.String                   `tfsdk:"record_operator"`
+	RecordType                    types.String                   `tfsdk:"record_type"`
+	Minutes                       types.Int64                    `tfsdk:"minutes"`
 }
 
 func NewJobDefinitionNotifications(jobDefinitionNotifications []jobDefinitionEntities.JobDefinitionNotification) []JobDefinitionNotification {
@@ -30,17 +31,18 @@ func NewJobDefinitionNotifications(jobDefinitionNotifications []jobDefinitionEnt
 	notifications := make([]JobDefinitionNotification, 0, len(jobDefinitionNotifications))
 	for _, input := range jobDefinitionNotifications {
 		notification := JobDefinitionNotification{
-			ID:               types.Int64Value(input.ID),
-			DestinationType:  types.StringValue(input.DestinationType),
-			SlackChannelID:   types.Int64PointerValue(input.SlackChannelID),
-			EmailID:          types.Int64PointerValue(input.EmailID),
-			NotificationType: types.StringValue(input.NotificationType),
-			NotifyWhen:       types.StringPointerValue(input.NotifyWhen),
-			Message:          custom_type.TrimmedStringValue{StringValue: types.StringValue(input.Message)},
-			RecordCount:      types.Int64PointerValue(input.RecordCount),
-			RecordOperator:   types.StringPointerValue(input.RecordOperator),
-			RecordType:       types.StringPointerValue(input.RecordType),
-			Minutes:          types.Int64PointerValue(input.Minutes),
+			ID:                            types.Int64Value(input.ID),
+			DestinationType:               types.StringValue(input.DestinationType),
+			SlackChannelID:                types.Int64PointerValue(input.SlackChannelID),
+			EmailID:                       types.Int64PointerValue(input.EmailID),
+			HTTPNotificationDestinationID: types.Int64PointerValue(input.HTTPNotificationDestinationID),
+			NotificationType:              types.StringValue(input.NotificationType),
+			NotifyWhen:                    types.StringPointerValue(input.NotifyWhen),
+			Message:                       custom_type.TrimmedStringValue{StringValue: types.StringValue(input.Message)},
+			RecordCount:                   types.Int64PointerValue(input.RecordCount),
+			RecordOperator:                types.StringPointerValue(input.RecordOperator),
+			RecordType:                    types.StringPointerValue(input.RecordType),
+			Minutes:                       types.Int64PointerValue(input.Minutes),
 		}
 		notifications = append(notifications, notification)
 	}
@@ -49,32 +51,34 @@ func NewJobDefinitionNotifications(jobDefinitionNotifications []jobDefinitionEnt
 
 func (notification JobDefinitionNotification) ToInput() jobDefinitionParameters.JobDefinitionNotificationInput {
 	input := jobDefinitionParameters.JobDefinitionNotificationInput{
-		DestinationType:  notification.DestinationType.ValueString(),
-		SlackChannelID:   notification.SlackChannelID.ValueInt64Pointer(),
-		EmailID:          notification.EmailID.ValueInt64Pointer(),
-		NotificationType: notification.NotificationType.ValueString(),
-		NotifyWhen:       notification.NotifyWhen.ValueStringPointer(),
-		Message:          notification.Message.ValueString(),
-		RecordCount:      notification.RecordCount.ValueInt64Pointer(),
-		RecordOperator:   notification.RecordOperator.ValueStringPointer(),
-		RecordType:       notification.RecordType.ValueStringPointer(),
-		Minutes:          notification.Minutes.ValueInt64Pointer(),
+		DestinationType:               notification.DestinationType.ValueString(),
+		SlackChannelID:                notification.SlackChannelID.ValueInt64Pointer(),
+		EmailID:                       notification.EmailID.ValueInt64Pointer(),
+		HTTPNotificationDestinationID: notification.HTTPNotificationDestinationID.ValueInt64Pointer(),
+		NotificationType:              notification.NotificationType.ValueString(),
+		NotifyWhen:                    notification.NotifyWhen.ValueStringPointer(),
+		Message:                       notification.Message.ValueString(),
+		RecordCount:                   notification.RecordCount.ValueInt64Pointer(),
+		RecordOperator:                notification.RecordOperator.ValueStringPointer(),
+		RecordType:                    notification.RecordType.ValueStringPointer(),
+		Minutes:                       notification.Minutes.ValueInt64Pointer(),
 	}
 	return input
 }
 
 func (n JobDefinitionNotification) AttrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"id":                types.Int64Type,
-		"destination_type":  types.StringType,
-		"slack_channel_id":  types.Int64Type,
-		"email_id":          types.Int64Type,
-		"notification_type": types.StringType,
-		"notify_when":       types.StringType,
-		"message":           types.StringType,
-		"record_count":      types.Int64Type,
-		"record_operator":   types.StringType,
-		"record_type":       types.StringType,
-		"minutes":           types.Int64Type,
+		"id":                               types.Int64Type,
+		"destination_type":                 types.StringType,
+		"slack_channel_id":                 types.Int64Type,
+		"email_id":                         types.Int64Type,
+		"http_notification_destination_id": types.Int64Type,
+		"notification_type":                types.StringType,
+		"notify_when":                      types.StringType,
+		"message":                          types.StringType,
+		"record_count":                     types.Int64Type,
+		"record_operator":                  types.StringType,
+		"record_type":                      types.StringType,
+		"minutes":                          types.Int64Type,
 	}
 }
