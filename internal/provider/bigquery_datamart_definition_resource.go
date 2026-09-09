@@ -15,9 +15,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -66,6 +68,15 @@ type bigqueryDatamartDefinitionModel struct {
 	LookbackPeriodFrom       types.Int64                    `tfsdk:"lookback_period_from"`
 	LookbackPeriodTo         types.Int64                    `tfsdk:"lookback_period_to"`
 	LookbackPeriodUnit       types.String                   `tfsdk:"lookback_period_unit"`
+	QualityCheckEnabled                  types.Bool   `tfsdk:"quality_check_enabled"`
+	QualityCheckOnViolation              types.String `tfsdk:"quality_check_on_violation"`
+	QualityCheckLookbackPeriodColumn     types.String `tfsdk:"quality_check_lookback_period_column"`
+	QualityCheckLookbackPeriodColumnType types.String `tfsdk:"quality_check_lookback_period_column_type"`
+	QualityCheckLookbackPeriodTimezone   types.String `tfsdk:"quality_check_lookback_period_timezone"`
+	QualityCheckLookbackPeriodFrom       types.Int64  `tfsdk:"quality_check_lookback_period_from"`
+	QualityCheckLookbackPeriodTo         types.Int64  `tfsdk:"quality_check_lookback_period_to"`
+	QualityCheckLookbackPeriodUnit       types.String `tfsdk:"quality_check_lookback_period_unit"`
+	QualityChecks                        types.List   `tfsdk:"quality_checks"`
 	Notifications            types.List                     `tfsdk:"notifications"`
 	Schedules                types.Set                      `tfsdk:"schedules"`
 	Labels                   types.Set                      `tfsdk:"labels"`
@@ -101,6 +112,11 @@ type scheduleModel struct {
 	Day       types.Int64  `tfsdk:"day"`
 	DayOfWeek types.Int64  `tfsdk:"day_of_week"`
 	TimeZone  types.String `tfsdk:"time_zone"`
+}
+
+type qualityCheckModel struct {
+	CheckType   types.String `tfsdk:"check_type"`
+	ColumnNames types.List   `tfsdk:"column_names"`
 }
 
 type labelModel struct {
@@ -363,6 +379,83 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 				},
 				MarkdownDescription: "Unit of the lookback period. The following units are supported: `days`, `hours`",
 			},
+			// The API omits the quality check block entirely when it is disabled, so a static
+			// default keeps plans stable and lets ImportStateVerify pass without a config value.
+			"quality_check_enabled": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(false),
+				MarkdownDescription: "Whether to run quality checks against the destination table after loading. Defaults to `false`. Available only in `insert` mode",
+			},
+			"quality_check_on_violation": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("fail", "warn"),
+				},
+				MarkdownDescription: "Behavior when a quality check is violated. `fail` marks the job as failed; `warn` keeps the job succeeded and triggers `quality_check_failed` notifications. Required when `quality_check_enabled` is `true`",
+			},
+			"quality_check_lookback_period_column": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Column name for the lookback period for quality checks. Available when `quality_check_enabled` is `true`",
+			},
+			"quality_check_lookback_period_column_type": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("TIMESTAMP", "DATETIME", "DATE"),
+				},
+				MarkdownDescription: "Data type of the lookback period column for quality checks. The following types are supported: `TIMESTAMP`, `DATETIME`, `DATE`",
+			},
+			"quality_check_lookback_period_timezone": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Timezone for the lookback period for quality checks",
+			},
+			"quality_check_lookback_period_from": schema.Int64Attribute{
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+				},
+				MarkdownDescription: "Start value of the lookback period for quality checks",
+			},
+			"quality_check_lookback_period_to": schema.Int64Attribute{
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(0),
+				},
+				MarkdownDescription: "End value of the lookback period for quality checks",
+			},
+			"quality_check_lookback_period_unit": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("days", "hours"),
+				},
+				MarkdownDescription: "Unit of the lookback period for quality checks. The following units are supported: `days`, `hours`",
+			},
+			"quality_checks": schema.ListNestedAttribute{
+				Optional: true,
+				Validators: []validator.List{
+					listvalidator.SizeAtLeast(1),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"check_type": schema.StringAttribute{
+							Required: true,
+							Validators: []validator.String{
+								stringvalidator.OneOf("not_null", "unique", "composite_unique"),
+							},
+							MarkdownDescription: "Type of the quality check. The following types are supported: `not_null`, `unique`, `composite_unique`",
+						},
+						"column_names": schema.ListAttribute{
+							Required:    true,
+							ElementType: types.StringType,
+							Validators: []validator.List{
+								listvalidator.SizeAtLeast(1),
+							},
+							MarkdownDescription: "Column names to be checked. At least 1 column must be specified",
+						},
+					},
+				},
+				MarkdownDescription: "Quality checks to run against the destination table after loading. The order is preserved. Required when `quality_check_enabled` is `true`",
+			},
 			"schedules": schema.SetNestedAttribute{
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -575,6 +668,34 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		if !plan.LookbackPeriodUnit.IsNull() {
 			optionInput.SetLookbackPeriodUnit(plan.LookbackPeriodUnit.ValueString())
+		}
+		if plan.QualityCheckEnabled.ValueBool() {
+			optionInput.SetQualityCheckEnabled(true)
+			optionInput.SetQualityCheckOnViolation(plan.QualityCheckOnViolation.ValueString())
+			if !plan.QualityCheckLookbackPeriodColumn.IsNull() {
+				optionInput.SetQualityCheckLookbackPeriodColumn(plan.QualityCheckLookbackPeriodColumn.ValueString())
+			}
+			if !plan.QualityCheckLookbackPeriodColumnType.IsNull() {
+				optionInput.SetQualityCheckLookbackPeriodColumnType(plan.QualityCheckLookbackPeriodColumnType.ValueString())
+			}
+			if !plan.QualityCheckLookbackPeriodTimezone.IsNull() {
+				optionInput.SetQualityCheckLookbackPeriodTimezone(plan.QualityCheckLookbackPeriodTimezone.ValueString())
+			}
+			if !plan.QualityCheckLookbackPeriodFrom.IsNull() {
+				optionInput.SetQualityCheckLookbackPeriodFrom(plan.QualityCheckLookbackPeriodFrom.ValueInt64())
+			}
+			// A value of 0 is valid, so the null check (not the value) decides whether to send it.
+			if !plan.QualityCheckLookbackPeriodTo.IsNull() {
+				optionInput.SetQualityCheckLookbackPeriodTo(plan.QualityCheckLookbackPeriodTo.ValueInt64())
+			}
+			if !plan.QualityCheckLookbackPeriodUnit.IsNull() {
+				optionInput.SetQualityCheckLookbackPeriodUnit(plan.QualityCheckLookbackPeriodUnit.ValueString())
+			}
+			checks := convertQualityChecks(ctx, plan.QualityChecks, &resp.Diagnostics)
+			if resp.Diagnostics.HasError() {
+				return
+			}
+			optionInput.SetQualityChecks(checks)
 		}
 		if resp.Diagnostics.HasError() {
 			return
@@ -902,6 +1023,10 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 		optionInput.SetLookbackPeriodUnit(plan.LookbackPeriodUnit.ValueString())
 	} else {
 		optionInput.SetLookbackPeriodUnitEmpty()
+	}
+	applyQualityCheckForUpdate(ctx, &plan, &optionInput, &resp.Diagnostics)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 	input.SetDatamartBigqueryOption(optionInput)
 	if !plan.Schedules.IsNull() && !plan.Schedules.IsUnknown() {
@@ -1242,6 +1367,128 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 		}
 	}
 
+	// Validate quality check settings. Skipped while quality_check_enabled is unknown
+	// (e.g. derived from a variable) because the remaining rules depend on its value.
+	if !data.QualityCheckEnabled.IsUnknown() {
+		qualityCheckEnabled := !data.QualityCheckEnabled.IsNull() && data.QualityCheckEnabled.ValueBool()
+
+		if qualityCheckEnabled {
+			if data.QueryMode.ValueString() == "query" {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("quality_check_enabled"),
+					"Invalid Quality Check Setting",
+					"quality_check_enabled is only available in insert query mode",
+				)
+			}
+			if data.QualityCheckOnViolation.IsNull() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("quality_check_on_violation"),
+					"Missing Quality Check On Violation",
+					"quality_check_on_violation is required when quality_check_enabled is true",
+				)
+			}
+			if data.QualityChecks.IsNull() {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("quality_checks"),
+					"Missing Quality Checks",
+					"quality_checks is required when quality_check_enabled is true",
+				)
+			}
+
+			// Validate quality_check_lookback_period consistency
+			columnSet := !data.QualityCheckLookbackPeriodColumn.IsNull()
+			fromSet := !data.QualityCheckLookbackPeriodFrom.IsNull()
+			toSet := !data.QualityCheckLookbackPeriodTo.IsNull()
+			fromOrToSet := fromSet || toSet
+
+			if !columnSet && fromOrToSet {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("quality_check_lookback_period_column"),
+					"Missing Quality Check Lookback Period Column",
+					"quality_check_lookback_period_column is required when quality_check_lookback_period_from or quality_check_lookback_period_to is set",
+				)
+			}
+
+			if columnSet {
+				if data.QualityCheckLookbackPeriodColumnType.IsNull() {
+					resp.Diagnostics.AddAttributeError(
+						path.Root("quality_check_lookback_period_column_type"),
+						"Missing Quality Check Lookback Period Column Type",
+						"quality_check_lookback_period_column_type is required when quality_check_lookback_period_column is set",
+					)
+				}
+				if !fromOrToSet {
+					resp.Diagnostics.AddAttributeError(
+						path.Root("quality_check_lookback_period_from"),
+						"Missing Quality Check Lookback Period Range",
+						"quality_check_lookback_period_from or quality_check_lookback_period_to is required when quality_check_lookback_period_column is set",
+					)
+				}
+			}
+
+			if fromOrToSet {
+				if data.QualityCheckLookbackPeriodUnit.IsNull() {
+					resp.Diagnostics.AddAttributeError(
+						path.Root("quality_check_lookback_period_unit"),
+						"Missing Quality Check Lookback Period Unit",
+						"quality_check_lookback_period_unit is required when quality_check_lookback_period_from or quality_check_lookback_period_to is set",
+					)
+				}
+				if data.QualityCheckLookbackPeriodTimezone.IsNull() {
+					resp.Diagnostics.AddAttributeError(
+						path.Root("quality_check_lookback_period_timezone"),
+						"Missing Quality Check Lookback Period Timezone",
+						"quality_check_lookback_period_timezone is required when quality_check_lookback_period_from or quality_check_lookback_period_to is set",
+					)
+				}
+			}
+
+			// Validate quality_check_lookback_period_from >= quality_check_lookback_period_to
+			if fromSet && toSet {
+				if data.QualityCheckLookbackPeriodFrom.ValueInt64() < data.QualityCheckLookbackPeriodTo.ValueInt64() {
+					resp.Diagnostics.AddAttributeError(
+						path.Root("quality_check_lookback_period_from"),
+						"Invalid Quality Check Lookback Period Range",
+						"quality_check_lookback_period_from must be greater than or equal to quality_check_lookback_period_to",
+					)
+				}
+			}
+
+			// A DATE column cannot be combined with an hourly lookback period
+			if data.QualityCheckLookbackPeriodColumnType.ValueString() == "DATE" && data.QualityCheckLookbackPeriodUnit.ValueString() == "hours" {
+				resp.Diagnostics.AddAttributeError(
+					path.Root("quality_check_lookback_period_unit"),
+					"Invalid Quality Check Lookback Period Unit",
+					"quality_check_lookback_period_unit must be days when quality_check_lookback_period_column_type is DATE",
+				)
+			}
+		} else {
+			// The API drops the whole quality check block when it is disabled, so any other
+			// quality check attribute set here would never be reflected back and would drift forever.
+			dependentAttributes := []struct {
+				name  string
+				isSet bool
+			}{
+				{"quality_check_on_violation", !data.QualityCheckOnViolation.IsNull()},
+				{"quality_check_lookback_period_column", !data.QualityCheckLookbackPeriodColumn.IsNull()},
+				{"quality_check_lookback_period_column_type", !data.QualityCheckLookbackPeriodColumnType.IsNull()},
+				{"quality_check_lookback_period_timezone", !data.QualityCheckLookbackPeriodTimezone.IsNull()},
+				{"quality_check_lookback_period_from", !data.QualityCheckLookbackPeriodFrom.IsNull()},
+				{"quality_check_lookback_period_to", !data.QualityCheckLookbackPeriodTo.IsNull()},
+				{"quality_check_lookback_period_unit", !data.QualityCheckLookbackPeriodUnit.IsNull()},
+				{"quality_checks", !data.QualityChecks.IsNull()},
+			}
+			for _, a := range dependentAttributes {
+				if a.isSet {
+					resp.Diagnostics.AddAttributeError(
+						path.Root(a.name),
+						"Invalid Quality Check Setting",
+						fmt.Sprintf("%s is only available when quality_check_enabled is true", a.name),
+					)
+				}
+			}
+		}
+	}
 }
 
 func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition, refNotifs []datamartNotificationModel) (*bigqueryDatamartDefinitionModel, error) {
@@ -1387,6 +1634,54 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 		}
 		if response.DatamartBigqueryOption.LookbackPeriodUnit != nil {
 			model.LookbackPeriodUnit = types.StringValue(*response.DatamartBigqueryOption.LookbackPeriodUnit)
+		}
+
+		// The API omits the whole quality check block when it is disabled, so an absent
+		// quality_check_enabled means false and every other quality check attribute stays null.
+		opt := response.DatamartBigqueryOption
+		qualityCheckObjectType := types.ObjectType{AttrTypes: qualityCheckModel{}.attrTypes()}
+		model.QualityCheckEnabled = types.BoolValue(opt.QualityCheckEnabled != nil && *opt.QualityCheckEnabled)
+		model.QualityChecks = types.ListNull(qualityCheckObjectType)
+		if model.QualityCheckEnabled.ValueBool() {
+			if opt.QualityCheckOnViolation != nil {
+				model.QualityCheckOnViolation = types.StringValue(*opt.QualityCheckOnViolation)
+			}
+			if opt.QualityCheckLookbackPeriodColumn != nil {
+				model.QualityCheckLookbackPeriodColumn = types.StringValue(*opt.QualityCheckLookbackPeriodColumn)
+			}
+			if opt.QualityCheckLookbackPeriodColumnType != nil {
+				model.QualityCheckLookbackPeriodColumnType = types.StringValue(*opt.QualityCheckLookbackPeriodColumnType)
+			}
+			if opt.QualityCheckLookbackPeriodTimezone != nil {
+				model.QualityCheckLookbackPeriodTimezone = types.StringValue(*opt.QualityCheckLookbackPeriodTimezone)
+			}
+			if opt.QualityCheckLookbackPeriodFrom != nil {
+				model.QualityCheckLookbackPeriodFrom = types.Int64Value(*opt.QualityCheckLookbackPeriodFrom)
+			}
+			if opt.QualityCheckLookbackPeriodTo != nil {
+				model.QualityCheckLookbackPeriodTo = types.Int64Value(*opt.QualityCheckLookbackPeriodTo)
+			}
+			if opt.QualityCheckLookbackPeriodUnit != nil {
+				model.QualityCheckLookbackPeriodUnit = types.StringValue(*opt.QualityCheckLookbackPeriodUnit)
+			}
+			if opt.QualityChecks != nil {
+				checks := make([]qualityCheckModel, len(opt.QualityChecks))
+				for i, c := range opt.QualityChecks {
+					columnNames, diags := types.ListValueFrom(ctx, types.StringType, c.ColumnNames)
+					if diags.HasError() {
+						return nil, fmt.Errorf("failed to convert quality_checks column_names to ListValue")
+					}
+					checks[i] = qualityCheckModel{
+						CheckType:   types.StringValue(c.CheckType),
+						ColumnNames: columnNames,
+					}
+				}
+				listValue, diags := types.ListValueFrom(ctx, qualityCheckObjectType, checks)
+				if diags.HasError() {
+					return nil, fmt.Errorf("failed to convert quality_checks to ListValue")
+				}
+				model.QualityChecks = listValue
+			}
 		}
 	} else {
 		return nil, fmt.Errorf("datamartBigqueryOption is nil")
@@ -1540,6 +1835,13 @@ func (s scheduleModel) attrTypes() map[string]attr.Type {
 	}
 }
 
+func (q qualityCheckModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"check_type":   types.StringType,
+		"column_names": types.ListType{ElemType: types.StringType},
+	}
+}
+
 func (l labelModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"id":   types.Int64Type,
@@ -1602,6 +1904,79 @@ func convertLabelsForCreate(ctx context.Context, source types.Set, diags *resour
 		result = append(result, v.Name.ValueString())
 	}
 	return result
+}
+
+// convertQualityChecks converts the quality_checks list into API inputs, preserving the order.
+func convertQualityChecks(ctx context.Context, source types.List, diags *diag.Diagnostics) []client.DatamartQualityCheckInput {
+	if source.IsNull() || source.IsUnknown() {
+		return []client.DatamartQualityCheckInput{}
+	}
+
+	var checks []qualityCheckModel
+	diags.Append(source.ElementsAs(ctx, &checks, false)...)
+	if diags.HasError() {
+		return nil
+	}
+
+	result := make([]client.DatamartQualityCheckInput, 0, len(checks))
+	for _, v := range checks {
+		result = append(result, client.NewDatamartQualityCheckInput(
+			v.CheckType.ValueString(),
+			utils.ConvertStringList(ctx, v.ColumnNames),
+		))
+	}
+	return result
+}
+
+// applyQualityCheckForUpdate always sends quality_check_enabled on update. When any
+// quality_check_* key is present the API replaces the whole block, and sending false
+// clears it. Omitting every key would leave the server state untouched and the resource
+// would drift from the configuration, so the flag is sent unconditionally.
+func applyQualityCheckForUpdate(ctx context.Context, plan *bigqueryDatamartDefinitionModel, opt *client.UpdateDatamartBigqueryOptionInput, diags *diag.Diagnostics) {
+	enabled := plan.QualityCheckEnabled.ValueBool()
+	opt.SetQualityCheckEnabled(enabled)
+	if !enabled {
+		return
+	}
+
+	opt.SetQualityCheckOnViolation(plan.QualityCheckOnViolation.ValueString())
+	if plan.QualityCheckLookbackPeriodColumn.IsNull() {
+		opt.SetQualityCheckLookbackPeriodColumnEmpty()
+	} else {
+		opt.SetQualityCheckLookbackPeriodColumn(plan.QualityCheckLookbackPeriodColumn.ValueString())
+	}
+	if plan.QualityCheckLookbackPeriodColumnType.IsNull() {
+		opt.SetQualityCheckLookbackPeriodColumnTypeEmpty()
+	} else {
+		opt.SetQualityCheckLookbackPeriodColumnType(plan.QualityCheckLookbackPeriodColumnType.ValueString())
+	}
+	if plan.QualityCheckLookbackPeriodTimezone.IsNull() {
+		opt.SetQualityCheckLookbackPeriodTimezoneEmpty()
+	} else {
+		opt.SetQualityCheckLookbackPeriodTimezone(plan.QualityCheckLookbackPeriodTimezone.ValueString())
+	}
+	if plan.QualityCheckLookbackPeriodFrom.IsNull() {
+		opt.SetQualityCheckLookbackPeriodFromEmpty()
+	} else {
+		opt.SetQualityCheckLookbackPeriodFrom(plan.QualityCheckLookbackPeriodFrom.ValueInt64())
+	}
+	// A value of 0 is valid, so the null check (not the value) decides between null and 0.
+	if plan.QualityCheckLookbackPeriodTo.IsNull() {
+		opt.SetQualityCheckLookbackPeriodToEmpty()
+	} else {
+		opt.SetQualityCheckLookbackPeriodTo(plan.QualityCheckLookbackPeriodTo.ValueInt64())
+	}
+	if plan.QualityCheckLookbackPeriodUnit.IsNull() {
+		opt.SetQualityCheckLookbackPeriodUnitEmpty()
+	} else {
+		opt.SetQualityCheckLookbackPeriodUnit(plan.QualityCheckLookbackPeriodUnit.ValueString())
+	}
+
+	checks := convertQualityChecks(ctx, plan.QualityChecks, diags)
+	if diags.HasError() {
+		return
+	}
+	opt.SetQualityChecks(checks)
 }
 
 func datamartNotificationKey(n datamartNotificationModel) string {

@@ -165,8 +165,72 @@ func TestGetDatamartDefinitionMinimum(t *testing.T) {
 		{"datamart_bigquery_option.destination_table", *output.DatamartBigqueryOption.DestinationTable, "test_table"},
 		{"datamart_bigquery_option.write_disposition", *output.DatamartBigqueryOption.WriteDisposition, "truncate"},
 		{"datamart_bigquery_option.partitioning", output.DatamartBigqueryOption.Partitioning, nil},
+		{"datamart_bigquery_option.quality_check_enabled", output.DatamartBigqueryOption.QualityCheckEnabled, nil},
 		{"created_at", output.CreatedAt, "2024-07-29T19:00:00.000+09:00"},
 		{"updated_at", output.UpdatedAt, "2024-07-29T20:00:00.000+09:00"},
+	}
+	testCases(t, cases)
+}
+
+func TestGetDatamartDefinitionWithQualityCheck(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		resp := `
+      {
+        "id": 1,
+        "name": "Test Datamart 01",
+        "description": "",
+        "data_warehouse_type": "bigquery",
+        "datamart_bigquery_option": {
+          "bigquery_connection_id": 1,
+          "query_mode": "insert",
+          "query": "SELECT * FROM table",
+          "destination_dataset": "test_dataset",
+          "destination_table": "test_table",
+          "write_disposition": "append",
+          "quality_check_enabled": true,
+          "quality_check_on_violation": "warn",
+          "quality_check_lookback_period_column": "updated_at",
+          "quality_check_lookback_period_column_type": "TIMESTAMP",
+          "quality_check_lookback_period_timezone": "Asia/Tokyo",
+          "quality_check_lookback_period_from": 3,
+          "quality_check_lookback_period_to": 0,
+          "quality_check_lookback_period_unit": "days",
+          "quality_checks": [
+            {"check_type": "not_null", "column_names": ["id"]},
+            {"check_type": "composite_unique", "column_names": ["id", "updated_at"]}
+          ]
+        },
+        "created_at": "2024-07-29T19:00:00.000+09:00",
+        "updated_at": "2024-07-29T20:00:00.000+09:00"
+      }
+    `
+		_, err := w.Write([]byte(resp))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+	}))
+	defer server.Close()
+
+	client := NewDevTroccoClient("1234567890", server.URL)
+	output, err := client.GetDatamartDefinition(1)
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+	cases := []Case{
+		{"datamart_bigquery_option.quality_check_enabled", *output.DatamartBigqueryOption.QualityCheckEnabled, true},
+		{"datamart_bigquery_option.quality_check_on_violation", *output.DatamartBigqueryOption.QualityCheckOnViolation, "warn"},
+		{"datamart_bigquery_option.quality_check_lookback_period_column", *output.DatamartBigqueryOption.QualityCheckLookbackPeriodColumn, "updated_at"},
+		{"datamart_bigquery_option.quality_check_lookback_period_column_type", *output.DatamartBigqueryOption.QualityCheckLookbackPeriodColumnType, "TIMESTAMP"},
+		{"datamart_bigquery_option.quality_check_lookback_period_timezone", *output.DatamartBigqueryOption.QualityCheckLookbackPeriodTimezone, "Asia/Tokyo"},
+		{"datamart_bigquery_option.quality_check_lookback_period_from", *output.DatamartBigqueryOption.QualityCheckLookbackPeriodFrom, int64(3)},
+		{"datamart_bigquery_option.quality_check_lookback_period_to", *output.DatamartBigqueryOption.QualityCheckLookbackPeriodTo, int64(0)},
+		{"datamart_bigquery_option.quality_check_lookback_period_unit", *output.DatamartBigqueryOption.QualityCheckLookbackPeriodUnit, "days"},
+		{"datamart_bigquery_option.quality_checks.#", len(output.DatamartBigqueryOption.QualityChecks), 2},
+		{"datamart_bigquery_option.quality_checks.0.check_type", output.DatamartBigqueryOption.QualityChecks[0].CheckType, "not_null"},
+		{"datamart_bigquery_option.quality_checks.1.check_type", output.DatamartBigqueryOption.QualityChecks[1].CheckType, "composite_unique"},
+		{"datamart_bigquery_option.quality_checks.1.column_names.1", output.DatamartBigqueryOption.QualityChecks[1].ColumnNames[1], "updated_at"},
 	}
 	testCases(t, cases)
 }
@@ -501,6 +565,59 @@ func TestCreateDatamartDefinitionFull(t *testing.T) {
 	}
 }
 
+func TestCreateDatamartDefinitionWithQualityCheck(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+		if string(body) != `{"name":"Test Datamart 01","data_warehouse_type":"bigquery","is_runnable_concurrently":false,"datamart_bigquery_option":{"bigquery_connection_id":1,"query_mode":"insert","query":"SELECT * FROM table","destination_dataset":"test_dataset","destination_table":"test_table","write_disposition":"append","quality_check_enabled":true,"quality_check_on_violation":"warn","quality_check_lookback_period_column":"updated_at","quality_check_lookback_period_column_type":"TIMESTAMP","quality_check_lookback_period_timezone":"Asia/Tokyo","quality_check_lookback_period_from":3,"quality_check_lookback_period_to":0,"quality_check_lookback_period_unit":"days","quality_checks":[{"check_type":"not_null","column_names":["id"]},{"check_type":"composite_unique","column_names":["id","updated_at"]}]}}` {
+			t.Errorf("Not expected request body: %s", string(body))
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_, err = w.Write([]byte(`{"id":1}`))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+	}))
+	defer server.Close()
+
+	client := NewDevTroccoClient("1234567890", server.URL)
+	input := NewCreateDatamartDefinitionInput(
+		"Test Datamart 01",
+		"bigquery",
+		false,
+	)
+	bigqueryOption := NewInsertModeCreateDatamartBigqueryOptionInput(
+		1,
+		"SELECT * FROM table",
+		"test_dataset",
+		"test_table",
+		"append",
+	)
+	bigqueryOption.SetQualityCheckEnabled(true)
+	bigqueryOption.SetQualityCheckOnViolation("warn")
+	bigqueryOption.SetQualityCheckLookbackPeriodColumn("updated_at")
+	bigqueryOption.SetQualityCheckLookbackPeriodColumnType("TIMESTAMP")
+	bigqueryOption.SetQualityCheckLookbackPeriodTimezone("Asia/Tokyo")
+	bigqueryOption.SetQualityCheckLookbackPeriodFrom(3)
+	// 0 is a valid value and must be serialized.
+	bigqueryOption.SetQualityCheckLookbackPeriodTo(0)
+	bigqueryOption.SetQualityCheckLookbackPeriodUnit("days")
+	bigqueryOption.SetQualityChecks([]DatamartQualityCheckInput{
+		NewDatamartQualityCheckInput("not_null", []string{"id"}),
+		NewDatamartQualityCheckInput("composite_unique", []string{"id", "updated_at"}),
+	})
+	input.SetDatamartBigqueryOption(bigqueryOption)
+
+	_, err := client.CreateDatamartDefinition(&input)
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+}
+
 // UpdateDatamartDefinition
 
 func TestUpdateDatamartDefinitionWithBasicValues(t *testing.T) {
@@ -733,6 +850,75 @@ func TestUpdateDatamartDefinitionWithNotificationsNotifyWhenVariants(t *testing.
 		NewSlackJobDatamartNotificationInput(1, "quality_check_failed", "foo"),
 		NewEmailJobDatamartNotificationInput(1, "schema_evolution_detected", "bar"),
 	})
+	_, err := client.UpdateDatamartDefinition(1, &input)
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+}
+
+func TestUpdateDatamartDefinitionWithQualityCheckDisabled(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+		if string(body) != `{"datamart_bigquery_option":{"quality_check_enabled":false}}` {
+			t.Errorf("Not expected request body: %s", string(body))
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+	}))
+	defer server.Close()
+
+	client := NewDevTroccoClient("1234567890", server.URL)
+	input := UpdateDatamartDefinitionInput{}
+	bigqueryOption := UpdateDatamartBigqueryOptionInput{}
+	bigqueryOption.SetQualityCheckEnabled(false)
+	input.SetDatamartBigqueryOption(bigqueryOption)
+	_, err := client.UpdateDatamartDefinition(1, &input)
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+}
+
+func TestUpdateDatamartDefinitionWithQualityCheckReplace(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+		if string(body) != `{"datamart_bigquery_option":{"quality_check_enabled":true,"quality_check_on_violation":"fail","quality_check_lookback_period_column":null,"quality_check_lookback_period_column_type":null,"quality_check_lookback_period_timezone":null,"quality_check_lookback_period_from":null,"quality_check_lookback_period_to":null,"quality_check_lookback_period_unit":null,"quality_checks":[{"check_type":"unique","column_names":["email"]},{"check_type":"not_null","column_names":["id"]}]}}` {
+			t.Errorf("Not expected request body: %s", string(body))
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+	}))
+	defer server.Close()
+
+	client := NewDevTroccoClient("1234567890", server.URL)
+	input := UpdateDatamartDefinitionInput{}
+	bigqueryOption := UpdateDatamartBigqueryOptionInput{}
+	bigqueryOption.SetQualityCheckEnabled(true)
+	bigqueryOption.SetQualityCheckOnViolation("fail")
+	bigqueryOption.SetQualityCheckLookbackPeriodColumnEmpty()
+	bigqueryOption.SetQualityCheckLookbackPeriodColumnTypeEmpty()
+	bigqueryOption.SetQualityCheckLookbackPeriodTimezoneEmpty()
+	bigqueryOption.SetQualityCheckLookbackPeriodFromEmpty()
+	bigqueryOption.SetQualityCheckLookbackPeriodToEmpty()
+	bigqueryOption.SetQualityCheckLookbackPeriodUnitEmpty()
+	bigqueryOption.SetQualityChecks([]DatamartQualityCheckInput{
+		NewDatamartQualityCheckInput("unique", []string{"email"}),
+		NewDatamartQualityCheckInput("not_null", []string{"id"}),
+	})
+	input.SetDatamartBigqueryOption(bigqueryOption)
 	_, err := client.UpdateDatamartDefinition(1, &input)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
