@@ -60,7 +60,7 @@ type Connection struct {
 	ServerHostname                   *string                `json:"server_hostname"`                      // databricks
 	HttpPath                         *string                `json:"http_path"`                            // databricks
 	AuthType                         *string                `json:"auth_type"`                            // databricks
-	OAuth2ClientID                   *string                `json:"oauth2_client_id"`                     // databricks
+	OAuth2ClientID                   *string                `json:"oauth2_client_id"`                     // databricks, custom_connector
 	ConnectionStringFormat           *string                `json:"connection_string_format"`             // mongodb
 	ReadPreference                   *string                `json:"read_preference"`                      // mongodb
 	AuthSource                       *string                `json:"auth_source"`                          // mongodb
@@ -73,6 +73,10 @@ type Connection struct {
 	APIMaxCallCount                  *int64                 `json:"api_max_call_count"`                   // marketo
 	// pagerduty (auto-generated)
 	APIKey *string `json:"api_key"` // API トークン
+	// custom_connector
+	CustomConnectorID *int64    `json:"custom_connector_id,omitempty"`
+	Scopes            *[]string `json:"scopes,omitempty"`
+	Authorized        *bool     `json:"authorized,omitempty"`
 }
 
 type GetConnectionsInput struct {
@@ -134,8 +138,8 @@ type CreateConnectionInput struct {
 	HttpPath                         *string                   `json:"http_path,omitempty"`                           // databricks
 	AuthType                         *string                   `json:"auth_type,omitempty"`                           // databricks
 	PersonalAccessToken              *parameter.NullableString `json:"personal_access_token,omitempty"`               // databricks
-	OAuth2ClientID                   *parameter.NullableString `json:"oauth2_client_id,omitempty"`                    // databricks
-	OAuth2ClientSecret               *parameter.NullableString `json:"oauth2_client_secret,omitempty"`                // databricks
+	OAuth2ClientID                   *parameter.NullableString `json:"oauth2_client_id,omitempty"`                    // databricks, custom_connector
+	OAuth2ClientSecret               *parameter.NullableString `json:"oauth2_client_secret,omitempty"`                // databricks, custom_connector
 	ServerHostname                   *string                   `json:"server_hostname,omitempty"`                     // databricks
 	ConnectionStringFormat           *parameter.NullableString `json:"connection_string_format,omitempty"`            // mongodb
 	ReadPreference                   *parameter.NullableString `json:"read_preference,omitempty"`                     // mongodb
@@ -149,6 +153,9 @@ type CreateConnectionInput struct {
 	APIMaxCallCount                  *parameter.NullableInt64  `json:"api_max_call_count,omitempty"`                  // marketo
 	// pagerduty (auto-generated)
 	APIKey *string `json:"api_key,omitempty"`
+	// custom_connector
+	CustomConnectorID *int64    `json:"custom_connector_id,omitempty"`
+	Scopes            *[]string `json:"scopes,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -205,8 +212,8 @@ type UpdateConnectionInput struct {
 	HttpPath                         *string                   `json:"http_path,omitempty"`                           // databricks
 	AuthType                         *string                   `json:"auth_type,omitempty"`                           // databricks
 	PersonalAccessToken              *parameter.NullableString `json:"personal_access_token,omitempty"`               // databricks
-	OAuth2ClientID                   *parameter.NullableString `json:"oauth2_client_id,omitempty"`                    // databricks
-	OAuth2ClientSecret               *parameter.NullableString `json:"oauth2_client_secret,omitempty"`                // databricks
+	OAuth2ClientID                   *parameter.NullableString `json:"oauth2_client_id,omitempty"`                    // databricks, custom_connector
+	OAuth2ClientSecret               *parameter.NullableString `json:"oauth2_client_secret,omitempty"`                // databricks, custom_connector
 	ServerHostname                   *string                   `json:"server_hostname,omitempty"`                     // databricks
 	ConnectionStringFormat           *parameter.NullableString `json:"connection_string_format,omitempty"`            // mongodb
 	ReadPreference                   *parameter.NullableString `json:"read_preference,omitempty"`                     // mongodb
@@ -220,6 +227,8 @@ type UpdateConnectionInput struct {
 	APIMaxCallCount                  *parameter.NullableInt64  `json:"api_max_call_count,omitempty"`                  // marketo
 	// pagerduty (auto-generated)
 	APIKey *string `json:"api_key,omitempty"`
+	// custom_connector (custom_connector_id is immutable and intentionally omitted here)
+	Scopes *[]string `json:"scopes,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {

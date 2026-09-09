@@ -18,6 +18,7 @@ type Task struct {
 	BigqueryDataCheckConfig                   *BigqueryDataCheckTaskConfig                   `json:"bigquery_data_check_config"`
 	SnowflakeDataCheckConfig                  *SnowflakeDataCheckTaskConfig                  `json:"snowflake_data_check_config"`
 	RedshiftDataCheckConfig                   *RedshiftDataCheckTaskConfig                   `json:"redshift_data_check_config"`
+	DatabricksDataCheckConfig                 *DatabricksDataCheckTaskConfig                 `json:"databricks_data_check_config"`
 	HTTPRequestConfig                         *HTTPRequestTaskConfig                         `json:"http_request_config"`
 	IfElseConfig                              *IfElseTaskConfig                              `json:"if_else_config"`
 }

@@ -40,10 +40,12 @@ type UpdateDbtJobDefinitionInput struct {
 	CustomVariableSettings []CustomVariableSettingInput `json:"custom_variable_settings"`
 }
 
-func (input *UpdateDbtJobDefinitionInput) SetName(v string)              { input.Name = &v }
-func (input *UpdateDbtJobDefinitionInput) SetDbtGitRepositoryID(v int64) { input.DbtGitRepositoryID = &v }
-func (input *UpdateDbtJobDefinitionInput) SetThreads(v int64)            { input.Threads = &v }
-func (input *UpdateDbtJobDefinitionInput) SetTarget(v string)            { input.Target = &v }
+func (input *UpdateDbtJobDefinitionInput) SetName(v string) { input.Name = &v }
+func (input *UpdateDbtJobDefinitionInput) SetDbtGitRepositoryID(v int64) {
+	input.DbtGitRepositoryID = &v
+}
+func (input *UpdateDbtJobDefinitionInput) SetThreads(v int64) { input.Threads = &v }
+func (input *UpdateDbtJobDefinitionInput) SetTarget(v string) { input.Target = &v }
 func (input *UpdateDbtJobDefinitionInput) SetBigquerySetting(v DbtBigquerySettingInput) {
 	input.BigquerySetting = &v
 }
