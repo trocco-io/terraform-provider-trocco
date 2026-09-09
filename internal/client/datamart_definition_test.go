@@ -709,6 +709,36 @@ func TestUpdateDatamartDefinitionWithNotifications(t *testing.T) {
 	}
 }
 
+func TestUpdateDatamartDefinitionWithNotificationsNotifyWhenVariants(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+		if string(body) != `{"notifications":[{"destination_type":"slack","slack_channel_id":1,"notification_type":"job","notify_when":"quality_check_failed","message":"foo"},{"destination_type":"email","email_id":1,"notification_type":"job","notify_when":"schema_evolution_detected","message":"bar"}]}` {
+			t.Errorf("Not expected request body: %s", string(body))
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write([]byte("{}"))
+		if err != nil {
+			t.Errorf("Expected no error, got %s", err)
+		}
+	}))
+	defer server.Close()
+
+	client := NewDevTroccoClient("1234567890", server.URL)
+	input := UpdateDatamartDefinitionInput{}
+	input.SetNotifications([]DatamartNotificationInput{
+		NewSlackJobDatamartNotificationInput(1, "quality_check_failed", "foo"),
+		NewEmailJobDatamartNotificationInput(1, "schema_evolution_detected", "bar"),
+	})
+	_, err := client.UpdateDatamartDefinition(1, &input)
+	if err != nil {
+		t.Errorf("Expected no error, got %s", err)
+	}
+}
+
 func TestUpdateDatamartDefinitionWithLabels(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)

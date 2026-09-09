@@ -452,9 +452,9 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						"notify_when": schema.StringAttribute{
 							Optional: true,
 							Validators: []validator.String{
-								stringvalidator.OneOf("finished", "failed"),
+								stringvalidator.OneOf("finished", "failed", "quality_check_failed", "schema_evolution_detected"),
 							},
-							MarkdownDescription: "Specifies the job status that trigger a notification. The following types are supported: `finished`, `failed`. Required when `notification_type` is `job`",
+							MarkdownDescription: "Specifies the job status that triggers a notification. The following types are supported: `finished` (the job finished regardless of the result), `failed` (the job failed), `quality_check_failed` (the job succeeded but at least one quality check was violated; fires only when `quality_check_on_violation` is `warn`), `schema_evolution_detected` (a schema change was detected regardless of the job result; requires `schema_evolution_mode` with `write_disposition` `incremental` or `scd_type_2`). Required when `notification_type` is `job`",
 						},
 						"record_count": schema.Int64Attribute{
 							Optional:            true,

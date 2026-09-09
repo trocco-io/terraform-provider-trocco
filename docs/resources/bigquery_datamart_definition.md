@@ -166,6 +166,33 @@ resource "trocco_bigquery_datamart_definition" "with_notifications" {
 }
 ```
 
+### With Schema Evolution Notifications
+
+```terraform
+resource "trocco_bigquery_datamart_definition" "with_schema_evolution_notifications" {
+  name                     = "example_with_schema_evolution_notifications"
+  is_runnable_concurrently = false
+  bigquery_connection_id   = 1
+  query                    = "SELECT * FROM tables"
+  query_mode               = "insert"
+  destination_dataset      = "dist_datasets"
+  destination_table        = "dist_tables"
+  write_disposition        = "incremental"
+  merge_keys               = ["id"]
+  on_matched_action        = "upsert"
+  schema_evolution_mode    = "detect_only"
+  notifications = [
+    {
+      destination_type  = "slack"
+      slack_channel_id  = 1
+      notification_type = "job"
+      notify_when       = "schema_evolution_detected"
+      message           = "@here A schema change was detected."
+    }
+  ]
+}
+```
+
 ### With Labels
 
 ```terraform
@@ -277,7 +304,7 @@ Required:
 Optional:
 
 - `email_id` (Number) ID of the email used to send notifications. Required when `destination_type` is `email`
-- `notify_when` (String) Specifies the job status that trigger a notification. The following types are supported: `finished`, `failed`. Required when `notification_type` is `job`
+- `notify_when` (String) Specifies the job status that triggers a notification. The following types are supported: `finished` (the job finished regardless of the result), `failed` (the job failed), `quality_check_failed` (the job succeeded but at least one quality check was violated; fires only when `quality_check_on_violation` is `warn`), `schema_evolution_detected` (a schema change was detected regardless of the job result; requires `schema_evolution_mode` with `write_disposition` `incremental` or `scd_type_2`). Required when `notification_type` is `job`
 - `record_count` (Number) The number of records to be used for condition. Required when `notification_type` is `record`
 - `record_operator` (String) Operator to be used for condition. The following operators are supported: `above`, `below`. Required when `notification_type` is `record`
 - `slack_channel_id` (Number) ID of the slack channel used to send notifications. Required when `destination_type` is `slack`
