@@ -16,6 +16,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -41,6 +42,7 @@ type notificationDestinationResourceModel struct {
 	ID                 types.Int64                                  `tfsdk:"id"`
 	EmailConfig        *notification_destination.EmailConfig        `tfsdk:"email_config"`
 	SlackChannelConfig *notification_destination.SlackChannelConfig `tfsdk:"slack_channel_config"`
+	HTTPConfig         *notification_destination.HTTPConfig         `tfsdk:"http_config"`
 }
 
 func (m *notificationDestinationResourceModel) ToCreateNotificationDestinationInput() *client.CreateNotificationDestinationInput {
@@ -60,6 +62,8 @@ func (m *notificationDestinationResourceModel) ToCreateNotificationDestinationIn
 				WebhookURL: m.SlackChannelConfig.WebhookURL.ValueStringPointer(),
 			}
 		}
+	case "http":
+		input.HTTPConfig = toHTTPConfigInput(m.HTTPConfig)
 	}
 
 	return input
@@ -82,9 +86,107 @@ func (m *notificationDestinationResourceModel) ToUpdateNotificationDestinationIn
 				WebhookURL: m.SlackChannelConfig.WebhookURL.ValueStringPointer(),
 			}
 		}
+	case "http":
+		input.HTTPConfig = toHTTPConfigInput(m.HTTPConfig)
 	}
 
 	return input
+}
+
+// toHTTPConfigInput converts the http_config block into the API input.
+// Headers and query parameters are always sent (an empty list when omitted) so that
+// the API replaces the whole list and the resource does not drift from the configuration.
+func toHTTPConfigInput(c *notification_destination.HTTPConfig) *notificationDestinationParameters.HTTPConfigInput {
+	if c == nil {
+		return nil
+	}
+	description := c.Description.ValueString()
+	return &notificationDestinationParameters.HTTPConfigInput{
+		Name:        c.Name.ValueStringPointer(),
+		URL:         c.URL.ValueStringPointer(),
+		Description: &description,
+		Headers:     toHTTPKeyValueInputs(c.Headers),
+		QueryParams: toHTTPKeyValueInputs(c.QueryParams),
+	}
+}
+
+func toHTTPKeyValueInputs(items []notification_destination.HTTPKeyValue) *[]notificationDestinationParameters.HTTPKeyValueInput {
+	result := make([]notificationDestinationParameters.HTTPKeyValueInput, 0, len(items))
+	for _, item := range items {
+		result = append(result, notificationDestinationParameters.HTTPKeyValueInput{
+			Key:     item.Key.ValueString(),
+			Value:   item.Value.ValueString(),
+			Masking: item.Masking.ValueBool(),
+		})
+	}
+	return &result
+}
+
+// httpConfigFromPlan builds the state of http_config after Create/Update. Name, URL and
+// description come from the API response; headers and query parameters come from the plan
+// because the API returns an empty value for masked entries.
+func httpConfigFromPlan(plan *notification_destination.HTTPConfig, api *client.NotificationDestination) *notification_destination.HTTPConfig {
+	if plan == nil {
+		return nil
+	}
+	return &notification_destination.HTTPConfig{
+		Name:        types.StringPointerValue(api.Name),
+		URL:         types.StringPointerValue(api.URL),
+		Description: httpDescriptionValue(api.Description),
+		Headers:     plan.Headers,
+		QueryParams: plan.QueryParams,
+	}
+}
+
+// httpConfigFromAPI builds the state of http_config on Read. The API response is the source
+// of truth (its lists are ordered by id). A masked value is returned as an empty string by the
+// API, so it is restored from the previous state only when the entry at the same index has the
+// same key. Other entries keep the API value, so changes made outside Terraform show up as drift.
+func httpConfigFromAPI(state *notification_destination.HTTPConfig, api *client.NotificationDestination) *notification_destination.HTTPConfig {
+	var stateHeaders, stateQueryParams []notification_destination.HTTPKeyValue
+	if state != nil {
+		stateHeaders = state.Headers
+		stateQueryParams = state.QueryParams
+	}
+	return &notification_destination.HTTPConfig{
+		Name:        types.StringPointerValue(api.Name),
+		URL:         types.StringPointerValue(api.URL),
+		Description: httpDescriptionValue(api.Description),
+		Headers:     mergeHTTPKeyValues(api.Headers, stateHeaders),
+		QueryParams: mergeHTTPKeyValues(api.QueryParams, stateQueryParams),
+	}
+}
+
+func mergeHTTPKeyValues(apiItems []client.HTTPKeyValue, stateItems []notification_destination.HTTPKeyValue) []notification_destination.HTTPKeyValue {
+	if len(apiItems) == 0 {
+		if stateItems != nil {
+			// keep an explicit empty list distinct from an omitted attribute
+			return []notification_destination.HTTPKeyValue{}
+		}
+		return nil
+	}
+	result := make([]notification_destination.HTTPKeyValue, 0, len(apiItems))
+	for i, item := range apiItems {
+		value := item.Value
+		if item.Masking && value == "" && i < len(stateItems) && stateItems[i].Key.ValueString() == item.Key {
+			value = stateItems[i].Value.ValueString()
+		}
+		result = append(result, notification_destination.HTTPKeyValue{
+			Key:     types.StringValue(item.Key),
+			Value:   types.StringValue(value),
+			Masking: types.BoolValue(item.Masking),
+		})
+	}
+	return result
+}
+
+// httpDescriptionValue maps an empty description from the API to null so that an omitted
+// description in the configuration does not produce a diff.
+func httpDescriptionValue(description *string) types.String {
+	if description == nil || *description == "" {
+		return types.StringNull()
+	}
+	return types.StringValue(*description)
 }
 
 func (r *notificationDestinationResource) Metadata(
@@ -122,9 +224,9 @@ func (r *notificationDestinationResource) Schema(ctx context.Context, req resour
 		Attributes: map[string]schema.Attribute{
 			"type": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The type of the notification destination. Must be either "email" or "slack_channel".`,
+				MarkdownDescription: `The type of the notification destination. Must be one of "email", "slack_channel" or "http".`,
 				Validators: []validator.String{
-					stringvalidator.OneOf("email", "slack_channel"),
+					stringvalidator.OneOf("email", "slack_channel", "http"),
 				},
 			},
 			"id": schema.Int64Attribute{
@@ -141,6 +243,7 @@ func (r *notificationDestinationResource) Schema(ctx context.Context, req resour
 				Optional: true,
 				Validators: []validator.Object{
 					objectvalidator.ConflictsWith(path.MatchRelative().AtParent().AtName("slack_channel_config")),
+					objectvalidator.ConflictsWith(path.MatchRelative().AtParent().AtName("http_config")),
 				},
 				Attributes: map[string]schema.Attribute{
 					"email": schema.StringAttribute{
@@ -159,6 +262,7 @@ func (r *notificationDestinationResource) Schema(ctx context.Context, req resour
 				Optional: true,
 				Validators: []validator.Object{
 					objectvalidator.ConflictsWith(path.MatchRelative().AtParent().AtName("email_config")),
+					objectvalidator.ConflictsWith(path.MatchRelative().AtParent().AtName("http_config")),
 				},
 				Attributes: map[string]schema.Attribute{
 					"channel": schema.StringAttribute{
@@ -176,6 +280,72 @@ func (r *notificationDestinationResource) Schema(ctx context.Context, req resour
 						MarkdownDescription: "The webhook URL of the Slack channel.",
 					},
 				},
+			},
+			"http_config": schema.SingleNestedAttribute{
+				Optional: true,
+				Validators: []validator.Object{
+					objectvalidator.ConflictsWith(path.MatchRelative().AtParent().AtName("email_config")),
+					objectvalidator.ConflictsWith(path.MatchRelative().AtParent().AtName("slack_channel_config")),
+				},
+				MarkdownDescription: "Configuration of an HTTP (webhook) notification destination. Header and query parameter values are stored in plain text in the Terraform state; mark secrets with `masking = true` so that they are masked in the TROCCO console and API responses.",
+				Attributes: map[string]schema.Attribute{
+					"name": schema.StringAttribute{
+						Required: true,
+						Validators: []validator.String{
+							stringvalidator.UTF8LengthAtLeast(1),
+						},
+						MarkdownDescription: "The name of the notification destination. Must be unique within the account.",
+					},
+					"url": schema.StringAttribute{
+						Required: true,
+						Validators: []validator.String{
+							stringvalidator.RegexMatches(regexp.MustCompile(`^https?://`), "must start with http:// or https://"),
+						},
+						MarkdownDescription: "The URL that receives the notification request.",
+					},
+					"description": schema.StringAttribute{
+						Optional:            true,
+						MarkdownDescription: "The description of the notification destination.",
+					},
+					"headers": schema.ListNestedAttribute{
+						Optional:            true,
+						MarkdownDescription: "HTTP headers sent with the notification request. The order is preserved.",
+						NestedObject:        httpKeyValueNestedObject("header"),
+					},
+					"query_params": schema.ListNestedAttribute{
+						Optional:            true,
+						MarkdownDescription: "Query parameters appended to the URL of the notification request. The order is preserved.",
+						NestedObject:        httpKeyValueNestedObject("query parameter"),
+					},
+				},
+			},
+		},
+	}
+}
+
+func httpKeyValueNestedObject(kind string) schema.NestedAttributeObject {
+	return schema.NestedAttributeObject{
+		Attributes: map[string]schema.Attribute{
+			"key": schema.StringAttribute{
+				Required: true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+				MarkdownDescription: fmt.Sprintf("The name of the %s.", kind),
+			},
+			"value": schema.StringAttribute{
+				Required:  true,
+				Sensitive: true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+				MarkdownDescription: fmt.Sprintf("The value of the %s. When `masking` is `true`, the API never returns this value; after import it has to be set manually.", kind),
+			},
+			"masking": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(false),
+				MarkdownDescription: fmt.Sprintf("Whether to mask the value of the %s in the TROCCO console and API responses. Defaults to `false`.", kind),
 			},
 		},
 	}
@@ -208,8 +378,16 @@ func (r *notificationDestinationResource) ValidateConfig(
 			)
 			return
 		}
+	case "http":
+		if plan.HTTPConfig == nil {
+			resp.Diagnostics.AddError(
+				"Missing HTTP Config",
+				"`http_config` is required when type is 'http'.",
+			)
+			return
+		}
 	default:
-		resp.Diagnostics.AddError("type", `"type" must be either "email" or "slack_channel".`)
+		resp.Diagnostics.AddError("type", `"type" must be one of "email", "slack_channel" or "http".`)
 	}
 }
 
@@ -251,6 +429,8 @@ func (r *notificationDestinationResource) Create(
 			Channel:    types.StringPointerValue(notification.Channel),
 			WebhookURL: plan.SlackChannelConfig.WebhookURL,
 		}
+	case "http":
+		newState.HTTPConfig = httpConfigFromPlan(plan.HTTPConfig, notification)
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
@@ -301,6 +481,8 @@ func (r *notificationDestinationResource) Update(
 			Channel:    types.StringPointerValue(notification.Channel),
 			WebhookURL: plan.SlackChannelConfig.WebhookURL,
 		}
+	case "http":
+		newState.HTTPConfig = httpConfigFromPlan(plan.HTTPConfig, notification)
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -350,6 +532,8 @@ func (r *notificationDestinationResource) Read(
 				WebhookURL: types.StringValue(""),
 			}
 		}
+	case "http":
+		newState.HTTPConfig = httpConfigFromAPI(state.HTTPConfig, notification)
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }

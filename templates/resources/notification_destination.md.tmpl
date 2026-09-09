@@ -19,6 +19,10 @@ description: |-
 
 {{codefile "terraform" "examples/resources/trocco_notification_destination/slack_channel.tf"}}
 
+### HTTP
+
+{{codefile "terraform" "examples/resources/trocco_notification_destination/http.tf"}}
+
 {{.SchemaMarkdown}}
 
 ## Import
@@ -38,3 +42,5 @@ terraform import trocco_notification_destination.example <type>,<id>
 ### Note
 
 After importing a slack_channel resource, running terraform plan or terraform apply may cause discrepancies with the webhook_url. Make sure to manually set the webhook_url.
+
+After importing an http resource, header and query parameter values with `masking = true` are not returned by the API and are imported as empty strings. Make sure to manually set those values. Note that all header and query parameter values are stored in plain text in the Terraform state.
