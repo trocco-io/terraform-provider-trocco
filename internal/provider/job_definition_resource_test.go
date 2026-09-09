@@ -7,6 +7,24 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
+// Regression test: an explicitly configured `notifications = []` must survive
+// apply as an empty list, not become null.
+func TestAccJobDefinitionResourceNotificationsEmptyList(t *testing.T) {
+	resourceName := "trocco_job_definition.notifications_empty_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/fixtures/mysql_connection.tf") + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/notifications/empty.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "notifications_empty_test"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "0"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccJobDefinitionResourceNotifications(t *testing.T) {
 	resourceName := "trocco_job_definition.notifications_test"
 	resource.Test(t, resource.TestCase{

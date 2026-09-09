@@ -76,6 +76,17 @@ resource "trocco_bigquery_datamart_definition" "insert_mode" {
   partitioning_time        = "DAY"
   partitioning_field       = "created_at"
   clustering_fields        = ["id", "name"]
+  table_description        = "Table description"
+  column_descriptions = [
+    {
+      name        = "id"
+      description = "Primary key"
+    },
+    {
+      name        = "name"
+      description = "Name of the record"
+    },
+  ]
 }
 ```
 
@@ -204,6 +215,7 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 
 - `before_load` (String) The query to be executed before loading the data into the destination table. Available only in `insert` mode
 - `clustering_fields` (List of String) Column names to be used for clustering. At most 4 fields can be specified. Available only in `insert` mode
+- `column_descriptions` (Attributes List) Descriptions of the destination table columns. Only the specified columns are reflected in the BigQuery column descriptions after the job runs. The order of the array is preserved. Available only in `insert` mode (see [below for nested schema](#nestedatt--column_descriptions))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--custom_variable_settings))
 - `description` (String) Description of the datamart definition. It must be at least 1 character
 - `destination_dataset` (String) Destination dataset where the query result will be inserted. Required in `insert` mode
@@ -226,6 +238,7 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 - `resource_group_id` (Number) ID of the resource group to which the datamart definition belongs
 - `schedules` (Attributes Set) Schedules to be attached to the datamart definition (see [below for nested schema](#nestedatt--schedules))
 - `schema_evolution_mode` (String) Schema evolution mode. The following modes are supported: `detect_only`, `auto_add_column`. Available when `write_disposition` is `incremental` or `scd_type_2`
+- `table_description` (String) Description of the destination table. It is reflected in the BigQuery table description after the job runs. It must be at most 1024 characters. Available only in `insert` mode
 - `write_disposition` (String) The following write dispositions are supported: `append`, `truncate`, `incremental`, `scd_type_2`. Required in `insert` mode
 
 ### Read-Only
@@ -234,6 +247,15 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 - `is_current_column` (String) SCD Type 2 is-current flag column name. Fixed value: `trocco_is_current`
 - `valid_from_column` (String) SCD Type 2 valid-from column name. Fixed value: `trocco_valid_from`
 - `valid_to_column` (String) SCD Type 2 valid-to column name. Fixed value: `trocco_valid_to`
+
+<a id="nestedatt--column_descriptions"></a>
+### Nested Schema for `column_descriptions`
+
+Required:
+
+- `description` (String) Description of the column. It must be at most 1024 characters. Specifying an empty string removes the description of the column in BigQuery after the job runs
+- `name` (String) Column name. It must start with a letter or underscore and contain only letters, digits, and underscores
+
 
 <a id="nestedatt--custom_variable_settings"></a>
 ### Nested Schema for `custom_variable_settings`
