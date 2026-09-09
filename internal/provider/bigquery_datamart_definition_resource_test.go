@@ -76,6 +76,35 @@ func TestAccDatamartDefinitionResourceForBigqueryNotifications(t *testing.T) {
 					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.slack_channel_id", "trocco_notification_destination.slack_b", "id"),
 				),
 			},
+			// HTTP notification destination for both job and record notifications
+			{
+				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/notifications/http.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "3"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "job"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.0.slack_channel_id", "trocco_notification_destination.slack", "id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "job"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notify_when", "failed"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.message", "{\"text\": \"datamart job failed\"}"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.http_notification_destination_id", "trocco_notification_destination.http", "id"),
+					resource.TestCheckNoResourceAttr(resourceName, "notifications.1.slack_channel_id"),
+					resource.TestCheckNoResourceAttr(resourceName, "notifications.1.email_id"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.1.id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.destination_type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.notification_type", "record"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.record_count", "100"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.record_operator", "above"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.2.http_notification_destination_id", "trocco_notification_destination.http", "id"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.2.id"),
+				),
+			},
+			// Refreshing should not produce a diff
+			{
+				Config:   providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/notifications/http.tf"),
+				PlanOnly: true,
+			},
 		},
 	})
 }
