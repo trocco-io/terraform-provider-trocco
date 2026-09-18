@@ -171,6 +171,13 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				},
 				MarkdownDescription: "ID of the resource group to which the job definition belongs",
 			},
+			"self_hosted_runner_cluster_id": schema.Int64Attribute{
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
+				},
+				MarkdownDescription: "ID of the self-hosted runner cluster on which the job runs. If not specified, the job runs on the TROCCO-managed infrastructure. Only available for accounts that can use self-hosted runners; the value is ignored otherwise.",
+			},
 			"resource_enhancement": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
@@ -239,6 +246,7 @@ type jobDefinitionResourceModel struct {
 	Name                      types.String                     `tfsdk:"name"`
 	Description               types.String                     `tfsdk:"description"`
 	ResourceGroupID           types.Int64                      `tfsdk:"resource_group_id"`
+	SelfHostedRunnerClusterID types.Int64                      `tfsdk:"self_hosted_runner_cluster_id"`
 	IsRunnableConcurrently    types.Bool                       `tfsdk:"is_runnable_concurrently"`
 	RetryLimit                types.Int64                      `tfsdk:"retry_limit"`
 	ResourceEnhancement       types.String                     `tfsdk:"resource_enhancement"`
@@ -351,6 +359,7 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 		Name:                      m.Name.ValueString(),
 		Description:               model.NewNullableString(m.Description),
 		ResourceGroupID:           model.NewNullableInt64(m.ResourceGroupID),
+		SelfHostedRunnerClusterID: model.NewNullableInt64(m.SelfHostedRunnerClusterID),
 		IsRunnableConcurrently:    m.IsRunnableConcurrently.ValueBool(),
 		RetryLimit:                m.RetryLimit.ValueInt64(),
 		ResourceEnhancement:       m.ResourceEnhancement.ValueStringPointer(),
@@ -416,19 +425,20 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	newState := jobDefinitionResourceModel{
-		ID:                     types.Int64Value(jobDefinition.ID),
-		Name:                   types.StringValue(jobDefinition.Name),
-		Description:            types.StringPointerValue(jobDefinition.Description),
-		ResourceGroupID:        types.Int64PointerValue(jobDefinition.ResourceGroupID),
-		IsRunnableConcurrently: types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
-		RetryLimit:             types.Int64Value(jobDefinition.RetryLimit),
-		ResourceEnhancement:    types.StringPointerValue(jobDefinition.ResourceEnhancement),
-		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
-		InputOption:            inputOption,
-		OutputOptionType:       types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:           outputOption,
-		FilterRows:             filter.NewFilterRows(ctx, jobDefinition.FilterRows),
-		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
+		ID:                        types.Int64Value(jobDefinition.ID),
+		Name:                      types.StringValue(jobDefinition.Name),
+		Description:               types.StringPointerValue(jobDefinition.Description),
+		ResourceGroupID:           types.Int64PointerValue(jobDefinition.ResourceGroupID),
+		SelfHostedRunnerClusterID: types.Int64PointerValue(jobDefinition.SelfHostedRunnerClusterID),
+		IsRunnableConcurrently:    types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
+		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
+		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
+		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
+		InputOption:               inputOption,
+		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
+		OutputOption:              outputOption,
+		FilterRows:                filter.NewFilterRows(ctx, jobDefinition.FilterRows),
+		FilterAddTime:             filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
 
 	filterColumns, diags := filter.NewFilterColumns(ctx, jobDefinition.FilterColumns)
@@ -646,6 +656,7 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 		Name:                      m.Name.ValueStringPointer(),
 		Description:               model.NewNullableString(m.Description),
 		ResourceGroupID:           model.NewNullableInt64(m.ResourceGroupID),
+		SelfHostedRunnerClusterID: model.NewNullableInt64(m.SelfHostedRunnerClusterID),
 		IsRunnableConcurrently:    m.IsRunnableConcurrently.ValueBoolPointer(),
 		RetryLimit:                m.RetryLimit.ValueInt64Pointer(),
 		ResourceEnhancement:       m.ResourceEnhancement.ValueStringPointer(),
@@ -703,19 +714,20 @@ func (r *jobDefinitionResource) Create(
 	}
 
 	newState := jobDefinitionResourceModel{
-		ID:                     types.Int64Value(jobDefinition.ID),
-		Name:                   types.StringValue(jobDefinition.Name),
-		Description:            types.StringPointerValue(jobDefinition.Description),
-		ResourceGroupID:        types.Int64PointerValue(jobDefinition.ResourceGroupID),
-		IsRunnableConcurrently: types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
-		RetryLimit:             types.Int64Value(jobDefinition.RetryLimit),
-		ResourceEnhancement:    types.StringPointerValue(jobDefinition.ResourceEnhancement),
-		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
-		InputOption:            inputOption,
-		OutputOptionType:       types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:           outputOption,
-		FilterRows:             filter.NewFilterRows(ctx, jobDefinition.FilterRows),
-		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
+		ID:                        types.Int64Value(jobDefinition.ID),
+		Name:                      types.StringValue(jobDefinition.Name),
+		Description:               types.StringPointerValue(jobDefinition.Description),
+		ResourceGroupID:           types.Int64PointerValue(jobDefinition.ResourceGroupID),
+		SelfHostedRunnerClusterID: types.Int64PointerValue(jobDefinition.SelfHostedRunnerClusterID),
+		IsRunnableConcurrently:    types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
+		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
+		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
+		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
+		InputOption:               inputOption,
+		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
+		OutputOption:              outputOption,
+		FilterRows:                filter.NewFilterRows(ctx, jobDefinition.FilterRows),
+		FilterAddTime:             filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
 
 	filterColumns, diags := filter.NewFilterColumns(ctx, jobDefinition.FilterColumns)
@@ -873,19 +885,20 @@ func (r *jobDefinitionResource) Read(
 	}
 
 	newState := jobDefinitionResourceModel{
-		ID:                     types.Int64Value(jobDefinition.ID),
-		Name:                   types.StringValue(jobDefinition.Name),
-		Description:            types.StringPointerValue(jobDefinition.Description),
-		ResourceGroupID:        types.Int64PointerValue(jobDefinition.ResourceGroupID),
-		IsRunnableConcurrently: types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
-		RetryLimit:             types.Int64Value(jobDefinition.RetryLimit),
-		ResourceEnhancement:    types.StringPointerValue(jobDefinition.ResourceEnhancement),
-		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
-		InputOption:            inputOption,
-		OutputOptionType:       types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:           outputOption,
-		FilterRows:             filter.NewFilterRows(ctx, jobDefinition.FilterRows),
-		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
+		ID:                        types.Int64Value(jobDefinition.ID),
+		Name:                      types.StringValue(jobDefinition.Name),
+		Description:               types.StringPointerValue(jobDefinition.Description),
+		ResourceGroupID:           types.Int64PointerValue(jobDefinition.ResourceGroupID),
+		SelfHostedRunnerClusterID: types.Int64PointerValue(jobDefinition.SelfHostedRunnerClusterID),
+		IsRunnableConcurrently:    types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
+		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
+		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
+		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
+		InputOption:               inputOption,
+		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
+		OutputOption:              outputOption,
+		FilterRows:                filter.NewFilterRows(ctx, jobDefinition.FilterRows),
+		FilterAddTime:             filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
 
 	filterColumns, diags := filter.NewFilterColumns(ctx, jobDefinition.FilterColumns)

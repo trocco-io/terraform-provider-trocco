@@ -462,6 +462,7 @@ var supportedConnectionTypes = []string{
 	"salesforce",
 	"s3",
 	"postgresql",
+	"sqlserver",
 	"google_analytics4",
 	"kintone",
 	"sftp",
@@ -564,14 +565,14 @@ func (r *connectionResource) Schema(
 
 			// Snowflake Fields
 			"host": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB, Redshift: The host of a (Snowflake, PostgreSQL, MongoDB, Redshift) account.",
+				MarkdownDescription: "Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift: The host of a (Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift) account.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
 			"user_name": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB, Redshift: The name of a (Snowflake, PostgreSQL, MongoDB, Redshift) user.",
+				MarkdownDescription: "Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift: The name of a (Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift) user.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
@@ -592,7 +593,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"password": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB, Redshift: The password for the (Snowflake, PostgreSQL, MongoDB, Redshift) user.",
+				MarkdownDescription: "Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift: The password for the (Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift) user.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -627,7 +628,7 @@ func (r *connectionResource) Schema(
 
 			// MySQL Fields
 			"port": schema.Int64Attribute{
-				MarkdownDescription: "MySQL, PostgreSQL, MongoDB, Redshift: The port of the (MySQL, PostgreSQL, MongoDB, Redshift) server.",
+				MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB, Redshift: The port of the (MySQL, PostgreSQL, SQL Server, MongoDB, Redshift) server.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
@@ -679,11 +680,11 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"gateway": schema.SingleNestedAttribute{
-				MarkdownDescription: "MySQL, PostgreSQL, MongoDB, Redshift: Whether to connect via SSH",
+				MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB, Redshift: Whether to connect via SSH",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"host": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH Host",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSHHost",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -691,7 +692,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"port": schema.Int64Attribute{
-						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH Port",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSHPort",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.Int64{
@@ -700,7 +701,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"user_name": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH User",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSHUser",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -708,21 +709,21 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"password": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, MongoDB, Kintone: SSH Password",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB, Kintone: SSH Password",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH Private Key",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSHPrivate Key",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key_passphrase": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH Private Key Passphrase",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSHPrivate Key Passphrase",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
@@ -800,10 +801,11 @@ func (r *connectionResource) Schema(
 
 			// PostgreSQL Fields
 			"driver": schema.StringAttribute{
-				MarkdownDescription: `Snowflake, MySQL, PostgreSQL: The name of a Database driver.
+				MarkdownDescription: `Snowflake, MySQL, PostgreSQL, SQL Server: The name of a Database driver.
   - MySQL: null, mysql_connector_java_5_1_49
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
+  - SQL Server: null, ms_sqlserver_jdbc_driver_8_2, ms_sqlserver_jdbc_driver_12_6, ms_sqlserver_jdbc_driver_13_4, jtds_driver_1_3_1
 `,
 				Optional: true,
 				Validators: []validator.String{
@@ -816,6 +818,11 @@ func (r *connectionResource) Schema(
 						// PostgreSQL
 						"postgresql_42_5_1",
 						"postgresql_9_4_1205_jdbc41",
+						// SQL Server
+						"ms_sqlserver_jdbc_driver_8_2",
+						"ms_sqlserver_jdbc_driver_12_6",
+						"ms_sqlserver_jdbc_driver_13_4",
+						"jtds_driver_1_3_1",
 					),
 				},
 			},
@@ -1041,7 +1048,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"ssl_enabled": schema.BoolAttribute{
-				MarkdownDescription: "Redshift: Whether SSL is enabled.",
+				MarkdownDescription: "Redshift, SQL Server: Whether SSL is enabled.",
 				Optional:            true,
 			},
 			// Marketo Fields
@@ -1408,7 +1415,7 @@ func (r *connectionResource) Read(
 	}
 
 	var sslEnabled types.Bool
-	if state.ConnectionType.ValueString() == "redshift" {
+	if state.ConnectionType.ValueString() == "redshift" || state.ConnectionType.ValueString() == "sqlserver" {
 		sslEnabled = types.BoolPointerValue(conn.SSL)
 	} else {
 		sslEnabled = state.SSLEnabled
@@ -1763,6 +1770,17 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "Redshift", resp)
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "Redshift", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "Redshift", resp)
+		}
+	case "sqlserver":
+		validateRequiredString(plan.Host, "host", "SQL Server", resp)
+		validateRequiredInt(plan.Port, "port", "SQL Server", resp)
+		validateRequiredString(plan.UserName, "user_name", "SQL Server", resp)
+		validateRequiredString(plan.Password, "password", "SQL Server", resp)
+		validateStringAgainstPatterns(plan.Driver, "driver", "SQL Server", resp, "ms_sqlserver_jdbc_driver_8_2", "ms_sqlserver_jdbc_driver_12_6", "ms_sqlserver_jdbc_driver_13_4", "jtds_driver_1_3_1")
+		if plan.Gateway != nil {
+			validateRequiredString(plan.Gateway.Host, "gateway.host", "SQL Server", resp)
+			validateRequiredInt(plan.Gateway.Port, "gateway.port", "SQL Server", resp)
+			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "SQL Server", resp)
 		}
 	case "marketo":
 		validateRequiredString(plan.MarketoAccountID, "account_id", "Marketo", resp)
