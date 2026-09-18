@@ -112,6 +112,13 @@ type connectionResourceModel struct {
 	AWSSecretAccessKey types.String `tfsdk:"aws_secret_access_key"`
 	SSLEnabled         types.Bool   `tfsdk:"ssl_enabled"`
 
+	// Oracle Fields
+	TnsAdminOra   types.String `tfsdk:"tns_admin_ora"`
+	WalletFile    types.String `tfsdk:"wallet_file"`
+	HasWalletFile types.Bool   `tfsdk:"has_wallet_file"`
+	SSLCA         types.String `tfsdk:"ssl_ca"`
+	HasSSLCA      types.Bool   `tfsdk:"has_ssl_ca"`
+
 	// Marketo Fields
 	MarketoAccountID       types.String `tfsdk:"account_id"`
 	MarketoClientID        types.String `tfsdk:"client_id"`
@@ -196,6 +203,12 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		AuthSource:               model.NewNullableString(m.AuthSource),
 		ReplicaSet:               model.NewNullableString(m.ReplicaSet),
 		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
+
+		// Oracle Fields
+		TnsAdminOra: m.TnsAdminOra.ValueStringPointer(),
+		WalletFile:  m.WalletFile.ValueStringPointer(),
+		SSLCA:       m.SSLCA.ValueStringPointer(),
+
 		// START [GENERATOR:CONNECTION_INPUT]
 		APIKey: m.APIKey.ValueStringPointer(),
 		// END [GENERATOR:CONNECTION_INPUT]
@@ -341,6 +354,12 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		AuthSource:               model.NewNullableString(m.AuthSource),
 		ReplicaSet:               model.NewNullableString(m.ReplicaSet),
 		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
+
+		// Oracle Fields
+		TnsAdminOra: m.TnsAdminOra.ValueStringPointer(),
+		WalletFile:  m.WalletFile.ValueStringPointer(),
+		SSLCA:       m.SSLCA.ValueStringPointer(),
+
 		// START [GENERATOR:CONNECTION_INPUT]
 		APIKey: m.APIKey.ValueStringPointer(),
 		// END [GENERATOR:CONNECTION_INPUT]
@@ -469,6 +488,7 @@ var supportedConnectionTypes = []string{
 	"mongodb",
 	"google_drive",
 	"redshift",
+	"oracle",
 	"marketo",
 	"pagerduty",
 	"custom_connector",
@@ -1044,6 +1064,38 @@ func (r *connectionResource) Schema(
 				MarkdownDescription: "Redshift: Whether SSL is enabled.",
 				Optional:            true,
 			},
+			// Oracle Fields
+			"tns_admin_ora": schema.StringAttribute{
+				MarkdownDescription: "Oracle: Contents of tnsnames.ora for TNS naming. If specified, `host`, `port` are ignored. Mutually exclusive with `host`/`port`.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"wallet_file": schema.StringAttribute{
+				MarkdownDescription: "Oracle: Oracle Wallet file (`cwallet.sso`) for Autonomous Database connection, base64-encoded. Write-only; use `has_wallet_file` to check if set.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"has_wallet_file": schema.BoolAttribute{
+				MarkdownDescription: "Oracle: Whether a wallet file is set (read-only).",
+				Computed:            true,
+			},
+			"ssl_ca": schema.StringAttribute{
+				MarkdownDescription: "Oracle: SSL CA certificate. Write-only; use `has_ssl_ca` to check if set.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"has_ssl_ca": schema.BoolAttribute{
+				MarkdownDescription: "Oracle: Whether SSL CA is set (read-only).",
+				Computed:            true,
+			},
 			// Marketo Fields
 			"account_id": schema.StringAttribute{
 				MarkdownDescription: "Marketo: Marketo account identifier.",
@@ -1493,6 +1545,13 @@ func (r *connectionResource) Read(
 		AWSSecretAccessKey: state.AWSSecretAccessKey,
 		SSLEnabled:         sslEnabled,
 
+		// Oracle Fields
+		TnsAdminOra:   types.StringPointerValue(conn.TnsAdminOra),
+		WalletFile:    state.WalletFile,
+		HasWalletFile: types.BoolPointerValue(conn.HasWalletFile),
+		SSLCA:         state.SSLCA,
+		HasSSLCA:      types.BoolPointerValue(conn.HasSSLCA),
+
 		// Marketo Fields
 		MarketoAccountID:       types.StringPointerValue(conn.AccountID),
 		MarketoClientID:        types.StringPointerValue(conn.ClientID),
@@ -1763,6 +1822,26 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "Redshift", resp)
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "Redshift", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "Redshift", resp)
+		}
+	case "oracle":
+		validateRequiredString(plan.UserName, "user_name", "Oracle", resp)
+		validateRequiredString(plan.Password, "password", "Oracle", resp)
+		// Either host/port or tns_admin_ora is required
+		hasHostPort := !plan.Host.IsNull() && !plan.Port.IsNull()
+		hasTnsAdmin := !plan.TnsAdminOra.IsNull()
+		if !hasHostPort && !hasTnsAdmin {
+			resp.Diagnostics.AddError(
+				"oracle_connection",
+				"either host and port, or tns_admin_ora must be specified for Oracle connection.",
+			)
+		}
+		if plan.AWSPrivatelinkEnabled.ValueBool() {
+			validateRequiredInt(plan.SSHTunnelID, "ssh_tunnel_id", "Oracle", resp)
+		}
+		if plan.Gateway != nil {
+			validateRequiredString(plan.Gateway.Host, "gateway.host", "Oracle", resp)
+			validateRequiredInt(plan.Gateway.Port, "gateway.port", "Oracle", resp)
+			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "Oracle", resp)
 		}
 	case "marketo":
 		validateRequiredString(plan.MarketoAccountID, "account_id", "Marketo", resp)
