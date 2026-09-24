@@ -60,6 +60,29 @@ resource "trocco_job_definition" "sqlserver_to_bigquery" {
     }
   }
 
+  filter_columns = [
+    {
+      name = "id"
+      src  = "id"
+      type = "long"
+    },
+    {
+      name = "name"
+      src  = "name"
+      type = "string"
+    },
+    {
+      name = "email"
+      src  = "email"
+      type = "string"
+    },
+    {
+      name = "created_at"
+      src  = "created_at"
+      type = "string"
+    },
+  ]
+
   output_option_type = "bigquery"
   output_option = {
     bigquery_output_option = {

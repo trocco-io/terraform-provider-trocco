@@ -26,6 +26,14 @@ resource "trocco_job_definition" "sqlserver_to_bigquery_by_table" {
   # Optional: run the job on a self-hosted runner cluster instead of the TROCCO-managed infrastructure.
   # self_hosted_runner_cluster_id = 1
 
+  filter_columns = [
+    for column in each.value : {
+      name = column.name
+      src  = column.name
+      type = column.type
+    }
+  ]
+
   input_option_type = "sqlserver"
   input_option = {
     sqlserver_input_option = {

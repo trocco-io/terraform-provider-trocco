@@ -270,7 +270,7 @@ func TestInvalidDriver(t *testing.T) {
 		{
 			name:        "mismatch_driver_sqlserver",
 			configFile:  "testdata/connection/mismatch_driver_sqlserver.tf",
-			expectError: "are: ms_sqlserver_jdbc_driver_8_2, ms_sqlserver_jdbc_driver_12_6",
+			expectError: "`mysql_connector_java_5_1_49` is invalid for SQL Server connection",
 		},
 	}
 
