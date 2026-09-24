@@ -96,19 +96,19 @@ func (o *OracleInputOption) ToInput(ctx context.Context) *inputOptionParameters.
 	inputOptionColOpts := extractOracleInputOptionColumnOptions(ctx, o.InputOptionColumnOptions)
 
 	return &inputOptionParameters.OracleInputOptionInput{
-		OracleConnectionID:         o.OracleConnectionID.ValueInt64(),
-		Database:                   model.NewNullableString(o.Database),
-		ConnectionType:             model.NewNullableString(o.ConnectionType),
-		NetServiceName:             model.NewNullableString(o.NetServiceName),
-		Schema:                     model.NewNullableString(o.Schema),
-		Query:                      o.Query.ValueStringPointer(),
-		IncrementalLoadingEnabled:  o.IncrementalLoadingEnabled.ValueBool(),
-		Table:                      o.Table.ValueStringPointer(),
-		IncrementalColumns:         model.NewNullableString(o.IncrementalColumns),
-		DefaultTimeZone:            o.DefaultTimeZone.ValueStringPointer(),
-		InputOptionColumns:         inputOptionCols,
-		InputOptionColumnOptions:   inputOptionColOpts,
-		CustomVariableSettings:     model.ToCustomVariableSettingInputs(customVarSettings),
+		OracleConnectionID:        o.OracleConnectionID.ValueInt64(),
+		Database:                  model.NewNullableString(o.Database),
+		ConnectionType:            model.NewNullableString(o.ConnectionType),
+		NetServiceName:            model.NewNullableString(o.NetServiceName),
+		Schema:                    model.NewNullableString(o.Schema),
+		Query:                     o.Query.ValueStringPointer(),
+		IncrementalLoadingEnabled: o.IncrementalLoadingEnabled.ValueBool(),
+		Table:                     o.Table.ValueStringPointer(),
+		IncrementalColumns:        model.NewNullableString(o.IncrementalColumns),
+		DefaultTimeZone:           o.DefaultTimeZone.ValueStringPointer(),
+		InputOptionColumns:        inputOptionCols,
+		InputOptionColumnOptions:  inputOptionColOpts,
+		CustomVariableSettings:    model.ToCustomVariableSettingInputs(customVarSettings),
 	}
 }
 
@@ -122,19 +122,19 @@ func (o *OracleInputOption) ToUpdateInput(ctx context.Context) *inputOptionParam
 	inputOptionColOpts := extractOracleInputOptionColumnOptions(ctx, o.InputOptionColumnOptions)
 
 	return &inputOptionParameters.UpdateOracleInputOptionInput{
-		OracleConnectionID:         o.OracleConnectionID.ValueInt64Pointer(),
-		Database:                   model.NewNullableString(o.Database),
-		ConnectionType:             model.NewNullableString(o.ConnectionType),
-		NetServiceName:             model.NewNullableString(o.NetServiceName),
-		Schema:                     model.NewNullableString(o.Schema),
-		Query:                      o.Query.ValueStringPointer(),
-		IncrementalLoadingEnabled:  o.IncrementalLoadingEnabled.ValueBoolPointer(),
-		Table:                      o.Table.ValueStringPointer(),
-		IncrementalColumns:         model.NewNullableString(o.IncrementalColumns),
-		DefaultTimeZone:            o.DefaultTimeZone.ValueStringPointer(),
-		InputOptionColumns:         inputOptionCols,
-		InputOptionColumnOptions:   inputOptionColOpts,
-		CustomVariableSettings:     model.ToCustomVariableSettingInputs(customVarSettings),
+		OracleConnectionID:        o.OracleConnectionID.ValueInt64Pointer(),
+		Database:                  model.NewNullableString(o.Database),
+		ConnectionType:            model.NewNullableString(o.ConnectionType),
+		NetServiceName:            model.NewNullableString(o.NetServiceName),
+		Schema:                    model.NewNullableString(o.Schema),
+		Query:                     o.Query.ValueStringPointer(),
+		IncrementalLoadingEnabled: o.IncrementalLoadingEnabled.ValueBoolPointer(),
+		Table:                     o.Table.ValueStringPointer(),
+		IncrementalColumns:        model.NewNullableString(o.IncrementalColumns),
+		DefaultTimeZone:           o.DefaultTimeZone.ValueStringPointer(),
+		InputOptionColumns:        inputOptionCols,
+		InputOptionColumnOptions:  inputOptionColOpts,
+		CustomVariableSettings:    model.ToCustomVariableSettingInputs(customVarSettings),
 	}
 }
 
