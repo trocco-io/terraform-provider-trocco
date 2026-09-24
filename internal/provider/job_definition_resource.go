@@ -176,7 +176,7 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
-				MarkdownDescription: "ID of the self-hosted runner cluster on which the job runs. If not specified, the job runs on the TROCCO-managed infrastructure. Only available for accounts that can use self-hosted runners; the value is ignored otherwise.",
+				MarkdownDescription: "ID of the self-hosted runner cluster on which the job runs. If not specified, the job runs on the TROCCO-managed infrastructure. Only accounts that can use self-hosted runners can set it.",
 			},
 			"resource_enhancement": schema.StringAttribute{
 				Optional: true,

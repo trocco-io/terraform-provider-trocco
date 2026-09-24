@@ -156,6 +156,9 @@ func SqlserverInputOptionSchema() schema.Attribute {
 						},
 					},
 				},
+				Validators: []validator.List{
+					listvalidator.SizeAtLeast(1),
+				},
 			},
 			"custom_variable_settings": CustomVariableSettingsSchema(),
 		},

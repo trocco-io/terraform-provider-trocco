@@ -411,7 +411,7 @@ resource "trocco_connection" "custom_connector_oauth2" {
   - MySQL: null, mysql_connector_java_5_1_49
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
-  - SQL Server: null, ms_sqlserver_jdbc_driver_8_2, ms_sqlserver_jdbc_driver_12_6, ms_sqlserver_jdbc_driver_13_4, jtds_driver_1_3_1
+  - SQL Server: ms_sqlserver_jdbc_driver_8_2, ms_sqlserver_jdbc_driver_12_6, ms_sqlserver_jdbc_driver_13_4, jtds_driver_1_3_1
 - `gateway` (Attributes) MySQL, PostgreSQL, SQL Server, MongoDB, Redshift: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
 - `host` (String) Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift: The host of a (Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift) account.
 - `http_path` (String) Databricks: The HTTP Path for the Databricks connection.
@@ -438,7 +438,7 @@ resource "trocco_connection" "custom_connector_oauth2" {
 - `service_account_json_key` (String, Sensitive) BigQuery, Google Sheets, Google Analytics4, Google Drive: A GCP service account key.
 - `ssh_tunnel_id` (Number) SFTP, Redshift: SSH tunnel ID. Required when aws_privatelink_enabled is true.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
-- `ssl_enabled` (Boolean) Redshift, SQL Server: Whether SSL is enabled.
+- `ssl_enabled` (Boolean) Redshift, SQL Server: Whether SSL is enabled. Default is false.
 - `strict_read_preference_tags` (Boolean) MongoDB: Whether to enable strict mode for read preference tag matching. Default is `false`.
 - `token` (String, Sensitive) Kintone: Token.
 - `user_directory_is_root` (Boolean) SFTP: Whether the user directory is root. Default is true.
@@ -476,12 +476,12 @@ Optional:
 
 Optional:
 
-- `host` (String, Sensitive) MySQL, PostgreSQL, SQL Server, MongoDB: SSHHost
-- `key` (String, Sensitive) MySQL, PostgreSQL, SQL Server, MongoDB: SSHPrivate Key
-- `key_passphrase` (String, Sensitive) MySQL, PostgreSQL, SQL Server, MongoDB: SSHPrivate Key Passphrase
+- `host` (String, Sensitive) MySQL, PostgreSQL, SQL Server, MongoDB: SSH Host
+- `key` (String, Sensitive) MySQL, PostgreSQL, SQL Server, MongoDB: SSH Private Key
+- `key_passphrase` (String, Sensitive) MySQL, PostgreSQL, SQL Server, MongoDB: SSH Private Key Passphrase
 - `password` (String, Sensitive) MySQL, PostgreSQL, SQL Server, MongoDB, Kintone: SSH Password
-- `port` (Number, Sensitive) MySQL, PostgreSQL, SQL Server, MongoDB: SSHPort
-- `user_name` (String, Sensitive) MySQL, PostgreSQL, SQL Server, MongoDB: SSHUser
+- `port` (Number, Sensitive) MySQL, PostgreSQL, SQL Server, MongoDB: SSH Port
+- `user_name` (String, Sensitive) MySQL, PostgreSQL, SQL Server, MongoDB: SSH User
 
 
 <a id="nestedatt--ssl"></a>

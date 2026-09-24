@@ -453,6 +453,20 @@ func (r *connectionResource) Configure(
 	r.client = c
 }
 
+// Connection types whose SSL setting is the ssl_enabled boolean instead of the ssl block.
+var sslEnabledConnectionTypes = []string{"redshift", "sqlserver"}
+
+// ssl_enabled is computed, so connection types that do not use it must store null instead of unknown.
+func sslEnabledState(connectionType types.String, ssl *bool, fallback types.Bool) types.Bool {
+	if lo.Contains(sslEnabledConnectionTypes, connectionType.ValueString()) {
+		return types.BoolPointerValue(ssl)
+	}
+	if fallback.IsUnknown() {
+		return types.BoolNull()
+	}
+	return fallback
+}
+
 var supportedConnectionTypes = []string{
 	"bigquery",
 	"snowflake",
@@ -684,7 +698,7 @@ func (r *connectionResource) Schema(
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"host": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSHHost",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSH Host",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -692,7 +706,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"port": schema.Int64Attribute{
-						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSHPort",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSH Port",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.Int64{
@@ -701,7 +715,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"user_name": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSHUser",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSH User",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -716,14 +730,14 @@ func (r *connectionResource) Schema(
 						Default:             stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSHPrivate Key",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSH Private Key",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key_passphrase": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSHPrivate Key Passphrase",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSH Private Key Passphrase",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
@@ -805,7 +819,7 @@ func (r *connectionResource) Schema(
   - MySQL: null, mysql_connector_java_5_1_49
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
-  - SQL Server: null, ms_sqlserver_jdbc_driver_8_2, ms_sqlserver_jdbc_driver_12_6, ms_sqlserver_jdbc_driver_13_4, jtds_driver_1_3_1
+  - SQL Server: ms_sqlserver_jdbc_driver_8_2, ms_sqlserver_jdbc_driver_12_6, ms_sqlserver_jdbc_driver_13_4, jtds_driver_1_3_1
 `,
 				Optional: true,
 				Validators: []validator.String{
@@ -1048,8 +1062,12 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"ssl_enabled": schema.BoolAttribute{
-				MarkdownDescription: "Redshift, SQL Server: Whether SSL is enabled.",
+				MarkdownDescription: "Redshift, SQL Server: Whether SSL is enabled. Default is false.",
 				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					planModifier.ConditionalBooleanDefault(false, sslEnabledConnectionTypes...),
+				},
 			},
 			// Marketo Fields
 			"account_id": schema.StringAttribute{
@@ -1228,7 +1246,7 @@ func (r *connectionResource) Create(
 		// Redshift Fields
 		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
 		AWSSecretAccessKey: plan.AWSSecretAccessKey,
-		SSLEnabled:         plan.SSLEnabled,
+		SSLEnabled:         sslEnabledState(plan.ConnectionType, conn.SSL, plan.SSLEnabled),
 
 		// Marketo Fields
 		MarketoAccountID:       types.StringPointerValue(conn.AccountID),
@@ -1370,7 +1388,7 @@ func (r *connectionResource) Update(
 		// Redshift Fields
 		AWSAccessKeyID:     types.StringPointerValue(connection.AWSAccessKeyID),
 		AWSSecretAccessKey: plan.AWSSecretAccessKey,
-		SSLEnabled:         plan.SSLEnabled,
+		SSLEnabled:         sslEnabledState(plan.ConnectionType, connection.SSL, plan.SSLEnabled),
 
 		// Marketo Fields
 		MarketoAccountID:       types.StringPointerValue(connection.AccountID),
@@ -1414,12 +1432,7 @@ func (r *connectionResource) Read(
 		return
 	}
 
-	var sslEnabled types.Bool
-	if state.ConnectionType.ValueString() == "redshift" || state.ConnectionType.ValueString() == "sqlserver" {
-		sslEnabled = types.BoolPointerValue(conn.SSL)
-	} else {
-		sslEnabled = state.SSLEnabled
-	}
+	sslEnabled := sslEnabledState(state.ConnectionType, conn.SSL, state.SSLEnabled)
 
 	newState := connectionResourceModel{
 		// Common Fields
@@ -1776,7 +1789,14 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredInt(plan.Port, "port", "SQL Server", resp)
 		validateRequiredString(plan.UserName, "user_name", "SQL Server", resp)
 		validateRequiredString(plan.Password, "password", "SQL Server", resp)
+		validateRequiredString(plan.Driver, "driver", "SQL Server", resp)
 		validateStringAgainstPatterns(plan.Driver, "driver", "SQL Server", resp, "ms_sqlserver_jdbc_driver_8_2", "ms_sqlserver_jdbc_driver_12_6", "ms_sqlserver_jdbc_driver_13_4", "jtds_driver_1_3_1")
+		if plan.SSL != nil {
+			resp.Diagnostics.AddError(
+				"ssl",
+				"ssl is not supported for SQL Server connection. Use ssl_enabled instead.",
+			)
+		}
 		if plan.Gateway != nil {
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "SQL Server", resp)
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "SQL Server", resp)

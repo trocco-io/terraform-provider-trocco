@@ -25,6 +25,9 @@ func TestAccConnectionResource(t *testing.T) {
 	t.Run("sqlserver", func(t *testing.T) {
 		testAccConnectionResourceSQLServer(t)
 	})
+	t.Run("sqlserver_default_ssl", func(t *testing.T) {
+		testAccConnectionResourceSQLServerDefaultSSL(t)
+	})
 	t.Run("google_analytics4", func(t *testing.T) {
 		testAccConnectionResourceGoogleAnalytics4(t)
 	})
@@ -162,6 +165,62 @@ func testAccConnectionResourceSQLServer(t *testing.T) {
 			},
 		},
 	})
+}
+
+// ssl_enabled is omitted, so it must default to false without leaving a diff after apply or refresh.
+func testAccConnectionResourceSQLServerDefaultSSL(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.sqlserver_default_ssl_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/sqlserver_default_ssl.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "ssl_enabled", "false"),
+				),
+			},
+			{
+				RefreshState: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "ssl_enabled", "false"),
+				),
+			},
+		},
+	})
+}
+
+func TestInvalidSQLServerConnection(t *testing.T) {
+	testCases := []struct {
+		name        string
+		configFile  string
+		expectError string
+	}{
+		{
+			name:        "missing_driver",
+			configFile:  "testdata/connection/missing_driver_sqlserver.tf",
+			expectError: `driver\s+is\s+required\s+for\s+SQL\s+Server\s+connection`,
+		},
+		{
+			name:        "ssl_block",
+			configFile:  "testdata/connection/ssl_block_sqlserver.tf",
+			expectError: `ssl\s+is\s+not\s+supported\s+for\s+SQL\s+Server\s+connection`,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			resource.Test(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{
+						Config:      providerConfig + LoadTextFile(tc.configFile),
+						ExpectError: regexp.MustCompile(tc.expectError),
+					},
+				},
+			})
+		})
+	}
 }
 
 func testAccConnectionResourceGoogleAnalytics4(t *testing.T) {

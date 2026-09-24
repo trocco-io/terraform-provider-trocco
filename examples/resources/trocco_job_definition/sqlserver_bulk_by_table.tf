@@ -68,4 +68,10 @@ resource "trocco_job_definition" "sqlserver_to_bigquery_by_table" {
       timeout_sec                              = 300
     }
   }
+
+  # TROCCO updates last_record after each incremental run. Ignore it so that
+  # the next apply does not reset it and transfer the whole table again.
+  lifecycle {
+    ignore_changes = [input_option.sqlserver_input_option.last_record]
+  }
 }

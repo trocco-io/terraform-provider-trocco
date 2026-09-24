@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -48,6 +49,18 @@ func TestAccJobDefinitionResourceSqlserverToBigQuery(t *testing.T) {
 					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
 					return jobDefinitionId, nil
 				},
+			},
+		},
+	})
+}
+
+func TestJobDefinitionResourceSqlserverEmptyColumnOptions(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:      providerConfig + LoadTextFile("testdata/job_definition/sqlserver_to_bigquery/empty_column_options.tf"),
+				ExpectError: regexp.MustCompile(`input_option_column_options\s+list\s+must\s+contain\s+at\s+least\s+1\s+elements`),
 			},
 		},
 	})

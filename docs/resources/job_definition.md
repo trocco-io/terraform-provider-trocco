@@ -1638,7 +1638,7 @@ resource "trocco_job_definition" "schedules" {
 - `resource_group_id` (Number) ID of the resource group to which the job definition belongs
 - `retry_limit` (Number) Maximum number of retries. if set 0, the job will not be retried
 - `schedules` (Attributes Set) Schedules to be attached to the job definition (see [below for nested schema](#nestedatt--schedules))
-- `self_hosted_runner_cluster_id` (Number) ID of the self-hosted runner cluster on which the job runs. If not specified, the job runs on the TROCCO-managed infrastructure. Only available for accounts that can use self-hosted runners; the value is ignored otherwise.
+- `self_hosted_runner_cluster_id` (Number) ID of the self-hosted runner cluster on which the job runs. If not specified, the job runs on the TROCCO-managed infrastructure. Only accounts that can use self-hosted runners can set it.
 
 ### Read-Only
 
