@@ -7,7 +7,6 @@ resource "trocco_job_definition" "kintone_to_mysql_example" {
   filter_columns = [
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "record_id"
@@ -16,7 +15,6 @@ resource "trocco_job_definition" "kintone_to_mysql_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "name"
@@ -25,7 +23,6 @@ resource "trocco_job_definition" "kintone_to_mysql_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "email"

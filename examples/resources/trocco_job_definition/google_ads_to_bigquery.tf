@@ -6,7 +6,6 @@ resource "trocco_job_definition" "google_ads_to_bigquery_example" {
   filter_columns = [
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "campaign_name"
@@ -15,7 +14,6 @@ resource "trocco_job_definition" "google_ads_to_bigquery_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "campaign_id"
@@ -25,7 +23,6 @@ resource "trocco_job_definition" "google_ads_to_bigquery_example" {
     {
       default                      = null
       format                       = "%Y-%m-%d %H:%M:%S"
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "created_at"
@@ -34,7 +31,6 @@ resource "trocco_job_definition" "google_ads_to_bigquery_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "ctr"
@@ -43,7 +39,6 @@ resource "trocco_job_definition" "google_ads_to_bigquery_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "is_enabled"
