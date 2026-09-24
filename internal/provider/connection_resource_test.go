@@ -22,6 +22,12 @@ func TestAccConnectionResource(t *testing.T) {
 	t.Run("postgresql", func(t *testing.T) {
 		testAccConnectionResourcePostgreSQL(t)
 	})
+	t.Run("sqlserver", func(t *testing.T) {
+		testAccConnectionResourceSQLServer(t)
+	})
+	t.Run("sqlserver_default_ssl", func(t *testing.T) {
+		testAccConnectionResourceSQLServerDefaultSSL(t)
+	})
 	t.Run("google_analytics4", func(t *testing.T) {
 		testAccConnectionResourceGoogleAnalytics4(t)
 	})
@@ -131,6 +137,92 @@ func testAccConnectionResourcePostgreSQL(t *testing.T) {
 	})
 }
 
+func testAccConnectionResourceSQLServer(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.sqlserver_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/sqlserver_create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "sqlserver"),
+					resource.TestCheckResourceAttr(resourceName, "name", "sqlserver test"),
+					resource.TestCheckResourceAttr(resourceName, "driver", "ms_sqlserver_jdbc_driver_13_4"),
+					resource.TestCheckResourceAttr(resourceName, "ssl_enabled", "true"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"password"},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					connectionID := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("sqlserver,%s", connectionID), nil
+				},
+			},
+		},
+	})
+}
+
+// ssl_enabled is omitted, so it must default to false without leaving a diff after apply or refresh.
+func testAccConnectionResourceSQLServerDefaultSSL(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.sqlserver_default_ssl_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/sqlserver_default_ssl.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "ssl_enabled", "false"),
+				),
+			},
+			{
+				RefreshState: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "ssl_enabled", "false"),
+				),
+			},
+		},
+	})
+}
+
+func TestInvalidSQLServerConnection(t *testing.T) {
+	testCases := []struct {
+		name        string
+		configFile  string
+		expectError string
+	}{
+		{
+			name:        "missing_driver",
+			configFile:  "testdata/connection/missing_driver_sqlserver.tf",
+			expectError: `driver\s+is\s+required\s+for\s+SQL\s+Server\s+connection`,
+		},
+		{
+			name:        "ssl_block",
+			configFile:  "testdata/connection/ssl_block_sqlserver.tf",
+			expectError: `ssl\s+is\s+not\s+supported\s+for\s+SQL\s+Server\s+connection`,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			resource.Test(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{
+						Config:      providerConfig + LoadTextFile(tc.configFile),
+						ExpectError: regexp.MustCompile(tc.expectError),
+					},
+				},
+			})
+		})
+	}
+}
+
 func testAccConnectionResourceGoogleAnalytics4(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.google_analytics4_test"
@@ -233,6 +325,11 @@ func TestInvalidDriver(t *testing.T) {
 			name:        "mismatch_driver_snowflake",
 			configFile:  "testdata/connection/mismatch_driver_snowflake.tf",
 			expectError: "are: snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0",
+		},
+		{
+			name:        "mismatch_driver_sqlserver",
+			configFile:  "testdata/connection/mismatch_driver_sqlserver.tf",
+			expectError: "`mysql_connector_java_5_1_49` is invalid for SQL Server connection",
 		},
 	}
 

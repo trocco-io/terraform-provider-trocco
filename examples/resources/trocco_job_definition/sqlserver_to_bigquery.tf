@@ -1,5 +1,5 @@
-resource "trocco_job_definition" "mysql_to_bigquery_example" {
-  name                     = "mysql_to_bigquery_example"
+resource "trocco_job_definition" "sqlserver_to_bigquery_example" {
+  name                     = "sqlserver_to_bigquery_example"
   description              = ""
   is_runnable_concurrently = false
   retry_limit              = 0
@@ -20,24 +20,19 @@ resource "trocco_job_definition" "mysql_to_bigquery_example" {
       src                          = "name"
       type                         = "string"
     },
-    {
-      default                      = null
-      format                       = null
-      json_expand_enabled          = false
-      json_expand_keep_base_column = false
-      name                         = "created_at"
-      src                          = "created_at"
-      type                         = "timestamp"
-    },
   ]
-  input_option_type = "mysql"
+  input_option_type = "sqlserver"
   input_option = {
-    mysql_input_option = {
-      connect_timeout             = 300
+    sqlserver_input_option = {
+      sqlserver_connection_id     = 1 // please set your sqlserver connection id
       database                    = "example_database"
-      default_time_zone           = ""
-      fetch_rows                  = 10000
+      schema                      = "dbo"
       incremental_loading_enabled = false
+      query                       = "select * from dbo.example_table;"
+      connect_timeout             = 300
+      socket_timeout              = 1800
+      fetch_rows                  = 10000
+      default_time_zone           = "UTC"
       input_option_columns = [
         {
           name = "id"
@@ -47,19 +42,7 @@ resource "trocco_job_definition" "mysql_to_bigquery_example" {
           name = "name"
           type = "string"
         },
-        {
-          name = "email"
-          type = "string"
-        },
-        {
-          name = "created_at"
-          type = "timestamp"
-        },
       ]
-      mysql_connection_id      = 1 // please set your mysql connection id
-      query                    = "select * from example_table;"
-      socket_timeout           = 1800
-      use_legacy_datetime_code = false
     }
   }
   output_option_type = "bigquery"
@@ -77,7 +60,7 @@ resource "trocco_job_definition" "mysql_to_bigquery_example" {
       read_timeout_sec                         = 300
       retries                                  = 5
       send_timeout_sec                         = 300
-      table                                    = "mysql_to_bigquery_example_table"
+      table                                    = "sqlserver_to_bigquery_example_table"
       template_table                           = ""
       timeout_sec                              = 300
     }

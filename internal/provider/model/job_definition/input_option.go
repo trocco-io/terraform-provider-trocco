@@ -18,6 +18,7 @@ type InputOption struct {
 	S3InputOption                  *inputOptionModel.S3InputOption                  `tfsdk:"s3_input_option"`
 	BigqueryInputOption            *inputOptionModel.BigqueryInputOption            `tfsdk:"bigquery_input_option"`
 	PostgreSQLInputOption          *inputOptionModel.PostgreSQLInputOption          `tfsdk:"postgresql_input_option"`
+	SQLServerInputOption           *inputOptionModel.SQLServerInputOption           `tfsdk:"sqlserver_input_option"`
 	GoogleAnalytics4InputOption    *inputOptionModel.GoogleAnalytics4InputOption    `tfsdk:"google_analytics4_input_option"`
 	HttpInputOption                *inputOptionModel.HttpInputOption                `tfsdk:"http_input_option"`
 	KintoneInputOption             *inputOptionModel.KintoneInputOption             `tfsdk:"kintone_input_option"`
@@ -56,6 +57,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		S3InputOption:                  inputOptionModel.NewS3InputOption(ctx, inputOption.S3InputOption),
 		BigqueryInputOption:            inputOptionModel.NewBigqueryInputOption(ctx, inputOption.BigqueryInputOption),
 		PostgreSQLInputOption:          inputOptionModel.NewPostgreSQLInputOption(ctx, inputOption.PostgreSQLInputOption),
+		SQLServerInputOption:           inputOptionModel.NewSQLServerInputOption(ctx, inputOption.SQLServerInputOption),
 		GoogleAnalytics4InputOption:    inputOptionModel.NewGoogleAnalytics4InputOption(ctx, inputOption.GoogleAnalytics4InputOption),
 		HttpInputOption:                httpInputOption,
 		KintoneInputOption:             inputOptionModel.NewKintoneInputOption(ctx, inputOption.KintoneInputOption),
@@ -96,6 +98,7 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 		S3InputOption:                  model.WrapObject(o.S3InputOption.ToInput(ctx)),
 		BigqueryInputOption:            model.WrapObject(o.BigqueryInputOption.ToInput(ctx)),
 		PostgreSQLInputOption:          model.WrapObject(o.PostgreSQLInputOption.ToInput(ctx)),
+		SQLServerInputOption:           model.WrapObject(o.SQLServerInputOption.ToInput(ctx)),
 		GoogleAnalytics4InputOption:    model.WrapObject(o.GoogleAnalytics4InputOption.ToInput(ctx)),
 		HttpInputOption:                model.WrapObject(httpInput),
 		KintoneInputOption:             model.WrapObject(o.KintoneInputOption.ToInput(ctx)),
@@ -135,6 +138,7 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 		S3InputOption:                  model.WrapObject(o.S3InputOption.ToUpdateInput(ctx)),
 		BigqueryInputOption:            model.WrapObject(o.BigqueryInputOption.ToUpdateInput(ctx)),
 		PostgreSQLInputOption:          model.WrapObject(o.PostgreSQLInputOption.ToUpdateInput(ctx)),
+		SQLServerInputOption:           model.WrapObject(o.SQLServerInputOption.ToUpdateInput(ctx)),
 		GoogleAnalytics4InputOption:    model.WrapObject(o.GoogleAnalytics4InputOption.ToUpdateInput(ctx)),
 		HttpInputOption:                model.WrapObject(httpInput),
 		KintoneInputOption:             model.WrapObject(o.KintoneInputOption.ToUpdateInput(ctx)),

@@ -7,7 +7,6 @@ resource "trocco_job_definition" "facebook_ads_insights_to_bigquery_example" {
   filter_columns = [
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "campaign_id"
@@ -16,7 +15,6 @@ resource "trocco_job_definition" "facebook_ads_insights_to_bigquery_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "campaign_name"
@@ -25,7 +23,6 @@ resource "trocco_job_definition" "facebook_ads_insights_to_bigquery_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "impressions"
@@ -34,7 +31,6 @@ resource "trocco_job_definition" "facebook_ads_insights_to_bigquery_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "clicks"
@@ -43,7 +39,6 @@ resource "trocco_job_definition" "facebook_ads_insights_to_bigquery_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "spend"
