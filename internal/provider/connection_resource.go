@@ -820,10 +820,11 @@ func (r *connectionResource) Schema(
 
 			// PostgreSQL Fields
 			"driver": schema.StringAttribute{
-				MarkdownDescription: `Snowflake, MySQL, PostgreSQL: The name of a Database driver.
+				MarkdownDescription: `Snowflake, MySQL, PostgreSQL, Oracle: The name of a Database driver.
   - MySQL: null, mysql_connector_java_5_1_49
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
+  - Oracle: 12c-ojdbc7.jar, 19c-ojdbc8.jar, 26ai-ojdbc8.jar (defaults to 19c-ojdbc8.jar on the API side when omitted)
 `,
 				Optional: true,
 				Validators: []validator.String{
@@ -836,6 +837,10 @@ func (r *connectionResource) Schema(
 						// PostgreSQL
 						"postgresql_42_5_1",
 						"postgresql_9_4_1205_jdbc41",
+						// Oracle
+						"12c-ojdbc7.jar",
+						"19c-ojdbc8.jar",
+						"26ai-ojdbc8.jar",
 					),
 				},
 			},
@@ -1286,6 +1291,13 @@ func (r *connectionResource) Create(
 		APIKey: plan.APIKey,
 		// END [GENERATOR:CONNECTION_STATE_CREATE]
 
+		// Oracle Fields
+		TnsAdminOra:   types.StringPointerValue(conn.TnsAdminOra),
+		WalletFile:    plan.WalletFile,
+		HasWalletFile: types.BoolPointerValue(conn.HasWalletFile),
+		SSLCA:         plan.SSLCA,
+		HasSSLCA:      types.BoolPointerValue(conn.HasSSLCA),
+
 		// Custom Connector Fields
 		CustomConnectorID: types.Int64PointerValue(conn.CustomConnectorID),
 		Scopes:            scopesToList(conn.Scopes),
@@ -1427,6 +1439,13 @@ func (r *connectionResource) Update(
 		// START [GENERATOR:CONNECTION_STATE_UPDATE]
 		APIKey: plan.APIKey,
 		// END [GENERATOR:CONNECTION_STATE_UPDATE]
+
+		// Oracle Fields
+		TnsAdminOra:   types.StringPointerValue(connection.TnsAdminOra),
+		WalletFile:    plan.WalletFile,
+		HasWalletFile: types.BoolPointerValue(connection.HasWalletFile),
+		SSLCA:         plan.SSLCA,
+		HasSSLCA:      types.BoolPointerValue(connection.HasSSLCA),
 
 		// Custom Connector Fields
 		CustomConnectorID: types.Int64PointerValue(connection.CustomConnectorID),
