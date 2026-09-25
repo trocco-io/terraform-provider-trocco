@@ -38,6 +38,9 @@ func TestAccConnectionResource(t *testing.T) {
 	t.Run("pagerduty", func(t *testing.T) {
 		testAccConnectionResourcePagerduty(t)
 	})
+	t.Run("oracle", func(t *testing.T) {
+		testAccConnectionResourceOracle(t)
+	})
 	// END [GENERATOR:CONNECTION_RESOURCE_TEST]
 	t.Run("custom_connector", func(t *testing.T) {
 		testAccConnectionResourceCustomConnector(t)
@@ -342,6 +345,37 @@ func testAccConnectionResourcePagerduty(t *testing.T) {
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					connectionID := s.RootModule().Resources[resourceName].Primary.ID
 					return fmt.Sprintf("pagerduty,%s", connectionID), nil
+				},
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceOracle(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.oracle_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/oracle/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "oracle"),
+					resource.TestCheckResourceAttr(resourceName, "name", "Test Oracle Connection"),
+					resource.TestCheckResourceAttr(resourceName, "host", "oracle.example.com"),
+					resource.TestCheckResourceAttr(resourceName, "port", "1521"),
+					resource.TestCheckResourceAttr(resourceName, "user_name", "test_user"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"password"},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					connectionID := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("oracle,%s", connectionID), nil
 				},
 			},
 		},
