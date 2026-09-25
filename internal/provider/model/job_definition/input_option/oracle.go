@@ -7,9 +7,22 @@ import (
 	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/job_definition/common"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+var oracleInputOptionColumnAttrTypes = map[string]attr.Type{
+	"name":     types.StringType,
+	"type":     types.StringType,
+	"format":   types.StringType,
+	"timezone": types.StringType,
+}
+
+var oracleInputOptionColumnOptionAttrTypes = map[string]attr.Type{
+	"column_name":       types.StringType,
+	"column_value_type": types.StringType,
+}
 
 type OracleInputOption struct {
 	OracleConnectionID        types.Int64  `tfsdk:"oracle_connection_id"`
@@ -64,7 +77,7 @@ func NewOracleInputOption(ctx context.Context, oracleInputOption *inputOptionEnt
 		}
 		result.InputOptionColumns = inputOptionColumnList
 	} else {
-		result.InputOptionColumns = types.ListNull(types.ObjectType{})
+		result.InputOptionColumns = types.ListNull(types.ObjectType{AttrTypes: oracleInputOptionColumnAttrTypes})
 	}
 
 	if oracleInputOption.InputOptionColumnOptions != nil {
@@ -74,7 +87,7 @@ func NewOracleInputOption(ctx context.Context, oracleInputOption *inputOptionEnt
 		}
 		result.InputOptionColumnOptions = inputOptionColumnOptionList
 	} else {
-		result.InputOptionColumnOptions = types.ListNull(types.ObjectType{})
+		result.InputOptionColumnOptions = types.ListNull(types.ObjectType{AttrTypes: oracleInputOptionColumnOptionAttrTypes})
 	}
 
 	customVariableSettings, err := common.ConvertCustomVariableSettingsToList(ctx, oracleInputOption.CustomVariableSettings)
@@ -148,7 +161,7 @@ func oracleInputOptionColumnsToList(ctx context.Context, columns []inputOptionEn
 			Timezone: types.StringPointerValue(col.Timezone),
 		}
 	}
-	return types.ListValueFrom(ctx, types.ObjectType{}, columnModels)
+	return types.ListValueFrom(ctx, types.ObjectType{AttrTypes: oracleInputOptionColumnAttrTypes}, columnModels)
 }
 
 func oracleInputOptionColumnOptionsToList(ctx context.Context, columnOptions []inputOptionEntities.OracleInputOptionColumnOption) (types.List, diag.Diagnostics) {
@@ -159,7 +172,7 @@ func oracleInputOptionColumnOptionsToList(ctx context.Context, columnOptions []i
 			ColumnValueType: types.StringValue(colOpt.ColumnValueType),
 		}
 	}
-	return types.ListValueFrom(ctx, types.ObjectType{}, columnOptionModels)
+	return types.ListValueFrom(ctx, types.ObjectType{AttrTypes: oracleInputOptionColumnOptionAttrTypes}, columnOptionModels)
 }
 
 func extractOracleInputOptionColumns(ctx context.Context, columns types.List) *[]inputOptionParameters.OracleInputOptionColumnInput {
