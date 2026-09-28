@@ -7,6 +7,94 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
+func TestAccJobDefinitionResourceOracleIncrementalToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.oracle_incremental_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/oracle_incremental_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "oracle"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.schema", "test_schema"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.table", "test_table"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.incremental_loading_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.incremental_columns", "updated_at"),
+					resource.TestCheckNoResourceAttr(resourceName, "input_option.oracle_input_option.query"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceOracleTnsToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.oracle_tns_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/oracle_tns_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "input_option_type", "oracle"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.net_service_name", "orcl_high"),
+					resource.TestCheckNoResourceAttr(resourceName, "input_option.oracle_input_option.database"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceOracleDefaultsToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.oracle_defaults_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/oracle_defaults_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					// connection_type / default_time_zone を config で省略した場合、
+					// API 側デフォルト（sid / UTC）が適用されることを確認する。
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.connection_type", "sid"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.default_time_zone", "UTC"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
 func TestAccJobDefinitionResourceOracleToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.oracle_to_bigquery"
 	resource.Test(t, resource.TestCase{
@@ -32,6 +120,19 @@ func TestAccJobDefinitionResourceOracleToBigQuery(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "oracle_to_bigquery_test_table"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.location", "US"),
+				),
+			},
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/oracle_to_bigquery/update.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "Oracle to BigQuery Test (Updated)"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "5"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.database", "test_database_updated"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.default_time_zone", "UTC"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.input_option_columns.#", "3"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.input_option_columns.2.timezone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "oracle_to_bigquery_test_table_updated"),
 				),
 			},
 			{
