@@ -1845,13 +1845,19 @@ func (r *connectionResource) ValidateConfig(
 	case "oracle":
 		validateRequiredString(plan.UserName, "user_name", "Oracle", resp)
 		validateRequiredString(plan.Password, "password", "Oracle", resp)
-		// Either host/port or tns_admin_ora is required
+		// host/port and tns_admin_ora are mutually exclusive: exactly one of them must be specified.
 		hasHostPort := !plan.Host.IsNull() && !plan.Port.IsNull()
 		hasTnsAdmin := !plan.TnsAdminOra.IsNull()
-		if !hasHostPort && !hasTnsAdmin {
+		switch {
+		case !hasHostPort && !hasTnsAdmin:
 			resp.Diagnostics.AddError(
 				"oracle_connection",
 				"either host and port, or tns_admin_ora must be specified for Oracle connection.",
+			)
+		case hasHostPort && hasTnsAdmin:
+			resp.Diagnostics.AddError(
+				"oracle_connection",
+				"host/port and tns_admin_ora cannot be specified at the same time for Oracle connection.",
 			)
 		}
 		if plan.AWSPrivatelinkEnabled.ValueBool() {
