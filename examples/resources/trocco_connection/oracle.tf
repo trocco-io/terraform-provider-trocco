@@ -8,7 +8,7 @@ resource "trocco_connection" "oracle_basic" {
   port              = 1521
   user_name         = "admin"
   password          = "MySecurePassword123!"
-  ssl               = true
+  ssl_enabled       = true
   driver            = "19c-ojdbc8.jar"
 
   ssl_ca = <<-EOT
