@@ -40,10 +40,9 @@ resource "trocco_job_definition" "oracle_defaults_to_bigquery" {
   input_option_type = "oracle"
   input_option = {
     oracle_input_option = {
-      oracle_connection_id        = trocco_connection.test_oracle_defaults.id
-      database                    = "test_database"
-      incremental_loading_enabled = false
-      query                       = <<-EOT
+      oracle_connection_id = trocco_connection.test_oracle_defaults.id
+      database             = "test_database"
+      query                = <<-EOT
         select
             *
         from

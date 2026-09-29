@@ -76,10 +76,12 @@ func TestAccJobDefinitionResourceOracleDefaultsToBigQuery(t *testing.T) {
 				ResourceName: resourceName,
 				Config:       providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/oracle_defaults_to_bigquery/create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					// connection_type / default_time_zone を config で省略した場合、
-					// API 側デフォルト（sid / UTC）が適用されることを確認する。
+					// connection_type / default_time_zone / incremental_loading_enabled を
+					// config で省略した場合、デフォルト値（sid / UTC / false）が適用され、
+					// Provider produced inconsistent result にならないことを確認する。
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.connection_type", "sid"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.default_time_zone", "UTC"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.incremental_loading_enabled", "false"),
 				),
 			},
 			{
