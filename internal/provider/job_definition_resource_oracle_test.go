@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -90,6 +91,21 @@ func TestAccJobDefinitionResourceOracleDefaultsToBigQuery(t *testing.T) {
 					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
 					return jobDefinitionId, nil
 				},
+			},
+		},
+	})
+}
+
+func TestAccJobDefinitionResourceOracleInputOptionConflict(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				// input_option_type = "oracle" なのに mysql_input_option も
+				// 同時に設定した場合、InputOptionPlanModifier によって
+				// プラン時にエラーになることを確認する。
+				Config:      providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/oracle_input_option_conflict/create.tf"),
+				ExpectError: regexp.MustCompile(`(?s)invalid attribute.*mysql_input_option`),
 			},
 		},
 	})
