@@ -47,7 +47,7 @@ resource "trocco_job_definition" "oracle_tns_to_bigquery" {
       oracle_connection_id        = trocco_connection.test_oracle_tns.id
       net_service_name            = "orcl_high"
       incremental_loading_enabled = false
-      default_time_zone           = "UTC"
+      source_time_zone            = "UTC"
       query                       = <<-EOT
         select
             *

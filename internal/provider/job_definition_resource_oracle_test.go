@@ -76,11 +76,13 @@ func TestAccJobDefinitionResourceOracleDefaultsToBigQuery(t *testing.T) {
 				ResourceName: resourceName,
 				Config:       providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/oracle_defaults_to_bigquery/create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					// connection_type / default_time_zone / incremental_loading_enabled を
-					// config で省略した場合、デフォルト値（sid / UTC / false）が適用され、
-					// Provider produced inconsistent result にならないことを確認する。
+					// connection_type / incremental_loading_enabled を config で省略した場合、
+					// デフォルト値（sid / false）が適用され、Provider produced inconsistent result に
+					// ならないことを確認する。source_time_zone はデフォルト値を持たないため、
+					// 省略時は未設定のまま（API側ではnull、実行時は転送元マシンのタイムゾーンとして解釈）
+					// であることを確認する。
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.connection_type", "sid"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.default_time_zone", "UTC"),
+					resource.TestCheckNoResourceAttr(resourceName, "input_option.oracle_input_option.source_time_zone"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.incremental_loading_enabled", "false"),
 				),
 			},
@@ -131,7 +133,7 @@ func TestAccJobDefinitionResourceOracleToBigQuery(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "output_option_type", "bigquery"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.database", "test_database"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.connection_type", "sid"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.default_time_zone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.source_time_zone", "Asia/Tokyo"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.input_option_columns.#", "4"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.input_option_columns.3.timezone", "UTC"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
@@ -147,7 +149,7 @@ func TestAccJobDefinitionResourceOracleToBigQuery(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", "Oracle to BigQuery Test (Updated)"),
 					resource.TestCheckResourceAttr(resourceName, "retry_limit", "5"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.database", "test_database_updated"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.default_time_zone", "UTC"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.source_time_zone", "UTC"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.input_option_columns.#", "3"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.input_option_columns.2.timezone", "Asia/Tokyo"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "oracle_to_bigquery_test_table_updated"),

@@ -34,7 +34,7 @@ type OracleInputOption struct {
 	IncrementalLoadingEnabled types.Bool   `tfsdk:"incremental_loading_enabled"`
 	Table                     types.String `tfsdk:"table"`
 	IncrementalColumns        types.String `tfsdk:"incremental_columns"`
-	DefaultTimeZone           types.String `tfsdk:"default_time_zone"`
+	SourceTimeZone            types.String `tfsdk:"source_time_zone"`
 	InputOptionColumns        types.List   `tfsdk:"input_option_columns"`
 	InputOptionColumnOptions  types.List   `tfsdk:"input_option_column_options"`
 	CustomVariableSettings    types.List   `tfsdk:"custom_variable_settings"`
@@ -67,7 +67,7 @@ func NewOracleInputOption(ctx context.Context, oracleInputOption *inputOptionEnt
 		IncrementalLoadingEnabled: types.BoolValue(oracleInputOption.IncrementalLoadingEnabled),
 		Table:                     types.StringPointerValue(oracleInputOption.Table),
 		IncrementalColumns:        types.StringPointerValue(oracleInputOption.IncrementalColumns),
-		DefaultTimeZone:           types.StringValue(oracleInputOption.DefaultTimeZone),
+		SourceTimeZone:            types.StringPointerValue(oracleInputOption.SourceTimeZone),
 	}
 
 	if oracleInputOption.InputOptionColumns != nil {
@@ -118,7 +118,7 @@ func (o *OracleInputOption) ToInput(ctx context.Context) *inputOptionParameters.
 		IncrementalLoadingEnabled: o.IncrementalLoadingEnabled.ValueBool(),
 		Table:                     o.Table.ValueStringPointer(),
 		IncrementalColumns:        model.NewNullableString(o.IncrementalColumns),
-		DefaultTimeZone:           o.DefaultTimeZone.ValueStringPointer(),
+		SourceTimeZone:            o.SourceTimeZone.ValueStringPointer(),
 		InputOptionColumns:        inputOptionCols,
 		InputOptionColumnOptions:  inputOptionColOpts,
 		CustomVariableSettings:    model.ToCustomVariableSettingInputs(customVarSettings),
@@ -144,7 +144,7 @@ func (o *OracleInputOption) ToUpdateInput(ctx context.Context) *inputOptionParam
 		IncrementalLoadingEnabled: o.IncrementalLoadingEnabled.ValueBoolPointer(),
 		Table:                     o.Table.ValueStringPointer(),
 		IncrementalColumns:        model.NewNullableString(o.IncrementalColumns),
-		DefaultTimeZone:           o.DefaultTimeZone.ValueStringPointer(),
+		SourceTimeZone:            o.SourceTimeZone.ValueStringPointer(),
 		InputOptionColumns:        inputOptionCols,
 		InputOptionColumnOptions:  inputOptionColOpts,
 		CustomVariableSettings:    model.ToCustomVariableSettingInputs(customVarSettings),

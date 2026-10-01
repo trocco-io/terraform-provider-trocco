@@ -3298,13 +3298,13 @@ Optional:
 - `connection_type` (String) How to interpret `database` field: `sid` (Oracle SID) or `service_name` (Oracle Service Name). Default: `sid`. Ignored when using TNS naming.
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--oracle_input_option--custom_variable_settings))
 - `database` (String) Database name (SID or service name). Required when using host/port connection. Ignored when using TNS naming.
-- `default_time_zone` (String) Default timezone (IANA format, e.g., 'Asia/Tokyo') for interpreting DATE/TIMESTAMP columns without timezone. Default: 'UTC'.
 - `incremental_columns` (String) Comma-separated column names to identify incremental records. If omitted, primary key is used.
 - `incremental_loading_enabled` (Boolean) Whether to use incremental loading (true) or query-based transfer (false). Default: false.
 - `input_option_column_options` (Attributes List) Per-column options (e.g., NUMBER-to-string conversion). When updated, fully replaces the existing list. (see [below for nested schema](#nestedatt--input_option--oracle_input_option--input_option_column_options))
 - `net_service_name` (String) Net service name from tnsnames.ora. Required when using TNS naming connection.
 - `query` (String) SQL query to fetch data. Required when `incremental_loading_enabled` is false.
 - `schema` (String) Schema name
+- `source_time_zone` (String) Timezone (IANA format, e.g., 'Asia/Tokyo') used to interpret DATE/TIMESTAMP columns without timezone information. If omitted, the timezone of the machine running the transfer is used.
 - `table` (String) Table name. Required when `incremental_loading_enabled` is true.
 
 <a id="nestedatt--input_option--oracle_input_option--input_option_columns"></a>
@@ -3318,7 +3318,7 @@ Required:
 Optional:
 
 - `format` (String) Timestamp format (strftime). Required when `type` is `timestamp`.
-- `timezone` (String) Column-level timezone (IANA format). If omitted, `default_time_zone` is used. Only for `type: timestamp`.
+- `timezone` (String) Column-level timezone (IANA format). If omitted, `source_time_zone` is used. Only for `type: timestamp`.
 
 
 <a id="nestedatt--input_option--oracle_input_option--custom_variable_settings"></a>

@@ -47,7 +47,7 @@ resource "trocco_job_definition" "oracle_incremental_to_bigquery" {
       table                       = "test_table"
       incremental_loading_enabled = true
       incremental_columns         = "updated_at"
-      default_time_zone           = "UTC"
+      source_time_zone            = "UTC"
       input_option_columns = [
         {
           name = "id"

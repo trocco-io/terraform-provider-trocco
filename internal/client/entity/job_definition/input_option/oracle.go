@@ -12,7 +12,7 @@ type OracleInputOption struct {
 	IncrementalLoadingEnabled bool                             `json:"incremental_loading_enabled"`
 	Table                     *string                          `json:"table"`
 	IncrementalColumns        *string                          `json:"incremental_columns"`
-	DefaultTimeZone           string                           `json:"default_time_zone"`
+	SourceTimeZone            *string                          `json:"source_time_zone"`
 	InputOptionColumns        *[]OracleInputOptionColumn       `json:"input_option_columns"`
 	InputOptionColumnOptions  *[]OracleInputOptionColumnOption `json:"input_option_column_options"`
 	CustomVariableSettings    *[]entity.CustomVariableSetting  `json:"custom_variable_settings"`

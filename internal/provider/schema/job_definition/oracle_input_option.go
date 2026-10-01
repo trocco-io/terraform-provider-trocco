@@ -78,11 +78,9 @@ func OracleInputOptionSchema() schema.Attribute {
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
-			"default_time_zone": schema.StringAttribute{
+			"source_time_zone": schema.StringAttribute{
 				Optional:            true,
-				Computed:            true,
-				Default:             stringdefault.StaticString("UTC"),
-				MarkdownDescription: "Default timezone (IANA format, e.g., 'Asia/Tokyo') for interpreting DATE/TIMESTAMP columns without timezone. Default: 'UTC'.",
+				MarkdownDescription: "Timezone (IANA format, e.g., 'Asia/Tokyo') used to interpret DATE/TIMESTAMP columns without timezone information. If omitted, the timezone of the machine running the transfer is used.",
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
@@ -115,7 +113,7 @@ func OracleInputOptionSchema() schema.Attribute {
 						},
 						"timezone": schema.StringAttribute{
 							Optional:            true,
-							MarkdownDescription: "Column-level timezone (IANA format). If omitted, `default_time_zone` is used. Only for `type: timestamp`.",
+							MarkdownDescription: "Column-level timezone (IANA format). If omitted, `source_time_zone` is used. Only for `type: timestamp`.",
 							Validators: []validator.String{
 								stringvalidator.UTF8LengthAtLeast(1),
 							},

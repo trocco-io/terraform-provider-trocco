@@ -11,7 +11,7 @@ resource "trocco_job_definition" "oracle_query_transfer" {
       database             = "ORCL"
       connection_type      = "sid"
       query                = "SELECT id, name, created_at FROM users WHERE created_at >= '$start_date$'"
-      default_time_zone    = "Asia/Tokyo"
+      source_time_zone     = "Asia/Tokyo"
 
       input_option_columns = [
         { name = "id", type = "long" },
@@ -57,7 +57,7 @@ resource "trocco_job_definition" "oracle_incremental_transfer" {
       table                       = "orders"
       incremental_loading_enabled = true
       incremental_columns         = "id,updated_at"
-      default_time_zone           = "UTC"
+      source_time_zone            = "UTC"
 
       input_option_columns = [
         { name = "id", type = "long" },
@@ -99,7 +99,7 @@ resource "trocco_job_definition" "oracle_service_name_transfer" {
       database             = "orcl_prod"
       connection_type      = "service_name"
       query                = "SELECT * FROM products WHERE category = '$category$'"
-      default_time_zone    = "UTC"
+      source_time_zone     = "UTC"
 
       input_option_columns = [
         { name = "product_id", type = "long" },

@@ -45,7 +45,7 @@ resource "trocco_job_definition" "oracle_to_bigquery" {
       database                    = "test_database_updated"
       connection_type             = "sid"
       incremental_loading_enabled = false
-      default_time_zone           = "UTC"
+      source_time_zone            = "UTC"
       query                       = <<-EOT
         select
             *
