@@ -1,7 +1,7 @@
 package pipeline_definition
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -20,12 +20,12 @@ func BigqueryCustomVariableLoopConfigSchema() schema.Attribute {
 				MarkdownDescription: "Query to expand custom variables",
 				Required:            true,
 			},
-			"variables": schema.SetAttribute{
-				MarkdownDescription: "Custom variables to be expanded",
+			"variables": schema.ListAttribute{
+				MarkdownDescription: "Custom variables to be expanded. The order corresponds to the column order of the query result.",
 				Required:            true,
 				ElementType:         types.StringType,
-				Validators: []validator.Set{
-					setvalidator.SizeAtLeast(1),
+				Validators: []validator.List{
+					listvalidator.SizeAtLeast(1),
 				},
 			},
 		},

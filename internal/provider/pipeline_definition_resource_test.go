@@ -289,14 +289,9 @@ func TestAccPipelineDefinitionResourceForBigQueryDatamartWithBigQueryLoop(t *tes
 					resource.TestCheckResourceAttr(resourceName, "tasks.0.key", "trocco_bigquery_datamart"),
 					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.type", "bigquery"),
 					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.query", "SELECT foo, bar FROM sample"),
-					resource.TestCheckTypeSetElemAttr(resourceName,
-						"tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.*",
-						"$foo$",
-					),
-					resource.TestCheckTypeSetElemAttr(resourceName,
-						"tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.*",
-						"$bar$",
-					),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.0", "$foo$"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.1", "$bar$"),
 				),
 				ImportStateVerifyIgnore: []string{
 					"tasks.0.key",
@@ -306,6 +301,16 @@ func TestAccPipelineDefinitionResourceForBigQueryDatamartWithBigQueryLoop(t *tes
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					return s.RootModule().Resources[resourceName].Primary.ID, nil
 				},
+			},
+			// The order of variables maps to the column order of the query result, so it must be kept as configured.
+			{
+				Config: providerConfig + LoadTextFile("testdata/pipeline_definition/custom_variable_loop/valid_bigquery_config_reordered.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.query", "SELECT bar, foo FROM sample"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.0", "$bar$"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.1", "$foo$"),
+				),
 			},
 		},
 	})
