@@ -78,6 +78,13 @@ func OracleInputOptionSchema() schema.Attribute {
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
+			"last_record": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Last transferred record value. During incremental loading, only data newer than this value is transferred. If empty, transfer starts from the beginning. Do not change this value unless there is a specific reason, as doing so may cause data duplication.",
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
 			"source_time_zone": schema.StringAttribute{
 				Optional:            true,
 				MarkdownDescription: "Timezone (IANA format, e.g., 'Asia/Tokyo') used to interpret DATE/TIMESTAMP columns without timezone information. If omitted, the timezone of the machine running the transfer is used.",

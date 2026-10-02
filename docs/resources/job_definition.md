@@ -3301,6 +3301,7 @@ Optional:
 - `incremental_columns` (String) Comma-separated column names to identify incremental records. If omitted, primary key is used.
 - `incremental_loading_enabled` (Boolean) Whether to use incremental loading (true) or query-based transfer (false). Default: false.
 - `input_option_column_options` (Attributes List) Per-column options (e.g., NUMBER-to-string conversion). When updated, fully replaces the existing list. (see [below for nested schema](#nestedatt--input_option--oracle_input_option--input_option_column_options))
+- `last_record` (String) Last transferred record value. During incremental loading, only data newer than this value is transferred. If empty, transfer starts from the beginning. Do not change this value unless there is a specific reason, as doing so may cause data duplication.
 - `net_service_name` (String) Net service name from tnsnames.ora. Required when using TNS naming connection.
 - `query` (String) SQL query to fetch data. Required when `incremental_loading_enabled` is false.
 - `schema` (String) Schema name

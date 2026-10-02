@@ -12,6 +12,7 @@ type OracleInputOptionInput struct {
 	IncrementalLoadingEnabled bool                                    `json:"incremental_loading_enabled"`
 	Table                     *string                                 `json:"table,omitempty"`
 	IncrementalColumns        *parameter.NullableString               `json:"incremental_columns,omitempty"`
+	LastRecord                *parameter.NullableString               `json:"last_record,omitempty"`
 	SourceTimeZone            *string                                 `json:"source_time_zone,omitempty"`
 	InputOptionColumns        *[]OracleInputOptionColumnInput         `json:"input_option_columns,omitempty"`
 	InputOptionColumnOptions  *[]OracleInputOptionColumnOptionInput   `json:"input_option_column_options,omitempty"`
@@ -40,6 +41,7 @@ type UpdateOracleInputOptionInput struct {
 	IncrementalLoadingEnabled *bool                                   `json:"incremental_loading_enabled,omitempty"`
 	Table                     *string                                 `json:"table,omitempty"`
 	IncrementalColumns        *parameter.NullableString               `json:"incremental_columns,omitempty"`
+	LastRecord                *parameter.NullableString               `json:"last_record,omitempty"`
 	SourceTimeZone            *string                                 `json:"source_time_zone,omitempty"`
 	InputOptionColumns        *[]OracleInputOptionColumnInput         `json:"input_option_columns,omitempty"`
 	InputOptionColumnOptions  *[]OracleInputOptionColumnOptionInput   `json:"input_option_column_options,omitempty"`

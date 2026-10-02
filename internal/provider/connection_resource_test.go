@@ -377,14 +377,20 @@ func testAccConnectionResourceOracle(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "host", "oracle.example.com"),
 					resource.TestCheckResourceAttr(resourceName, "port", "1521"),
 					resource.TestCheckResourceAttr(resourceName, "user_name", "test_user"),
+					resource.TestCheckResourceAttr(resourceName, "ssl_enabled", "true"),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
 			{
-				ResourceName:            resourceName,
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"password"},
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				// ssl_enabled is not restored on import: Read() only re-fetches it from
+				// the API for the redshift connector and otherwise falls back to the
+				// existing state, which is empty right after import. This is a known,
+				// provider-wide limitation unrelated to Oracle (see ssl_enabled/gateway
+				// import-restoration notes).
+				ImportStateVerifyIgnore: []string{"password", "ssl_enabled"},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					connectionID := s.RootModule().Resources[resourceName].Primary.ID
 					return fmt.Sprintf("oracle,%s", connectionID), nil

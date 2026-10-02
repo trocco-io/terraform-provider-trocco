@@ -439,7 +439,7 @@ resource "trocco_connection" "custom_connector_oauth2" {
 - `ssh_tunnel_id` (Number) SFTP, Redshift: SSH tunnel ID. Required when aws_privatelink_enabled is true.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
 - `ssl_ca` (String, Sensitive) Oracle: SSL CA certificate. Write-only; use `has_ssl_ca` to check if set.
-- `ssl_enabled` (Boolean) Redshift: Whether SSL is enabled.
+- `ssl_enabled` (Boolean) Redshift, Oracle: Whether SSL is enabled.
 - `strict_read_preference_tags` (Boolean) MongoDB: Whether to enable strict mode for read preference tag matching. Default is `false`.
 - `tns_admin_ora` (String) Oracle: Contents of tnsnames.ora for TNS naming. If specified, `host`, `port` are ignored. Mutually exclusive with `host`/`port`.
 - `token` (String, Sensitive) Kintone: Token.

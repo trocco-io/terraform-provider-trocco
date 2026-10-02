@@ -34,6 +34,7 @@ type OracleInputOption struct {
 	IncrementalLoadingEnabled types.Bool   `tfsdk:"incremental_loading_enabled"`
 	Table                     types.String `tfsdk:"table"`
 	IncrementalColumns        types.String `tfsdk:"incremental_columns"`
+	LastRecord                types.String `tfsdk:"last_record"`
 	SourceTimeZone            types.String `tfsdk:"source_time_zone"`
 	InputOptionColumns        types.List   `tfsdk:"input_option_columns"`
 	InputOptionColumnOptions  types.List   `tfsdk:"input_option_column_options"`
@@ -67,6 +68,7 @@ func NewOracleInputOption(ctx context.Context, oracleInputOption *inputOptionEnt
 		IncrementalLoadingEnabled: types.BoolValue(oracleInputOption.IncrementalLoadingEnabled),
 		Table:                     types.StringPointerValue(oracleInputOption.Table),
 		IncrementalColumns:        types.StringPointerValue(oracleInputOption.IncrementalColumns),
+		LastRecord:                types.StringPointerValue(oracleInputOption.LastRecord),
 		SourceTimeZone:            types.StringPointerValue(oracleInputOption.SourceTimeZone),
 	}
 
@@ -118,6 +120,7 @@ func (o *OracleInputOption) ToInput(ctx context.Context) *inputOptionParameters.
 		IncrementalLoadingEnabled: o.IncrementalLoadingEnabled.ValueBool(),
 		Table:                     o.Table.ValueStringPointer(),
 		IncrementalColumns:        model.NewNullableString(o.IncrementalColumns),
+		LastRecord:                model.NewNullableString(o.LastRecord),
 		SourceTimeZone:            o.SourceTimeZone.ValueStringPointer(),
 		InputOptionColumns:        inputOptionCols,
 		InputOptionColumnOptions:  inputOptionColOpts,
@@ -144,6 +147,7 @@ func (o *OracleInputOption) ToUpdateInput(ctx context.Context) *inputOptionParam
 		IncrementalLoadingEnabled: o.IncrementalLoadingEnabled.ValueBoolPointer(),
 		Table:                     o.Table.ValueStringPointer(),
 		IncrementalColumns:        model.NewNullableString(o.IncrementalColumns),
+		LastRecord:                model.NewNullableString(o.LastRecord),
 		SourceTimeZone:            o.SourceTimeZone.ValueStringPointer(),
 		InputOptionColumns:        inputOptionCols,
 		InputOptionColumnOptions:  inputOptionColOpts,

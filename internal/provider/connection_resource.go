@@ -1066,7 +1066,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"ssl_enabled": schema.BoolAttribute{
-				MarkdownDescription: "Redshift: Whether SSL is enabled.",
+				MarkdownDescription: "Redshift, Oracle: Whether SSL is enabled.",
 				Optional:            true,
 			},
 			// Oracle Fields

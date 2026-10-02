@@ -22,6 +22,7 @@ func TestAccJobDefinitionResourceOracleIncrementalToBigQuery(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.table", "test_table"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.incremental_loading_enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.incremental_columns", "updated_at"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.last_record", "2026-01-01 00:00:00"),
 					resource.TestCheckNoResourceAttr(resourceName, "input_option.oracle_input_option.query"),
 				),
 			},
