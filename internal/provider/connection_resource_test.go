@@ -38,6 +38,21 @@ func TestAccConnectionResource(t *testing.T) {
 	t.Run("pagerduty", func(t *testing.T) {
 		testAccConnectionResourcePagerduty(t)
 	})
+	t.Run("oracle", func(t *testing.T) {
+		testAccConnectionResourceOracle(t)
+	})
+	t.Run("oracle_tns", func(t *testing.T) {
+		testAccConnectionResourceOracleTns(t)
+	})
+	t.Run("oracle_host_tns_conflict", func(t *testing.T) {
+		testAccConnectionResourceOracleHostTnsConflict(t)
+	})
+	t.Run("oracle_gateway", func(t *testing.T) {
+		testAccConnectionResourceOracleGateway(t)
+	})
+	t.Run("oracle_wallet", func(t *testing.T) {
+		testAccConnectionResourceOracleWallet(t)
+	})
 	// END [GENERATOR:CONNECTION_RESOURCE_TEST]
 	t.Run("custom_connector", func(t *testing.T) {
 		testAccConnectionResourceCustomConnector(t)
@@ -342,6 +357,164 @@ func testAccConnectionResourcePagerduty(t *testing.T) {
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					connectionID := s.RootModule().Resources[resourceName].Primary.ID
 					return fmt.Sprintf("pagerduty,%s", connectionID), nil
+				},
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceOracle(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.oracle_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/oracle/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "oracle"),
+					resource.TestCheckResourceAttr(resourceName, "name", "Test Oracle Connection"),
+					resource.TestCheckResourceAttr(resourceName, "host", "oracle.example.com"),
+					resource.TestCheckResourceAttr(resourceName, "port", "1521"),
+					resource.TestCheckResourceAttr(resourceName, "user_name", "test_user"),
+					resource.TestCheckResourceAttr(resourceName, "ssl_enabled", "true"),
+					// has_ssl_ca is intentionally excluded from the Public API response
+					// for Oracle (same as mysql/postgresql), so it always comes back
+					// null regardless of whether ssl_ca is set; not asserted here.
+					resource.TestCheckResourceAttr(resourceName, "has_wallet_file", "false"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				// ssl_enabled is not restored on import: Read() only re-fetches it from
+				// the API for the redshift connector and otherwise falls back to the
+				// existing state, which is empty right after import. This is a known,
+				// provider-wide limitation unrelated to Oracle (see ssl_enabled/gateway
+				// import-restoration notes). ssl_ca is write-only, same as password.
+				ImportStateVerifyIgnore: []string{"password", "ssl_enabled", "ssl_ca"},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					connectionID := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("oracle,%s", connectionID), nil
+				},
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceOracleTns(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.oracle_tns_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/oracle/tns_create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "oracle"),
+					resource.TestCheckResourceAttr(resourceName, "name", "Test Oracle TNS Connection"),
+					resource.TestCheckResourceAttrSet(resourceName, "tns_admin_ora"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"password"},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					connectionID := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("oracle,%s", connectionID), nil
+				},
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceOracleHostTnsConflict(t *testing.T) {
+	t.Helper()
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				// host/port と tns_admin_ora を両方指定した場合は
+				// ValidateConfig でプラン時にエラーになることを確認する。
+				Config:      providerConfig + LoadTextFile("testdata/connection/oracle/conflict_host_tns.tf"),
+				ExpectError: regexp.MustCompile(`cannot be specified at the same time`),
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceOracleGateway(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.oracle_gateway_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/oracle/gateway_create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "oracle"),
+					resource.TestCheckResourceAttr(resourceName, "gateway.host", "bastion.example.com"),
+					resource.TestCheckResourceAttr(resourceName, "gateway.port", "22"),
+					resource.TestCheckResourceAttr(resourceName, "gateway.user_name", "ec2-user"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				// gateway is not restored on import: Read() falls back to state.Gateway
+				// wholesale, so immediately after import (no prior state) the entire
+				// gateway block is lost, not just its secret fields. This is a known,
+				// pre-existing limitation shared by every connector that uses gateway
+				// (not specific to Oracle), so only the gateway attributes are ignored
+				// here; all other fields are still verified to round-trip correctly.
+				ImportStateVerifyIgnore: []string{
+					"password",
+					"gateway",
+					"gateway.host",
+					"gateway.port",
+					"gateway.user_name",
+					"gateway.password",
+					"gateway.key",
+					"gateway.key_passphrase",
+				},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					connectionID := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("oracle,%s", connectionID), nil
+				},
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceOracleWallet(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.oracle_wallet_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/oracle/wallet_create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "oracle"),
+					resource.TestCheckResourceAttr(resourceName, "has_wallet_file", "true"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"password", "wallet_file"},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					connectionID := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("oracle,%s", connectionID), nil
 				},
 			},
 		},
