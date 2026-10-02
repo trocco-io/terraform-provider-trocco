@@ -8,4 +8,5 @@ resource "trocco_connection" "oracle_test" {
   password        = "test_password"
   driver          = "19c-ojdbc8.jar"
   ssl_enabled     = true
+  ssl_ca          = "-----BEGIN CERTIFICATE-----\ntest\n-----END CERTIFICATE-----"
 }

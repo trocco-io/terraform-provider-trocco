@@ -101,6 +101,35 @@ func TestAccJobDefinitionResourceOracleDefaultsToBigQuery(t *testing.T) {
 	})
 }
 
+func TestAccJobDefinitionResourceOracleServiceNameToBigQuery(t *testing.T) {
+	resourceName := "trocco_job_definition.oracle_service_name_to_bigquery"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/oracle_service_name_to_bigquery/create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.connection_type", "service_name"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.custom_variable_settings.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.custom_variable_settings.0.name", "$category$"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.custom_variable_settings.0.value", "electronics"),
+				),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
+					return jobDefinitionId, nil
+				},
+			},
+		},
+	})
+}
+
 func TestAccJobDefinitionResourceOracleInputOptionConflict(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,

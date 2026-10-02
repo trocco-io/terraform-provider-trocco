@@ -378,6 +378,10 @@ func testAccConnectionResourceOracle(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "port", "1521"),
 					resource.TestCheckResourceAttr(resourceName, "user_name", "test_user"),
 					resource.TestCheckResourceAttr(resourceName, "ssl_enabled", "true"),
+					// has_ssl_ca is intentionally excluded from the Public API response
+					// for Oracle (same as mysql/postgresql), so it always comes back
+					// null regardless of whether ssl_ca is set; not asserted here.
+					resource.TestCheckResourceAttr(resourceName, "has_wallet_file", "false"),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
@@ -389,8 +393,8 @@ func testAccConnectionResourceOracle(t *testing.T) {
 				// the API for the redshift connector and otherwise falls back to the
 				// existing state, which is empty right after import. This is a known,
 				// provider-wide limitation unrelated to Oracle (see ssl_enabled/gateway
-				// import-restoration notes).
-				ImportStateVerifyIgnore: []string{"password", "ssl_enabled"},
+				// import-restoration notes). ssl_ca is write-only, same as password.
+				ImportStateVerifyIgnore: []string{"password", "ssl_enabled", "ssl_ca"},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					connectionID := s.RootModule().Resources[resourceName].Primary.ID
 					return fmt.Sprintf("oracle,%s", connectionID), nil
@@ -460,11 +464,31 @@ func testAccConnectionResourceOracleGateway(t *testing.T) {
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
-			// NOTE: import は検証しない。gateway は Read() が state.Gateway に
-			// フォールバックする実装のため、import 直後（事前 state が無い状態）では
-			// gateway ブロック全体が復元されない。これは gateway を使う全コネクタに
-			// 共通する既存の実装上の制約であり、Oracle 固有の問題ではないため
-			// 本 PR のスコープでは対応しない。
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				// gateway is not restored on import: Read() falls back to state.Gateway
+				// wholesale, so immediately after import (no prior state) the entire
+				// gateway block is lost, not just its secret fields. This is a known,
+				// pre-existing limitation shared by every connector that uses gateway
+				// (not specific to Oracle), so only the gateway attributes are ignored
+				// here; all other fields are still verified to round-trip correctly.
+				ImportStateVerifyIgnore: []string{
+					"password",
+					"gateway",
+					"gateway.host",
+					"gateway.port",
+					"gateway.user_name",
+					"gateway.password",
+					"gateway.key",
+					"gateway.key_passphrase",
+				},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					connectionID := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("oracle,%s", connectionID), nil
+				},
+			},
 		},
 	})
 }
