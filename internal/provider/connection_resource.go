@@ -1035,18 +1035,18 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"ssh_tunnel_id": schema.Int64Attribute{
-				MarkdownDescription: "SFTP, Redshift: SSH tunnel ID. Required when aws_privatelink_enabled is true.",
+				MarkdownDescription: "SFTP, Redshift, Oracle: SSH tunnel ID. Required when aws_privatelink_enabled is true.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
 			},
 			"aws_privatelink_enabled": schema.BoolAttribute{
-				MarkdownDescription: "SFTP, Redshift: Whether AWS PrivateLink is enabled. Default is false.",
+				MarkdownDescription: "SFTP, Redshift, Oracle: Whether AWS PrivateLink is enabled. Default is false.",
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Bool{
-					planModifier.ConditionalBooleanDefault(false, "sftp", "redshift"),
+					planModifier.ConditionalBooleanDefault(false, "sftp", "redshift", "oracle"),
 				},
 			},
 			// Redshift Fields
