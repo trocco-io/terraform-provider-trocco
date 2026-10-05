@@ -397,7 +397,7 @@ resource "trocco_connection" "custom_connector_oauth2" {
 - `aws_assume_role` (Attributes) S3: AssumeRole configuration. (see [below for nested schema](#nestedatt--aws_assume_role))
 - `aws_auth_type` (String) S3: The authentication type for the S3 connection. It must be one of `iam_user` or `assume_role`.
 - `aws_iam_user` (Attributes) S3: IAM User configuration. (see [below for nested schema](#nestedatt--aws_iam_user))
-- `aws_privatelink_enabled` (Boolean) SFTP, Redshift: Whether AWS PrivateLink is enabled. Default is false.
+- `aws_privatelink_enabled` (Boolean) SFTP, Redshift, Oracle: Whether AWS PrivateLink is enabled. Default is false.
 - `aws_secret_access_key` (String, Sensitive) Redshift: AWS secret access key.
 - `basic_auth_password` (String, Sensitive) Kintone: Basic Auth Password
 - `basic_auth_username` (String) Kintone: Basic Auth Username
@@ -436,7 +436,7 @@ resource "trocco_connection" "custom_connector_oauth2" {
 - `server_hostname` (String) Databricks: The host of a (Databricks) account.
 - `service_account_email` (String, Sensitive) GCS: A GCP service account email.
 - `service_account_json_key` (String, Sensitive) BigQuery, Google Sheets, Google Analytics4, Google Drive: A GCP service account key.
-- `ssh_tunnel_id` (Number) SFTP, Redshift: SSH tunnel ID. Required when aws_privatelink_enabled is true.
+- `ssh_tunnel_id` (Number) SFTP, Redshift, Oracle: SSH tunnel ID. Required when aws_privatelink_enabled is true.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
 - `ssl_ca` (String, Sensitive) Oracle: SSL CA certificate. Write-only; use `has_ssl_ca` to check if set.
 - `ssl_enabled` (Boolean) Redshift, Oracle: Whether SSL is enabled.
