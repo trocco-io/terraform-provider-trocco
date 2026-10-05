@@ -107,6 +107,7 @@ type InputOption struct {
 	GoogleAdsInputOption           *inputOptionEntities.GoogleAdsInputOption           `json:"google_ads_input_option"`
 	GoogleDriveInputOption         *inputOptionEntities.GoogleDriveInputOption         `json:"google_drive_input_option"`
 	RedshiftInputOption            *inputOptionEntities.RedshiftInputOption            `json:"redshift_input_option"`
+	OracleInputOption              *inputOptionEntities.OracleInputOption              `json:"oracle_input_option"`
 	FacebookAdsInsightsInputOption *inputOptionEntities.FacebookAdsInsightsInputOption `json:"facebook_ads_insights_input_option"`
 	MarketoInputOption             *inputOptionEntities.MarketoInputOption             `json:"marketo_input_option"`
 	CustomConnectorInputOption     *inputOptionEntities.CustomConnectorInputOption     `json:"custom_connector_input_option"`
@@ -137,6 +138,7 @@ type InputOptionInput struct {
 	GoogleAdsInputOption           *parameter.NullableObject[inputOptionParameters.GoogleAdsInputOptionInput]           `json:"google_ads_input_option,omitempty"`
 	GoogleDriveInputOption         *parameter.NullableObject[inputOptionParameters.GoogleDriveInputOptionInput]         `json:"google_drive_input_option,omitempty"`
 	RedshiftInputOption            *parameter.NullableObject[inputOptionParameters.RedshiftInputOptionInput]            `json:"redshift_input_option,omitempty"`
+	OracleInputOption              *parameter.NullableObject[inputOptionParameters.OracleInputOptionInput]              `json:"oracle_input_option,omitempty"`
 	FacebookAdsInsightsInputOption *parameter.NullableObject[inputOptionParameters.FacebookAdsInsightsInputOptionInput] `json:"facebook_ads_insights_input_option,omitempty"`
 	MarketoInputOption             *parameter.NullableObject[inputOptionParameters.MarketoInputOptionInput]             `json:"marketo_input_option,omitempty"`
 	CustomConnectorInputOption     *parameter.NullableObject[inputOptionParameters.CustomConnectorInputOptionInput]     `json:"custom_connector_input_option,omitempty"`
@@ -167,6 +169,7 @@ type UpdateInputOptionInput struct {
 	GoogleAdsInputOption           *parameter.NullableObject[inputOptionParameters.UpdateGoogleAdsInputOptionInput]           `json:"google_ads_input_option,omitempty"`
 	GoogleDriveInputOption         *parameter.NullableObject[inputOptionParameters.UpdateGoogleDriveInputOptionInput]         `json:"google_drive_input_option,omitempty"`
 	RedshiftInputOption            *parameter.NullableObject[inputOptionParameters.UpdateRedshiftInputOptionInput]            `json:"redshift_input_option,omitempty"`
+	OracleInputOption              *parameter.NullableObject[inputOptionParameters.UpdateOracleInputOptionInput]              `json:"oracle_input_option,omitempty"`
 	FacebookAdsInsightsInputOption *parameter.NullableObject[inputOptionParameters.UpdateFacebookAdsInsightsInputOptionInput] `json:"facebook_ads_insights_input_option,omitempty"`
 	MarketoInputOption             *parameter.NullableObject[inputOptionParameters.UpdateMarketoInputOptionInput]             `json:"marketo_input_option,omitempty"`
 	CustomConnectorInputOption     *parameter.NullableObject[inputOptionParameters.UpdateCustomConnectorInputOptionInput]     `json:"custom_connector_input_option,omitempty"`
