@@ -50,8 +50,11 @@ func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Not
 		},
 	}
 
+	// A nil response is normalized to an empty slice so that the previous
+	// (plan or state) value decides between null and an empty list; an
+	// explicitly configured `notifications = []` must survive apply.
 	if ens == nil {
-		return types.ListNull(objectType)
+		ens = []*pipelineDefinitionEntities.Notification{}
 	}
 
 	if previousIsNull && len(ens) == 0 {
