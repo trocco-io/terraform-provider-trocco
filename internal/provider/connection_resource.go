@@ -122,6 +122,11 @@ type connectionResourceModel struct {
 	// START [GENERATOR:CONNECTION_FIELDS]
 	APIKey types.String `tfsdk:"api_key"`
 	// END [GENERATOR:CONNECTION_FIELDS]
+
+	// Custom Connector Fields
+	CustomConnectorID types.Int64 `tfsdk:"custom_connector_id"`
+	Scopes            types.List  `tfsdk:"scopes"`
+	Authorized        types.Bool  `tfsdk:"authorized"`
 }
 
 func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnectionInput {
@@ -194,12 +199,21 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		// START [GENERATOR:CONNECTION_INPUT]
 		APIKey: m.APIKey.ValueStringPointer(),
 		// END [GENERATOR:CONNECTION_INPUT]
+
+		// Custom Connector Fields
+		CustomConnectorID: m.CustomConnectorID.ValueInt64Pointer(),
 	}
 
 	// ReadPreferenceTags
 	if !m.ReadPreferenceTags.IsNull() && !m.ReadPreferenceTags.IsUnknown() {
 		tags := readPreferenceTagsFromList(m.ReadPreferenceTags)
 		input.ReadPreferenceTags = &tags
+	}
+
+	// Scopes (Custom Connector)
+	if !m.Scopes.IsNull() && !m.Scopes.IsUnknown() {
+		scopes := scopesFromList(m.Scopes)
+		input.Scopes = &scopes
 	}
 
 	// SSL Fields
@@ -338,6 +352,12 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		input.ReadPreferenceTags = &tags
 	}
 
+	// Scopes (Custom Connector)
+	if !m.Scopes.IsNull() && !m.Scopes.IsUnknown() {
+		scopes := scopesFromList(m.Scopes)
+		input.Scopes = &scopes
+	}
+
 	// SSL Fields
 	switch {
 	case m.SSL != nil:
@@ -451,6 +471,7 @@ var supportedConnectionTypes = []string{
 	"redshift",
 	"marketo",
 	"pagerduty",
+	"custom_connector",
 }
 
 func (r *connectionResource) Schema(
@@ -860,8 +881,12 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"auth_type": schema.StringAttribute{
-				MarkdownDescription: "Databricks: The Auth Type for the Databricks connection. It must be one of `pat` or `oauth-m2m`.",
+				MarkdownDescription: "Databricks: The Auth Type for the Databricks connection. It must be one of `pat` or `oauth-m2m`. Custom Connector: read-only, reflects the auth type (`api_key` or `oauth2`) of the referenced custom connector definition.",
 				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.String{
+					planModifier.ConnectionStateForUnknownStringPlanModifier{},
+				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("pat", "oauth-m2m"),
 				},
@@ -875,14 +900,14 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"oauth2_client_id": schema.StringAttribute{
-				MarkdownDescription: "Databricks: The OAuth2 Client ID for the Databricks connection.",
+				MarkdownDescription: "Databricks, Custom Connector: The OAuth2 Client ID for the connection.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
 			"oauth2_client_secret": schema.StringAttribute{
-				MarkdownDescription: "Databricks: The OAuth2 Client Secret for the Databricks connection.",
+				MarkdownDescription: "Databricks, Custom Connector: The OAuth2 Client Secret for the connection.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -1060,6 +1085,34 @@ func (r *connectionResource) Schema(
 				MarkdownDescription: "API Key",
 			},
 			// END [GENERATOR:CONNECTION_SCHEMA]
+
+			// Custom Connector Fields
+			"custom_connector_id": schema.Int64Attribute{
+				MarkdownDescription: "Custom Connector: The ID of the custom connector definition (`trocco_custom_connector_input`/`trocco_custom_connector_output`) to use. Required when `connection_type` is `custom_connector`. Changing this value forces recreation of the connection.",
+				Optional:            true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.RequiresReplace(),
+				},
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
+				},
+			},
+			"scopes": schema.ListAttribute{
+				MarkdownDescription: "Custom Connector: OAuth2 scopes. When specified on update, this fully replaces the existing scope list; omitting it keeps the scopes stored on the server. Computed because the server always returns a (possibly empty) list for an `oauth2` definition, which would otherwise conflict with an unset configuration.",
+				Optional:            true,
+				Computed:            true,
+				ElementType:         types.StringType,
+				PlanModifiers: []planmodifier.List{
+					planModifier.ConnectionStateForUnknownListPlanModifier{},
+				},
+			},
+			"authorized": schema.BoolAttribute{
+				MarkdownDescription: "Custom Connector: Whether the OAuth2 credentials have been verified through the authorization flow (read-only). A connection created through the API is always `false`, regardless of `grant_type`, since the API does not validate the credentials; completing the authorization flow in the TROCCO UI is what turns it `true`. Changing `oauth2_client_id` or `oauth2_client_secret` resets it to `false`. Null when the referenced custom connector definition uses `api_key` authentication (the concept does not apply).",
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					planModifier.ConnectionAuthorizedPlanModifier{},
+				},
+			},
 		},
 	}
 }
@@ -1180,6 +1233,11 @@ func (r *connectionResource) Create(
 		// START [GENERATOR:CONNECTION_STATE_CREATE]
 		APIKey: plan.APIKey,
 		// END [GENERATOR:CONNECTION_STATE_CREATE]
+
+		// Custom Connector Fields
+		CustomConnectorID: types.Int64PointerValue(conn.CustomConnectorID),
+		Scopes:            scopesToList(conn.Scopes),
+		Authorized:        types.BoolPointerValue(conn.Authorized),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1317,6 +1375,11 @@ func (r *connectionResource) Update(
 		// START [GENERATOR:CONNECTION_STATE_UPDATE]
 		APIKey: plan.APIKey,
 		// END [GENERATOR:CONNECTION_STATE_UPDATE]
+
+		// Custom Connector Fields
+		CustomConnectorID: types.Int64PointerValue(connection.CustomConnectorID),
+		Scopes:            scopesToList(connection.Scopes),
+		Authorized:        types.BoolPointerValue(connection.Authorized),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1440,6 +1503,11 @@ func (r *connectionResource) Read(
 		// START [GENERATOR:CONNECTION_STATE_READ]
 		APIKey: state.APIKey,
 		// END [GENERATOR:CONNECTION_STATE_READ]
+
+		// Custom Connector Fields
+		CustomConnectorID: types.Int64PointerValue(conn.CustomConnectorID),
+		Scopes:            scopesToList(conn.Scopes),
+		Authorized:        types.BoolPointerValue(conn.Authorized),
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, newState)...)
 }
@@ -1700,6 +1768,8 @@ func (r *connectionResource) ValidateConfig(
 		validateRequiredString(plan.MarketoAccountID, "account_id", "Marketo", resp)
 		validateRequiredString(plan.MarketoClientID, "client_id", "Marketo", resp)
 		validateRequiredString(plan.MarketoClientSecret, "client_secret", "Marketo", resp)
+	case "custom_connector":
+		validateRequiredInt(plan.CustomConnectorID, "custom_connector_id", "Custom Connector", resp)
 	}
 }
 
@@ -1875,6 +1945,42 @@ func readPreferenceTagsFromList(list types.List) [][]client.ReadPreferenceTag {
 				Value: value.ValueString(),
 			}
 		}
+	}
+	return result
+}
+
+func scopesToList(scopes *[]string) types.List {
+	if scopes == nil {
+		return types.ListNull(types.StringType)
+	}
+
+	elements := make([]attr.Value, len(*scopes))
+	for i, scope := range *scopes {
+		elements[i] = types.StringValue(scope)
+	}
+	result, _ := types.ListValue(types.StringType, elements)
+	return result
+}
+
+// scopesFromList converts the `scopes` list into its wire shape.
+//
+// The type assertion cannot fail: the schema declares the attribute as
+// `ElementType: types.StringType`, so a non-string element would mean the
+// provider's own schema and model disagree. It panics rather than dropping the
+// element, since silently sending an incomplete scope list would replace the
+// stored scopes with the wrong set. The callers
+// (ToCreateConnectionInput/ToUpdateConnectionInput) have no diagnostics channel
+// to report this through, which is why readPreferenceTagsFromList above asserts
+// the same way.
+func scopesFromList(list types.List) []string {
+	elements := list.Elements()
+	result := make([]string, len(elements))
+	for i, elem := range elements {
+		s, ok := elem.(types.String)
+		if !ok {
+			panic("unexpected type for scopes element")
+		}
+		result[i] = s.ValueString()
 	}
 	return result
 }
