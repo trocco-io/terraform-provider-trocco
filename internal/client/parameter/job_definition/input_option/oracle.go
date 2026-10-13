@@ -8,12 +8,12 @@ type OracleInputOptionInput struct {
 	ConnectionType            *parameter.NullableString               `json:"connection_type,omitempty"`
 	NetServiceName            *parameter.NullableString               `json:"net_service_name,omitempty"`
 	Schema                    *parameter.NullableString               `json:"schema,omitempty"`
-	Query                     *string                                 `json:"query,omitempty"`
+	Query                     *parameter.NullableString               `json:"query,omitempty"`
 	IncrementalLoadingEnabled bool                                    `json:"incremental_loading_enabled"`
-	Table                     *string                                 `json:"table,omitempty"`
+	Table                     *parameter.NullableString               `json:"table,omitempty"`
 	IncrementalColumns        *parameter.NullableString               `json:"incremental_columns,omitempty"`
 	LastRecord                *parameter.NullableString               `json:"last_record,omitempty"`
-	SourceTimeZone            *string                                 `json:"source_time_zone,omitempty"`
+	SourceTimeZone            *parameter.NullableString               `json:"source_time_zone,omitempty"`
 	InputOptionColumns        *[]OracleInputOptionColumnInput         `json:"input_option_columns,omitempty"`
 	InputOptionColumnOptions  *[]OracleInputOptionColumnOptionInput   `json:"input_option_column_options,omitempty"`
 	CustomVariableSettings    *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
@@ -37,12 +37,12 @@ type UpdateOracleInputOptionInput struct {
 	ConnectionType            *parameter.NullableString               `json:"connection_type,omitempty"`
 	NetServiceName            *parameter.NullableString               `json:"net_service_name,omitempty"`
 	Schema                    *parameter.NullableString               `json:"schema,omitempty"`
-	Query                     *string                                 `json:"query,omitempty"`
+	Query                     *parameter.NullableString               `json:"query,omitempty"`
 	IncrementalLoadingEnabled *bool                                   `json:"incremental_loading_enabled,omitempty"`
-	Table                     *string                                 `json:"table,omitempty"`
+	Table                     *parameter.NullableString               `json:"table,omitempty"`
 	IncrementalColumns        *parameter.NullableString               `json:"incremental_columns,omitempty"`
 	LastRecord                *parameter.NullableString               `json:"last_record,omitempty"`
-	SourceTimeZone            *string                                 `json:"source_time_zone,omitempty"`
+	SourceTimeZone            *parameter.NullableString               `json:"source_time_zone,omitempty"`
 	InputOptionColumns        *[]OracleInputOptionColumnInput         `json:"input_option_columns,omitempty"`
 	InputOptionColumnOptions  *[]OracleInputOptionColumnOptionInput   `json:"input_option_column_options,omitempty"`
 	CustomVariableSettings    *[]parameter.CustomVariableSettingInput `json:"custom_variable_settings,omitempty"`
