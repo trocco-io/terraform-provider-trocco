@@ -53,6 +53,18 @@ func TestAccConnectionResource(t *testing.T) {
 	t.Run("oracle_wallet", func(t *testing.T) {
 		testAccConnectionResourceOracleWallet(t)
 	})
+	t.Run("oracle_update", func(t *testing.T) {
+		testAccConnectionResourceOracleUpdate(t)
+	})
+	t.Run("oracle_gateway_tns", func(t *testing.T) {
+		testAccConnectionResourceOracleGatewayTns(t)
+	})
+	t.Run("oracle_privatelink", func(t *testing.T) {
+		testAccConnectionResourceOraclePrivatelink(t)
+	})
+	t.Run("oracle_user_name_required", func(t *testing.T) {
+		testAccConnectionResourceOracleUserNameRequired(t)
+	})
 	// END [GENERATOR:CONNECTION_RESOURCE_TEST]
 	t.Run("custom_connector", func(t *testing.T) {
 		testAccConnectionResourceCustomConnector(t)
@@ -516,6 +528,107 @@ func testAccConnectionResourceOracleWallet(t *testing.T) {
 					connectionID := s.RootModule().Resources[resourceName].Primary.ID
 					return fmt.Sprintf("oracle,%s", connectionID), nil
 				},
+			},
+			{
+				// Updates wallet_file to a new value; has_wallet_file should stay true.
+				Config: providerConfig + LoadTextFile("testdata/connection/oracle/wallet_update.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "has_wallet_file", "true"),
+				),
+			},
+			{
+				// Removes wallet_file from config entirely; the API should clear it
+				// server-side (has_wallet_file becomes false), not merely leave the
+				// old value in place.
+				Config: providerConfig + LoadTextFile("testdata/connection/oracle/wallet_delete.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "has_wallet_file", "false"),
+				),
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceOracleUpdate(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.oracle_update_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/oracle/update_create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "host", "oracle-before-update.example.com"),
+					resource.TestCheckResourceAttr(resourceName, "driver", "19c-ojdbc8.jar"),
+					resource.TestCheckNoResourceAttr(resourceName, "tns_admin_ora"),
+				),
+			},
+			{
+				// Switches from host/port to TNS naming, and changes driver to a
+				// non-default value, in the same update.
+				Config: providerConfig + LoadTextFile("testdata/connection/oracle/update_to_tns.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "driver", "26ai-ojdbc8.jar"),
+					resource.TestCheckResourceAttrSet(resourceName, "tns_admin_ora"),
+					resource.TestCheckNoResourceAttr(resourceName, "host"),
+					resource.TestCheckNoResourceAttr(resourceName, "port"),
+				),
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceOracleGatewayTns(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.oracle_gateway_tns_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				// gateway combined with tns_admin_ora: needed for existing
+				// AWS PrivateLink-based Autonomous Database connections (see
+				// Design Decisions in the PR description).
+				Config: providerConfig + LoadTextFile("testdata/connection/oracle/gateway_tns_create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet(resourceName, "tns_admin_ora"),
+					resource.TestCheckResourceAttr(resourceName, "gateway.host", "bastion.example.com"),
+					resource.TestCheckResourceAttr(resourceName, "gateway.port", "22"),
+					resource.TestCheckResourceAttr(resourceName, "gateway.user_name", "ec2-user"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceOraclePrivatelink(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.oracle_privatelink_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/oracle/privatelink_create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "aws_privatelink_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "ssh_tunnel_id", "1"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceOracleUserNameRequired(t *testing.T) {
+	t.Helper()
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				// Enforced by the provider's own ValidateConfig (plan-time), not just
+				// the API's server-side presence validation.
+				Config:      providerConfig + LoadTextFile("testdata/connection/oracle/missing_user_name.tf"),
+				ExpectError: regexp.MustCompile(`user_name is required for Oracle connection`),
 			},
 		},
 	})

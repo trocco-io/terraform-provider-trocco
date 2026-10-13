@@ -301,7 +301,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		WorkloadIdentityFederationConfig: parseWifConfig(m.WorkloadIdentityFederationConfig.ValueStringPointer()),
 
 		// Snowflake Fields
-		Host:       m.Host.ValueStringPointer(),
+		Host:       model.NewNullableString(m.Host),
 		UserName:   m.UserName.ValueStringPointer(),
 		Role:       m.Role.ValueStringPointer(),
 		AuthMethod: m.AuthMethod.ValueStringPointer(),
@@ -356,8 +356,8 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
 
 		// Oracle Fields
-		TnsAdminOra: m.TnsAdminOra.ValueStringPointer(),
-		WalletFile:  m.WalletFile.ValueStringPointer(),
+		TnsAdminOra: model.NewNullableString(m.TnsAdminOra),
+		WalletFile:  model.NewNullableString(m.WalletFile),
 		SSLCA:       m.SSLCA.ValueStringPointer(),
 
 		// START [GENERATOR:CONNECTION_INPUT]

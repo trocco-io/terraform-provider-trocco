@@ -178,14 +178,14 @@ type UpdateConnectionInput struct {
 	ServiceAccountJSONKey            *string                   `json:"service_account_json_key"`                      // bigquery, gcs, google_spreadsheets, google_analytics4, google_drive
 	IsWorkloadIdentityFederation     *bool                     `json:"is_workload_identity_federation,omitempty"`     // bigquery
 	WorkloadIdentityFederationConfig interface{}               `json:"workload_identity_federation_config,omitempty"` // bigquery
-	Host                             *string                   `json:"host,omitempty"`                                // snowflake, mysql, postgresql, sftp, mongodb, redshift, oracle
+	Host                             *parameter.NullableString `json:"host,omitempty"`                                // snowflake, mysql, postgresql, sftp, mongodb, redshift, oracle
 	UserName                         *string                   `json:"user_name,omitempty"`                           // snowflake, mysql, postgresql, salesforce, sftp, mongodb, redshift, oracle
 	Role                             *string                   `json:"role,omitempty"`                                // snowflake
 	AuthMethod                       *string                   `json:"auth_method,omitempty"`                         // snowflake, mongodb
 	Password                         *string                   `json:"password,omitempty"`                            // snowflake, mysql, postgresql, salesforce, kintone, sftp, mongodb, redshift, oracle
 	PrivateKey                       *string                   `json:"private_key,omitempty"`                         // snowflake
-	TnsAdminOra                      *string                   `json:"tns_admin_ora,omitempty"`                       // oracle
-	WalletFile                       *string                   `json:"wallet_file,omitempty"`                         // oracle (base64 encoded)
+	TnsAdminOra                      *parameter.NullableString `json:"tns_admin_ora,omitempty"`                       // oracle
+	WalletFile                       *parameter.NullableString `json:"wallet_file,omitempty"`                         // oracle (base64 encoded)
 	ApplicationName                  *string                   `json:"application_name,omitempty"`                    // gcs
 	ServiceAccountEmail              *string                   `json:"service_account_email,omitempty"`               // gcs
 	Port                             *parameter.NullableInt64  `json:"port,omitempty"`                                // mysql, postgresql, sftp, mongodb, redshift, oracle
