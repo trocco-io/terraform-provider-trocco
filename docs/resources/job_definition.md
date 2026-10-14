@@ -1700,6 +1700,7 @@ Optional:
 - `marketo_input_option` (Attributes) Attributes about source Marketo Engage (see [below for nested schema](#nestedatt--input_option--marketo_input_option))
 - `mongodb_input_option` (Attributes) Attributes of source MongoDB (see [below for nested schema](#nestedatt--input_option--mongodb_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
+- `oracle_input_option` (Attributes) Attributes of source Oracle Database (see [below for nested schema](#nestedatt--input_option--oracle_input_option))
 - `pagerduty_input_option` (Attributes) attributes of source Pagerduty (see [below for nested schema](#nestedatt--input_option--pagerduty_input_option))
 - `postgresql_input_option` (Attributes) Attributes of source postgresql (see [below for nested schema](#nestedatt--input_option--postgresql_input_option))
 - `redshift_input_option` (Attributes) Attributes of source redshift (see [below for nested schema](#nestedatt--input_option--redshift_input_option))
@@ -3281,6 +3282,71 @@ Optional:
 - `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--input_option--oracle_input_option"></a>
+### Nested Schema for `input_option.oracle_input_option`
+
+Required:
+
+- `input_option_columns` (Attributes List) Column definitions. When updated, fully replaces the existing list (id ascending order). (see [below for nested schema](#nestedatt--input_option--oracle_input_option--input_option_columns))
+- `oracle_connection_id` (Number) ID of Oracle connection
+
+Optional:
+
+- `connection_type` (String) How to interpret `database` field: `sid` (Oracle SID) or `service_name` (Oracle Service Name). Default: `sid`. Ignored when using TNS naming.
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--oracle_input_option--custom_variable_settings))
+- `database` (String) Database name (SID or service name). Required when using host/port connection. Ignored when using TNS naming.
+- `incremental_columns` (String) Comma-separated column names to identify incremental records. If omitted, primary key is used.
+- `incremental_loading_enabled` (Boolean) Whether to use incremental loading (true) or query-based transfer (false). Default: false.
+- `input_option_column_options` (Attributes List) Per-column options (e.g., NUMBER-to-string conversion). When updated, fully replaces the existing list. (see [below for nested schema](#nestedatt--input_option--oracle_input_option--input_option_column_options))
+- `last_record` (String) Last transferred record value. During incremental loading, only data newer than this value is transferred. If empty, transfer starts from the beginning. Do not change this value unless there is a specific reason, as doing so may cause data duplication.
+- `net_service_name` (String) Net service name from tnsnames.ora. Required when using TNS naming connection.
+- `query` (String) SQL query to fetch data. Required when `incremental_loading_enabled` is false.
+- `schema` (String) Schema name
+- `source_time_zone` (String) Timezone (IANA format, e.g., 'Asia/Tokyo') used to interpret DATE/TIMESTAMP columns without timezone information. If omitted, the timezone of the machine running the transfer is used.
+- `table` (String) Table name. Required when `incremental_loading_enabled` is true.
+
+<a id="nestedatt--input_option--oracle_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.oracle_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type: `boolean`, `long`, `double`, `string`, `json`, or `timestamp`
+
+Optional:
+
+- `format` (String) Timestamp format (strftime). Required when `type` is `timestamp`.
+- `timezone` (String) Column-level timezone (IANA format). If omitted, `source_time_zone` is used. Only for `type: timestamp`.
+
+
+<a id="nestedatt--input_option--oracle_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.oracle_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--oracle_input_option--input_option_column_options"></a>
+### Nested Schema for `input_option.oracle_input_option.input_option_column_options`
+
+Required:
+
+- `column_name` (String) Column name to apply option to
+- `column_value_type` (String) Value type override. Currently only `string` is supported.
 
 
 

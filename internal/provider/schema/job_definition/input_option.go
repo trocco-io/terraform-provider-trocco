@@ -31,6 +31,7 @@ func InputOptionSchema() schema.Attribute {
 			"google_ads_input_option":            GoogleAdsInputOptionSchema(),
 			"google_drive_input_option":          GoogleDriveInputOptionSchema(),
 			"redshift_input_option":              RedshiftInputOptionSchema(),
+			"oracle_input_option":                OracleInputOptionSchema(),
 			"facebook_ads_insights_input_option": FacebookAdsInsightsInputOptionSchema(),
 			"marketo_input_option":               MarketoInputOptionSchema(),
 			"custom_connector_input_option":      CustomConnectorInputOptionSchema(),
