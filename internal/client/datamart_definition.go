@@ -89,31 +89,38 @@ type DatamartDefinition struct {
 }
 
 type DatamartBigqueryOption struct {
-	BigqueryConnectionID     int64    `json:"bigquery_connection_id"`
-	QueryMode                string   `json:"query_mode"`
-	Query                    string   `json:"query"`
-	DestinationDataset       *string  `json:"destination_dataset"`
-	DestinationTable         *string  `json:"destination_table"`
-	WriteDisposition         *string  `json:"write_disposition"`
-	BeforeLoad               *string  `json:"before_load"`
-	Partitioning             *string  `json:"partitioning"`
-	PartitioningTime         *string  `json:"partitioning_time"`
-	PartitioningField        *string  `json:"partitioning_field"`
-	ClusteringFields         []string `json:"clustering_fields"`
-	Location                 *string  `json:"location"`
-	MergeKeys                []string `json:"merge_keys"`
-	OnMatchedAction          *string  `json:"on_matched_action"`
-	IncrementalColumn        *string  `json:"incremental_column"`
-	ValidFromColumn          *string  `json:"valid_from_column"`
-	ValidToColumn            *string  `json:"valid_to_column"`
-	IsCurrentColumn          *string  `json:"is_current_column"`
-	SchemaEvolutionMode      *string  `json:"schema_evolution_mode"`
-	LookbackPeriodColumn     *string  `json:"lookback_period_column"`
-	LookbackPeriodColumnType *string  `json:"lookback_period_column_type"`
-	LookbackPeriodTimezone   *string  `json:"lookback_period_timezone"`
-	LookbackPeriodFrom       *int64   `json:"lookback_period_from"`
-	LookbackPeriodTo         *int64   `json:"lookback_period_to"`
-	LookbackPeriodUnit       *string  `json:"lookback_period_unit"`
+	BigqueryConnectionID     int64               `json:"bigquery_connection_id"`
+	QueryMode                string              `json:"query_mode"`
+	Query                    string              `json:"query"`
+	DestinationDataset       *string             `json:"destination_dataset"`
+	DestinationTable         *string             `json:"destination_table"`
+	WriteDisposition         *string             `json:"write_disposition"`
+	BeforeLoad               *string             `json:"before_load"`
+	Partitioning             *string             `json:"partitioning"`
+	PartitioningTime         *string             `json:"partitioning_time"`
+	PartitioningField        *string             `json:"partitioning_field"`
+	ClusteringFields         []string            `json:"clustering_fields"`
+	Location                 *string             `json:"location"`
+	TableDescription         *string             `json:"table_description"`
+	ColumnDescriptions       []ColumnDescription `json:"column_descriptions"`
+	MergeKeys                []string            `json:"merge_keys"`
+	OnMatchedAction          *string             `json:"on_matched_action"`
+	IncrementalColumn        *string             `json:"incremental_column"`
+	ValidFromColumn          *string             `json:"valid_from_column"`
+	ValidToColumn            *string             `json:"valid_to_column"`
+	IsCurrentColumn          *string             `json:"is_current_column"`
+	SchemaEvolutionMode      *string             `json:"schema_evolution_mode"`
+	LookbackPeriodColumn     *string             `json:"lookback_period_column"`
+	LookbackPeriodColumnType *string             `json:"lookback_period_column_type"`
+	LookbackPeriodTimezone   *string             `json:"lookback_period_timezone"`
+	LookbackPeriodFrom       *int64              `json:"lookback_period_from"`
+	LookbackPeriodTo         *int64              `json:"lookback_period_to"`
+	LookbackPeriodUnit       *string             `json:"lookback_period_unit"`
+}
+
+type ColumnDescription struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 type ResourceGroup struct {
@@ -275,28 +282,35 @@ func NewTimestampTypeCustomVariableSettingInput(
 }
 
 type CreateDatamartBigqueryOptionInput struct {
-	BigqueryConnectionID     int64     `json:"bigquery_connection_id"`
-	QueryMode                string    `json:"query_mode"`
-	Query                    string    `json:"query"`
-	DestinationDataset       *string   `json:"destination_dataset,omitempty"`
-	DestinationTable         *string   `json:"destination_table,omitempty"`
-	WriteDisposition         *string   `json:"write_disposition,omitempty"`
-	BeforeLoad               *string   `json:"before_load,omitempty"`
-	Partitioning             *string   `json:"partitioning,omitempty"`
-	PartitioningTime         *string   `json:"partitioning_time,omitempty"`
-	PartitioningField        *string   `json:"partitioning_field,omitempty"`
-	ClusteringFields         *[]string `json:"clustering_fields,omitempty"`
-	Location                 *string   `json:"location,omitempty"`
-	MergeKeys                *[]string `json:"merge_keys,omitempty"`
-	OnMatchedAction          *string   `json:"on_matched_action,omitempty"`
-	IncrementalColumn        *string   `json:"incremental_column,omitempty"`
-	SchemaEvolutionMode      *string   `json:"schema_evolution_mode,omitempty"`
-	LookbackPeriodColumn     *string   `json:"lookback_period_column,omitempty"`
-	LookbackPeriodColumnType *string   `json:"lookback_period_column_type,omitempty"`
-	LookbackPeriodTimezone   *string   `json:"lookback_period_timezone,omitempty"`
-	LookbackPeriodFrom       *int64    `json:"lookback_period_from,omitempty"`
-	LookbackPeriodTo         *int64    `json:"lookback_period_to,omitempty"`
-	LookbackPeriodUnit       *string   `json:"lookback_period_unit,omitempty"`
+	BigqueryConnectionID     int64                     `json:"bigquery_connection_id"`
+	QueryMode                string                    `json:"query_mode"`
+	Query                    string                    `json:"query"`
+	DestinationDataset       *string                   `json:"destination_dataset,omitempty"`
+	DestinationTable         *string                   `json:"destination_table,omitempty"`
+	WriteDisposition         *string                   `json:"write_disposition,omitempty"`
+	BeforeLoad               *string                   `json:"before_load,omitempty"`
+	Partitioning             *string                   `json:"partitioning,omitempty"`
+	PartitioningTime         *string                   `json:"partitioning_time,omitempty"`
+	PartitioningField        *string                   `json:"partitioning_field,omitempty"`
+	ClusteringFields         *[]string                 `json:"clustering_fields,omitempty"`
+	Location                 *string                   `json:"location,omitempty"`
+	TableDescription         *string                   `json:"table_description,omitempty"`
+	ColumnDescriptions       *[]ColumnDescriptionInput `json:"column_descriptions,omitempty"`
+	MergeKeys                *[]string                 `json:"merge_keys,omitempty"`
+	OnMatchedAction          *string                   `json:"on_matched_action,omitempty"`
+	IncrementalColumn        *string                   `json:"incremental_column,omitempty"`
+	SchemaEvolutionMode      *string                   `json:"schema_evolution_mode,omitempty"`
+	LookbackPeriodColumn     *string                   `json:"lookback_period_column,omitempty"`
+	LookbackPeriodColumnType *string                   `json:"lookback_period_column_type,omitempty"`
+	LookbackPeriodTimezone   *string                   `json:"lookback_period_timezone,omitempty"`
+	LookbackPeriodFrom       *int64                    `json:"lookback_period_from,omitempty"`
+	LookbackPeriodTo         *int64                    `json:"lookback_period_to,omitempty"`
+	LookbackPeriodUnit       *string                   `json:"lookback_period_unit,omitempty"`
+}
+
+type ColumnDescriptionInput struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 func NewInsertModeCreateDatamartBigqueryOptionInput(
@@ -349,6 +363,14 @@ func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetClusteringFi
 
 func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetLocation(location string) {
 	datamartBigqueryOption.Location = &location
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetTableDescription(tableDescription string) {
+	datamartBigqueryOption.TableDescription = &tableDescription
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetColumnDescriptions(columnDescriptions []ColumnDescriptionInput) {
+	datamartBigqueryOption.ColumnDescriptions = &columnDescriptions
 }
 
 func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetMergeKeys(mergeKeys []string) {
@@ -478,6 +500,8 @@ type UpdateDatamartBigqueryOptionInput struct {
 	PartitioningField        *string                   `json:"partitioning_field,omitempty"`
 	ClusteringFields         *[]string                 `json:"clustering_fields,omitempty"`
 	Location                 *parameter.NullableString `json:"location,omitempty"`
+	TableDescription         *parameter.NullableString `json:"table_description,omitempty"`
+	ColumnDescriptions       *[]ColumnDescriptionInput `json:"column_descriptions,omitempty"`
 	MergeKeys                *[]string                 `json:"merge_keys,omitempty"`
 	OnMatchedAction          *parameter.NullableString `json:"on_matched_action,omitempty"`
 	IncrementalColumn        *parameter.NullableString `json:"incremental_column,omitempty"`
@@ -548,6 +572,18 @@ func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLocation(loc
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetLocationEmpty() {
 	datamartBigqueryOption.Location = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetTableDescription(tableDescription string) {
+	datamartBigqueryOption.TableDescription = &parameter.NullableString{Value: tableDescription, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetTableDescriptionEmpty() {
+	datamartBigqueryOption.TableDescription = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetColumnDescriptions(columnDescriptions []ColumnDescriptionInput) {
+	datamartBigqueryOption.ColumnDescriptions = &columnDescriptions
 }
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetMergeKeys(mergeKeys []string) {
