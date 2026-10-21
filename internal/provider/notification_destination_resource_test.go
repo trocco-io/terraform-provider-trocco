@@ -16,6 +16,73 @@ func TestAccNotificationDestinationResource(t *testing.T) {
 	t.Run("slack_channel", func(t *testing.T) {
 		testAccNotificationDestinationResourceSlackChannel(t)
 	})
+	t.Run("http", func(t *testing.T) {
+		testAccNotificationDestinationResourceHTTP(t)
+	})
+}
+
+func testAccNotificationDestinationResourceHTTP(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_notification_destination.http_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/notification_destination/http_create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "type", "http"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.name", "terraform-acc-http"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.url", "https://example.com/webhook"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.description", "created by acceptance test"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.headers.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.headers.0.key", "Authorization"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.headers.0.value", "Bearer acc-secret"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.headers.0.masking", "true"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.headers.1.key", "Content-Type"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.headers.1.value", "application/json"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.headers.1.masking", "false"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.query_params.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.query_params.0.key", "token"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.query_params.0.value", "acc-token"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.query_params.0.masking", "true"),
+				),
+			},
+			// Refresh: masked values are not returned by the API and must be restored from the state.
+			{
+				Config:   providerConfig + LoadTextFile("testdata/notification_destination/http_create.tf"),
+				PlanOnly: true,
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					id := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("http,%s", id), nil
+				},
+				// masked values cannot be read back from the API
+				ImportStateVerifyIgnore: []string{"http_config.headers.0.value", "http_config.query_params.0.value"},
+			},
+			{
+				Config: providerConfig + LoadTextFile("testdata/notification_destination/http_update.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "http_config.name", "terraform-acc-http-updated"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.url", "https://example.com/webhook/v2"),
+					resource.TestCheckNoResourceAttr(resourceName, "http_config.description"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.headers.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.headers.0.key", "X-Api-Key"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.headers.0.value", "rotated-secret"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.headers.0.masking", "true"),
+					resource.TestCheckNoResourceAttr(resourceName, "http_config.query_params.#"),
+				),
+			},
+			{
+				Config:   providerConfig + LoadTextFile("testdata/notification_destination/http_update.tf"),
+				PlanOnly: true,
+			},
+		},
+	})
 }
 
 func testAccNotificationDestinationResourceEmail(t *testing.T) {
@@ -78,7 +145,32 @@ func TestInvalidNotificationDestinationType(t *testing.T) {
 					  }
 					}
 				`,
-				ExpectError: regexp.MustCompile(`"type" must be either "email" or "slack_channel".`),
+				ExpectError: regexp.MustCompile(`"type" must be one of "email", "slack_channel" or "http".`),
+			},
+			// Valid type but missing http_config for http type
+			{
+				Config: providerConfig + `
+					resource "trocco_notification_destination" "http" {
+					  type = "http"
+					}
+				`,
+				ExpectError: regexp.MustCompile("`http_config` is required when type is 'http'."),
+			},
+			// Valid type but conflicting email_config for http type
+			{
+				Config: providerConfig + `
+					resource "trocco_notification_destination" "http" {
+						type = "http"
+						http_config = {
+							name = "conflict"
+							url  = "https://example.com/webhook"
+						}
+						email_config = {
+							email = "test@example.com"
+						}
+					}
+				`,
+				ExpectError: regexp.MustCompile(`Invalid Attribute Combination`),
 			},
 			// Valid type but missing email_config for email type
 			{
