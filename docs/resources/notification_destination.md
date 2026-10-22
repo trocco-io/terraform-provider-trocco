@@ -73,7 +73,7 @@ resource "trocco_notification_destination" "http" {
 
 ### Required
 
-- `type` (String) The type of the notification destination. Must be one of "email", "slack_channel" or "http".
+- `type` (String) The type of the notification destination. Must be one of "email", "slack_channel" or "http". Changing this forces a new resource to be created.
 
 ### Optional
 
