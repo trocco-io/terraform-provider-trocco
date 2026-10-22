@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
@@ -18,6 +19,57 @@ func TestAccNotificationDestinationResource(t *testing.T) {
 	})
 	t.Run("http", func(t *testing.T) {
 		testAccNotificationDestinationResourceHTTP(t)
+	})
+	t.Run("type_change", func(t *testing.T) {
+		testAccNotificationDestinationResourceTypeChange(t)
+	})
+}
+
+// Each type has its own ID space, so updating in place would send the old ID to the
+// endpoint of the new type and could overwrite an unrelated notification destination.
+func testAccNotificationDestinationResourceTypeChange(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_notification_destination.type_change_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + `
+					resource "trocco_notification_destination" "type_change_test" {
+					  type = "slack_channel"
+					  slack_channel_config = {
+					    channel     = "terraform-acc-type-change"
+					    webhook_url = "https://hooks.slack.com/services/test"
+					  }
+					}
+				`,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "type", "slack_channel"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+			{
+				Config: providerConfig + `
+					resource "trocco_notification_destination" "type_change_test" {
+					  type = "http"
+					  http_config = {
+					    name = "terraform-acc-type-change"
+					    url  = "https://example.com/webhook"
+					  }
+					}
+				`,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction(resourceName, plancheck.ResourceActionDestroyBeforeCreate),
+					},
+				},
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "http_config.name", "terraform-acc-type-change"),
+					resource.TestCheckNoResourceAttr(resourceName, "slack_channel_config"),
+				),
+			},
+		},
 	})
 }
 
