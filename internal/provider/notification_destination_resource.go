@@ -8,6 +8,7 @@ import (
 	"strings"
 	"terraform-provider-trocco/internal/client"
 	notificationDestinationParameters "terraform-provider-trocco/internal/client/parameter/notification_destination"
+	"terraform-provider-trocco/internal/provider/model"
 	"terraform-provider-trocco/internal/provider/model/notification_destination"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
@@ -100,11 +101,10 @@ func toHTTPConfigInput(c *notification_destination.HTTPConfig) *notificationDest
 	if c == nil {
 		return nil
 	}
-	description := c.Description.ValueString()
 	return &notificationDestinationParameters.HTTPConfigInput{
 		Name:        c.Name.ValueStringPointer(),
 		URL:         c.URL.ValueStringPointer(),
-		Description: &description,
+		Description: model.NewNullableString(c.Description),
 		Headers:     toHTTPKeyValueInputs(c.Headers),
 		QueryParams: toHTTPKeyValueInputs(c.QueryParams),
 	}
@@ -132,7 +132,7 @@ func httpConfigFromPlan(plan *notification_destination.HTTPConfig, api *client.N
 	return &notification_destination.HTTPConfig{
 		Name:        types.StringPointerValue(api.Name),
 		URL:         types.StringPointerValue(api.URL),
-		Description: httpDescriptionValue(api.Description),
+		Description: types.StringPointerValue(api.Description),
 		Headers:     plan.Headers,
 		QueryParams: plan.QueryParams,
 	}
@@ -151,7 +151,7 @@ func httpConfigFromAPI(state *notification_destination.HTTPConfig, api *client.N
 	return &notification_destination.HTTPConfig{
 		Name:        types.StringPointerValue(api.Name),
 		URL:         types.StringPointerValue(api.URL),
-		Description: httpDescriptionValue(api.Description),
+		Description: types.StringPointerValue(api.Description),
 		Headers:     mergeHTTPKeyValues(api.Headers, stateHeaders),
 		QueryParams: mergeHTTPKeyValues(api.QueryParams, stateQueryParams),
 	}
@@ -178,15 +178,6 @@ func mergeHTTPKeyValues(apiItems []client.HTTPKeyValue, stateItems []notificatio
 		})
 	}
 	return result
-}
-
-// httpDescriptionValue maps an empty description from the API to null so that an omitted
-// description in the configuration does not produce a diff.
-func httpDescriptionValue(description *string) types.String {
-	if description == nil || *description == "" {
-		return types.StringNull()
-	}
-	return types.StringValue(*description)
 }
 
 func (r *notificationDestinationResource) Metadata(
@@ -304,11 +295,7 @@ func (r *notificationDestinationResource) Schema(ctx context.Context, req resour
 						MarkdownDescription: "The URL that receives the notification request.",
 					},
 					"description": schema.StringAttribute{
-						Optional: true,
-						// the API stores an empty description as unset, so it is read back as null
-						Validators: []validator.String{
-							stringvalidator.UTF8LengthAtLeast(1),
-						},
+						Optional:            true,
 						MarkdownDescription: "The description of the notification destination.",
 					},
 					"headers": schema.ListNestedAttribute{
