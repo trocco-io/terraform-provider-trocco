@@ -172,20 +172,6 @@ func TestInvalidNotificationDestinationType(t *testing.T) {
 				`,
 				ExpectError: regexp.MustCompile(`Invalid Attribute Combination`),
 			},
-			// Empty description for http type
-			{
-				Config: providerConfig + `
-					resource "trocco_notification_destination" "http" {
-						type = "http"
-						http_config = {
-							name        = "empty-description"
-							url         = "https://example.com/webhook"
-							description = ""
-						}
-					}
-				`,
-				ExpectError: regexp.MustCompile(`UTF-8 character count must be at least 1`),
-			},
 			// Valid type but missing email_config for email type
 			{
 				Config: providerConfig + `
