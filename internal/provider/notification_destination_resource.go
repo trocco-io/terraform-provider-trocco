@@ -304,7 +304,11 @@ func (r *notificationDestinationResource) Schema(ctx context.Context, req resour
 						MarkdownDescription: "The URL that receives the notification request.",
 					},
 					"description": schema.StringAttribute{
-						Optional:            true,
+						Optional: true,
+						// the API stores an empty description as unset, so it is read back as null
+						Validators: []validator.String{
+							stringvalidator.UTF8LengthAtLeast(1),
+						},
 						MarkdownDescription: "The description of the notification destination.",
 					},
 					"headers": schema.ListNestedAttribute{
