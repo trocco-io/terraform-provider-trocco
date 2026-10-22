@@ -94,6 +94,16 @@ resource "trocco_pipeline_definition" "notifications" {
         message         = "The quick brown fox jumps over the lazy dog."
       }
     },
+    {
+      type             = "job_execution"
+      destination_type = "http"
+      notify_when      = "failed"
+
+      http_config = {
+        notification_id = 1                                      # ID of a trocco_notification_destination with type = "http"
+        message         = "{\"text\": \"The workflow failed.\"}" # sent as the request body; must be a JSON string
+      }
+    },
   ]
 }
 ```
@@ -782,6 +792,7 @@ Required:
 Optional:
 
 - `email_config` (Attributes) The email configuration of the notification (see [below for nested schema](#nestedatt--notifications--email_config))
+- `http_config` (Attributes) The HTTP configuration of the notification. Used when `destination_type` is `http` (see [below for nested schema](#nestedatt--notifications--http_config))
 - `notify_when` (String) When to notify
 - `slack_config` (Attributes) The slack configuration of the notification (see [below for nested schema](#nestedatt--notifications--slack_config))
 - `time` (Number) The time of the notification
@@ -797,6 +808,15 @@ Required:
 
 - `message` (String) The message of the notification
 - `notification_id` (Number) The notification id
+
+
+<a id="nestedatt--notifications--http_config"></a>
+### Nested Schema for `notifications.http_config`
+
+Required:
+
+- `message` (String) The message of the notification. It is sent as the request body and must be a valid JSON string
+- `notification_id` (Number) The ID of the HTTP notification destination
 
 
 <a id="nestedatt--notifications--slack_config"></a>
