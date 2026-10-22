@@ -20,6 +20,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -215,7 +216,10 @@ func (r *notificationDestinationResource) Schema(ctx context.Context, req resour
 		Attributes: map[string]schema.Attribute{
 			"type": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The type of the notification destination. Must be one of "email", "slack_channel" or "http".`,
+				MarkdownDescription: `The type of the notification destination. Must be one of "email", "slack_channel" or "http". Changing this forces a new resource to be created.`,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("email", "slack_channel", "http"),
 				},
