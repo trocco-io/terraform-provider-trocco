@@ -120,7 +120,7 @@ func OracleInputOptionSchema() schema.Attribute {
 						},
 						"timezone": schema.StringAttribute{
 							Optional:            true,
-							MarkdownDescription: "Column-level timezone (IANA format). If omitted, `source_time_zone` is used. Only for `type: timestamp`.",
+							MarkdownDescription: "Timezone (IANA format) used to format this column's value as a string. This is independent of `source_time_zone`, which only affects how DATE/TIMESTAMP values without timezone information are interpreted. If omitted, defaults to UTC. Only for `type: timestamp`.",
 							Validators: []validator.String{
 								stringvalidator.UTF8LengthAtLeast(1),
 							},

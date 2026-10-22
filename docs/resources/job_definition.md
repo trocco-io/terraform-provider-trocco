@@ -3319,7 +3319,7 @@ Required:
 Optional:
 
 - `format` (String) Timestamp format (strftime). Required when `type` is `timestamp`.
-- `timezone` (String) Column-level timezone (IANA format). If omitted, `source_time_zone` is used. Only for `type: timestamp`.
+- `timezone` (String) Timezone (IANA format) used to format this column's value as a string. This is independent of `source_time_zone`, which only affects how DATE/TIMESTAMP values without timezone information are interpreted. If omitted, defaults to UTC. Only for `type: timestamp`.
 
 
 <a id="nestedatt--input_option--oracle_input_option--custom_variable_settings"></a>
