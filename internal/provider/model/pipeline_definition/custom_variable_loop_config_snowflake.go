@@ -14,7 +14,7 @@ type SnowflakeCustomVariableLoopConfig struct {
 	ConnectionID types.Int64  `tfsdk:"connection_id"`
 	Query        types.String `tfsdk:"query"`
 	Warehouse    types.String `tfsdk:"warehouse"`
-	Variables    types.Set    `tfsdk:"variables"`
+	Variables    types.List   `tfsdk:"variables"`
 }
 
 func NewSnowflakeCustomVariableLoopConfig(ctx context.Context, en *pipelineDefinitionEntities.SnowflakeCustomVariableLoopConfig) *SnowflakeCustomVariableLoopConfig {
@@ -22,9 +22,9 @@ func NewSnowflakeCustomVariableLoopConfig(ctx context.Context, en *pipelineDefin
 		return nil
 	}
 
-	variables, diags := types.SetValueFrom(ctx, types.StringType, en.Variables)
+	variables, diags := types.ListValueFrom(ctx, types.StringType, en.Variables)
 	if diags.HasError() {
-		variables = types.SetNull(types.StringType)
+		variables = types.ListNull(types.StringType)
 	}
 
 	return &SnowflakeCustomVariableLoopConfig{
@@ -60,6 +60,6 @@ func SnowflakeCustomVariableLoopConfigAttrTypes() map[string]attr.Type {
 		"connection_id": types.Int64Type,
 		"query":         types.StringType,
 		"warehouse":     types.StringType,
-		"variables":     types.SetType{ElemType: types.StringType},
+		"variables":     types.ListType{ElemType: types.StringType},
 	}
 }
