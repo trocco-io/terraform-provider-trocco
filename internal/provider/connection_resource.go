@@ -83,6 +83,11 @@ type connectionResourceModel struct {
 	Username          types.String `tfsdk:"username"`
 	BasicAuthUsername types.String `tfsdk:"basic_auth_username"`
 	BasicAuthPassword types.String `tfsdk:"basic_auth_password"`
+	// Client certificate (PFX) for kintone secure access. The API never returns the
+	// certificate or its password, so both are kept from the plan/state.
+	ClientCertificateEnabled  types.Bool   `tfsdk:"client_certificate_enabled"`
+	ClientCertificate         types.String `tfsdk:"client_certificate"`
+	ClientCertificatePassword types.String `tfsdk:"client_certificate_password"`
 
 	// SFTP Fields
 	SecretKey             types.String `tfsdk:"secret_key"`
@@ -174,6 +179,16 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		Username:          model.NewNullableString(m.Username),
 		BasicAuthUsername: model.NewNullableString(m.BasicAuthUsername),
 		BasicAuthPassword: model.NewNullableString(m.BasicAuthPassword),
+		// client_certificate_enabled is read-only: the plan modifier derives it from whether
+		// client_certificate is set, so the planned value is sent as is (null for other
+		// connection types, which omits the key).
+		// client_certificate must be omitted when unset: the API treats an empty string as
+		// "unset" and a missing key as "keep". client_certificate_password follows
+		// basic_auth_password: null is sent when unset so the registered password is cleared,
+		// and the re-sent certificate is validated against the configured password.
+		ClientCertificateEnabled:  m.ClientCertificateEnabled.ValueBoolPointer(),
+		ClientCertificate:         m.ClientCertificate.ValueStringPointer(),
+		ClientCertificatePassword: model.NewNullableString(m.ClientCertificatePassword),
 
 		// SFTP Fields
 		SecretKey:             m.SecretKey.ValueStringPointer(),
@@ -319,6 +334,16 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		Username:          model.NewNullableString(m.Username),
 		BasicAuthUsername: model.NewNullableString(m.BasicAuthUsername),
 		BasicAuthPassword: model.NewNullableString(m.BasicAuthPassword),
+		// client_certificate_enabled is read-only: the plan modifier derives it from whether
+		// client_certificate is set, so the planned value is sent as is (null for other
+		// connection types, which omits the key).
+		// client_certificate must be omitted when unset: the API treats an empty string as
+		// "unset" and a missing key as "keep". client_certificate_password follows
+		// basic_auth_password: null is sent when unset so the registered password is cleared,
+		// and the re-sent certificate is validated against the configured password.
+		ClientCertificateEnabled:  m.ClientCertificateEnabled.ValueBoolPointer(),
+		ClientCertificate:         m.ClientCertificate.ValueStringPointer(),
+		ClientCertificatePassword: model.NewNullableString(m.ClientCertificatePassword),
 
 		// SFTP Fields
 		SecretKey:             m.SecretKey.ValueStringPointer(),
@@ -865,6 +890,26 @@ func (r *connectionResource) Schema(
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
+			"client_certificate_enabled": schema.BoolAttribute{
+				MarkdownDescription: "Kintone: Whether a client certificate is registered (read-only). It is `true` when `client_certificate` is set in the configuration and `false` otherwise. A diff on this attribute means the certificate was enabled or disabled outside Terraform, for example in the TROCCO UI or by importing a connection without `client_certificate` in the configuration.",
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					planModifier.KintoneClientCertificateEnabledPlanModifier{},
+				},
+			},
+			"client_certificate": schema.StringAttribute{
+				MarkdownDescription: "Kintone: The client certificate as a base64-encoded PFX file without line breaks, e.g. `filebase64(\"client.pfx\")`. Setting it enables secure access with the certificate; set `domain` to `<subdomain>.s.cybozu.com`. Removing it from the configuration removes the registered certificate and password. The API never returns this value, so it is not populated on import and is re-sent on every update.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"client_certificate_password": schema.StringAttribute{
+				MarkdownDescription: "Kintone: The password of the PFX file. Requires `client_certificate`. Omit it when the PFX has no password. Removing it from the configuration clears the registered password. The API never returns this value, so it is not populated on import.",
+				Optional:            true,
+				Sensitive:           true,
+			},
 			// Databricks Fields
 			"server_hostname": schema.StringAttribute{
 				MarkdownDescription: "Databricks: The host of a (Databricks) account.",
@@ -1188,12 +1233,15 @@ func (r *connectionResource) Create(
 		Driver: types.StringPointerValue(conn.Driver),
 
 		// Kintone
-		Domain:            types.StringPointerValue(conn.Domain),
-		LoginMethod:       types.StringPointerValue(conn.LoginMethod),
-		Token:             plan.Token,
-		Username:          types.StringPointerValue(conn.Username),
-		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
-		BasicAuthPassword: plan.BasicAuthPassword,
+		Domain:                    types.StringPointerValue(conn.Domain),
+		LoginMethod:               types.StringPointerValue(conn.LoginMethod),
+		Token:                     plan.Token,
+		Username:                  types.StringPointerValue(conn.Username),
+		BasicAuthUsername:         types.StringPointerValue(conn.BasicAuthUsername),
+		BasicAuthPassword:         plan.BasicAuthPassword,
+		ClientCertificateEnabled:  boolPointerValueOr(conn.ClientCertificateEnabled, plan.ClientCertificateEnabled),
+		ClientCertificate:         plan.ClientCertificate,
+		ClientCertificatePassword: plan.ClientCertificatePassword,
 
 		// SFTP Fields
 		SecretKey:             plan.SecretKey,
@@ -1330,12 +1378,15 @@ func (r *connectionResource) Update(
 		Driver: types.StringPointerValue(connection.Driver),
 
 		// Kintone
-		Domain:            types.StringPointerValue(connection.Domain),
-		LoginMethod:       types.StringPointerValue(connection.LoginMethod),
-		Token:             plan.Token,
-		Username:          types.StringPointerValue(connection.Username),
-		BasicAuthUsername: types.StringPointerValue(connection.BasicAuthUsername),
-		BasicAuthPassword: plan.BasicAuthPassword,
+		Domain:                    types.StringPointerValue(connection.Domain),
+		LoginMethod:               types.StringPointerValue(connection.LoginMethod),
+		Token:                     plan.Token,
+		Username:                  types.StringPointerValue(connection.Username),
+		BasicAuthUsername:         types.StringPointerValue(connection.BasicAuthUsername),
+		BasicAuthPassword:         plan.BasicAuthPassword,
+		ClientCertificateEnabled:  boolPointerValueOr(connection.ClientCertificateEnabled, plan.ClientCertificateEnabled),
+		ClientCertificate:         plan.ClientCertificate,
+		ClientCertificatePassword: plan.ClientCertificatePassword,
 
 		// SFTP Fields
 		SecretKey:             plan.SecretKey,
@@ -1458,12 +1509,15 @@ func (r *connectionResource) Read(
 		Driver: types.StringPointerValue(conn.Driver),
 
 		// Kintone Fields
-		Domain:            types.StringPointerValue(conn.Domain),
-		LoginMethod:       types.StringPointerValue(conn.LoginMethod),
-		Token:             state.Token,
-		Username:          types.StringPointerValue(conn.Username),
-		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
-		BasicAuthPassword: state.BasicAuthPassword,
+		Domain:                    types.StringPointerValue(conn.Domain),
+		LoginMethod:               types.StringPointerValue(conn.LoginMethod),
+		Token:                     state.Token,
+		Username:                  types.StringPointerValue(conn.Username),
+		BasicAuthUsername:         types.StringPointerValue(conn.BasicAuthUsername),
+		BasicAuthPassword:         state.BasicAuthPassword,
+		ClientCertificateEnabled:  boolPointerValueOr(conn.ClientCertificateEnabled, state.ClientCertificateEnabled),
+		ClientCertificate:         state.ClientCertificate,
+		ClientCertificatePassword: state.ClientCertificatePassword,
 
 		// SFTP Fields
 		SecretKey:             state.SecretKey,
@@ -1704,6 +1758,7 @@ func (r *connectionResource) ValidateConfig(
 				)
 			}
 		}
+		validateKintoneClientCertificate(plan, resp)
 	case "sftp":
 		validateRequiredString(plan.Host, "host", "SFTP", resp)
 		validateRequiredInt(plan.Port, "port", "SFTP", resp)
@@ -1860,6 +1915,27 @@ func validateStringAgainstPatterns(field types.String, fieldName, connectionType
 			strings.Join(patterns, ", "),
 		),
 	)
+}
+
+// boolPointerValueOr returns the API value, or the planned/stored value when the API
+// does not return the field (for example before the API supports it).
+func boolPointerValueOr(v *bool, fallback types.Bool) types.Bool {
+	if v == nil {
+		return fallback
+	}
+	return types.BoolValue(*v)
+}
+
+// validateKintoneClientCertificate rejects a PFX password without a certificate.
+// client_certificate_enabled is read-only and derived from client_certificate, so there is
+// no other invalid combination to check at plan time.
+func validateKintoneClientCertificate(plan *connectionResourceModel, resp *resource.ValidateConfigResponse) {
+	if !plan.ClientCertificatePassword.IsNull() && plan.ClientCertificate.IsNull() {
+		resp.Diagnostics.AddError(
+			"client_certificate_password",
+			"client_certificate is required for Kintone connection when client_certificate_password is set.",
+		)
+	}
 }
 
 func validateRequiredString(field types.String, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {
