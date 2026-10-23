@@ -31,6 +31,9 @@ func TestAccConnectionResource(t *testing.T) {
 	t.Run("kintone", func(t *testing.T) {
 		testAccConnectionResourceKintone(t)
 	})
+	t.Run("kintone_client_certificate", func(t *testing.T) {
+		testAccConnectionResourceKintoneClientCertificate(t)
+	})
 	t.Run("marketo", func(t *testing.T) {
 		testAccConnectionResourceMarketo(t)
 	})
@@ -208,6 +211,57 @@ func testAccConnectionResourceKintone(t *testing.T) {
 	})
 }
 
+func testAccConnectionResourceKintoneClientCertificate(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.kintone_client_certificate_test"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/connection/kintone_client_certificate_create.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "kintone"),
+					resource.TestCheckResourceAttr(resourceName, "domain", "test_domain.s.cybozu.com"),
+					resource.TestCheckResourceAttr(resourceName, "client_certificate_enabled", "true"),
+					resource.TestCheckResourceAttrSet(resourceName, "client_certificate"),
+					resource.TestCheckResourceAttr(resourceName, "client_certificate_password", "test_pfx_password"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+			{
+				// The API returns client_certificate_enabled but never the secrets, so the certificate,
+				// its password, and the login password are not populated on import.
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"password", "client_certificate", "client_certificate_password"},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					connectionID := s.RootModule().Resources[resourceName].Primary.ID
+					return fmt.Sprintf("kintone,%s", connectionID), nil
+				},
+			},
+			{
+				// Replace the certificate with a passwordless PFX. Omitting the password clears the stored one.
+				Config: providerConfig + LoadTextFile("testdata/connection/kintone_client_certificate_update.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "client_certificate_enabled", "true"),
+					resource.TestCheckResourceAttrSet(resourceName, "client_certificate"),
+					resource.TestCheckNoResourceAttr(resourceName, "client_certificate_password"),
+				),
+			},
+			{
+				// Removing client_certificate disables secure access; the API deletes the certificate and password.
+				Config: providerConfig + LoadTextFile("testdata/connection/kintone_client_certificate_remove.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "client_certificate_enabled", "false"),
+					resource.TestCheckNoResourceAttr(resourceName, "client_certificate"),
+					resource.TestCheckNoResourceAttr(resourceName, "client_certificate_password"),
+				),
+			},
+		},
+	})
+}
+
 func TestInvalidDriver(t *testing.T) {
 	testCases := []struct {
 		name        string
@@ -261,6 +315,39 @@ func TestInvalidLoginMethod(t *testing.T) {
 			},
 		},
 	})
+}
+
+func TestInvalidKintoneClientCertificate(t *testing.T) {
+	testCases := []struct {
+		name        string
+		configFile  string
+		expectError string
+	}{
+		{
+			name:        "password_without_cert",
+			configFile:  "testdata/connection/kintone_client_certificate_password_without_cert.tf",
+			expectError: `client_certificate is required for Kintone connection when\s+client_certificate_password is set`,
+		},
+		{
+			name:        "enabled_is_read_only",
+			configFile:  "testdata/connection/kintone_client_certificate_enabled_without_cert.tf",
+			expectError: "read-only",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			resource.Test(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{
+						Config:      providerConfig + LoadTextFile(tc.configFile),
+						ExpectError: regexp.MustCompile(tc.expectError),
+					},
+				},
+			})
+		})
+	}
 }
 
 func TestInvalidCustomConnectorMissingID(t *testing.T) {
