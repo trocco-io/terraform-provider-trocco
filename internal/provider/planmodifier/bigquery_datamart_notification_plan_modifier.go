@@ -38,6 +38,12 @@ func (d *BigqueryDatamartNotificationPlanModifier) PlanModifyObject(ctx context.
 		return
 	}
 
+	var httpNotificationDestinationID types.Int64
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("http_notification_destination_id"), &httpNotificationDestinationID)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	var notificationType types.String
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("notification_type"), &notificationType)...)
 	if resp.Diagnostics.HasError() {
@@ -68,6 +74,10 @@ func (d *BigqueryDatamartNotificationPlanModifier) PlanModifyObject(ctx context.
 
 	if destination_type.ValueString() == "email" && emailID.IsNull() {
 		addNotificationAttributeError(req, resp, "email_id is required for email destination type")
+	}
+
+	if destination_type.ValueString() == "http" && httpNotificationDestinationID.IsNull() {
+		addNotificationAttributeError(req, resp, "http_notification_destination_id is required for http destination type")
 	}
 
 	if notificationType.ValueString() == "job" && notifyWhen.IsNull() {
