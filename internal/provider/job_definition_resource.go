@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
 	"terraform-provider-trocco/internal/client/parameter"
 	jobDefinitionParameters "terraform-provider-trocco/internal/client/parameter/job_definition"
 	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
@@ -505,25 +506,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 		})
 	}
 
-	if jobDefinition.Notifications != nil {
-		notifications := jobDefinitionModel.NewJobDefinitionNotifications(jobDefinition.Notifications)
-		var refNotifs []jobDefinitionModel.JobDefinitionNotification
-		if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
-			if refDiags := plan.Notifications.ElementsAs(ctx, &refNotifs, false); refDiags.HasError() {
-				refNotifs = nil
-			}
-		}
-		notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey, jobNotificationFallbackKey)
-		notificationsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
-			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
-		}, notifications)
-		resp.Diagnostics.Append(diags...)
-		newState.Notifications = notificationsValue
-	} else {
-		newState.Notifications = types.ListNull(types.ObjectType{
-			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
-		})
-	}
+	newState.Notifications = newJobDefinitionNotificationsValue(ctx, jobDefinition.Notifications, plan.Notifications, &resp.Diagnostics)
 
 	if jobDefinition.Schedules != nil {
 		schedules := model.NewSchedules(jobDefinition.Schedules)
@@ -792,25 +775,7 @@ func (r *jobDefinitionResource) Create(
 		})
 	}
 
-	if jobDefinition.Notifications != nil {
-		notifications := jobDefinitionModel.NewJobDefinitionNotifications(jobDefinition.Notifications)
-		var refNotifs []jobDefinitionModel.JobDefinitionNotification
-		if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
-			if refDiags := plan.Notifications.ElementsAs(ctx, &refNotifs, false); refDiags.HasError() {
-				refNotifs = nil
-			}
-		}
-		notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey, jobNotificationFallbackKey)
-		notificationsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
-			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
-		}, notifications)
-		resp.Diagnostics.Append(diags...)
-		newState.Notifications = notificationsValue
-	} else {
-		newState.Notifications = types.ListNull(types.ObjectType{
-			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
-		})
-	}
+	newState.Notifications = newJobDefinitionNotificationsValue(ctx, jobDefinition.Notifications, plan.Notifications, &resp.Diagnostics)
 
 	if jobDefinition.Schedules != nil {
 		schedules := model.NewSchedules(jobDefinition.Schedules)
@@ -962,25 +927,7 @@ func (r *jobDefinitionResource) Read(
 		})
 	}
 
-	if jobDefinition.Notifications != nil {
-		notifications := jobDefinitionModel.NewJobDefinitionNotifications(jobDefinition.Notifications)
-		var refNotifs []jobDefinitionModel.JobDefinitionNotification
-		if !state.Notifications.IsNull() && !state.Notifications.IsUnknown() {
-			if refDiags := state.Notifications.ElementsAs(ctx, &refNotifs, false); refDiags.HasError() {
-				refNotifs = nil
-			}
-		}
-		notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey, jobNotificationFallbackKey)
-		notificationsValue, diags := types.ListValueFrom(ctx, types.ObjectType{
-			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
-		}, notifications)
-		resp.Diagnostics.Append(diags...)
-		newState.Notifications = notificationsValue
-	} else {
-		newState.Notifications = types.ListNull(types.ObjectType{
-			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
-		})
-	}
+	newState.Notifications = newJobDefinitionNotificationsValue(ctx, jobDefinition.Notifications, state.Notifications, &resp.Diagnostics)
 
 	if jobDefinition.Schedules != nil {
 		schedules := model.NewSchedules(jobDefinition.Schedules)
@@ -1102,6 +1049,37 @@ func validateHttpInputOption(httpInputOption *inputOptionModel.HttpInputOption, 
 			)
 		}
 	}
+}
+
+// newJobDefinitionNotificationsValue converts notifications in an API response
+// to a state value. When the response has none, the previous (plan or state)
+// value decides between null and an empty list so that an explicitly
+// configured `notifications = []` survives apply.
+func newJobDefinitionNotificationsValue(ctx context.Context, apiNotifications []jobDefinitionEntities.JobDefinitionNotification, previous types.List, diags *diag.Diagnostics) types.List {
+	objectType := types.ObjectType{
+		AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
+	}
+
+	if len(apiNotifications) == 0 {
+		if previous.IsNull() || previous.IsUnknown() {
+			return types.ListNull(objectType)
+		}
+		emptyValue, d := types.ListValueFrom(ctx, objectType, []jobDefinitionModel.JobDefinitionNotification{})
+		diags.Append(d...)
+		return emptyValue
+	}
+
+	notifications := jobDefinitionModel.NewJobDefinitionNotifications(apiNotifications)
+	var refNotifs []jobDefinitionModel.JobDefinitionNotification
+	if !previous.IsNull() && !previous.IsUnknown() {
+		if refDiags := previous.ElementsAs(ctx, &refNotifs, false); refDiags.HasError() {
+			refNotifs = nil
+		}
+	}
+	notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey, jobNotificationFallbackKey)
+	listValue, d := types.ListValueFrom(ctx, objectType, notifications)
+	diags.Append(d...)
+	return listValue
 }
 
 func jobNotificationKey(n jobDefinitionModel.JobDefinitionNotification) string {

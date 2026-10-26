@@ -9,6 +9,7 @@ type Notification struct {
 	Time            *parameter.NullableInt64  `json:"time"`
 	EmailConfig     *EmailNotificationConfig  `json:"email_config"`
 	SlackConfig     *SlackNotificationConfig  `json:"slack_config"`
+	HTTPConfig      *HTTPNotificationConfig   `json:"http_config"`
 }
 
 type EmailNotificationConfig struct {
@@ -17,6 +18,11 @@ type EmailNotificationConfig struct {
 }
 
 type SlackNotificationConfig struct {
+	NotificationID int64  `json:"notification_id"`
+	Message        string `json:"message"`
+}
+
+type HTTPNotificationConfig struct {
 	NotificationID int64  `json:"notification_id"`
 	Message        string `json:"message"`
 }
