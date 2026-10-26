@@ -53,7 +53,7 @@ resource "trocco_pipeline_definition" "trocco_bigquery_datamart" {
           type = "bigquery"
           bigquery_config = {
             connection_id = trocco_connection.my_conn.id
-            query         = "SELECT bar, foo FROM sample"
+            query         = "SELECT foo, bar FROM sample"
             variables     = ["$bar$", "$foo$"]
           }
         }
