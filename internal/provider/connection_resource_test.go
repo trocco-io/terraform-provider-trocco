@@ -2,11 +2,20 @@ package provider
 
 import (
 	"fmt"
+	"os"
 	"regexp"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
+
+	"terraform-provider-trocco/internal/client"
+	"terraform-provider-trocco/internal/client/parameter"
 )
 
 func TestAccConnectionResource(t *testing.T) {
@@ -30,6 +39,9 @@ func TestAccConnectionResource(t *testing.T) {
 	})
 	t.Run("kintone", func(t *testing.T) {
 		testAccConnectionResourceKintone(t)
+	})
+	t.Run("kintone_client_certificate", func(t *testing.T) {
+		testAccConnectionResourceKintoneClientCertificate(t)
 	})
 	t.Run("marketo", func(t *testing.T) {
 		testAccConnectionResourceMarketo(t)
@@ -146,6 +158,8 @@ func testAccConnectionResourceGoogleAnalytics4(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "service_account_json_key",
 						"{\"type\":\"service_account\",\"project_id\":\"create_project_id\",\"private_key_id\":\"create_private_key_id\",\"private_key\":\"create_private_key\",\"client_email\":\"create_client_email\",\"client_id\":\"create_client_id\"}"),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
+					// client_certificate_enabled is planned as null for non-kintone connection types.
+					resource.TestCheckNoResourceAttr(resourceName, "client_certificate_enabled"),
 				),
 			},
 		},
@@ -201,11 +215,130 @@ func testAccConnectionResourceKintone(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "basic_auth_username", "test_basic_auth_username"),
 					resource.TestCheckResourceAttr(resourceName, "basic_auth_password", "test_basic_auth_password"),
 					resource.TestCheckNoResourceAttr(resourceName, "token"),
+					resource.TestCheckResourceAttr(resourceName, "client_certificate_enabled", "false"),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
 		},
 	})
+}
+
+func testAccConnectionResourceKintoneClientCertificate(t *testing.T) {
+	t.Helper()
+	resourceName := "trocco_connection.kintone_client_certificate_test"
+
+	// Self-signed test PFX files (base64) injected into the configurations so the same strings
+	// can be sent through the API client to simulate a change outside Terraform.
+	pfxWithPassword := strings.TrimSpace(LoadTextFile("testdata/connection/kintone_client_certificate_with_password.pfx.b64"))
+	pfxWithoutPassword := strings.TrimSpace(LoadTextFile("testdata/connection/kintone_client_certificate_without_password.pfx.b64"))
+	createConfig := fmt.Sprintf(LoadTextFile("testdata/connection/kintone_client_certificate_create.tf"), pfxWithPassword)
+	updateDescriptionConfig := fmt.Sprintf(LoadTextFile("testdata/connection/kintone_client_certificate_update_description.tf"), pfxWithPassword)
+	passwordDroppedConfig := fmt.Sprintf(LoadTextFile("testdata/connection/kintone_client_certificate_password_dropped.tf"), pfxWithPassword)
+	updateConfig := fmt.Sprintf(LoadTextFile("testdata/connection/kintone_client_certificate_update.tf"), pfxWithoutPassword)
+	removeConfig := LoadTextFile("testdata/connection/kintone_client_certificate_remove.tf")
+
+	var connectionID int64
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + createConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "connection_type", "kintone"),
+					resource.TestCheckResourceAttr(resourceName, "domain", "test_domain.s.cybozu.com"),
+					resource.TestCheckResourceAttr(resourceName, "client_certificate_enabled", "true"),
+					resource.TestCheckResourceAttrSet(resourceName, "client_certificate"),
+					resource.TestCheckResourceAttr(resourceName, "client_certificate_password", "test_pfx_password"),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+				),
+			},
+			{
+				// The API never returns the secrets, so they are not populated on import.
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"password", "client_certificate", "client_certificate_password"},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					return fmt.Sprintf("kintone,%s", s.RootModule().Resources[resourceName].Primary.ID), nil
+				},
+			},
+			{
+				Config: providerConfig + updateDescriptionConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "description", "This is a Kintone connection example (updated)"),
+					resource.TestCheckResourceAttr(resourceName, "client_certificate_enabled", "true"),
+					resource.TestCheckResourceAttrSet(resourceName, "client_certificate"),
+					resource.TestCheckResourceAttr(resourceName, "client_certificate_password", "test_pfx_password"),
+				),
+			},
+			{
+				// The API rejects the re-sent certificate without its password; the state stays as in the previous step.
+				Config:      providerConfig + passwordDroppedConfig,
+				ExpectError: regexp.MustCompile(`Unable to update connection`),
+			},
+			{
+				Config: providerConfig + updateConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "client_certificate_enabled", "true"),
+					resource.TestCheckResourceAttrSet(resourceName, "client_certificate"),
+					resource.TestCheckNoResourceAttr(resourceName, "client_certificate_password"),
+				),
+			},
+			{
+				Config: providerConfig + removeConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "client_certificate_enabled", "false"),
+					resource.TestCheckNoResourceAttr(resourceName, "client_certificate"),
+					resource.TestCheckNoResourceAttr(resourceName, "client_certificate_password"),
+					func(s *terraform.State) error {
+						id, err := strconv.ParseInt(s.RootModule().Resources[resourceName].Primary.ID, 10, 64)
+						if err != nil {
+							return err
+						}
+						connectionID = id
+						return nil
+					},
+				),
+			},
+			{
+				// A certificate enabled outside Terraform is read back as client_certificate_enabled = true,
+				// so the plan shows true -> false while the configuration has no client_certificate.
+				PreConfig: func() {
+					enabled := true
+					_, err := testAccTroccoClient().UpdateConnection("kintone", connectionID, &client.UpdateConnectionInput{
+						ClientCertificateEnabled:  &enabled,
+						ClientCertificate:         &parameter.NullableString{Value: pfxWithPassword, Valid: true},
+						ClientCertificatePassword: &parameter.NullableString{Value: "test_pfx_password", Valid: true},
+					})
+					if err != nil {
+						t.Fatalf("failed to enable the client certificate through the api: %v", err)
+					}
+				},
+				Config:             providerConfig + removeConfig,
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
+				// A PlanOnly step skips the pre-apply plan, so PreApply checks never run. The change
+				// made in PreConfig is only visible after a refresh, hence PostApplyPostRefresh.
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPostRefresh: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction(resourceName, plancheck.ResourceActionUpdate),
+						plancheck.ExpectKnownValue(resourceName, tfjsonpath.New("client_certificate_enabled"), knownvalue.Bool(false)),
+					},
+				},
+			},
+			{
+				Config: providerConfig + removeConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "client_certificate_enabled", "false"),
+				),
+			},
+		},
+	})
+}
+
+// testAccTroccoClient returns an API client for the environment under test, for changes made outside Terraform.
+func testAccTroccoClient() *client.TroccoClient {
+	return client.NewDevTroccoClient(os.Getenv("TROCCO_API_KEY"), os.Getenv("TROCCO_TEST_URL"))
 }
 
 func TestInvalidDriver(t *testing.T) {
@@ -261,6 +394,39 @@ func TestInvalidLoginMethod(t *testing.T) {
 			},
 		},
 	})
+}
+
+func TestInvalidKintoneClientCertificate(t *testing.T) {
+	testCases := []struct {
+		name        string
+		configFile  string
+		expectError string
+	}{
+		{
+			name:        "password_without_cert",
+			configFile:  "testdata/connection/kintone_client_certificate_password_without_cert.tf",
+			expectError: `client_certificate is required for Kintone connection when\s+client_certificate_password is set`,
+		},
+		{
+			name:        "enabled_is_read_only",
+			configFile:  "testdata/connection/kintone_client_certificate_enabled_without_cert.tf",
+			expectError: "read-only",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			resource.Test(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{
+						Config:      providerConfig + LoadTextFile(tc.configFile),
+						ExpectError: regexp.MustCompile(tc.expectError),
+					},
+				},
+			})
+		})
+	}
 }
 
 func TestInvalidCustomConnectorMissingID(t *testing.T) {

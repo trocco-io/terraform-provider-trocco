@@ -303,6 +303,21 @@ resource "trocco_connection" "kintone_login_method_username_and_password" {
   basic_auth_username = "basic_auth_username"
   basic_auth_password = "basic_auth_password"
 }
+
+# Secure access with a client certificate (PFX).
+# Use the secure access domain (<subdomain>.s.cybozu.com) when client_certificate is set.
+resource "trocco_connection" "kintone_client_certificate" {
+  connection_type             = "kintone"
+  name                        = "Kintone Example"
+  description                 = "This is a Kintone connection example"
+  resource_group_id           = 1
+  domain                      = "subdomain.s.cybozu.com"
+  login_method                = "username_and_password"
+  username                    = "username"
+  password                    = "password"
+  client_certificate          = filebase64("client.pfx")
+  client_certificate_password = "pfx_password"
+}
 ```
 
 ### Databricks
@@ -401,6 +416,8 @@ resource "trocco_connection" "custom_connector_oauth2" {
 - `aws_secret_access_key` (String, Sensitive) Redshift: AWS secret access key.
 - `basic_auth_password` (String, Sensitive) Kintone: Basic Auth Password
 - `basic_auth_username` (String) Kintone: Basic Auth Username
+- `client_certificate` (String, Sensitive) Kintone: The client certificate as a base64-encoded PFX file, used to connect through kintone secure access.
+- `client_certificate_password` (String, Sensitive) Kintone: The password of the PFX file. Requires `client_certificate`.
 - `client_id` (String) Marketo: Marketo REST API client ID.
 - `client_secret` (String, Sensitive) Marketo: Marketo REST API client secret.
 - `connection_string_format` (String) MongoDB: Connection string format. It must be one of `standard` or `dns_seed_list`. Default is `standard`.
@@ -449,6 +466,7 @@ resource "trocco_connection" "custom_connector_oauth2" {
 ### Read-Only
 
 - `authorized` (Boolean) Custom Connector: Whether the OAuth2 credentials have been verified through the authorization flow (read-only). A connection created through the API is always `false`, regardless of `grant_type`, since the API does not validate the credentials; completing the authorization flow in the TROCCO UI is what turns it `true`. Changing `oauth2_client_id` or `oauth2_client_secret` resets it to `false`. Null when the referenced custom connector definition uses `api_key` authentication (the concept does not apply).
+- `client_certificate_enabled` (Boolean) Kintone: Whether a client certificate is registered (read-only). Derived from `client_certificate`; a diff means it was changed outside Terraform.
 - `has_client_secret` (Boolean) Marketo: Whether a client secret is set (read-only).
 - `id` (Number) The ID of the connection.
 
