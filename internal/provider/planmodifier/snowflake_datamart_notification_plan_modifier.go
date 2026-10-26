@@ -2,25 +2,24 @@ package planmodifier
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ planmodifier.Object = &DatamartNotificationPlanModifier{}
+var _ planmodifier.Object = &SnowflakeDatamartNotificationPlanModifier{}
 
-type DatamartNotificationPlanModifier struct{}
+type SnowflakeDatamartNotificationPlanModifier struct{}
 
-func (d *DatamartNotificationPlanModifier) Description(ctx context.Context) string {
+func (d *SnowflakeDatamartNotificationPlanModifier) Description(ctx context.Context) string {
 	return "Modifier for validating notification attributes"
 }
 
-func (d *DatamartNotificationPlanModifier) MarkdownDescription(ctx context.Context) string {
+func (d *SnowflakeDatamartNotificationPlanModifier) MarkdownDescription(ctx context.Context) string {
 	return d.Description(ctx)
 }
 
-func (d *DatamartNotificationPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
+func (d *SnowflakeDatamartNotificationPlanModifier) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
 	var destination_type types.String
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("destination_type"), &destination_type)...)
 	if resp.Diagnostics.HasError() {
@@ -35,12 +34,6 @@ func (d *DatamartNotificationPlanModifier) PlanModifyObject(ctx context.Context,
 
 	var emailID types.Int64
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("email_id"), &emailID)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	var httpNotificationDestinationID types.Int64
-	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, req.Path.AtName("http_notification_destination_id"), &httpNotificationDestinationID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -77,10 +70,6 @@ func (d *DatamartNotificationPlanModifier) PlanModifyObject(ctx context.Context,
 		addNotificationAttributeError(req, resp, "email_id is required for email destination type")
 	}
 
-	if destination_type.ValueString() == "http" && httpNotificationDestinationID.IsNull() {
-		addNotificationAttributeError(req, resp, "http_notification_destination_id is required for http destination type")
-	}
-
 	if notificationType.ValueString() == "job" && notifyWhen.IsNull() {
 		addNotificationAttributeError(req, resp, "notify_when is required for job notification type")
 	}
@@ -92,12 +81,4 @@ func (d *DatamartNotificationPlanModifier) PlanModifyObject(ctx context.Context,
 	if notificationType.ValueString() == "record_count" && recordOperator.IsNull() {
 		addNotificationAttributeError(req, resp, "record_operator is required for record_count notification type")
 	}
-}
-
-func addNotificationAttributeError(req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse, message string) {
-	resp.Diagnostics.AddAttributeError(
-		req.Path,
-		"Notification Validation Error",
-		fmt.Sprintf("Attribute %s %s", req.Path, message),
-	)
 }
