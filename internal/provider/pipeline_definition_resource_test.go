@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
@@ -287,9 +288,15 @@ func TestAccPipelineDefinitionResourceForBigQueryDatamartWithStringLoop(t *testi
 					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.string_config.variables.1.name", "$bar$"),
 					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.string_config.variables.1.values.#", "2"),
 				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{
+					// The `key` attribute does not exist in the TROCCO API,
+					// therefore there is no value for it during import.
 					"tasks.0.key",
-					"tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.string_config.variables.1.values",
 				},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					return s.RootModule().Resources[resourceName].Primary.ID, nil
@@ -311,23 +318,85 @@ func TestAccPipelineDefinitionResourceForBigQueryDatamartWithBigQueryLoop(t *tes
 					resource.TestCheckResourceAttr(resourceName, "tasks.0.key", "trocco_bigquery_datamart"),
 					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.type", "bigquery"),
 					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.query", "SELECT foo, bar FROM sample"),
-					resource.TestCheckTypeSetElemAttr(resourceName,
-						"tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.*",
-						"$foo$",
-					),
-					resource.TestCheckTypeSetElemAttr(resourceName,
-						"tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.*",
-						"$bar$",
-					),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.0", "$foo$"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.1", "$bar$"),
 				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{
+					// The `key` attribute does not exist in the TROCCO API,
+					// therefore there is no value for it during import.
 					"tasks.0.key",
-					"tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.query",
-					"tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables",
 				},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					return s.RootModule().Resources[resourceName].Primary.ID, nil
 				},
+			},
+			// The order of variables maps to the column order of the query result,
+			// so changing only the order must be planned as an update.
+			{
+				Config: providerConfig + LoadTextFile("testdata/pipeline_definition/custom_variable_loop/valid_bigquery_config_reordered.tf"),
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction(resourceName, plancheck.ResourceActionUpdate),
+					},
+				},
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.0", "$bar$"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.bigquery_config.variables.1", "$foo$"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccPipelineDefinitionResourceForBigQueryDatamartWithSnowflakeLoop(t *testing.T) {
+	resourceName := "trocco_pipeline_definition.trocco_bigquery_datamart"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/pipeline_definition/custom_variable_loop/valid_snowflake_config.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.type", "snowflake"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.snowflake_config.warehouse", "COMPUTE_WH"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.snowflake_config.variables.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.snowflake_config.variables.0", "$foo$"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.snowflake_config.variables.1", "$bar$"),
+				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateVerifyIgnore: []string{
+					// The `key` attribute does not exist in the TROCCO API,
+					// therefore there is no value for it during import.
+					"tasks.0.key",
+				},
+				ImportStateIdFunc: func(s *terraform.State) (string, error) {
+					return s.RootModule().Resources[resourceName].Primary.ID, nil
+				},
+			},
+			// The order of variables maps to the column order of the query result,
+			// so changing only the order must be planned as an update.
+			{
+				Config: providerConfig + LoadTextFile("testdata/pipeline_definition/custom_variable_loop/valid_snowflake_config_reordered.tf"),
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PreApply: []plancheck.PlanCheck{
+						plancheck.ExpectResourceAction(resourceName, plancheck.ResourceActionUpdate),
+					},
+				},
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.snowflake_config.variables.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.snowflake_config.variables.0", "$bar$"),
+					resource.TestCheckResourceAttr(resourceName, "tasks.0.trocco_bigquery_datamart_config.custom_variable_loop.snowflake_config.variables.1", "$foo$"),
+				),
 			},
 		},
 	})
