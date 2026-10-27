@@ -91,6 +91,47 @@ func (m snowflakeDatamartQualityCheckModel) attrTypes() map[string]attr.Type {
 	}
 }
 
+type snowflakeDatamartNotificationModel struct {
+	ID               types.Int64                    `tfsdk:"id"`
+	DestinationType  types.String                   `tfsdk:"destination_type"`
+	SlackChannelID   types.Int64                    `tfsdk:"slack_channel_id"`
+	EmailID          types.Int64                    `tfsdk:"email_id"`
+	NotificationType types.String                   `tfsdk:"notification_type"`
+	NotifyWhen       types.String                   `tfsdk:"notify_when"`
+	RecordCount      types.Int64                    `tfsdk:"record_count"`
+	RecordOperator   types.String                   `tfsdk:"record_operator"`
+	Message          custom_type.TrimmedStringValue `tfsdk:"message"`
+}
+
+func (n snowflakeDatamartNotificationModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"id":                types.Int64Type,
+		"destination_type":  types.StringType,
+		"slack_channel_id":  types.Int64Type,
+		"email_id":          types.Int64Type,
+		"notification_type": types.StringType,
+		"notify_when":       types.StringType,
+		"record_count":      types.Int64Type,
+		"record_operator":   types.StringType,
+		"message":           types.StringType,
+	}
+}
+
+func snowflakeDatamartNotificationKey(n snowflakeDatamartNotificationModel) string {
+	return fmt.Sprintf("%s|%s|%d",
+		n.NotificationType.ValueString(),
+		n.DestinationType.ValueString(),
+		n.ID.ValueInt64(),
+	)
+}
+
+func snowflakeDatamartNotificationFallbackKey(n snowflakeDatamartNotificationModel) string {
+	return fmt.Sprintf("%s|%s",
+		n.NotificationType.ValueString(),
+		n.DestinationType.ValueString(),
+	)
+}
+
 func (r *snowflakeDatamartDefinitionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_snowflake_datamart_definition"
 }
@@ -513,7 +554,7 @@ func (r *snowflakeDatamartDefinitionResource) Schema(ctx context.Context, req re
 						},
 					},
 					PlanModifiers: []planmodifier.Object{
-						&troccoPlanModifier.DatamartNotificationPlanModifier{},
+						&troccoPlanModifier.SnowflakeDatamartNotificationPlanModifier{},
 					},
 				},
 				MarkdownDescription: "Notifications to be attached to the datamart definition",
@@ -690,7 +731,7 @@ func (r *snowflakeDatamartDefinitionResource) Create(ctx context.Context, req re
 	}
 
 	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
-		var notificationValues []datamartNotificationModel
+		var notificationValues []snowflakeDatamartNotificationModel
 		diags := plan.Notifications.ElementsAs(ctx, &notificationValues, false)
 		resp.Diagnostics.Append(diags...)
 		if resp.Diagnostics.HasError() {
@@ -750,7 +791,7 @@ func (r *snowflakeDatamartDefinitionResource) Create(ctx context.Context, req re
 		return
 	}
 
-	var planNotifs []datamartNotificationModel
+	var planNotifs []snowflakeDatamartNotificationModel
 	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
 		if refDiags := plan.Notifications.ElementsAs(ctx, &planNotifs, false); refDiags.HasError() {
 			planNotifs = nil
@@ -776,7 +817,7 @@ func (r *snowflakeDatamartDefinitionResource) Read(ctx context.Context, req reso
 	}
 
 	id := state.ID.ValueInt64()
-	var stateNotifs []datamartNotificationModel
+	var stateNotifs []snowflakeDatamartNotificationModel
 	if !state.Notifications.IsNull() && !state.Notifications.IsUnknown() {
 		if refDiags := state.Notifications.ElementsAs(ctx, &stateNotifs, false); refDiags.HasError() {
 			stateNotifs = nil
@@ -1015,7 +1056,7 @@ func (r *snowflakeDatamartDefinitionResource) Update(ctx context.Context, req re
 	}
 
 	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
-		var notificationValues []datamartNotificationModel
+		var notificationValues []snowflakeDatamartNotificationModel
 		diags := plan.Notifications.ElementsAs(ctx, &notificationValues, false)
 		resp.Diagnostics.Append(diags...)
 		if resp.Diagnostics.HasError() {
@@ -1087,7 +1128,7 @@ func (r *snowflakeDatamartDefinitionResource) Update(ctx context.Context, req re
 		return
 	}
 
-	var planNotifs []datamartNotificationModel
+	var planNotifs []snowflakeDatamartNotificationModel
 	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
 		if refDiags := plan.Notifications.ElementsAs(ctx, &planNotifs, false); refDiags.HasError() {
 			planNotifs = nil
@@ -1418,7 +1459,7 @@ func (r snowflakeDatamartDefinitionResource) ValidateConfig(ctx context.Context,
 	}
 }
 
-func parseToSnowflakeDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition, refNotifs []datamartNotificationModel) (*snowflakeDatamartDefinitionModel, error) {
+func parseToSnowflakeDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition, refNotifs []snowflakeDatamartNotificationModel) (*snowflakeDatamartDefinitionModel, error) {
 	model := snowflakeDatamartDefinitionModel{
 		ID:                     types.Int64Value(response.ID),
 		Name:                   types.StringValue(response.Name),
@@ -1592,9 +1633,9 @@ func parseToSnowflakeDatamartDefinitionModel(ctx context.Context, response clien
 	}
 
 	if response.Notifications != nil {
-		notifications := make([]datamartNotificationModel, len(response.Notifications))
+		notifications := make([]snowflakeDatamartNotificationModel, len(response.Notifications))
 		for i, v := range response.Notifications {
-			notifications[i] = datamartNotificationModel{
+			notifications[i] = snowflakeDatamartNotificationModel{
 				ID:               types.Int64Value(v.ID),
 				DestinationType:  types.StringValue(v.DestinationType),
 				NotificationType: types.StringValue(v.NotificationType),
@@ -1617,10 +1658,10 @@ func parseToSnowflakeDatamartDefinitionModel(ctx context.Context, response clien
 			}
 		}
 
-		notifications = utils.MatchByKey(notifications, refNotifs, datamartNotificationKey, datamartNotificationFallbackKey)
+		notifications = utils.MatchByKey(notifications, refNotifs, snowflakeDatamartNotificationKey, snowflakeDatamartNotificationFallbackKey)
 
 		objectType := types.ObjectType{
-			AttrTypes: datamartNotificationModel{}.attrTypes(),
+			AttrTypes: snowflakeDatamartNotificationModel{}.attrTypes(),
 		}
 
 		listValue, diags := types.ListValueFrom(ctx, objectType, notifications)
@@ -1630,7 +1671,7 @@ func parseToSnowflakeDatamartDefinitionModel(ctx context.Context, response clien
 		model.Notifications = listValue
 	} else {
 		model.Notifications = types.ListNull(types.ObjectType{
-			AttrTypes: datamartNotificationModel{}.attrTypes(),
+			AttrTypes: snowflakeDatamartNotificationModel{}.attrTypes(),
 		})
 	}
 
@@ -1695,7 +1736,7 @@ func parseToSnowflakeDatamartDefinitionModel(ctx context.Context, response clien
 	return &model, nil
 }
 
-func (r *snowflakeDatamartDefinitionResource) fetchSnowflakeModel(ctx context.Context, id int64, refNotifs []datamartNotificationModel) (*snowflakeDatamartDefinitionModel, error) {
+func (r *snowflakeDatamartDefinitionResource) fetchSnowflakeModel(ctx context.Context, id int64, refNotifs []snowflakeDatamartNotificationModel) (*snowflakeDatamartDefinitionModel, error) {
 	datamartDefinition, err := r.client.GetDatamartDefinition(id)
 	if err != nil {
 		return nil, err

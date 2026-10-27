@@ -14,7 +14,7 @@ type RedshiftCustomVariableLoopConfig struct {
 	ConnectionID types.Int64  `tfsdk:"connection_id"`
 	Query        types.String `tfsdk:"query"`
 	Database     types.String `tfsdk:"database"`
-	Variables    types.Set    `tfsdk:"variables"`
+	Variables    types.List   `tfsdk:"variables"`
 }
 
 func NewRedshiftCustomVariableLoopConfig(ctx context.Context, en *pipelineDefinitionEntities.RedshiftCustomVariableLoopConfig) *RedshiftCustomVariableLoopConfig {
@@ -22,9 +22,9 @@ func NewRedshiftCustomVariableLoopConfig(ctx context.Context, en *pipelineDefini
 		return nil
 	}
 
-	variables, diags := types.SetValueFrom(ctx, types.StringType, en.Variables)
+	variables, diags := types.ListValueFrom(ctx, types.StringType, en.Variables)
 	if diags.HasError() {
-		variables = types.SetNull(types.StringType)
+		variables = types.ListNull(types.StringType)
 	}
 
 	return &RedshiftCustomVariableLoopConfig{
@@ -60,6 +60,6 @@ func RedshiftCustomVariableLoopConfigAttrTypes() map[string]attr.Type {
 		"connection_id": types.Int64Type,
 		"query":         types.StringType,
 		"database":      types.StringType,
-		"variables":     types.SetType{ElemType: types.StringType},
+		"variables":     types.ListType{ElemType: types.StringType},
 	}
 }
