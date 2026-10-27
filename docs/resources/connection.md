@@ -533,3 +533,8 @@ Using the [`terraform import` command](https://developer.hashicorp.com/terraform
 terraform import trocco_connection.example <connection_type>,<id>
 ```
 
+### Note
+
+Sensitive attributes such as `password`, `token`, `private_key`, `service_account_json_key`, `client_certificate`, and `client_certificate_password` are stored in plain text in the Terraform state. Marking an attribute as sensitive only masks it in CLI output. Protect the state accordingly, for example with a remote backend that encrypts it at rest and restricts access, and never commit state files to version control.
+
+The TROCCO API does not return these values, so after `terraform import` they are empty until the configuration supplies them.
