@@ -7,7 +7,6 @@ resource "trocco_job_definition" "mysql_to_redshift_example" {
   filter_columns = [
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "id"
@@ -16,7 +15,6 @@ resource "trocco_job_definition" "mysql_to_redshift_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "name"
@@ -26,7 +24,6 @@ resource "trocco_job_definition" "mysql_to_redshift_example" {
     {
       default                      = null
       format                       = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "created_at"
