@@ -83,6 +83,11 @@ type connectionResourceModel struct {
 	Username          types.String `tfsdk:"username"`
 	BasicAuthUsername types.String `tfsdk:"basic_auth_username"`
 	BasicAuthPassword types.String `tfsdk:"basic_auth_password"`
+	// Kintone client certificate (PFX). The API never returns the certificate or its
+	// password, so both are kept from plan/state.
+	ClientCertificateEnabled  types.Bool   `tfsdk:"client_certificate_enabled"`
+	ClientCertificate         types.String `tfsdk:"client_certificate"`
+	ClientCertificatePassword types.String `tfsdk:"client_certificate_password"`
 
 	// SFTP Fields
 	SecretKey             types.String `tfsdk:"secret_key"`
@@ -174,6 +179,9 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		Username:          model.NewNullableString(m.Username),
 		BasicAuthUsername: model.NewNullableString(m.BasicAuthUsername),
 		BasicAuthPassword: model.NewNullableString(m.BasicAuthPassword),
+		ClientCertificateEnabled:  m.ClientCertificateEnabled.ValueBoolPointer(),
+		ClientCertificate:         model.NewNullableString(m.ClientCertificate),
+		ClientCertificatePassword: model.NewNullableString(m.ClientCertificatePassword),
 
 		// SFTP Fields
 		SecretKey:             m.SecretKey.ValueStringPointer(),
@@ -319,6 +327,9 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		Username:          model.NewNullableString(m.Username),
 		BasicAuthUsername: model.NewNullableString(m.BasicAuthUsername),
 		BasicAuthPassword: model.NewNullableString(m.BasicAuthPassword),
+		ClientCertificateEnabled:  m.ClientCertificateEnabled.ValueBoolPointer(),
+		ClientCertificate:         model.NewNullableString(m.ClientCertificate),
+		ClientCertificatePassword: model.NewNullableString(m.ClientCertificatePassword),
 
 		// SFTP Fields
 		SecretKey:             m.SecretKey.ValueStringPointer(),
@@ -886,6 +897,29 @@ func (r *connectionResource) Schema(
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
+			"client_certificate_enabled": schema.BoolAttribute{
+				MarkdownDescription: "Kintone: Whether a client certificate is registered (read-only). Derived from `client_certificate`; a diff means it was changed outside Terraform.",
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					planModifier.KintoneClientCertificateEnabledPlanModifier{},
+				},
+			},
+			"client_certificate": schema.StringAttribute{
+				MarkdownDescription: "Kintone: The client certificate as a base64-encoded PFX file, used to connect through kintone secure access.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"client_certificate_password": schema.StringAttribute{
+				MarkdownDescription: "Kintone: The password of the PFX file. Requires `client_certificate`.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
 			// Databricks Fields
 			"server_hostname": schema.StringAttribute{
 				MarkdownDescription: "Databricks: The host of a (Databricks) account.",
@@ -1213,12 +1247,15 @@ func (r *connectionResource) Create(
 		Driver: types.StringPointerValue(conn.Driver),
 
 		// Kintone
-		Domain:            types.StringPointerValue(conn.Domain),
-		LoginMethod:       types.StringPointerValue(conn.LoginMethod),
-		Token:             plan.Token,
-		Username:          types.StringPointerValue(conn.Username),
-		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
-		BasicAuthPassword: plan.BasicAuthPassword,
+		Domain:                    types.StringPointerValue(conn.Domain),
+		LoginMethod:               types.StringPointerValue(conn.LoginMethod),
+		Token:                     plan.Token,
+		Username:                  types.StringPointerValue(conn.Username),
+		BasicAuthUsername:         types.StringPointerValue(conn.BasicAuthUsername),
+		BasicAuthPassword:         plan.BasicAuthPassword,
+		ClientCertificateEnabled:  types.BoolPointerValue(conn.ClientCertificateEnabled),
+		ClientCertificate:         plan.ClientCertificate,
+		ClientCertificatePassword: plan.ClientCertificatePassword,
 
 		// SFTP Fields
 		SecretKey:             plan.SecretKey,
@@ -1355,12 +1392,15 @@ func (r *connectionResource) Update(
 		Driver: types.StringPointerValue(connection.Driver),
 
 		// Kintone
-		Domain:            types.StringPointerValue(connection.Domain),
-		LoginMethod:       types.StringPointerValue(connection.LoginMethod),
-		Token:             plan.Token,
-		Username:          types.StringPointerValue(connection.Username),
-		BasicAuthUsername: types.StringPointerValue(connection.BasicAuthUsername),
-		BasicAuthPassword: plan.BasicAuthPassword,
+		Domain:                    types.StringPointerValue(connection.Domain),
+		LoginMethod:               types.StringPointerValue(connection.LoginMethod),
+		Token:                     plan.Token,
+		Username:                  types.StringPointerValue(connection.Username),
+		BasicAuthUsername:         types.StringPointerValue(connection.BasicAuthUsername),
+		BasicAuthPassword:         plan.BasicAuthPassword,
+		ClientCertificateEnabled:  types.BoolPointerValue(connection.ClientCertificateEnabled),
+		ClientCertificate:         plan.ClientCertificate,
+		ClientCertificatePassword: plan.ClientCertificatePassword,
 
 		// SFTP Fields
 		SecretKey:             plan.SecretKey,
@@ -1478,12 +1518,15 @@ func (r *connectionResource) Read(
 		Driver: types.StringPointerValue(conn.Driver),
 
 		// Kintone Fields
-		Domain:            types.StringPointerValue(conn.Domain),
-		LoginMethod:       types.StringPointerValue(conn.LoginMethod),
-		Token:             state.Token,
-		Username:          types.StringPointerValue(conn.Username),
-		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
-		BasicAuthPassword: state.BasicAuthPassword,
+		Domain:                    types.StringPointerValue(conn.Domain),
+		LoginMethod:               types.StringPointerValue(conn.LoginMethod),
+		Token:                     state.Token,
+		Username:                  types.StringPointerValue(conn.Username),
+		BasicAuthUsername:         types.StringPointerValue(conn.BasicAuthUsername),
+		BasicAuthPassword:         state.BasicAuthPassword,
+		ClientCertificateEnabled:  types.BoolPointerValue(conn.ClientCertificateEnabled),
+		ClientCertificate:         state.ClientCertificate,
+		ClientCertificatePassword: state.ClientCertificatePassword,
 
 		// SFTP Fields
 		SecretKey:             state.SecretKey,
@@ -1724,6 +1767,7 @@ func (r *connectionResource) ValidateConfig(
 				)
 			}
 		}
+		validateKintoneClientCertificate(plan, resp)
 	case "sftp":
 		validateRequiredString(plan.Host, "host", "SFTP", resp)
 		validateRequiredInt(plan.Port, "port", "SFTP", resp)
@@ -1898,6 +1942,16 @@ func validateStringAgainstPatterns(field types.String, fieldName, connectionType
 			strings.Join(patterns, ", "),
 		),
 	)
+}
+
+// validateKintoneClientCertificate rejects client_certificate_password without client_certificate.
+func validateKintoneClientCertificate(plan *connectionResourceModel, resp *resource.ValidateConfigResponse) {
+	if !plan.ClientCertificatePassword.IsNull() && plan.ClientCertificate.IsNull() {
+		resp.Diagnostics.AddError(
+			"client_certificate_password",
+			"client_certificate is required for Kintone connection when client_certificate_password is set.",
+		)
+	}
 }
 
 func validateRequiredString(field types.String, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {
