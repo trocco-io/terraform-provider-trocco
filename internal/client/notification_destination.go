@@ -15,16 +15,34 @@ type NotificationDestination struct {
 
 	// SlackChannel Fields
 	Channel *string `json:"channel"`
+
+	// HTTP Fields
+	Name        *string        `json:"name"`
+	URL         *string        `json:"url"`
+	Description *string        `json:"description"`
+	Headers     []HTTPKeyValue `json:"headers"`
+	QueryParams []HTTPKeyValue `json:"query_params"`
+}
+
+// HTTPKeyValue is a header or a query parameter of an HTTP notification destination.
+// The API returns an empty Value when Masking is true.
+type HTTPKeyValue struct {
+	ID      *int64 `json:"id"`
+	Key     string `json:"key"`
+	Value   string `json:"value"`
+	Masking bool   `json:"masking"`
 }
 
 type CreateNotificationDestinationInput struct {
 	EmailConfig        *notification_destination.EmailConfigInput        `json:"email_config,omitempty"`
 	SlackChannelConfig *notification_destination.SlackChannelConfigInput `json:"slack_channel_config,omitempty"`
+	HTTPConfig         *notification_destination.HTTPConfigInput         `json:"http_config,omitempty"`
 }
 
 type UpdateNotificationDestinationInput struct {
 	EmailConfig        *notification_destination.EmailConfigInput        `json:"email_config,omitempty"`
 	SlackChannelConfig *notification_destination.SlackChannelConfigInput `json:"slack_channel_config,omitempty"`
+	HTTPConfig         *notification_destination.HTTPConfigInput         `json:"http_config,omitempty"`
 }
 
 func (c *TroccoClient) CreateNotificationDestination(notificationType string, in *CreateNotificationDestinationInput) (*NotificationDestination, error) {

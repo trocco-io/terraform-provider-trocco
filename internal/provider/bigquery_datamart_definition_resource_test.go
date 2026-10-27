@@ -76,6 +76,53 @@ func TestAccDatamartDefinitionResourceForBigqueryNotifications(t *testing.T) {
 					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.slack_channel_id", "trocco_notification_destination.slack_b", "id"),
 				),
 			},
+			// HTTP notification destination for both job and record notifications
+			{
+				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/notifications/http.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "3"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "job"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.0.slack_channel_id", "trocco_notification_destination.slack", "id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "job"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notify_when", "failed"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.message", "{\"text\": \"datamart job failed\"}"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.http_notification_destination_id", "trocco_notification_destination.http", "id"),
+					resource.TestCheckNoResourceAttr(resourceName, "notifications.1.slack_channel_id"),
+					resource.TestCheckNoResourceAttr(resourceName, "notifications.1.email_id"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.1.id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.destination_type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.notification_type", "record"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.record_count", "100"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.record_operator", "above"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.2.http_notification_destination_id", "trocco_notification_destination.http", "id"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.2.id"),
+				),
+			},
+			// Refreshing should not produce a diff
+			{
+				Config:   providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/notifications/http.tf"),
+				PlanOnly: true,
+			},
+		},
+	})
+}
+
+// Regression test: an explicitly configured `notifications = []` must survive
+// apply as an empty list, not become null.
+func TestAccDatamartDefinitionResourceForBigqueryNotificationsEmptyList(t *testing.T) {
+	resourceName := "trocco_bigquery_datamart_definition.test_notifications_empty"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/notifications/empty.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "test_notifications_empty"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "0"),
+				),
+			},
 		},
 	})
 }
@@ -123,6 +170,54 @@ func TestAccDatamartDefinitionResourceForBigquerySCDType2(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "valid_from_column", "trocco_valid_from"),
 					resource.TestCheckResourceAttr(resourceName, "valid_to_column", "trocco_valid_to"),
 					resource.TestCheckResourceAttr(resourceName, "is_current_column", "trocco_is_current"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccDatamartDefinitionResourceForBigqueryDescriptions(t *testing.T) {
+	resourceName := "trocco_bigquery_datamart_definition.test_descriptions"
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// table_description and column_descriptions are not available in query mode.
+			{
+				Config:      providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/descriptions/query_mode_invalid.tf"),
+				ExpectError: regexp.MustCompile("table_description is only available in insert query mode"),
+			},
+			{
+				Config:      providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/descriptions/create.tf"),
+				ExpectError: nil,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "test_descriptions"),
+					resource.TestCheckResourceAttr(resourceName, "table_description", "Table description"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.0.name", "id"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.0.description", "Primary key"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.1.name", "name"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.1.description", "Name of the record"),
+				),
+			},
+			// Updating the descriptions should replace them while preserving the
+			// configured ordering.
+			{
+				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/descriptions/update.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "table_description", "Updated table description"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.0.name", "name"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.0.description", "Updated name description"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.1.name", "id"),
+					resource.TestCheckResourceAttr(resourceName, "column_descriptions.1.description", "Primary key"),
+				),
+			},
+			// Removing the attributes from the config should clear them on the server.
+			{
+				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/descriptions/remove.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckNoResourceAttr(resourceName, "table_description"),
+					resource.TestCheckNoResourceAttr(resourceName, "column_descriptions"),
 				),
 			},
 		},

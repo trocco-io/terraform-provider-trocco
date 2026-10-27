@@ -21,9 +21,9 @@ func NotificationsSchema() schema.Attribute {
 				"destination_type": schema.StringAttribute{
 					Required: true,
 					Validators: []validator.String{
-						stringvalidator.OneOf("slack", "email"),
+						stringvalidator.OneOf("slack", "email", "http"),
 					},
-					MarkdownDescription: "Destination service where the notification will be sent. The following types are supported: `slack`, `email`",
+					MarkdownDescription: "Destination service where the notification will be sent. The following types are supported: `slack`, `email`, `http`",
 				},
 				"slack_channel_id": schema.Int64Attribute{
 					Optional: true,
@@ -38,6 +38,13 @@ func NotificationsSchema() schema.Attribute {
 						int64validator.AtLeast(1),
 					},
 					MarkdownDescription: "ID of the email used to send notifications. Required when `destination_type` is `email`",
+				},
+				"http_notification_destination_id": schema.Int64Attribute{
+					Optional: true,
+					Validators: []validator.Int64{
+						int64validator.AtLeast(1),
+					},
+					MarkdownDescription: "ID of the HTTP notification destination used to send notifications. Required when `destination_type` is `http`. For `notification_type` `job`, the `message` must be a valid JSON string because it is sent as the request body",
 				},
 				"notification_type": schema.StringAttribute{
 					Required: true,

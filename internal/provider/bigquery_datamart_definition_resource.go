@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strconv"
 
 	"terraform-provider-trocco/internal/client"
@@ -53,6 +54,8 @@ type bigqueryDatamartDefinitionModel struct {
 	PartitioningField        types.String                   `tfsdk:"partitioning_field"`
 	ClusteringFields         types.List                     `tfsdk:"clustering_fields"`
 	Location                 types.String                   `tfsdk:"location"`
+	TableDescription         types.String                   `tfsdk:"table_description"`
+	ColumnDescriptions       types.List                     `tfsdk:"column_descriptions"`
 	MergeKeys                types.List                     `tfsdk:"merge_keys"`
 	OnMatchedAction          types.String                   `tfsdk:"on_matched_action"`
 	IncrementalColumn        types.String                   `tfsdk:"incremental_column"`
@@ -82,16 +85,22 @@ type customVariableSettingModel struct {
 	TimeZone  types.String `tfsdk:"time_zone"`
 }
 
-type datamartNotificationModel struct {
-	ID               types.Int64                    `tfsdk:"id"`
-	DestinationType  types.String                   `tfsdk:"destination_type"`
-	SlackChannelID   types.Int64                    `tfsdk:"slack_channel_id"`
-	EmailID          types.Int64                    `tfsdk:"email_id"`
-	NotificationType types.String                   `tfsdk:"notification_type"`
-	NotifyWhen       types.String                   `tfsdk:"notify_when"`
-	RecordCount      types.Int64                    `tfsdk:"record_count"`
-	RecordOperator   types.String                   `tfsdk:"record_operator"`
-	Message          custom_type.TrimmedStringValue `tfsdk:"message"`
+type columnDescriptionModel struct {
+	Name        types.String `tfsdk:"name"`
+	Description types.String `tfsdk:"description"`
+}
+
+type bigqueryDatamartNotificationModel struct {
+	ID                            types.Int64                    `tfsdk:"id"`
+	DestinationType               types.String                   `tfsdk:"destination_type"`
+	SlackChannelID                types.Int64                    `tfsdk:"slack_channel_id"`
+	EmailID                       types.Int64                    `tfsdk:"email_id"`
+	HTTPNotificationDestinationID types.Int64                    `tfsdk:"http_notification_destination_id"`
+	NotificationType              types.String                   `tfsdk:"notification_type"`
+	NotifyWhen                    types.String                   `tfsdk:"notify_when"`
+	RecordCount                   types.Int64                    `tfsdk:"record_count"`
+	RecordOperator                types.String                   `tfsdk:"record_operator"`
+	Message                       custom_type.TrimmedStringValue `tfsdk:"message"`
 }
 
 type scheduleModel struct {
@@ -288,6 +297,42 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 				Optional:            true,
 				MarkdownDescription: "The location where the query will be executed. If not specified, the location is automatically determined by Google BigQuery. Available only in `query` mode",
 			},
+			"table_description": schema.StringAttribute{
+				Optional: true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+					stringvalidator.UTF8LengthAtMost(1024),
+				},
+				MarkdownDescription: "Description of the destination table. It is reflected in the BigQuery table description after the job runs. It must be at most 1024 characters. Available only in `insert` mode",
+			},
+			"column_descriptions": schema.ListNestedAttribute{
+				Optional: true,
+				Validators: []validator.List{
+					listvalidator.SizeAtLeast(1),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"name": schema.StringAttribute{
+							Required: true,
+							Validators: []validator.String{
+								stringvalidator.RegexMatches(
+									regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`),
+									"must start with a letter or underscore and contain only letters, digits, and underscores",
+								),
+							},
+							MarkdownDescription: "Column name. It must start with a letter or underscore and contain only letters, digits, and underscores",
+						},
+						"description": schema.StringAttribute{
+							Required: true,
+							Validators: []validator.String{
+								stringvalidator.UTF8LengthAtMost(1024),
+							},
+							MarkdownDescription: "Description of the column. It must be at most 1024 characters. Specifying an empty string removes the description of the column in BigQuery after the job runs",
+						},
+					},
+				},
+				MarkdownDescription: "Descriptions of the destination table columns. Only the specified columns are reflected in the BigQuery column descriptions after the job runs. The order of the array is preserved. Available only in `insert` mode",
+			},
 			"merge_keys": schema.ListAttribute{
 				Optional:    true,
 				ElementType: types.StringType,
@@ -424,9 +469,9 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						"destination_type": schema.StringAttribute{
 							Required: true,
 							Validators: []validator.String{
-								stringvalidator.OneOf("slack", "email"),
+								stringvalidator.OneOf("slack", "email", "http"),
 							},
-							MarkdownDescription: "Destination service where the notification will be sent. The following types are supported: `slack`, `email`",
+							MarkdownDescription: "Destination service where the notification will be sent. The following types are supported: `slack`, `email`, `http`",
 						},
 						"slack_channel_id": schema.Int64Attribute{
 							Optional: true,
@@ -441,6 +486,13 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 								int64validator.AtLeast(1),
 							},
 							MarkdownDescription: "ID of the email used to send notifications. Required when `destination_type` is `email`",
+						},
+						"http_notification_destination_id": schema.Int64Attribute{
+							Optional: true,
+							Validators: []validator.Int64{
+								int64validator.AtLeast(1),
+							},
+							MarkdownDescription: "ID of the HTTP notification destination used to send notifications. Required when `destination_type` is `http`",
 						},
 						"notification_type": schema.StringAttribute{
 							Required: true,
@@ -474,7 +526,7 @@ func (r *bigqueryDatamartDefinitionResource) Schema(ctx context.Context, req res
 						},
 					},
 					PlanModifiers: []planmodifier.Object{
-						&troccoPlanModifier.DatamartNotificationPlanModifier{},
+						&troccoPlanModifier.BigqueryDatamartNotificationPlanModifier{},
 					},
 				},
 				MarkdownDescription: "Notifications to be attached to the datamart definition",
@@ -545,6 +597,18 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		if clusteringFields := utils.ConvertStringList(ctx, plan.ClusteringFields); len(clusteringFields) > 0 {
 			optionInput.SetClusteringFields(clusteringFields)
+		}
+		if !plan.TableDescription.IsNull() {
+			optionInput.SetTableDescription(plan.TableDescription.ValueString())
+		}
+		if !plan.ColumnDescriptions.IsNull() && !plan.ColumnDescriptions.IsUnknown() {
+			var columnDescriptionValues []columnDescriptionModel
+			diags := plan.ColumnDescriptions.ElementsAs(ctx, &columnDescriptionValues, false)
+			resp.Diagnostics.Append(diags...)
+			if resp.Diagnostics.HasError() {
+				return
+			}
+			optionInput.SetColumnDescriptions(convertColumnDescriptionInputs(columnDescriptionValues))
 		}
 		if mergeKeys := utils.ConvertStringList(ctx, plan.MergeKeys); len(mergeKeys) > 0 {
 			optionInput.SetMergeKeys(mergeKeys)
@@ -639,7 +703,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		input.SetSchedules(scheduleInputs)
 	}
 	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
-		var notificationValues []datamartNotificationModel
+		var notificationValues []bigqueryDatamartNotificationModel
 		diags := plan.Notifications.ElementsAs(ctx, &notificationValues, false)
 		resp.Diagnostics.Append(diags...)
 		if resp.Diagnostics.HasError() {
@@ -648,7 +712,8 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 
 		notificationInputs := make([]client.DatamartNotificationInput, len(notificationValues))
 		for i, v := range notificationValues {
-			if v.DestinationType.ValueString() == "slack" {
+			switch v.DestinationType.ValueString() {
+			case "slack":
 				if v.NotificationType.ValueString() == "job" {
 					notificationInputs[i] = client.NewSlackJobDatamartNotificationInput(
 						v.SlackChannelID.ValueInt64(),
@@ -663,7 +728,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 						v.Message.ValueString(),
 					)
 				}
-			} else {
+			case "email":
 				if v.NotificationType.ValueString() == "job" {
 					notificationInputs[i] = client.NewEmailJobDatamartNotificationInput(
 						v.EmailID.ValueInt64(),
@@ -673,6 +738,21 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 				} else {
 					notificationInputs[i] = client.NewEmailRecordDatamartNotificationInput(
 						v.EmailID.ValueInt64(),
+						v.RecordCount.ValueInt64(),
+						v.RecordOperator.ValueString(),
+						v.Message.ValueString(),
+					)
+				}
+			default:
+				if v.NotificationType.ValueString() == "job" {
+					notificationInputs[i] = client.NewHTTPJobDatamartNotificationInput(
+						v.HTTPNotificationDestinationID.ValueInt64(),
+						v.NotifyWhen.ValueString(),
+						v.Message.ValueString(),
+					)
+				} else {
+					notificationInputs[i] = client.NewHTTPRecordDatamartNotificationInput(
+						v.HTTPNotificationDestinationID.ValueInt64(),
 						v.RecordCount.ValueInt64(),
 						v.RecordOperator.ValueString(),
 						v.Message.ValueString(),
@@ -697,13 +777,7 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		return
 	}
 
-	var planNotifs []datamartNotificationModel
-	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
-		if refDiags := plan.Notifications.ElementsAs(ctx, &planNotifs, false); refDiags.HasError() {
-			planNotifs = nil
-		}
-	}
-	data, err := parseToBigqueryDatamartDefinitionModel(ctx, res.DatamartDefinition, planNotifs)
+	data, err := parseToBigqueryDatamartDefinitionModel(ctx, res.DatamartDefinition, plan.Notifications)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Reading datamart_definition",
@@ -723,13 +797,7 @@ func (r *bigqueryDatamartDefinitionResource) Read(ctx context.Context, req resou
 	}
 
 	id := state.ID.ValueInt64()
-	var stateNotifs []datamartNotificationModel
-	if !state.Notifications.IsNull() && !state.Notifications.IsUnknown() {
-		if refDiags := state.Notifications.ElementsAs(ctx, &stateNotifs, false); refDiags.HasError() {
-			stateNotifs = nil
-		}
-	}
-	data, err := r.fetchModel(ctx, id, stateNotifs)
+	data, err := r.fetchModel(ctx, id, state.Notifications)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Reading datamart_definition",
@@ -843,6 +911,22 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 	} else {
 		optionInput.SetLocationEmpty()
 	}
+	if !plan.TableDescription.IsNull() {
+		optionInput.SetTableDescription(plan.TableDescription.ValueString())
+	} else {
+		optionInput.SetTableDescriptionEmpty()
+	}
+	if !plan.ColumnDescriptions.IsNull() {
+		var columnDescriptionValues []columnDescriptionModel
+		diags := plan.ColumnDescriptions.ElementsAs(ctx, &columnDescriptionValues, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		optionInput.SetColumnDescriptions(convertColumnDescriptionInputs(columnDescriptionValues))
+	} else {
+		optionInput.SetColumnDescriptions([]client.ColumnDescriptionInput{})
+	}
 	if !plan.MergeKeys.IsNull() {
 		var mergeKeysValues []types.String
 		diags := plan.MergeKeys.ElementsAs(ctx, &mergeKeysValues, false)
@@ -955,7 +1039,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 		input.SetSchedules([]client.ScheduleInput{})
 	}
 	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
-		var notificationValues []datamartNotificationModel
+		var notificationValues []bigqueryDatamartNotificationModel
 		diags := plan.Notifications.ElementsAs(ctx, &notificationValues, false)
 		resp.Diagnostics.Append(diags...)
 		if resp.Diagnostics.HasError() {
@@ -964,7 +1048,8 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 
 		notificationInputs := make([]client.DatamartNotificationInput, len(notificationValues))
 		for i, v := range notificationValues {
-			if v.DestinationType.ValueString() == "slack" {
+			switch v.DestinationType.ValueString() {
+			case "slack":
 				if v.NotificationType.ValueString() == "job" {
 					notificationInputs[i] = client.NewSlackJobDatamartNotificationInput(
 						v.SlackChannelID.ValueInt64(),
@@ -979,7 +1064,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 						v.Message.ValueString(),
 					)
 				}
-			} else {
+			case "email":
 				if v.NotificationType.ValueString() == "job" {
 					notificationInputs[i] = client.NewEmailJobDatamartNotificationInput(
 						v.EmailID.ValueInt64(),
@@ -989,6 +1074,21 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 				} else {
 					notificationInputs[i] = client.NewEmailRecordDatamartNotificationInput(
 						v.EmailID.ValueInt64(),
+						v.RecordCount.ValueInt64(),
+						v.RecordOperator.ValueString(),
+						v.Message.ValueString(),
+					)
+				}
+			default:
+				if v.NotificationType.ValueString() == "job" {
+					notificationInputs[i] = client.NewHTTPJobDatamartNotificationInput(
+						v.HTTPNotificationDestinationID.ValueInt64(),
+						v.NotifyWhen.ValueString(),
+						v.Message.ValueString(),
+					)
+				} else {
+					notificationInputs[i] = client.NewHTTPRecordDatamartNotificationInput(
+						v.HTTPNotificationDestinationID.ValueInt64(),
 						v.RecordCount.ValueInt64(),
 						v.RecordOperator.ValueString(),
 						v.Message.ValueString(),
@@ -1026,13 +1126,7 @@ func (r *bigqueryDatamartDefinitionResource) Update(ctx context.Context, req res
 		)
 		return
 	}
-	var planNotifs []datamartNotificationModel
-	if !plan.Notifications.IsNull() && !plan.Notifications.IsUnknown() {
-		if refDiags := plan.Notifications.ElementsAs(ctx, &planNotifs, false); refDiags.HasError() {
-			planNotifs = nil
-		}
-	}
-	model, err := parseToBigqueryDatamartDefinitionModel(ctx, data.DatamartDefinition, planNotifs)
+	model, err := parseToBigqueryDatamartDefinitionModel(ctx, data.DatamartDefinition, plan.Notifications)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Parsing datamart definition",
@@ -1089,6 +1183,23 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 				path.Root("before_load"),
 				"Invalid Before Load Query",
 				"before_load is only available in insert query mode and write_disposition is append",
+			)
+		}
+	}
+
+	if data.QueryMode.ValueString() == "query" {
+		if !data.TableDescription.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("table_description"),
+				"Invalid Table Description",
+				"table_description is only available in insert query mode",
+			)
+		}
+		if !data.ColumnDescriptions.IsNull() {
+			resp.Diagnostics.AddAttributeError(
+				path.Root("column_descriptions"),
+				"Invalid Column Descriptions",
+				"column_descriptions is only available in insert query mode",
 			)
 		}
 	}
@@ -1244,7 +1355,7 @@ func (r bigqueryDatamartDefinitionResource) ValidateConfig(ctx context.Context, 
 
 }
 
-func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition, refNotifs []datamartNotificationModel) (*bigqueryDatamartDefinitionModel, error) {
+func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client.DatamartDefinition, previousNotifications types.List) (*bigqueryDatamartDefinitionModel, error) {
 	model := bigqueryDatamartDefinitionModel{
 		ID:                     types.Int64Value(response.ID),
 		Name:                   types.StringValue(response.Name),
@@ -1339,6 +1450,32 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 		if response.DatamartBigqueryOption.Location != nil {
 			model.Location = types.StringValue(*response.DatamartBigqueryOption.Location)
 		}
+		if response.DatamartBigqueryOption.TableDescription != nil {
+			model.TableDescription = types.StringValue(*response.DatamartBigqueryOption.TableDescription)
+		}
+		if response.DatamartBigqueryOption.ColumnDescriptions != nil {
+			columnDescriptions := make([]columnDescriptionModel, len(response.DatamartBigqueryOption.ColumnDescriptions))
+			for i, v := range response.DatamartBigqueryOption.ColumnDescriptions {
+				columnDescriptions[i] = columnDescriptionModel{
+					Name:        types.StringValue(v.Name),
+					Description: types.StringValue(v.Description),
+				}
+			}
+
+			objectType := types.ObjectType{
+				AttrTypes: columnDescriptionModel{}.attrTypes(),
+			}
+
+			listValue, diags := types.ListValueFrom(ctx, objectType, columnDescriptions)
+			if diags.HasError() {
+				return nil, fmt.Errorf("failed to convert column_descriptions to ListValue")
+			}
+			model.ColumnDescriptions = listValue
+		} else {
+			model.ColumnDescriptions = types.ListNull(types.ObjectType{
+				AttrTypes: columnDescriptionModel{}.attrTypes(),
+			})
+		}
 		if response.DatamartBigqueryOption.MergeKeys != nil {
 			mergeKeys := make([]types.String, len(response.DatamartBigqueryOption.MergeKeys))
 			for i, v := range response.DatamartBigqueryOption.MergeKeys {
@@ -1391,10 +1528,26 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 	} else {
 		return nil, fmt.Errorf("datamartBigqueryOption is nil")
 	}
-	if response.Notifications != nil {
-		notifications := make([]datamartNotificationModel, len(response.Notifications))
+	notificationObjectType := types.ObjectType{
+		AttrTypes: bigqueryDatamartNotificationModel{}.attrTypes(),
+	}
+	if len(response.Notifications) == 0 {
+		// When the response has no notifications, the previous (plan or state)
+		// value decides between null and an empty list so that an explicitly
+		// configured `notifications = []` survives apply.
+		if previousNotifications.IsNull() || previousNotifications.IsUnknown() {
+			model.Notifications = types.ListNull(notificationObjectType)
+		} else {
+			listValue, diags := types.ListValueFrom(ctx, notificationObjectType, []bigqueryDatamartNotificationModel{})
+			if diags.HasError() {
+				return nil, fmt.Errorf("failed to convert notifications to ListValue")
+			}
+			model.Notifications = listValue
+		}
+	} else {
+		notifications := make([]bigqueryDatamartNotificationModel, len(response.Notifications))
 		for i, v := range response.Notifications {
-			notifications[i] = datamartNotificationModel{
+			notifications[i] = bigqueryDatamartNotificationModel{
 				ID:               types.Int64Value(v.ID),
 				DestinationType:  types.StringValue(v.DestinationType),
 				NotificationType: types.StringValue(v.NotificationType),
@@ -1405,6 +1558,9 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			}
 			if v.EmailID != nil {
 				notifications[i].EmailID = types.Int64Value(*v.EmailID)
+			}
+			if v.HTTPNotificationDestinationID != nil {
+				notifications[i].HTTPNotificationDestinationID = types.Int64Value(*v.HTTPNotificationDestinationID)
 			}
 			if v.NotifyWhen != nil {
 				notifications[i].NotifyWhen = types.StringValue(*v.NotifyWhen)
@@ -1417,21 +1573,19 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 			}
 		}
 
-		notifications = utils.MatchByKey(notifications, refNotifs, datamartNotificationKey, datamartNotificationFallbackKey)
-
-		objectType := types.ObjectType{
-			AttrTypes: datamartNotificationModel{}.attrTypes(),
+		var refNotifs []bigqueryDatamartNotificationModel
+		if !previousNotifications.IsNull() && !previousNotifications.IsUnknown() {
+			if refDiags := previousNotifications.ElementsAs(ctx, &refNotifs, false); refDiags.HasError() {
+				refNotifs = nil
+			}
 		}
+		notifications = utils.MatchByKey(notifications, refNotifs, bigqueryDatamartNotificationKey, bigqueryDatamartNotificationFallbackKey)
 
-		listValue, diags := types.ListValueFrom(ctx, objectType, notifications)
+		listValue, diags := types.ListValueFrom(ctx, notificationObjectType, notifications)
 		if diags.HasError() {
 			return nil, fmt.Errorf("failed to convert notifications to ListValue")
 		}
 		model.Notifications = listValue
-	} else {
-		model.Notifications = types.ListNull(types.ObjectType{
-			AttrTypes: datamartNotificationModel{}.attrTypes(),
-		})
 	}
 	if response.Schedules != nil {
 		schedules := make([]scheduleModel, len(response.Schedules))
@@ -1493,12 +1647,15 @@ func parseToBigqueryDatamartDefinitionModel(ctx context.Context, response client
 	return &model, nil
 }
 
-func (r *bigqueryDatamartDefinitionResource) fetchModel(ctx context.Context, id int64, refNotifs []datamartNotificationModel) (*bigqueryDatamartDefinitionModel, error) {
+func (r *bigqueryDatamartDefinitionResource) fetchModel(ctx context.Context, id int64, previousNotifications types.List) (*bigqueryDatamartDefinitionModel, error) {
 	datamartDefinition, err := r.client.GetDatamartDefinition(id)
 	if err != nil {
 		return nil, err
 	}
-	model, _ := parseToBigqueryDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition, refNotifs)
+	model, err := parseToBigqueryDatamartDefinitionModel(ctx, datamartDefinition.DatamartDefinition, previousNotifications)
+	if err != nil {
+		return nil, err
+	}
 	return model, nil
 }
 
@@ -1515,17 +1672,25 @@ func (c customVariableSettingModel) attrTypes() map[string]attr.Type {
 	}
 }
 
-func (n datamartNotificationModel) attrTypes() map[string]attr.Type {
+func (c columnDescriptionModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"id":                types.Int64Type,
-		"destination_type":  types.StringType,
-		"slack_channel_id":  types.Int64Type,
-		"email_id":          types.Int64Type,
-		"notification_type": types.StringType,
-		"notify_when":       types.StringType,
-		"record_count":      types.Int64Type,
-		"record_operator":   types.StringType,
-		"message":           types.StringType,
+		"name":        types.StringType,
+		"description": types.StringType,
+	}
+}
+
+func (n bigqueryDatamartNotificationModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"id":                               types.Int64Type,
+		"destination_type":                 types.StringType,
+		"slack_channel_id":                 types.Int64Type,
+		"email_id":                         types.Int64Type,
+		"http_notification_destination_id": types.Int64Type,
+		"notification_type":                types.StringType,
+		"notify_when":                      types.StringType,
+		"record_count":                     types.Int64Type,
+		"record_operator":                  types.StringType,
+		"message":                          types.StringType,
 	}
 }
 
@@ -1584,6 +1749,18 @@ func convertCustomVariableSettingsForCreate(ctx context.Context, source types.Li
 	return result
 }
 
+// convertColumnDescriptionInputs converts column description models to client inputs.
+func convertColumnDescriptionInputs(models []columnDescriptionModel) []client.ColumnDescriptionInput {
+	result := make([]client.ColumnDescriptionInput, len(models))
+	for i, v := range models {
+		result[i] = client.ColumnDescriptionInput{
+			Name:        v.Name.ValueString(),
+			Description: v.Description.ValueString(),
+		}
+	}
+	return result
+}
+
 // convertLabelsForCreate converts labels for create operation.
 func convertLabelsForCreate(ctx context.Context, source types.Set, diags *resource.CreateResponse) []string {
 	if source.IsNull() {
@@ -1604,7 +1781,7 @@ func convertLabelsForCreate(ctx context.Context, source types.Set, diags *resour
 	return result
 }
 
-func datamartNotificationKey(n datamartNotificationModel) string {
+func bigqueryDatamartNotificationKey(n bigqueryDatamartNotificationModel) string {
 	return fmt.Sprintf("%s|%s|%d",
 		n.NotificationType.ValueString(),
 		n.DestinationType.ValueString(),
@@ -1612,7 +1789,7 @@ func datamartNotificationKey(n datamartNotificationModel) string {
 	)
 }
 
-func datamartNotificationFallbackKey(n datamartNotificationModel) string {
+func bigqueryDatamartNotificationFallbackKey(n bigqueryDatamartNotificationModel) string {
 	return fmt.Sprintf("%s|%s",
 		n.NotificationType.ValueString(),
 		n.DestinationType.ValueString(),
