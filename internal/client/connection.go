@@ -41,7 +41,6 @@ type Connection struct {
 	Port                             *int64                 `json:"port"`                                 // mysql, postgresql, sftp, mongodb, redshift, oracle
 	SSL                              *bool                  `json:"ssl"`                                  // mysql, postgresql, redshift, oracle
 	SSLCA                            *string                `json:"ssl_ca"`                               // oracle (write-only)
-	HasSSLCA                         *bool                  `json:"has_ssl_ca"`                           // oracle (read-only)
 	GatewayEnabled                   *bool                  `json:"gateway_enabled"`                      // mysql, postgresql, mongodb, redshift, oracle
 	GatewayHost                      *string                `json:"gateway_host"`                         // redshift, oracle
 	GatewayPort                      *int64                 `json:"gateway_port"`                         // redshift, oracle

@@ -117,7 +117,6 @@ type connectionResourceModel struct {
 	WalletFile    types.String `tfsdk:"wallet_file"`
 	HasWalletFile types.Bool   `tfsdk:"has_wallet_file"`
 	SSLCA         types.String `tfsdk:"ssl_ca"`
-	HasSSLCA      types.Bool   `tfsdk:"has_ssl_ca"`
 
 	// Marketo Fields
 	MarketoAccountID       types.String `tfsdk:"account_id"`
@@ -824,7 +823,7 @@ func (r *connectionResource) Schema(
   - MySQL: null, mysql_connector_java_5_1_49
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
-  - Oracle: 12c-ojdbc7.jar, 19c-ojdbc8.jar, 26ai-ojdbc8.jar (defaults to 19c-ojdbc8.jar on the API side when omitted)
+  - Oracle: 12c-ojdbc7.jar, 19c-ojdbc8.jar, 26ai-ojdbc8.jar (required for Oracle)
 `,
 				Optional: true,
 				Validators: []validator.String{
@@ -1068,6 +1067,7 @@ func (r *connectionResource) Schema(
 			"ssl_enabled": schema.BoolAttribute{
 				MarkdownDescription: "Redshift, Oracle: Whether SSL is enabled.",
 				Optional:            true,
+				Computed:            true,
 			},
 			// Oracle Fields
 			"tns_admin_ora": schema.StringAttribute{
@@ -1090,16 +1090,12 @@ func (r *connectionResource) Schema(
 				Computed:            true,
 			},
 			"ssl_ca": schema.StringAttribute{
-				MarkdownDescription: "Oracle: SSL CA certificate. Write-only; use `has_ssl_ca` to check if set.",
+				MarkdownDescription: "Oracle: SSL CA certificate. Write-only; the value is not returned by the API.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
-			},
-			"has_ssl_ca": schema.BoolAttribute{
-				MarkdownDescription: "Oracle: Whether SSL CA is set (read-only).",
-				Computed:            true,
 			},
 			// Marketo Fields
 			"account_id": schema.StringAttribute{
@@ -1278,7 +1274,7 @@ func (r *connectionResource) Create(
 		// Redshift Fields
 		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
 		AWSSecretAccessKey: plan.AWSSecretAccessKey,
-		SSLEnabled:         plan.SSLEnabled,
+		SSLEnabled:         sslEnabledForConnectionType(plan.ConnectionType.ValueString(), conn.SSL, plan.SSLEnabled),
 
 		// Marketo Fields
 		MarketoAccountID:       types.StringPointerValue(conn.AccountID),
@@ -1296,7 +1292,6 @@ func (r *connectionResource) Create(
 		WalletFile:    plan.WalletFile,
 		HasWalletFile: types.BoolPointerValue(conn.HasWalletFile),
 		SSLCA:         plan.SSLCA,
-		HasSSLCA:      types.BoolPointerValue(conn.HasSSLCA),
 
 		// Custom Connector Fields
 		CustomConnectorID: types.Int64PointerValue(conn.CustomConnectorID),
@@ -1427,7 +1422,7 @@ func (r *connectionResource) Update(
 		// Redshift Fields
 		AWSAccessKeyID:     types.StringPointerValue(connection.AWSAccessKeyID),
 		AWSSecretAccessKey: plan.AWSSecretAccessKey,
-		SSLEnabled:         plan.SSLEnabled,
+		SSLEnabled:         sslEnabledForConnectionType(plan.ConnectionType.ValueString(), connection.SSL, plan.SSLEnabled),
 
 		// Marketo Fields
 		MarketoAccountID:       types.StringPointerValue(connection.AccountID),
@@ -1445,7 +1440,6 @@ func (r *connectionResource) Update(
 		WalletFile:    plan.WalletFile,
 		HasWalletFile: types.BoolPointerValue(connection.HasWalletFile),
 		SSLCA:         plan.SSLCA,
-		HasSSLCA:      types.BoolPointerValue(connection.HasSSLCA),
 
 		// Custom Connector Fields
 		CustomConnectorID: types.Int64PointerValue(connection.CustomConnectorID),
@@ -1478,12 +1472,7 @@ func (r *connectionResource) Read(
 		return
 	}
 
-	var sslEnabled types.Bool
-	if state.ConnectionType.ValueString() == "redshift" {
-		sslEnabled = types.BoolPointerValue(conn.SSL)
-	} else {
-		sslEnabled = state.SSLEnabled
-	}
+	sslEnabled := sslEnabledForConnectionType(state.ConnectionType.ValueString(), conn.SSL, state.SSLEnabled)
 
 	newState := connectionResourceModel{
 		// Common Fields
@@ -1569,7 +1558,6 @@ func (r *connectionResource) Read(
 		WalletFile:    state.WalletFile,
 		HasWalletFile: types.BoolPointerValue(conn.HasWalletFile),
 		SSLCA:         state.SSLCA,
-		HasSSLCA:      types.BoolPointerValue(conn.HasSSLCA),
 
 		// Marketo Fields
 		MarketoAccountID:       types.StringPointerValue(conn.AccountID),
@@ -1845,8 +1833,11 @@ func (r *connectionResource) ValidateConfig(
 	case "oracle":
 		validateRequiredString(plan.UserName, "user_name", "Oracle", resp)
 		validateRequiredString(plan.Password, "password", "Oracle", resp)
+		validateRequiredString(plan.Driver, "driver", "Oracle", resp)
+		validateStringAgainstPatterns(plan.Driver, "driver", "Oracle", resp, "12c-ojdbc7.jar", "19c-ojdbc8.jar", "26ai-ojdbc8.jar")
 		// host/port and tns_admin_ora are mutually exclusive: exactly one of them must be specified.
 		hasHostPort := !plan.Host.IsNull() && !plan.Port.IsNull()
+		hasHostOrPort := !plan.Host.IsNull() || !plan.Port.IsNull()
 		hasTnsAdmin := !plan.TnsAdminOra.IsNull()
 		switch {
 		case !hasHostPort && !hasTnsAdmin:
@@ -1854,7 +1845,7 @@ func (r *connectionResource) ValidateConfig(
 				"oracle_connection",
 				"either host and port, or tns_admin_ora must be specified for Oracle connection.",
 			)
-		case hasHostPort && hasTnsAdmin:
+		case hasHostOrPort && hasTnsAdmin:
 			resp.Diagnostics.AddError(
 				"oracle_connection",
 				"host/port and tns_admin_ora cannot be specified at the same time for Oracle connection.",
@@ -1964,6 +1955,26 @@ func validateStringAgainstPatterns(field types.String, fieldName, connectionType
 			strings.Join(patterns, ", "),
 		),
 	)
+}
+
+// sslEnabledForConnectionType resolves the ssl_enabled value to store in
+// state. Redshift and Oracle are the only connection types that use this
+// shared attribute and have it reflected back from the API (ssl); MySQL and
+// PostgreSQL also have an "ssl" concept on the API side, but expose it through
+// the nested ssl block instead, so the live API value must not be reused here
+// for them. For every other connection type the attribute does not apply, so
+// the planned/prior value is preserved when already known; because the
+// attribute is Optional+Computed, an unset value can arrive as unknown (not
+// null) for those types, and all values must be known after apply, so that
+// case resolves to an explicit null.
+func sslEnabledForConnectionType(connectionType string, apiValue *bool, fallback types.Bool) types.Bool {
+	if connectionType == "redshift" || connectionType == "oracle" {
+		return types.BoolPointerValue(apiValue)
+	}
+	if fallback.IsUnknown() {
+		return types.BoolNull()
+	}
+	return fallback
 }
 
 func validateRequiredString(field types.String, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {

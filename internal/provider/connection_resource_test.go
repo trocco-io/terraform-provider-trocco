@@ -65,6 +65,9 @@ func TestAccConnectionResource(t *testing.T) {
 	t.Run("oracle_user_name_required", func(t *testing.T) {
 		testAccConnectionResourceOracleUserNameRequired(t)
 	})
+	t.Run("oracle_driver_required", func(t *testing.T) {
+		testAccConnectionResourceOracleDriverRequired(t)
+	})
 	// END [GENERATOR:CONNECTION_RESOURCE_TEST]
 	t.Run("custom_connector", func(t *testing.T) {
 		testAccConnectionResourceCustomConnector(t)
@@ -261,6 +264,11 @@ func TestInvalidDriver(t *testing.T) {
 			configFile:  "testdata/connection/mismatch_driver_snowflake.tf",
 			expectError: "are: snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0",
 		},
+		{
+			name:        "mismatch_driver_oracle",
+			configFile:  "testdata/connection/mismatch_driver_oracle.tf",
+			expectError: "are: 12c-ojdbc7.jar, 19c-ojdbc8.jar, 26ai-ojdbc8.jar",
+		},
 	}
 
 	for _, tc := range testCases {
@@ -390,9 +398,6 @@ func testAccConnectionResourceOracle(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "port", "1521"),
 					resource.TestCheckResourceAttr(resourceName, "user_name", "test_user"),
 					resource.TestCheckResourceAttr(resourceName, "ssl_enabled", "true"),
-					// has_ssl_ca is intentionally excluded from the Public API response
-					// for Oracle (same as mysql/postgresql), so it always comes back
-					// null regardless of whether ssl_ca is set; not asserted here.
 					resource.TestCheckResourceAttr(resourceName, "has_wallet_file", "false"),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
@@ -401,12 +406,8 @@ func testAccConnectionResourceOracle(t *testing.T) {
 				ResourceName:      resourceName,
 				ImportState:       true,
 				ImportStateVerify: true,
-				// ssl_enabled is not restored on import: Read() only re-fetches it from
-				// the API for the redshift connector and otherwise falls back to the
-				// existing state, which is empty right after import. This is a known,
-				// provider-wide limitation unrelated to Oracle (see ssl_enabled/gateway
-				// import-restoration notes). ssl_ca is write-only, same as password.
-				ImportStateVerifyIgnore: []string{"password", "ssl_enabled", "ssl_ca"},
+				// ssl_ca is write-only, same as password.
+				ImportStateVerifyIgnore: []string{"password", "ssl_ca"},
 				ImportStateIdFunc: func(s *terraform.State) (string, error) {
 					connectionID := s.RootModule().Resources[resourceName].Primary.ID
 					return fmt.Sprintf("oracle,%s", connectionID), nil
@@ -451,9 +452,16 @@ func testAccConnectionResourceOracleHostTnsConflict(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				// host/port と tns_admin_ora を両方指定した場合は
-				// ValidateConfig でプラン時にエラーになることを確認する。
+				// Specifying both host/port and tns_admin_ora must fail
+				// at plan time in ValidateConfig.
 				Config:      providerConfig + LoadTextFile("testdata/connection/oracle/conflict_host_tns.tf"),
+				ExpectError: regexp.MustCompile(`cannot be specified at the same time`),
+			},
+			{
+				// A host-only (no port) combined with tns_admin_ora must also
+				// fail at plan time: the conflict check must not require both
+				// host and port to be set before detecting the conflict.
+				Config:      providerConfig + LoadTextFile("testdata/connection/oracle/conflict_host_only_tns.tf"),
 				ExpectError: regexp.MustCompile(`cannot be specified at the same time`),
 			},
 		},
@@ -629,6 +637,23 @@ func testAccConnectionResourceOracleUserNameRequired(t *testing.T) {
 				// the API's server-side presence validation.
 				Config:      providerConfig + LoadTextFile("testdata/connection/oracle/missing_user_name.tf"),
 				ExpectError: regexp.MustCompile(`user_name is required for Oracle connection`),
+			},
+		},
+	})
+}
+
+func testAccConnectionResourceOracleDriverRequired(t *testing.T) {
+	t.Helper()
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				// Unlike MySQL/Snowflake, the Oracle backend fills in a default
+				// driver when none is sent, which would otherwise produce an
+				// inconsistent result after apply. driver must be required
+				// at plan time for Oracle, same as PostgreSQL.
+				Config:      providerConfig + LoadTextFile("testdata/connection/oracle/missing_driver.tf"),
+				ExpectError: regexp.MustCompile(`driver is required for Oracle connection`),
 			},
 		},
 	})

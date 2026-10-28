@@ -411,7 +411,7 @@ resource "trocco_connection" "custom_connector_oauth2" {
   - MySQL: null, mysql_connector_java_5_1_49
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
-  - Oracle: 12c-ojdbc7.jar, 19c-ojdbc8.jar, 26ai-ojdbc8.jar (defaults to 19c-ojdbc8.jar on the API side when omitted)
+  - Oracle: 12c-ojdbc7.jar, 19c-ojdbc8.jar, 26ai-ojdbc8.jar (required for Oracle)
 - `gateway` (Attributes) MySQL, PostgreSQL, MongoDB, Redshift: Whether to connect via SSH (see [below for nested schema](#nestedatt--gateway))
 - `host` (String) Snowflake, PostgreSQL, MongoDB, Redshift: The host of a (Snowflake, PostgreSQL, MongoDB, Redshift) account.
 - `http_path` (String) Databricks: The HTTP Path for the Databricks connection.
@@ -438,7 +438,7 @@ resource "trocco_connection" "custom_connector_oauth2" {
 - `service_account_json_key` (String, Sensitive) BigQuery, Google Sheets, Google Analytics4, Google Drive: A GCP service account key.
 - `ssh_tunnel_id` (Number) SFTP, Redshift, Oracle: SSH tunnel ID. Required when aws_privatelink_enabled is true.
 - `ssl` (Attributes) MySQL, PostgreSQL: SSL configuration. (see [below for nested schema](#nestedatt--ssl))
-- `ssl_ca` (String, Sensitive) Oracle: SSL CA certificate. Write-only; use `has_ssl_ca` to check if set.
+- `ssl_ca` (String, Sensitive) Oracle: SSL CA certificate. Write-only; the value is not returned by the API.
 - `ssl_enabled` (Boolean) Redshift, Oracle: Whether SSL is enabled.
 - `strict_read_preference_tags` (Boolean) MongoDB: Whether to enable strict mode for read preference tag matching. Default is `false`.
 - `tns_admin_ora` (String) Oracle: Contents of tnsnames.ora for TNS naming. If specified, `host`, `port` are ignored. Mutually exclusive with `host`/`port`.
@@ -454,7 +454,6 @@ resource "trocco_connection" "custom_connector_oauth2" {
 
 - `authorized` (Boolean) Custom Connector: Whether the OAuth2 credentials have been verified through the authorization flow (read-only). A connection created through the API is always `false`, regardless of `grant_type`, since the API does not validate the credentials; completing the authorization flow in the TROCCO UI is what turns it `true`. Changing `oauth2_client_id` or `oauth2_client_secret` resets it to `false`. Null when the referenced custom connector definition uses `api_key` authentication (the concept does not apply).
 - `has_client_secret` (Boolean) Marketo: Whether a client secret is set (read-only).
-- `has_ssl_ca` (Boolean) Oracle: Whether SSL CA is set (read-only).
 - `has_wallet_file` (Boolean) Oracle: Whether a wallet file is set (read-only).
 - `id` (Number) The ID of the connection.
 
