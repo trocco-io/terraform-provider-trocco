@@ -6,7 +6,6 @@ resource "trocco_job_definition" "mysql_to_postgresql_example" {
   filter_columns = [
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "id"
@@ -15,7 +14,6 @@ resource "trocco_job_definition" "mysql_to_postgresql_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "name"

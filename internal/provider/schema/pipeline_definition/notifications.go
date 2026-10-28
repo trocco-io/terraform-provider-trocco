@@ -62,6 +62,21 @@ func NotificationsSchema() schema.Attribute {
 						},
 					},
 				},
+				"http_config": schema.SingleNestedAttribute{
+					MarkdownDescription: "The HTTP configuration of the notification. Used when `destination_type` is `http`",
+					Optional:            true,
+					Attributes: map[string]schema.Attribute{
+						"notification_id": schema.Int64Attribute{
+							MarkdownDescription: "The ID of the HTTP notification destination",
+							Required:            true,
+						},
+						"message": schema.StringAttribute{
+							MarkdownDescription: "The message of the notification. It is sent as the request body and must be a valid JSON string",
+							Required:            true,
+							CustomType:          custom_type.TrimmedStringType{},
+						},
+					},
+				},
 			},
 		},
 	}

@@ -61,6 +61,7 @@ type Connection struct {
 	LoginMethod                      *string                `json:"login_method"`                         // kintone
 	Username                         *string                `json:"username"`                             // kintone
 	BasicAuthUsername                *string                `json:"basic_auth_username"`                  // kintone
+	ClientCertificateEnabled         *bool                  `json:"client_certificate_enabled"`           // kintone
 	SecretKey                        *string                `json:"secret_key"`                           // sftp
 	SecretKeyPassphrase              *string                `json:"secret_key_passphrase"`                // sftp
 	UserDirectoryIsRoot              *bool                  `json:"user_directory_is_root"`               // sftp
@@ -140,6 +141,9 @@ type CreateConnectionInput struct {
 	Username                         *parameter.NullableString `json:"username,omitempty"`                            // kintone
 	BasicAuthUsername                *parameter.NullableString `json:"basic_auth_username,omitempty"`                 // kintone
 	BasicAuthPassword                *parameter.NullableString `json:"basic_auth_password,omitempty"`                 // kintone
+	ClientCertificateEnabled         *bool                     `json:"client_certificate_enabled,omitempty"`          // kintone
+	ClientCertificate                *parameter.NullableString `json:"client_certificate,omitempty"`                  // kintone
+	ClientCertificatePassword        *parameter.NullableString `json:"client_certificate_password,omitempty"`         // kintone
 	SecretKey                        *string                   `json:"secret_key,omitempty"`                          // sftp
 	SecretKeyPassphrase              *string                   `json:"secret_key_passphrase,omitempty"`               // sftp
 	UserDirectoryIsRoot              *bool                     `json:"user_directory_is_root,omitempty"`              // sftp
@@ -216,6 +220,9 @@ type UpdateConnectionInput struct {
 	Username                         *parameter.NullableString `json:"username,omitempty"`                            // kintone
 	BasicAuthUsername                *parameter.NullableString `json:"basic_auth_username,omitempty"`                 // kintone
 	BasicAuthPassword                *parameter.NullableString `json:"basic_auth_password,omitempty"`                 // kintone
+	ClientCertificateEnabled         *bool                     `json:"client_certificate_enabled,omitempty"`          // kintone
+	ClientCertificate                *parameter.NullableString `json:"client_certificate,omitempty"`                  // kintone
+	ClientCertificatePassword        *parameter.NullableString `json:"client_certificate_password,omitempty"`         // kintone
 	SecretKey                        *string                   `json:"secret_key,omitempty"`                          // sftp
 	SecretKeyPassphrase              *string                   `json:"secret_key_passphrase,omitempty"`               // sftp
 	UserDirectoryIsRoot              *bool                     `json:"user_directory_is_root,omitempty"`              // sftp

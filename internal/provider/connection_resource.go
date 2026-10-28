@@ -83,6 +83,11 @@ type connectionResourceModel struct {
 	Username          types.String `tfsdk:"username"`
 	BasicAuthUsername types.String `tfsdk:"basic_auth_username"`
 	BasicAuthPassword types.String `tfsdk:"basic_auth_password"`
+	// Kintone client certificate (PFX). The API never returns the certificate or its
+	// password, so both are kept from plan/state.
+	ClientCertificateEnabled  types.Bool   `tfsdk:"client_certificate_enabled"`
+	ClientCertificate         types.String `tfsdk:"client_certificate"`
+	ClientCertificatePassword types.String `tfsdk:"client_certificate_password"`
 
 	// SFTP Fields
 	SecretKey             types.String `tfsdk:"secret_key"`
@@ -180,6 +185,9 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		Username:          model.NewNullableString(m.Username),
 		BasicAuthUsername: model.NewNullableString(m.BasicAuthUsername),
 		BasicAuthPassword: model.NewNullableString(m.BasicAuthPassword),
+		ClientCertificateEnabled:  m.ClientCertificateEnabled.ValueBoolPointer(),
+		ClientCertificate:         model.NewNullableString(m.ClientCertificate),
+		ClientCertificatePassword: model.NewNullableString(m.ClientCertificatePassword),
 
 		// SFTP Fields
 		SecretKey:             m.SecretKey.ValueStringPointer(),
@@ -331,6 +339,9 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		Username:          model.NewNullableString(m.Username),
 		BasicAuthUsername: model.NewNullableString(m.BasicAuthUsername),
 		BasicAuthPassword: model.NewNullableString(m.BasicAuthPassword),
+		ClientCertificateEnabled:  m.ClientCertificateEnabled.ValueBoolPointer(),
+		ClientCertificate:         model.NewNullableString(m.ClientCertificate),
+		ClientCertificatePassword: model.NewNullableString(m.ClientCertificatePassword),
 
 		// SFTP Fields
 		SecretKey:             m.SecretKey.ValueStringPointer(),
@@ -471,6 +482,20 @@ func (r *connectionResource) Configure(
 	r.client = c
 }
 
+// Connection types whose SSL setting is the ssl_enabled boolean instead of the ssl block.
+var sslEnabledConnectionTypes = []string{"redshift", "sqlserver", "oracle"}
+
+// ssl_enabled is computed, so connection types that do not use it must store null instead of unknown.
+func sslEnabledState(connectionType types.String, ssl *bool, fallback types.Bool) types.Bool {
+	if lo.Contains(sslEnabledConnectionTypes, connectionType.ValueString()) {
+		return types.BoolPointerValue(ssl)
+	}
+	if fallback.IsUnknown() {
+		return types.BoolNull()
+	}
+	return fallback
+}
+
 var supportedConnectionTypes = []string{
 	"bigquery",
 	"snowflake",
@@ -480,6 +505,7 @@ var supportedConnectionTypes = []string{
 	"salesforce",
 	"s3",
 	"postgresql",
+	"sqlserver",
 	"google_analytics4",
 	"kintone",
 	"sftp",
@@ -583,14 +609,14 @@ func (r *connectionResource) Schema(
 
 			// Snowflake Fields
 			"host": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB, Redshift: The host of a (Snowflake, PostgreSQL, MongoDB, Redshift) account.",
+				MarkdownDescription: "Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift: The host of a (Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift) account.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
 			"user_name": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB, Redshift: The name of a (Snowflake, PostgreSQL, MongoDB, Redshift) user.",
+				MarkdownDescription: "Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift: The name of a (Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift) user.",
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
@@ -611,7 +637,7 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"password": schema.StringAttribute{
-				MarkdownDescription: "Snowflake, PostgreSQL, MongoDB, Redshift: The password for the (Snowflake, PostgreSQL, MongoDB, Redshift) user.",
+				MarkdownDescription: "Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift: The password for the (Snowflake, PostgreSQL, SQL Server, MongoDB, Redshift) user.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -646,7 +672,7 @@ func (r *connectionResource) Schema(
 
 			// MySQL Fields
 			"port": schema.Int64Attribute{
-				MarkdownDescription: "MySQL, PostgreSQL, MongoDB, Redshift: The port of the (MySQL, PostgreSQL, MongoDB, Redshift) server.",
+				MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB, Redshift: The port of the (MySQL, PostgreSQL, SQL Server, MongoDB, Redshift) server.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
@@ -698,11 +724,11 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"gateway": schema.SingleNestedAttribute{
-				MarkdownDescription: "MySQL, PostgreSQL, MongoDB, Redshift: Whether to connect via SSH",
+				MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB, Redshift: Whether to connect via SSH",
 				Optional:            true,
 				Attributes: map[string]schema.Attribute{
 					"host": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH Host",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSH Host",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -710,7 +736,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"port": schema.Int64Attribute{
-						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH Port",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSH Port",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.Int64{
@@ -719,7 +745,7 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"user_name": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH User",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSH User",
 						Optional:            true,
 						Sensitive:           true,
 						Validators: []validator.String{
@@ -727,21 +753,21 @@ func (r *connectionResource) Schema(
 						},
 					},
 					"password": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, MongoDB, Kintone: SSH Password",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB, Kintone: SSH Password",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH Private Key",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSH Private Key",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
 						Default:             stringdefault.StaticString(""),
 					},
 					"key_passphrase": schema.StringAttribute{
-						MarkdownDescription: "MySQL, PostgreSQL, MongoDB: SSH Private Key Passphrase",
+						MarkdownDescription: "MySQL, PostgreSQL, SQL Server, MongoDB: SSH Private Key Passphrase",
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
@@ -819,10 +845,11 @@ func (r *connectionResource) Schema(
 
 			// PostgreSQL Fields
 			"driver": schema.StringAttribute{
-				MarkdownDescription: `Snowflake, MySQL, PostgreSQL, Oracle: The name of a Database driver.
+				MarkdownDescription: `Snowflake, MySQL, PostgreSQL, SQL Server, Oracle: The name of a Database driver.
   - MySQL: null, mysql_connector_java_5_1_49
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
+  - SQL Server: ms_sqlserver_jdbc_driver_8_2, ms_sqlserver_jdbc_driver_12_6, ms_sqlserver_jdbc_driver_13_4, jtds_driver_1_3_1
   - Oracle: 12c-ojdbc7.jar, 19c-ojdbc8.jar, 26ai-ojdbc8.jar (required for Oracle)
 `,
 				Optional: true,
@@ -836,6 +863,11 @@ func (r *connectionResource) Schema(
 						// PostgreSQL
 						"postgresql_42_5_1",
 						"postgresql_9_4_1205_jdbc41",
+						// SQL Server
+						"ms_sqlserver_jdbc_driver_8_2",
+						"ms_sqlserver_jdbc_driver_12_6",
+						"ms_sqlserver_jdbc_driver_13_4",
+						"jtds_driver_1_3_1",
 						// Oracle
 						"12c-ojdbc7.jar",
 						"19c-ojdbc8.jar",
@@ -883,6 +915,29 @@ func (r *connectionResource) Schema(
 			},
 			"basic_auth_password": schema.StringAttribute{
 				MarkdownDescription: "Kintone: Basic Auth Password",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"client_certificate_enabled": schema.BoolAttribute{
+				MarkdownDescription: "Kintone: Whether a client certificate is registered (read-only). Derived from `client_certificate`; a diff means it was changed outside Terraform.",
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					planModifier.KintoneClientCertificateEnabledPlanModifier{},
+				},
+			},
+			"client_certificate": schema.StringAttribute{
+				MarkdownDescription: "Kintone: The client certificate as a base64-encoded PFX file, used to connect through kintone secure access.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"client_certificate_password": schema.StringAttribute{
+				MarkdownDescription: "Kintone: The password of the PFX file. Requires `client_certificate`.",
 				Optional:            true,
 				Sensitive:           true,
 				Validators: []validator.String{
@@ -1065,9 +1120,12 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"ssl_enabled": schema.BoolAttribute{
-				MarkdownDescription: "Redshift, Oracle: Whether SSL is enabled.",
+				MarkdownDescription: "Redshift, SQL Server, Oracle: Whether SSL is enabled. Default is false.",
 				Optional:            true,
 				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					planModifier.ConditionalBooleanDefault(false, sslEnabledConnectionTypes...),
+				},
 			},
 			// Oracle Fields
 			"tns_admin_ora": schema.StringAttribute{
@@ -1241,12 +1299,15 @@ func (r *connectionResource) Create(
 		Driver: types.StringPointerValue(conn.Driver),
 
 		// Kintone
-		Domain:            types.StringPointerValue(conn.Domain),
-		LoginMethod:       types.StringPointerValue(conn.LoginMethod),
-		Token:             plan.Token,
-		Username:          types.StringPointerValue(conn.Username),
-		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
-		BasicAuthPassword: plan.BasicAuthPassword,
+		Domain:                    types.StringPointerValue(conn.Domain),
+		LoginMethod:               types.StringPointerValue(conn.LoginMethod),
+		Token:                     plan.Token,
+		Username:                  types.StringPointerValue(conn.Username),
+		BasicAuthUsername:         types.StringPointerValue(conn.BasicAuthUsername),
+		BasicAuthPassword:         plan.BasicAuthPassword,
+		ClientCertificateEnabled:  types.BoolPointerValue(conn.ClientCertificateEnabled),
+		ClientCertificate:         plan.ClientCertificate,
+		ClientCertificatePassword: plan.ClientCertificatePassword,
 
 		// SFTP Fields
 		SecretKey:             plan.SecretKey,
@@ -1274,7 +1335,7 @@ func (r *connectionResource) Create(
 		// Redshift Fields
 		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
 		AWSSecretAccessKey: plan.AWSSecretAccessKey,
-		SSLEnabled:         sslEnabledForConnectionType(plan.ConnectionType.ValueString(), conn.SSL, plan.SSLEnabled),
+		SSLEnabled:         sslEnabledState(plan.ConnectionType, conn.SSL, plan.SSLEnabled),
 
 		// Marketo Fields
 		MarketoAccountID:       types.StringPointerValue(conn.AccountID),
@@ -1389,12 +1450,15 @@ func (r *connectionResource) Update(
 		Driver: types.StringPointerValue(connection.Driver),
 
 		// Kintone
-		Domain:            types.StringPointerValue(connection.Domain),
-		LoginMethod:       types.StringPointerValue(connection.LoginMethod),
-		Token:             plan.Token,
-		Username:          types.StringPointerValue(connection.Username),
-		BasicAuthUsername: types.StringPointerValue(connection.BasicAuthUsername),
-		BasicAuthPassword: plan.BasicAuthPassword,
+		Domain:                    types.StringPointerValue(connection.Domain),
+		LoginMethod:               types.StringPointerValue(connection.LoginMethod),
+		Token:                     plan.Token,
+		Username:                  types.StringPointerValue(connection.Username),
+		BasicAuthUsername:         types.StringPointerValue(connection.BasicAuthUsername),
+		BasicAuthPassword:         plan.BasicAuthPassword,
+		ClientCertificateEnabled:  types.BoolPointerValue(connection.ClientCertificateEnabled),
+		ClientCertificate:         plan.ClientCertificate,
+		ClientCertificatePassword: plan.ClientCertificatePassword,
 
 		// SFTP Fields
 		SecretKey:             plan.SecretKey,
@@ -1422,7 +1486,7 @@ func (r *connectionResource) Update(
 		// Redshift Fields
 		AWSAccessKeyID:     types.StringPointerValue(connection.AWSAccessKeyID),
 		AWSSecretAccessKey: plan.AWSSecretAccessKey,
-		SSLEnabled:         sslEnabledForConnectionType(plan.ConnectionType.ValueString(), connection.SSL, plan.SSLEnabled),
+		SSLEnabled:         sslEnabledState(plan.ConnectionType, connection.SSL, plan.SSLEnabled),
 
 		// Marketo Fields
 		MarketoAccountID:       types.StringPointerValue(connection.AccountID),
@@ -1472,7 +1536,7 @@ func (r *connectionResource) Read(
 		return
 	}
 
-	sslEnabled := sslEnabledForConnectionType(state.ConnectionType.ValueString(), conn.SSL, state.SSLEnabled)
+	sslEnabled := sslEnabledState(state.ConnectionType, conn.SSL, state.SSLEnabled)
 
 	newState := connectionResourceModel{
 		// Common Fields
@@ -1518,12 +1582,15 @@ func (r *connectionResource) Read(
 		Driver: types.StringPointerValue(conn.Driver),
 
 		// Kintone Fields
-		Domain:            types.StringPointerValue(conn.Domain),
-		LoginMethod:       types.StringPointerValue(conn.LoginMethod),
-		Token:             state.Token,
-		Username:          types.StringPointerValue(conn.Username),
-		BasicAuthUsername: types.StringPointerValue(conn.BasicAuthUsername),
-		BasicAuthPassword: state.BasicAuthPassword,
+		Domain:                    types.StringPointerValue(conn.Domain),
+		LoginMethod:               types.StringPointerValue(conn.LoginMethod),
+		Token:                     state.Token,
+		Username:                  types.StringPointerValue(conn.Username),
+		BasicAuthUsername:         types.StringPointerValue(conn.BasicAuthUsername),
+		BasicAuthPassword:         state.BasicAuthPassword,
+		ClientCertificateEnabled:  types.BoolPointerValue(conn.ClientCertificateEnabled),
+		ClientCertificate:         state.ClientCertificate,
+		ClientCertificatePassword: state.ClientCertificatePassword,
 
 		// SFTP Fields
 		SecretKey:             state.SecretKey,
@@ -1770,6 +1837,7 @@ func (r *connectionResource) ValidateConfig(
 				)
 			}
 		}
+		validateKintoneClientCertificate(plan, resp)
 	case "sftp":
 		validateRequiredString(plan.Host, "host", "SFTP", resp)
 		validateRequiredInt(plan.Port, "port", "SFTP", resp)
@@ -1858,6 +1926,24 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "Oracle", resp)
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "Oracle", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "Oracle", resp)
+		}
+	case "sqlserver":
+		validateRequiredString(plan.Host, "host", "SQL Server", resp)
+		validateRequiredInt(plan.Port, "port", "SQL Server", resp)
+		validateRequiredString(plan.UserName, "user_name", "SQL Server", resp)
+		validateRequiredString(plan.Password, "password", "SQL Server", resp)
+		validateRequiredString(plan.Driver, "driver", "SQL Server", resp)
+		validateStringAgainstPatterns(plan.Driver, "driver", "SQL Server", resp, "ms_sqlserver_jdbc_driver_8_2", "ms_sqlserver_jdbc_driver_12_6", "ms_sqlserver_jdbc_driver_13_4", "jtds_driver_1_3_1")
+		if plan.SSL != nil {
+			resp.Diagnostics.AddError(
+				"ssl",
+				"ssl is not supported for SQL Server connection. Use ssl_enabled instead.",
+			)
+		}
+		if plan.Gateway != nil {
+			validateRequiredString(plan.Gateway.Host, "gateway.host", "SQL Server", resp)
+			validateRequiredInt(plan.Gateway.Port, "gateway.port", "SQL Server", resp)
+			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "SQL Server", resp)
 		}
 	case "marketo":
 		validateRequiredString(plan.MarketoAccountID, "account_id", "Marketo", resp)
@@ -1957,24 +2043,14 @@ func validateStringAgainstPatterns(field types.String, fieldName, connectionType
 	)
 }
 
-// sslEnabledForConnectionType resolves the ssl_enabled value to store in
-// state. Redshift and Oracle are the only connection types that use this
-// shared attribute and have it reflected back from the API (ssl); MySQL and
-// PostgreSQL also have an "ssl" concept on the API side, but expose it through
-// the nested ssl block instead, so the live API value must not be reused here
-// for them. For every other connection type the attribute does not apply, so
-// the planned/prior value is preserved when already known; because the
-// attribute is Optional+Computed, an unset value can arrive as unknown (not
-// null) for those types, and all values must be known after apply, so that
-// case resolves to an explicit null.
-func sslEnabledForConnectionType(connectionType string, apiValue *bool, fallback types.Bool) types.Bool {
-	if connectionType == "redshift" || connectionType == "oracle" {
-		return types.BoolPointerValue(apiValue)
+// validateKintoneClientCertificate rejects client_certificate_password without client_certificate.
+func validateKintoneClientCertificate(plan *connectionResourceModel, resp *resource.ValidateConfigResponse) {
+	if !plan.ClientCertificatePassword.IsNull() && plan.ClientCertificate.IsNull() {
+		resp.Diagnostics.AddError(
+			"client_certificate_password",
+			"client_certificate is required for Kintone connection when client_certificate_password is set.",
+		)
 	}
-	if fallback.IsUnknown() {
-		return types.BoolNull()
-	}
-	return fallback
 }
 
 func validateRequiredString(field types.String, fieldName, connectionType string, resp *resource.ValidateConfigResponse) {

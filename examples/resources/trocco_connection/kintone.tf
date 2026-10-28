@@ -28,3 +28,17 @@ resource "trocco_connection" "kintone_login_method_username_and_password" {
   basic_auth_password = "basic_auth_password"
 }
 
+# Secure access with a client certificate (PFX).
+# Use the secure access domain (<subdomain>.s.cybozu.com) when client_certificate is set.
+resource "trocco_connection" "kintone_client_certificate" {
+  connection_type             = "kintone"
+  name                        = "Kintone Example"
+  description                 = "This is a Kintone connection example"
+  resource_group_id           = 1
+  domain                      = "subdomain.s.cybozu.com"
+  login_method                = "username_and_password"
+  username                    = "username"
+  password                    = "password"
+  client_certificate          = filebase64("client.pfx")
+  client_certificate_password = "pfx_password"
+}
