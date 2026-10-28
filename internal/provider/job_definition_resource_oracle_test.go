@@ -118,11 +118,11 @@ func TestAccJobDefinitionResourceOracleDefaultsToBigQuery(t *testing.T) {
 				ResourceName: resourceName,
 				Config:       providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/oracle_defaults_to_bigquery/create.tf"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					// connection_type / incremental_loading_enabled を config で省略した場合、
-					// デフォルト値（sid / false）が適用され、Provider produced inconsistent result に
-					// ならないことを確認する。source_time_zone はデフォルト値を持たないため、
-					// 省略時は未設定のまま（API側ではnull、実行時は転送元マシンのタイムゾーンとして解釈）
-					// であることを確認する。
+					// When connection_type / incremental_loading_enabled are omitted from the
+					// config, the defaults (sid / false) must be applied without causing
+					// "Provider produced inconsistent result". source_time_zone has no default,
+					// so it must stay unset when omitted (null on the API side; at runtime the
+					// timezone of the machine running the transfer is used).
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.connection_type", "sid"),
 					resource.TestCheckNoResourceAttr(resourceName, "input_option.oracle_input_option.source_time_zone"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.oracle_input_option.incremental_loading_enabled", "false"),
@@ -219,9 +219,8 @@ func TestAccJobDefinitionResourceOracleInputOptionConflict(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				// input_option_type = "oracle" なのに mysql_input_option も
-				// 同時に設定した場合、InputOptionPlanModifier によって
-				// プラン時にエラーになることを確認する。
+				// Setting mysql_input_option alongside input_option_type = "oracle"
+				// must fail at plan time via InputOptionPlanModifier.
 				Config:      providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/oracle_input_option_conflict/create.tf"),
 				ExpectError: regexp.MustCompile(`(?s)invalid attribute.*mysql_input_option`),
 			},
