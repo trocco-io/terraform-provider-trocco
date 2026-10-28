@@ -117,6 +117,12 @@ type connectionResourceModel struct {
 	AWSSecretAccessKey types.String `tfsdk:"aws_secret_access_key"`
 	SSLEnabled         types.Bool   `tfsdk:"ssl_enabled"`
 
+	// Oracle Fields
+	TnsAdminOra   types.String `tfsdk:"tns_admin_ora"`
+	WalletFile    types.String `tfsdk:"wallet_file"`
+	HasWalletFile types.Bool   `tfsdk:"has_wallet_file"`
+	SSLCA         types.String `tfsdk:"ssl_ca"`
+
 	// Marketo Fields
 	MarketoAccountID       types.String `tfsdk:"account_id"`
 	MarketoClientID        types.String `tfsdk:"client_id"`
@@ -204,6 +210,12 @@ func (m *connectionResourceModel) ToCreateConnectionInput() *client.CreateConnec
 		AuthSource:               model.NewNullableString(m.AuthSource),
 		ReplicaSet:               model.NewNullableString(m.ReplicaSet),
 		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
+
+		// Oracle Fields
+		TnsAdminOra: m.TnsAdminOra.ValueStringPointer(),
+		WalletFile:  m.WalletFile.ValueStringPointer(),
+		SSLCA:       m.SSLCA.ValueStringPointer(),
+
 		// START [GENERATOR:CONNECTION_INPUT]
 		APIKey: m.APIKey.ValueStringPointer(),
 		// END [GENERATOR:CONNECTION_INPUT]
@@ -296,7 +308,7 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		WorkloadIdentityFederationConfig: parseWifConfig(m.WorkloadIdentityFederationConfig.ValueStringPointer()),
 
 		// Snowflake Fields
-		Host:       m.Host.ValueStringPointer(),
+		Host:       model.NewNullableString(m.Host),
 		UserName:   m.UserName.ValueStringPointer(),
 		Role:       m.Role.ValueStringPointer(),
 		AuthMethod: m.AuthMethod.ValueStringPointer(),
@@ -352,6 +364,12 @@ func (m *connectionResourceModel) ToUpdateConnectionInput() *client.UpdateConnec
 		AuthSource:               model.NewNullableString(m.AuthSource),
 		ReplicaSet:               model.NewNullableString(m.ReplicaSet),
 		StrictReadPreferenceTags: model.NewNullableBool(m.StrictReadPreferenceTags),
+
+		// Oracle Fields
+		TnsAdminOra: model.NewNullableString(m.TnsAdminOra),
+		WalletFile:  model.NewNullableString(m.WalletFile),
+		SSLCA:       m.SSLCA.ValueStringPointer(),
+
 		// START [GENERATOR:CONNECTION_INPUT]
 		APIKey: m.APIKey.ValueStringPointer(),
 		// END [GENERATOR:CONNECTION_INPUT]
@@ -465,7 +483,7 @@ func (r *connectionResource) Configure(
 }
 
 // Connection types whose SSL setting is the ssl_enabled boolean instead of the ssl block.
-var sslEnabledConnectionTypes = []string{"redshift", "sqlserver"}
+var sslEnabledConnectionTypes = []string{"redshift", "sqlserver", "oracle"}
 
 // ssl_enabled is computed, so connection types that do not use it must store null instead of unknown.
 func sslEnabledState(connectionType types.String, ssl *bool, fallback types.Bool) types.Bool {
@@ -495,6 +513,7 @@ var supportedConnectionTypes = []string{
 	"mongodb",
 	"google_drive",
 	"redshift",
+	"oracle",
 	"marketo",
 	"pagerduty",
 	"custom_connector",
@@ -826,11 +845,12 @@ func (r *connectionResource) Schema(
 
 			// PostgreSQL Fields
 			"driver": schema.StringAttribute{
-				MarkdownDescription: `Snowflake, MySQL, PostgreSQL, SQL Server: The name of a Database driver.
+				MarkdownDescription: `Snowflake, MySQL, PostgreSQL, SQL Server, Oracle: The name of a Database driver.
   - MySQL: null, mysql_connector_java_5_1_49
   - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
   - SQL Server: ms_sqlserver_jdbc_driver_8_2, ms_sqlserver_jdbc_driver_12_6, ms_sqlserver_jdbc_driver_13_4, jtds_driver_1_3_1
+  - Oracle: 12c-ojdbc7.jar, 19c-ojdbc8.jar, 26ai-ojdbc8.jar (required for Oracle)
 `,
 				Optional: true,
 				Validators: []validator.String{
@@ -848,6 +868,10 @@ func (r *connectionResource) Schema(
 						"ms_sqlserver_jdbc_driver_12_6",
 						"ms_sqlserver_jdbc_driver_13_4",
 						"jtds_driver_1_3_1",
+						// Oracle
+						"12c-ojdbc7.jar",
+						"19c-ojdbc8.jar",
+						"26ai-ojdbc8.jar",
 					),
 				},
 			},
@@ -1065,18 +1089,18 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"ssh_tunnel_id": schema.Int64Attribute{
-				MarkdownDescription: "SFTP, Redshift: SSH tunnel ID. Required when aws_privatelink_enabled is true.",
+				MarkdownDescription: "SFTP, Redshift, Oracle: SSH tunnel ID. Required when aws_privatelink_enabled is true.",
 				Optional:            true,
 				Validators: []validator.Int64{
 					int64validator.AtLeast(1),
 				},
 			},
 			"aws_privatelink_enabled": schema.BoolAttribute{
-				MarkdownDescription: "SFTP, Redshift: Whether AWS PrivateLink is enabled. Default is false.",
+				MarkdownDescription: "SFTP, Redshift, Oracle: Whether AWS PrivateLink is enabled. Default is false.",
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Bool{
-					planModifier.ConditionalBooleanDefault(false, "sftp", "redshift"),
+					planModifier.ConditionalBooleanDefault(false, "sftp", "redshift", "oracle"),
 				},
 			},
 			// Redshift Fields
@@ -1096,11 +1120,39 @@ func (r *connectionResource) Schema(
 				},
 			},
 			"ssl_enabled": schema.BoolAttribute{
-				MarkdownDescription: "Redshift, SQL Server: Whether SSL is enabled. Default is false.",
+				MarkdownDescription: "Redshift, SQL Server, Oracle: Whether SSL is enabled. Default is false.",
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Bool{
 					planModifier.ConditionalBooleanDefault(false, sslEnabledConnectionTypes...),
+				},
+			},
+			// Oracle Fields
+			"tns_admin_ora": schema.StringAttribute{
+				MarkdownDescription: "Oracle: Contents of tnsnames.ora for TNS naming. If specified, `host`, `port` are ignored. Mutually exclusive with `host`/`port`.",
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"wallet_file": schema.StringAttribute{
+				MarkdownDescription: "Oracle: Oracle Wallet file (`cwallet.sso`) for Autonomous Database connection, base64-encoded. Write-only; use `has_wallet_file` to check if set.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"has_wallet_file": schema.BoolAttribute{
+				MarkdownDescription: "Oracle: Whether a wallet file is set (read-only).",
+				Computed:            true,
+			},
+			"ssl_ca": schema.StringAttribute{
+				MarkdownDescription: "Oracle: SSL CA certificate. Write-only; the value is not returned by the API.",
+				Optional:            true,
+				Sensitive:           true,
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
 				},
 			},
 			// Marketo Fields
@@ -1296,6 +1348,12 @@ func (r *connectionResource) Create(
 		APIKey: plan.APIKey,
 		// END [GENERATOR:CONNECTION_STATE_CREATE]
 
+		// Oracle Fields
+		TnsAdminOra:   types.StringPointerValue(conn.TnsAdminOra),
+		WalletFile:    plan.WalletFile,
+		HasWalletFile: types.BoolPointerValue(conn.HasWalletFile),
+		SSLCA:         plan.SSLCA,
+
 		// Custom Connector Fields
 		CustomConnectorID: types.Int64PointerValue(conn.CustomConnectorID),
 		Scopes:            scopesToList(conn.Scopes),
@@ -1441,6 +1499,12 @@ func (r *connectionResource) Update(
 		APIKey: plan.APIKey,
 		// END [GENERATOR:CONNECTION_STATE_UPDATE]
 
+		// Oracle Fields
+		TnsAdminOra:   types.StringPointerValue(connection.TnsAdminOra),
+		WalletFile:    plan.WalletFile,
+		HasWalletFile: types.BoolPointerValue(connection.HasWalletFile),
+		SSLCA:         plan.SSLCA,
+
 		// Custom Connector Fields
 		CustomConnectorID: types.Int64PointerValue(connection.CustomConnectorID),
 		Scopes:            scopesToList(connection.Scopes),
@@ -1555,6 +1619,12 @@ func (r *connectionResource) Read(
 		AWSAccessKeyID:     types.StringPointerValue(conn.AWSAccessKeyID),
 		AWSSecretAccessKey: state.AWSSecretAccessKey,
 		SSLEnabled:         sslEnabled,
+
+		// Oracle Fields
+		TnsAdminOra:   types.StringPointerValue(conn.TnsAdminOra),
+		WalletFile:    state.WalletFile,
+		HasWalletFile: types.BoolPointerValue(conn.HasWalletFile),
+		SSLCA:         state.SSLCA,
 
 		// Marketo Fields
 		MarketoAccountID:       types.StringPointerValue(conn.AccountID),
@@ -1827,6 +1897,35 @@ func (r *connectionResource) ValidateConfig(
 			validateRequiredString(plan.Gateway.Host, "gateway.host", "Redshift", resp)
 			validateRequiredInt(plan.Gateway.Port, "gateway.port", "Redshift", resp)
 			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "Redshift", resp)
+		}
+	case "oracle":
+		validateRequiredString(plan.UserName, "user_name", "Oracle", resp)
+		validateRequiredString(plan.Password, "password", "Oracle", resp)
+		validateRequiredString(plan.Driver, "driver", "Oracle", resp)
+		validateStringAgainstPatterns(plan.Driver, "driver", "Oracle", resp, "12c-ojdbc7.jar", "19c-ojdbc8.jar", "26ai-ojdbc8.jar")
+		// host/port and tns_admin_ora are mutually exclusive: exactly one of them must be specified.
+		hasHostPort := !plan.Host.IsNull() && !plan.Port.IsNull()
+		hasHostOrPort := !plan.Host.IsNull() || !plan.Port.IsNull()
+		hasTnsAdmin := !plan.TnsAdminOra.IsNull()
+		switch {
+		case !hasHostPort && !hasTnsAdmin:
+			resp.Diagnostics.AddError(
+				"oracle_connection",
+				"either host and port, or tns_admin_ora must be specified for Oracle connection.",
+			)
+		case hasHostOrPort && hasTnsAdmin:
+			resp.Diagnostics.AddError(
+				"oracle_connection",
+				"host/port and tns_admin_ora cannot be specified at the same time for Oracle connection.",
+			)
+		}
+		if plan.AWSPrivatelinkEnabled.ValueBool() {
+			validateRequiredInt(plan.SSHTunnelID, "ssh_tunnel_id", "Oracle", resp)
+		}
+		if plan.Gateway != nil {
+			validateRequiredString(plan.Gateway.Host, "gateway.host", "Oracle", resp)
+			validateRequiredInt(plan.Gateway.Port, "gateway.port", "Oracle", resp)
+			validateRequiredString(plan.Gateway.UserName, "gateway.user_name", "Oracle", resp)
 		}
 	case "sqlserver":
 		validateRequiredString(plan.Host, "host", "SQL Server", resp)
