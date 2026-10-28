@@ -123,7 +123,7 @@ func (o *OracleInputOption) ToInput(ctx context.Context) *inputOptionParameters.
 		LastRecord:                model.NewNullableString(o.LastRecord),
 		SourceTimeZone:            model.NewNullableString(o.SourceTimeZone),
 		InputOptionColumns:        inputOptionCols,
-		InputOptionColumnOptions:  inputOptionColOpts,
+		InputOptionColumnOptions:  model.WrapObjectList(inputOptionColOpts),
 		CustomVariableSettings:    model.ToCustomVariableSettingInputs(customVarSettings),
 	}
 }
@@ -150,7 +150,7 @@ func (o *OracleInputOption) ToUpdateInput(ctx context.Context) *inputOptionParam
 		LastRecord:                model.NewNullableString(o.LastRecord),
 		SourceTimeZone:            model.NewNullableString(o.SourceTimeZone),
 		InputOptionColumns:        inputOptionCols,
-		InputOptionColumnOptions:  inputOptionColOpts,
+		InputOptionColumnOptions:  model.WrapObjectList(inputOptionColOpts),
 		CustomVariableSettings:    model.ToCustomVariableSettingInputs(customVarSettings),
 	}
 }

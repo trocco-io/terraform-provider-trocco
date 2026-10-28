@@ -95,3 +95,83 @@ func TestOracleInputOptionToUpdateInput_SendsNullableStringFieldValues(t *testin
 		}
 	}
 }
+
+// Regression test for the "removing input_option_column_options from config
+// doesn't clear it server-side" bug: a field sent as *[]T with `omitempty` is
+// dropped from the request entirely when the list is unset, so the backend's
+// `unless ... .nil?` guard never fires and stale column options remain.
+// InputOptionColumnOptions must marshal through NullableObjectList so the key
+// is always present, with `[]` as an explicit "clear" signal when unset.
+func TestOracleInputOptionToUpdateInput_ClearsInputOptionColumnOptionsOnRemoval(t *testing.T) {
+	ctx := context.Background()
+
+	base := &OracleInputOption{
+		OracleConnectionID:        types.Int64Value(1),
+		Database:                  types.StringNull(),
+		ConnectionType:            types.StringValue("sid"),
+		NetServiceName:            types.StringNull(),
+		Schema:                    types.StringNull(),
+		Query:                     types.StringNull(),
+		IncrementalLoadingEnabled: types.BoolValue(true),
+		Table:                     types.StringNull(),
+		IncrementalColumns:        types.StringNull(),
+		LastRecord:                types.StringNull(),
+		SourceTimeZone:            types.StringNull(),
+		InputOptionColumns:        types.ListNull(types.ObjectType{AttrTypes: oracleInputOptionColumnAttrTypes}),
+		InputOptionColumnOptions:  types.ListNull(types.ObjectType{AttrTypes: oracleInputOptionColumnOptionAttrTypes}),
+		CustomVariableSettings:    types.ListNull(types.ObjectType{AttrTypes: common.GetCustomVariableSettingAttrTypes()}),
+	}
+
+	input := base.ToUpdateInput(ctx)
+	b, err := json.Marshal(input)
+	if err != nil {
+		t.Fatalf("failed to marshal UpdateOracleInputOptionInput: %s", err)
+	}
+	body := string(b)
+
+	key := `"input_option_column_options":[]`
+	if !strings.Contains(body, key) {
+		t.Errorf("expected request body to contain %s (key present with an explicit empty array to clear existing options) when the field is unset, got: %s", key, body)
+	}
+}
+
+func TestOracleInputOptionToUpdateInput_SendsInputOptionColumnOptionsValues(t *testing.T) {
+	ctx := context.Background()
+
+	columnOptions, diags := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: oracleInputOptionColumnOptionAttrTypes}, []OracleInputOptionColumnOption{
+		{ColumnName: types.StringValue("amount"), ColumnValueType: types.StringValue("string")},
+	})
+	if diags.HasError() {
+		t.Fatalf("failed to build input_option_column_options list: %v", diags)
+	}
+
+	base := &OracleInputOption{
+		OracleConnectionID:        types.Int64Value(1),
+		Database:                  types.StringNull(),
+		ConnectionType:            types.StringValue("sid"),
+		NetServiceName:            types.StringNull(),
+		Schema:                    types.StringNull(),
+		Query:                     types.StringNull(),
+		IncrementalLoadingEnabled: types.BoolValue(true),
+		Table:                     types.StringNull(),
+		IncrementalColumns:        types.StringNull(),
+		LastRecord:                types.StringNull(),
+		SourceTimeZone:            types.StringNull(),
+		InputOptionColumns:        types.ListNull(types.ObjectType{AttrTypes: oracleInputOptionColumnAttrTypes}),
+		InputOptionColumnOptions:  columnOptions,
+		CustomVariableSettings:    types.ListNull(types.ObjectType{AttrTypes: common.GetCustomVariableSettingAttrTypes()}),
+	}
+
+	input := base.ToUpdateInput(ctx)
+	b, err := json.Marshal(input)
+	if err != nil {
+		t.Fatalf("failed to marshal UpdateOracleInputOptionInput: %s", err)
+	}
+	body := string(b)
+
+	for _, want := range []string{`"column_name":"amount"`, `"column_value_type":"string"`} {
+		if !strings.Contains(body, want) {
+			t.Errorf("expected request body to contain %s, got: %s", want, body)
+		}
+	}
+}
