@@ -874,15 +874,24 @@ func testAccConnectionResourceOracleGatewayTns(t *testing.T) {
 
 func testAccConnectionResourceOraclePrivatelink(t *testing.T) {
 	t.Helper()
+	// SSH tunnels can only be created by an admin and must belong to the same
+	// account as the API key, so the ID differs per environment.
+	sshTunnelID := os.Getenv("TROCCO_TEST_SSH_TUNNEL_ID")
+	if sshTunnelID == "" {
+		t.Skip("TROCCO_TEST_SSH_TUNNEL_ID is not set")
+	}
+	if _, err := strconv.ParseInt(sshTunnelID, 10, 64); err != nil {
+		t.Fatalf("TROCCO_TEST_SSH_TUNNEL_ID must be an integer: %s", sshTunnelID)
+	}
 	resourceName := "trocco_connection.oracle_privatelink_test"
 	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: providerConfig + LoadTextFile("testdata/connection/oracle/privatelink_create.tf"),
+				Config: providerConfig + fmt.Sprintf(LoadTextFile("testdata/connection/oracle/privatelink_create.tf"), sshTunnelID),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "aws_privatelink_enabled", "true"),
-					resource.TestCheckResourceAttr(resourceName, "ssh_tunnel_id", "1"),
+					resource.TestCheckResourceAttr(resourceName, "ssh_tunnel_id", sshTunnelID),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
