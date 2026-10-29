@@ -9,7 +9,7 @@ import (
 
 func TestAccSnowflakeDatamartDefinitionResourceInsertMode(t *testing.T) {
 	resourceName := "trocco_snowflake_datamart_definition.test_snowflake_datamart_insert"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -41,7 +41,7 @@ func TestAccSnowflakeDatamartDefinitionResourceInsertMode(t *testing.T) {
 
 func TestAccSnowflakeDatamartDefinitionResourceQueryMode(t *testing.T) {
 	resourceName := "trocco_snowflake_datamart_definition.test_snowflake_datamart_query"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -59,7 +59,7 @@ func TestAccSnowflakeDatamartDefinitionResourceQueryMode(t *testing.T) {
 }
 
 func TestAccSnowflakeDatamartDefinitionResourceMissingRequiredInsertFields(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -72,7 +72,7 @@ func TestAccSnowflakeDatamartDefinitionResourceMissingRequiredInsertFields(t *te
 
 func TestAccSnowflakeDatamartDefinitionResourceIncremental(t *testing.T) {
 	resourceName := "trocco_snowflake_datamart_definition.test_snowflake_datamart_incremental"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -98,7 +98,7 @@ func TestAccSnowflakeDatamartDefinitionResourceIncremental(t *testing.T) {
 
 func TestAccSnowflakeDatamartDefinitionResourceSCDType2(t *testing.T) {
 	resourceName := "trocco_snowflake_datamart_definition.test_snowflake_datamart_scd_type_2"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -130,7 +130,7 @@ func TestAccSnowflakeDatamartDefinitionResourceSCDType2(t *testing.T) {
 }
 
 func TestAccSnowflakeDatamartDefinitionResourceMissingIncrementalFields(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -142,7 +142,7 @@ func TestAccSnowflakeDatamartDefinitionResourceMissingIncrementalFields(t *testi
 }
 
 func TestAccSnowflakeDatamartDefinitionResourceMissingQualityCheckFields(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -155,7 +155,7 @@ func TestAccSnowflakeDatamartDefinitionResourceMissingQualityCheckFields(t *test
 
 func TestAccSnowflakeDatamartDefinitionResourceNotifications(t *testing.T) {
 	resourceName := "trocco_snowflake_datamart_definition.test_snowflake_datamart_notifications"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -209,7 +209,7 @@ func TestAccSnowflakeDatamartDefinitionResourceNotifications(t *testing.T) {
 
 func TestAccSnowflakeDatamartDefinitionResourceWriteDispositionTransition(t *testing.T) {
 	resourceName := "trocco_snowflake_datamart_definition.test_snowflake_datamart_transition"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -284,7 +284,7 @@ func TestAccSnowflakeDatamartDefinitionResourceWriteDispositionTransition(t *tes
 
 func TestAccSnowflakeDatamartDefinitionResourceQualityChecks(t *testing.T) {
 	resourceName := "trocco_snowflake_datamart_definition.test_snowflake_datamart_quality_checks"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

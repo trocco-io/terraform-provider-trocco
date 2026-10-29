@@ -9,7 +9,7 @@ import (
 
 func TestAccJobDefinitionResourceSnowflakeToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.snowflake_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -53,7 +53,7 @@ func TestAccJobDefinitionResourceSnowflakeToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceBigQueryToSnowflake(t *testing.T) {
 	resourceName := "trocco_job_definition.bigquery_to_snowflake"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
