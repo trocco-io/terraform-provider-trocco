@@ -10,7 +10,7 @@ import (
 
 func TestAccPipelineDefinitionResourceForDataCheckBigquery(t *testing.T) {
 	resourceName := "trocco_pipeline_definition.bigquery_data_check_query_check"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -40,7 +40,7 @@ func TestAccPipelineDefinitionResourceForDataCheckBigquery(t *testing.T) {
 
 func TestAccPipelineDefinitionResourceForDataCheckSnowflake(t *testing.T) {
 	resourceName := "trocco_pipeline_definition.snowflake_data_check_query_check"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -75,7 +75,7 @@ func TestAccPipelineDefinitionResourceForDataCheckSnowflake(t *testing.T) {
 
 func TestAccPipelineDefinitionResourceForDataCheckRedshift(t *testing.T) {
 	resourceName := "trocco_pipeline_definition.redshift_data_check_query_check"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -110,7 +110,7 @@ func TestAccPipelineDefinitionResourceForDataCheckRedshift(t *testing.T) {
 
 func TestAccPipelineDefinitionResourceForDataCheckDatabricks(t *testing.T) {
 	resourceName := "trocco_pipeline_definition.databricks_data_check_query_check"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -152,7 +152,7 @@ func TestAccPipelineDefinitionResourceForDataCheckDatabricks(t *testing.T) {
 
 func TestAccPipelineDefinitionResourceForNotifications(t *testing.T) {
 	resourceName := "trocco_pipeline_definition.notifications_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -244,7 +244,7 @@ func TestAccPipelineDefinitionResourceForNotifications(t *testing.T) {
 }
 
 func TestAccPipelineDefinitionResourceForCustomVariableLoopInvalidType(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Test invalid type
@@ -257,7 +257,7 @@ func TestAccPipelineDefinitionResourceForCustomVariableLoopInvalidType(t *testin
 }
 
 func TestAccPipelineDefinitionResourceForCustomVariableLoopMissingConfig(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Test missing config
@@ -271,7 +271,7 @@ func TestAccPipelineDefinitionResourceForCustomVariableLoopMissingConfig(t *test
 
 func TestAccPipelineDefinitionResourceForBigQueryDatamartWithStringLoop(t *testing.T) {
 	resourceName := "trocco_pipeline_definition.trocco_bigquery_datamart"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -301,7 +301,7 @@ func TestAccPipelineDefinitionResourceForBigQueryDatamartWithStringLoop(t *testi
 
 func TestAccPipelineDefinitionResourceForBigQueryDatamartWithBigQueryLoop(t *testing.T) {
 	resourceName := "trocco_pipeline_definition.trocco_bigquery_datamart"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -335,7 +335,7 @@ func TestAccPipelineDefinitionResourceForBigQueryDatamartWithBigQueryLoop(t *tes
 
 func TestAccPipelineDefinitionResourceForIfElse(t *testing.T) {
 	resourceName := "trocco_pipeline_definition.if_else_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

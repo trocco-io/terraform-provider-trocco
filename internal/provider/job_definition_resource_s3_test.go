@@ -9,7 +9,7 @@ import (
 
 func TestAccJobDefinitionResourceS3ToSnowflake(t *testing.T) {
 	resourceName := "trocco_job_definition.s3_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -38,7 +38,7 @@ func TestAccJobDefinitionResourceS3ToSnowflake(t *testing.T) {
 
 func TestAccJobDefinitionResourceS3ToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.s3_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -84,7 +84,7 @@ func TestAccJobDefinitionResourceS3ToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceMysqlToS3CSV(t *testing.T) {
 	resourceName := "trocco_job_definition.mysql_to_s3_csv"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -156,7 +156,7 @@ func TestAccJobDefinitionResourceMysqlToS3CSV(t *testing.T) {
 
 func TestAccJobDefinitionResourceMysqlToS3JSONL(t *testing.T) {
 	resourceName := "trocco_job_definition.mysql_to_s3_jsonl"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

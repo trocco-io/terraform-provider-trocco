@@ -50,7 +50,7 @@ func TestAccConnectionResource(t *testing.T) {
 func testAccConnectionResourceBigQuery(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -80,7 +80,7 @@ func testAccConnectionResourceBigQuery(t *testing.T) {
 func testAccConnectionResourceSnowflake(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.snowflake_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -98,7 +98,7 @@ func testAccConnectionResourceSnowflake(t *testing.T) {
 func testAccConnectionResourceMySQL(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.mysql_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -116,7 +116,7 @@ func testAccConnectionResourceMySQL(t *testing.T) {
 func testAccConnectionResourcePostgreSQL(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.postgresql_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -134,7 +134,7 @@ func testAccConnectionResourcePostgreSQL(t *testing.T) {
 func testAccConnectionResourceGoogleAnalytics4(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.google_analytics4_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -155,7 +155,7 @@ func testAccConnectionResourceGoogleAnalytics4(t *testing.T) {
 func testAccConnectionResourceGoogleDrive(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.google_drive_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -186,7 +186,7 @@ func testAccConnectionResourceGoogleDrive(t *testing.T) {
 func testAccConnectionResourceKintone(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.kintone_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -238,7 +238,7 @@ func TestInvalidDriver(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			resource.Test(t, resource.TestCase{
+			resource.ParallelTest(t, resource.TestCase{
 				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 				Steps: []resource.TestStep{
 					{
@@ -252,7 +252,7 @@ func TestInvalidDriver(t *testing.T) {
 }
 
 func TestInvalidLoginMethod(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -264,7 +264,7 @@ func TestInvalidLoginMethod(t *testing.T) {
 }
 
 func TestInvalidCustomConnectorMissingID(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -276,7 +276,7 @@ func TestInvalidCustomConnectorMissingID(t *testing.T) {
 }
 
 func TestInvalidCustomConnectorIDZero(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -290,7 +290,7 @@ func TestInvalidCustomConnectorIDZero(t *testing.T) {
 func testAccConnectionResourceMarketo(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.marketo"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -323,7 +323,7 @@ func testAccConnectionResourceMarketo(t *testing.T) {
 func testAccConnectionResourcePagerduty(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.pagerduty_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -351,7 +351,7 @@ func testAccConnectionResourcePagerduty(t *testing.T) {
 func testAccConnectionResourceCustomConnector(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.custom_connector_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -395,7 +395,7 @@ func testAccConnectionResourceCustomConnector(t *testing.T) {
 func testAccConnectionResourceCustomConnectorOAuth2(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.custom_connector_oauth2_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

@@ -9,7 +9,7 @@ import (
 
 func TestAccDatamartDefinitionResourceForBigquery(t *testing.T) {
 	resourceName := "trocco_bigquery_datamart_definition.test_bigquery_datamart"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -27,7 +27,7 @@ func TestAccDatamartDefinitionResourceForBigquery(t *testing.T) {
 
 func TestAccDatamartDefinitionResourceForBigqueryNotifications(t *testing.T) {
 	resourceName := "trocco_bigquery_datamart_definition.test_bigquery_datamart_notifications"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -84,7 +84,7 @@ func TestAccDatamartDefinitionResourceForBigqueryNotifications(t *testing.T) {
 // apply as an empty list, not become null.
 func TestAccDatamartDefinitionResourceForBigqueryNotificationsEmptyList(t *testing.T) {
 	resourceName := "trocco_bigquery_datamart_definition.test_notifications_empty"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -100,7 +100,7 @@ func TestAccDatamartDefinitionResourceForBigqueryNotificationsEmptyList(t *testi
 
 func TestAccDatamartDefinitionResourceForBigqueryIncremental(t *testing.T) {
 	resourceName := "trocco_bigquery_datamart_definition.test_incremental"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -126,7 +126,7 @@ func TestAccDatamartDefinitionResourceForBigqueryIncremental(t *testing.T) {
 
 func TestAccDatamartDefinitionResourceForBigquerySCDType2(t *testing.T) {
 	resourceName := "trocco_bigquery_datamart_definition.test_scd_type_2"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -149,7 +149,7 @@ func TestAccDatamartDefinitionResourceForBigquerySCDType2(t *testing.T) {
 
 func TestAccDatamartDefinitionResourceForBigqueryDescriptions(t *testing.T) {
 	resourceName := "trocco_bigquery_datamart_definition.test_descriptions"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// table_description and column_descriptions are not available in query mode.
@@ -196,7 +196,7 @@ func TestAccDatamartDefinitionResourceForBigqueryDescriptions(t *testing.T) {
 }
 
 func TestAccDatamartDefinitionResourceForBigqueryTruncateWriteDisposition(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
