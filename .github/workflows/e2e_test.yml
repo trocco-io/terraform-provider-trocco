@@ -32,6 +32,7 @@ jobs:
         env:
           TROCCO_API_KEY: ${{ secrets.TROCCO_API_KEY }}
           TROCCO_TEST_URL: https://trocco.io
+          TROCCO_TEST_SSH_TUNNEL_ID: ${{ vars.TROCCO_TEST_SSH_TUNNEL_ID }}
       - run: |
           make cover-html
       - name: Archive code coverage results
