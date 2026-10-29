@@ -182,7 +182,7 @@ func testAccConnectionResourcePostgreSQL(t *testing.T) {
 func testAccConnectionResourceSQLServer(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.sqlserver_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -213,7 +213,7 @@ func testAccConnectionResourceSQLServer(t *testing.T) {
 func testAccConnectionResourceSQLServerDefaultSSL(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.sqlserver_default_ssl_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -252,7 +252,7 @@ func TestInvalidSQLServerConnection(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			resource.Test(t, resource.TestCase{
+			resource.ParallelTest(t, resource.TestCase{
 				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 				Steps: []resource.TestStep{
 					{
@@ -360,7 +360,7 @@ func testAccConnectionResourceKintoneClientCertificate(t *testing.T) {
 	removeConfig := LoadTextFile("testdata/connection/kintone_client_certificate_remove.tf")
 
 	var connectionID int64
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -548,7 +548,7 @@ func TestInvalidKintoneClientCertificate(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			resource.Test(t, resource.TestCase{
+			resource.ParallelTest(t, resource.TestCase{
 				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 				Steps: []resource.TestStep{
 					{
@@ -649,7 +649,7 @@ func testAccConnectionResourcePagerduty(t *testing.T) {
 func testAccConnectionResourceOracle(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.oracle_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -683,7 +683,7 @@ func testAccConnectionResourceOracle(t *testing.T) {
 func testAccConnectionResourceOracleTns(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.oracle_tns_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -711,7 +711,7 @@ func testAccConnectionResourceOracleTns(t *testing.T) {
 
 func testAccConnectionResourceOracleHostTnsConflict(t *testing.T) {
 	t.Helper()
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -734,7 +734,7 @@ func testAccConnectionResourceOracleHostTnsConflict(t *testing.T) {
 func testAccConnectionResourceOracleGateway(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.oracle_gateway_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -779,7 +779,7 @@ func testAccConnectionResourceOracleGateway(t *testing.T) {
 func testAccConnectionResourceOracleWallet(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.oracle_wallet_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -823,7 +823,7 @@ func testAccConnectionResourceOracleWallet(t *testing.T) {
 func testAccConnectionResourceOracleUpdate(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.oracle_update_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -852,7 +852,7 @@ func testAccConnectionResourceOracleUpdate(t *testing.T) {
 func testAccConnectionResourceOracleGatewayTns(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.oracle_gateway_tns_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -875,7 +875,7 @@ func testAccConnectionResourceOracleGatewayTns(t *testing.T) {
 func testAccConnectionResourceOraclePrivatelink(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_connection.oracle_privatelink_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -892,7 +892,7 @@ func testAccConnectionResourceOraclePrivatelink(t *testing.T) {
 
 func testAccConnectionResourceOracleUserNameRequired(t *testing.T) {
 	t.Helper()
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -907,7 +907,7 @@ func testAccConnectionResourceOracleUserNameRequired(t *testing.T) {
 
 func testAccConnectionResourceOracleDriverRequired(t *testing.T) {
 	t.Helper()
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

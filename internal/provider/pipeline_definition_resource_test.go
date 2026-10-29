@@ -357,7 +357,7 @@ func TestAccPipelineDefinitionResourceForBigQueryDatamartWithBigQueryLoop(t *tes
 
 func TestAccPipelineDefinitionResourceForBigQueryDatamartWithSnowflakeLoop(t *testing.T) {
 	resourceName := "trocco_pipeline_definition.trocco_bigquery_datamart"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
