@@ -22,6 +22,13 @@ resource "trocco_bigquery_datamart_definition" "with_notifications" {
       record_count      = 100
       record_operator   = "below"
       message           = "Record count is below 100."
+    },
+    {
+      destination_type                 = "http"
+      http_notification_destination_id = 1
+      notification_type                = "job"
+      notify_when                      = "failed"
+      message                          = "{\"text\": \"Job failed.\"}"
     }
   ]
 }

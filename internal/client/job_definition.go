@@ -20,6 +20,7 @@ type JobDefinition struct {
 	Name                      string                                            `json:"name"`
 	Description               *string                                           `json:"description"`
 	ResourceGroupID           *int64                                            `json:"resource_group_id"`
+	SelfHostedRunnerClusterID *int64                                            `json:"self_hosted_runner_cluster_id"`
 	IsRunnableConcurrently    *bool                                             `json:"is_runnable_concurrently"`
 	RetryLimit                int64                                             `json:"retry_limit"`
 	ResourceEnhancement       *string                                           `json:"resource_enhancement"`
@@ -44,6 +45,7 @@ type CreateJobDefinitionInput struct {
 	Name                      string                                                         `json:"name"`
 	Description               *parameter.NullableString                                      `json:"description,omitempty"`
 	ResourceGroupID           *parameter.NullableInt64                                       `json:"resource_group_id,omitempty"`
+	SelfHostedRunnerClusterID *parameter.NullableInt64                                       `json:"self_hosted_runner_cluster_id,omitempty"`
 	IsRunnableConcurrently    bool                                                           `json:"is_runnable_concurrently"`
 	RetryLimit                int64                                                          `json:"retry_limit"`
 	ResourceEnhancement       *string                                                        `json:"resource_enhancement,omitempty"`
@@ -68,6 +70,7 @@ type UpdateJobDefinitionInput struct {
 	Name                      *string                                                        `json:"name,omitempty"`
 	Description               *parameter.NullableString                                      `json:"description,omitempty"`
 	ResourceGroupID           *parameter.NullableInt64                                       `json:"resource_group_id,omitempty"`
+	SelfHostedRunnerClusterID *parameter.NullableInt64                                       `json:"self_hosted_runner_cluster_id,omitempty"`
 	IsRunnableConcurrently    *bool                                                          `json:"is_runnable_concurrently,omitempty"`
 	RetryLimit                *int64                                                         `json:"retry_limit,omitempty"`
 	ResourceEnhancement       *string                                                        `json:"resource_enhancement,omitempty"`
@@ -95,6 +98,7 @@ type InputOption struct {
 	S3InputOption                  *inputOptionEntities.S3InputOption                  `json:"s3_input_option"`
 	BigqueryInputOption            *inputOptionEntities.BigqueryInputOption            `json:"bigquery_input_option"`
 	PostgreSQLInputOption          *inputOptionEntities.PostgreSQLInputOption          `json:"postgresql_input_option"`
+	SQLServerInputOption           *inputOptionEntities.SQLServerInputOption           `json:"sqlserver_input_option"`
 	GoogleAnalytics4InputOption    *inputOptionEntities.GoogleAnalytics4InputOption    `json:"google_analytics4_input_option"`
 	HttpInputOption                *inputOptionEntities.HttpInputOption                `json:"http_input_option"`
 	KintoneInputOption             *inputOptionEntities.KintoneInputOption             `json:"kintone_input_option"`
@@ -107,6 +111,7 @@ type InputOption struct {
 	GoogleAdsInputOption           *inputOptionEntities.GoogleAdsInputOption           `json:"google_ads_input_option"`
 	GoogleDriveInputOption         *inputOptionEntities.GoogleDriveInputOption         `json:"google_drive_input_option"`
 	RedshiftInputOption            *inputOptionEntities.RedshiftInputOption            `json:"redshift_input_option"`
+	OracleInputOption              *inputOptionEntities.OracleInputOption              `json:"oracle_input_option"`
 	FacebookAdsInsightsInputOption *inputOptionEntities.FacebookAdsInsightsInputOption `json:"facebook_ads_insights_input_option"`
 	MarketoInputOption             *inputOptionEntities.MarketoInputOption             `json:"marketo_input_option"`
 	CustomConnectorInputOption     *inputOptionEntities.CustomConnectorInputOption     `json:"custom_connector_input_option"`
@@ -125,6 +130,7 @@ type InputOptionInput struct {
 	S3InputOption                  *parameter.NullableObject[inputOptionParameters.S3InputOptionInput]                  `json:"s3_input_option,omitempty"`
 	BigqueryInputOption            *parameter.NullableObject[inputOptionParameters.BigqueryInputOptionInput]            `json:"bigquery_input_option,omitempty"`
 	PostgreSQLInputOption          *parameter.NullableObject[inputOptionParameters.PostgreSQLInputOptionInput]          `json:"postgresql_input_option,omitempty"`
+	SQLServerInputOption           *parameter.NullableObject[inputOptionParameters.SQLServerInputOptionInput]           `json:"sqlserver_input_option,omitempty"`
 	GoogleAnalytics4InputOption    *parameter.NullableObject[inputOptionParameters.GoogleAnalytics4InputOptionInput]    `json:"google_analytics4_input_option,omitempty"`
 	HttpInputOption                *parameter.NullableObject[inputOptionParameters.HttpInputOptionInput]                `json:"http_input_option,omitempty"`
 	KintoneInputOption             *parameter.NullableObject[inputOptionParameters.KintoneInputOptionInput]             `json:"kintone_input_option,omitempty"`
@@ -137,6 +143,7 @@ type InputOptionInput struct {
 	GoogleAdsInputOption           *parameter.NullableObject[inputOptionParameters.GoogleAdsInputOptionInput]           `json:"google_ads_input_option,omitempty"`
 	GoogleDriveInputOption         *parameter.NullableObject[inputOptionParameters.GoogleDriveInputOptionInput]         `json:"google_drive_input_option,omitempty"`
 	RedshiftInputOption            *parameter.NullableObject[inputOptionParameters.RedshiftInputOptionInput]            `json:"redshift_input_option,omitempty"`
+	OracleInputOption              *parameter.NullableObject[inputOptionParameters.OracleInputOptionInput]              `json:"oracle_input_option,omitempty"`
 	FacebookAdsInsightsInputOption *parameter.NullableObject[inputOptionParameters.FacebookAdsInsightsInputOptionInput] `json:"facebook_ads_insights_input_option,omitempty"`
 	MarketoInputOption             *parameter.NullableObject[inputOptionParameters.MarketoInputOptionInput]             `json:"marketo_input_option,omitempty"`
 	CustomConnectorInputOption     *parameter.NullableObject[inputOptionParameters.CustomConnectorInputOptionInput]     `json:"custom_connector_input_option,omitempty"`
@@ -155,6 +162,7 @@ type UpdateInputOptionInput struct {
 	S3InputOption                  *parameter.NullableObject[inputOptionParameters.UpdateS3InputOptionInput]                  `json:"s3_input_option,omitempty"`
 	BigqueryInputOption            *parameter.NullableObject[inputOptionParameters.UpdateBigqueryInputOptionInput]            `json:"bigquery_input_option,omitempty"`
 	PostgreSQLInputOption          *parameter.NullableObject[inputOptionParameters.UpdatePostgreSQLInputOptionInput]          `json:"postgresql_input_option,omitempty"`
+	SQLServerInputOption           *parameter.NullableObject[inputOptionParameters.UpdateSQLServerInputOptionInput]           `json:"sqlserver_input_option,omitempty"`
 	GoogleAnalytics4InputOption    *parameter.NullableObject[inputOptionParameters.UpdateGoogleAnalytics4InputOptionInput]    `json:"google_analytics4_input_option,omitempty"`
 	HttpInputOption                *parameter.NullableObject[inputOptionParameters.UpdateHttpInputOptionInput]                `json:"http_input_option,omitempty"`
 	KintoneInputOption             *parameter.NullableObject[inputOptionParameters.UpdateKintoneInputOptionInput]             `json:"kintone_input_option,omitempty"`
@@ -167,6 +175,7 @@ type UpdateInputOptionInput struct {
 	GoogleAdsInputOption           *parameter.NullableObject[inputOptionParameters.UpdateGoogleAdsInputOptionInput]           `json:"google_ads_input_option,omitempty"`
 	GoogleDriveInputOption         *parameter.NullableObject[inputOptionParameters.UpdateGoogleDriveInputOptionInput]         `json:"google_drive_input_option,omitempty"`
 	RedshiftInputOption            *parameter.NullableObject[inputOptionParameters.UpdateRedshiftInputOptionInput]            `json:"redshift_input_option,omitempty"`
+	OracleInputOption              *parameter.NullableObject[inputOptionParameters.UpdateOracleInputOptionInput]              `json:"oracle_input_option,omitempty"`
 	FacebookAdsInsightsInputOption *parameter.NullableObject[inputOptionParameters.UpdateFacebookAdsInsightsInputOptionInput] `json:"facebook_ads_insights_input_option,omitempty"`
 	MarketoInputOption             *parameter.NullableObject[inputOptionParameters.UpdateMarketoInputOptionInput]             `json:"marketo_input_option,omitempty"`
 	CustomConnectorInputOption     *parameter.NullableObject[inputOptionParameters.UpdateCustomConnectorInputOptionInput]     `json:"custom_connector_input_option,omitempty"`

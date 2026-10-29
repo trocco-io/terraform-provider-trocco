@@ -72,7 +72,6 @@ resource "trocco_job_definition" "gcs_to_bigquery_example" {
   filter_columns = [
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "id"
@@ -81,7 +80,6 @@ resource "trocco_job_definition" "gcs_to_bigquery_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "num_col"
@@ -90,7 +88,6 @@ resource "trocco_job_definition" "gcs_to_bigquery_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "str_col"
@@ -100,7 +97,6 @@ resource "trocco_job_definition" "gcs_to_bigquery_example" {
     {
       default                      = null
       format                       = "%Y-%m-%d %H:%M:%S.%N %z"
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "date_col"
@@ -144,7 +140,6 @@ resource "trocco_job_definition" "mysql_to_bigquery_example" {
   filter_columns = [
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "id"
@@ -153,7 +148,6 @@ resource "trocco_job_definition" "mysql_to_bigquery_example" {
     },
     {
       default                      = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "name"
@@ -163,7 +157,6 @@ resource "trocco_job_definition" "mysql_to_bigquery_example" {
     {
       default                      = null
       format                       = null
-      json_expand_columns          = []
       json_expand_enabled          = false
       json_expand_keep_base_column = false
       name                         = "created_at"
@@ -293,6 +286,9 @@ resource "trocco_job_definition" "general_example" {
 
   # if your account is professional
   resource_enhancement = "medium"
+
+  # if your account can use self-hosted runners, the job runs on the specified cluster
+  self_hosted_runner_cluster_id = 1
 }
 ```
 
@@ -1656,6 +1652,7 @@ resource "trocco_job_definition" "schedules" {
 - `resource_group_id` (Number) ID of the resource group to which the job definition belongs
 - `retry_limit` (Number) Maximum number of retries. if set 0, the job will not be retried
 - `schedules` (Attributes Set) Schedules to be attached to the job definition (see [below for nested schema](#nestedatt--schedules))
+- `self_hosted_runner_cluster_id` (Number) ID of the self-hosted runner cluster on which the job runs. If not specified, the job runs on the TROCCO-managed infrastructure. Only accounts that can use self-hosted runners can set it.
 
 ### Read-Only
 
@@ -1714,6 +1711,7 @@ Optional:
 - `marketo_input_option` (Attributes) Attributes about source Marketo Engage (see [below for nested schema](#nestedatt--input_option--marketo_input_option))
 - `mongodb_input_option` (Attributes) Attributes of source MongoDB (see [below for nested schema](#nestedatt--input_option--mongodb_input_option))
 - `mysql_input_option` (Attributes) Attributes of source mysql (see [below for nested schema](#nestedatt--input_option--mysql_input_option))
+- `oracle_input_option` (Attributes) Attributes of source Oracle Database (see [below for nested schema](#nestedatt--input_option--oracle_input_option))
 - `pagerduty_input_option` (Attributes) attributes of source Pagerduty (see [below for nested schema](#nestedatt--input_option--pagerduty_input_option))
 - `postgresql_input_option` (Attributes) Attributes of source postgresql (see [below for nested schema](#nestedatt--input_option--postgresql_input_option))
 - `redshift_input_option` (Attributes) Attributes of source redshift (see [below for nested schema](#nestedatt--input_option--redshift_input_option))
@@ -1721,6 +1719,7 @@ Optional:
 - `salesforce_input_option` (Attributes) Attributes about source Salesforce (see [below for nested schema](#nestedatt--input_option--salesforce_input_option))
 - `sftp_input_option` (Attributes) Attributes about source SFTP (see [below for nested schema](#nestedatt--input_option--sftp_input_option))
 - `snowflake_input_option` (Attributes) Attributes about source snowflake (see [below for nested schema](#nestedatt--input_option--snowflake_input_option))
+- `sqlserver_input_option` (Attributes) Attributes of source sqlserver (see [below for nested schema](#nestedatt--input_option--sqlserver_input_option))
 - `yahoo_ads_api_ydn_input_option` (Attributes) Attributes of source yahoo_ads_api_ydn (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_ydn_input_option))
 - `yahoo_ads_api_yss_input_option` (Attributes) Attributes of source yahoo_ads_api_yss (see [below for nested schema](#nestedatt--input_option--yahoo_ads_api_yss_input_option))
 
@@ -3298,6 +3297,71 @@ Optional:
 
 
 
+<a id="nestedatt--input_option--oracle_input_option"></a>
+### Nested Schema for `input_option.oracle_input_option`
+
+Required:
+
+- `input_option_columns` (Attributes List) Column definitions. When updated, fully replaces the existing list (id ascending order). (see [below for nested schema](#nestedatt--input_option--oracle_input_option--input_option_columns))
+- `oracle_connection_id` (Number) ID of Oracle connection
+
+Optional:
+
+- `connection_type` (String) How to interpret `database` field: `sid` (Oracle SID) or `service_name` (Oracle Service Name). Default: `sid`. Ignored when using TNS naming.
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--oracle_input_option--custom_variable_settings))
+- `database` (String) Database name (SID or service name). Required when using host/port connection. Ignored when using TNS naming.
+- `incremental_columns` (String) Comma-separated column names to identify incremental records. If omitted, primary key is used.
+- `incremental_loading_enabled` (Boolean) Whether to use incremental loading (true) or query-based transfer (false). Default: false.
+- `input_option_column_options` (Attributes List) Per-column options (e.g., NUMBER-to-string conversion). When updated, fully replaces the existing list. (see [below for nested schema](#nestedatt--input_option--oracle_input_option--input_option_column_options))
+- `last_record` (String) Last transferred record value. During incremental loading, only data newer than this value is transferred. If empty, transfer starts from the beginning. Do not change this value unless there is a specific reason, as doing so may cause data duplication.
+- `net_service_name` (String) Net service name from tnsnames.ora. Required when using TNS naming connection.
+- `query` (String) SQL query to fetch data. Required when `incremental_loading_enabled` is false.
+- `schema` (String) Schema name
+- `source_time_zone` (String) Timezone (IANA format, e.g., 'Asia/Tokyo') used to interpret DATE/TIMESTAMP columns without timezone information. If omitted, the timezone of the machine running the transfer is used.
+- `table` (String) Table name. Required when `incremental_loading_enabled` is true.
+
+<a id="nestedatt--input_option--oracle_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.oracle_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type: `boolean`, `long`, `double`, `string`, `json`, or `timestamp`
+
+Optional:
+
+- `format` (String) Timestamp format (strftime). Required when `type` is `timestamp`.
+- `timezone` (String) Timezone (IANA format) used to format this column's value as a string. This is independent of `source_time_zone`, which only affects how DATE/TIMESTAMP values without timezone information are interpreted. If omitted, defaults to UTC. Only for `type: timestamp`.
+
+
+<a id="nestedatt--input_option--oracle_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.oracle_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--oracle_input_option--input_option_column_options"></a>
+### Nested Schema for `input_option.oracle_input_option.input_option_column_options`
+
+Required:
+
+- `column_name` (String) Column name to apply option to
+- `column_value_type` (String) Value type override. Currently only `string` is supported.
+
+
+
 <a id="nestedatt--input_option--pagerduty_input_option"></a>
 ### Nested Schema for `input_option.pagerduty_input_option`
 
@@ -4001,6 +4065,67 @@ Optional:
 - `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
 - `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
 - `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+
+<a id="nestedatt--input_option--sqlserver_input_option"></a>
+### Nested Schema for `input_option.sqlserver_input_option`
+
+Required:
+
+- `database` (String) database name
+- `input_option_columns` (Attributes List) List of columns to be retrieved and their types (see [below for nested schema](#nestedatt--input_option--sqlserver_input_option--input_option_columns))
+- `sqlserver_connection_id` (Number) ID of SQL Server connection
+
+Optional:
+
+- `connect_timeout` (Number) Connection timeout (sec)
+- `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--sqlserver_input_option--custom_variable_settings))
+- `default_time_zone` (String) Default time zone. enter the server-side time zone setting for SQL Server. If the time zone is set to Japan, enter “Asia/Tokyo”.
+- `fetch_rows` (Number) Number of records processed by the cursor at one time
+- `incremental_columns` (String) Columns to determine incremental data
+- `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
+- `input_option_column_options` (Attributes List) List of unsupported data types and their convertible types. Currently only `string` is supported as the convertible type. (see [below for nested schema](#nestedatt--input_option--sqlserver_input_option--input_option_column_options))
+- `last_record` (String) Last record transferred. The value of the column specified here is stored in “Last Transferred Record” for each transfer, and for the second and subsequent transfers, only records for which the value of the “Column for Determining Incremental Data” is greater than the value of the previous transfer (= “Last Transferred Record”) are transferred. If you wish to specify multiple columns, specify them separated by commas. If not specified, the primary key is used.
+- `query` (String) If you want to use all record loading, specify it.
+- `schema` (String) schema name. If not specified, the default schema of the connected user (usually dbo) is used.
+- `socket_timeout` (Number) Socket timeout (seconds)
+- `table` (String) table name. If you want to use incremental loading, specify it.
+
+<a id="nestedatt--input_option--sqlserver_input_option--input_option_columns"></a>
+### Nested Schema for `input_option.sqlserver_input_option.input_option_columns`
+
+Required:
+
+- `name` (String) Column name
+- `type` (String) Column type
+
+
+<a id="nestedatt--input_option--sqlserver_input_option--custom_variable_settings"></a>
+### Nested Schema for `input_option.sqlserver_input_option.custom_variable_settings`
+
+Required:
+
+- `name` (String) Custom variable name. It must start and end with `$`
+- `type` (String) Custom variable type. The following types are supported: `string`, `timestamp`, `timestamp_runtime`
+
+Optional:
+
+- `direction` (String) Direction of the diff from context_time. The following directions are supported: `ago`, `later`. Required in `timestamp` and `timestamp_runtime` types
+- `format` (String) Format used to replace variables. Required in `timestamp` and `timestamp_runtime` types
+- `quantity` (Number) Quantity used to calculate diff from context_time. Required in `timestamp` and `timestamp_runtime` types
+- `time_zone` (String) Time zone used to format the timestamp. Required in `timestamp` and `timestamp_runtime` types
+- `unit` (String) Time unit used to calculate diff from context_time. The following units are supported: `hour`, `date`, `month`. Required in `timestamp` and `timestamp_runtime` types
+- `value` (String) Fixed string which will replace variables at runtime. Required in `string` type
+
+
+<a id="nestedatt--input_option--sqlserver_input_option--input_option_column_options"></a>
+### Nested Schema for `input_option.sqlserver_input_option.input_option_column_options`
+
+Required:
+
+- `column_name` (String) Column name
+- `column_value_type` (String) Column value type
 
 
 

@@ -18,6 +18,7 @@ type InputOption struct {
 	S3InputOption                  *inputOptionModel.S3InputOption                  `tfsdk:"s3_input_option"`
 	BigqueryInputOption            *inputOptionModel.BigqueryInputOption            `tfsdk:"bigquery_input_option"`
 	PostgreSQLInputOption          *inputOptionModel.PostgreSQLInputOption          `tfsdk:"postgresql_input_option"`
+	SQLServerInputOption           *inputOptionModel.SQLServerInputOption           `tfsdk:"sqlserver_input_option"`
 	GoogleAnalytics4InputOption    *inputOptionModel.GoogleAnalytics4InputOption    `tfsdk:"google_analytics4_input_option"`
 	HttpInputOption                *inputOptionModel.HttpInputOption                `tfsdk:"http_input_option"`
 	KintoneInputOption             *inputOptionModel.KintoneInputOption             `tfsdk:"kintone_input_option"`
@@ -30,6 +31,7 @@ type InputOption struct {
 	GoogleAdsInputOption           *inputOptionModel.GoogleAdsInputOption           `tfsdk:"google_ads_input_option"`
 	GoogleDriveInputOption         *inputOptionModel.GoogleDriveInputOption         `tfsdk:"google_drive_input_option"`
 	RedshiftInputOption            *inputOptionModel.RedshiftInputOption            `tfsdk:"redshift_input_option"`
+	OracleInputOption              *inputOptionModel.OracleInputOption              `tfsdk:"oracle_input_option"`
 	FacebookAdsInsightsInputOption *inputOptionModel.FacebookAdsInsightsInputOption `tfsdk:"facebook_ads_insights_input_option"`
 	MarketoInputOption             *inputOptionModel.MarketoInputOption             `tfsdk:"marketo_input_option"`
 	CustomConnectorInputOption     *inputOptionModel.CustomConnectorInputOption     `tfsdk:"custom_connector_input_option"`
@@ -56,6 +58,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		S3InputOption:                  inputOptionModel.NewS3InputOption(ctx, inputOption.S3InputOption),
 		BigqueryInputOption:            inputOptionModel.NewBigqueryInputOption(ctx, inputOption.BigqueryInputOption),
 		PostgreSQLInputOption:          inputOptionModel.NewPostgreSQLInputOption(ctx, inputOption.PostgreSQLInputOption),
+		SQLServerInputOption:           inputOptionModel.NewSQLServerInputOption(ctx, inputOption.SQLServerInputOption),
 		GoogleAnalytics4InputOption:    inputOptionModel.NewGoogleAnalytics4InputOption(ctx, inputOption.GoogleAnalytics4InputOption),
 		HttpInputOption:                httpInputOption,
 		KintoneInputOption:             inputOptionModel.NewKintoneInputOption(ctx, inputOption.KintoneInputOption),
@@ -68,6 +71,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		GoogleAdsInputOption:           inputOptionModel.NewGoogleAdsInputOption(ctx, inputOption.GoogleAdsInputOption),
 		GoogleDriveInputOption:         inputOptionModel.NewGoogleDriveInputOption(ctx, inputOption.GoogleDriveInputOption),
 		RedshiftInputOption:            inputOptionModel.NewRedshiftInputOption(ctx, inputOption.RedshiftInputOption),
+		OracleInputOption:              inputOptionModel.NewOracleInputOption(ctx, inputOption.OracleInputOption),
 		FacebookAdsInsightsInputOption: inputOptionModel.NewFacebookAdsInsightsInputOption(ctx, inputOption.FacebookAdsInsightsInputOption),
 		MarketoInputOption:             inputOptionModel.NewMarketoInputOption(ctx, inputOption.MarketoInputOption),
 		CustomConnectorInputOption:     customConnectorInputOption,
@@ -96,6 +100,7 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 		S3InputOption:                  model.WrapObject(o.S3InputOption.ToInput(ctx)),
 		BigqueryInputOption:            model.WrapObject(o.BigqueryInputOption.ToInput(ctx)),
 		PostgreSQLInputOption:          model.WrapObject(o.PostgreSQLInputOption.ToInput(ctx)),
+		SQLServerInputOption:           model.WrapObject(o.SQLServerInputOption.ToInput(ctx)),
 		GoogleAnalytics4InputOption:    model.WrapObject(o.GoogleAnalytics4InputOption.ToInput(ctx)),
 		HttpInputOption:                model.WrapObject(httpInput),
 		KintoneInputOption:             model.WrapObject(o.KintoneInputOption.ToInput(ctx)),
@@ -108,6 +113,7 @@ func (o InputOption) ToInput(ctx context.Context) (client.InputOptionInput, diag
 		GoogleAdsInputOption:           model.WrapObject(o.GoogleAdsInputOption.ToInput(ctx)),
 		GoogleDriveInputOption:         model.WrapObject(o.GoogleDriveInputOption.ToInput(ctx)),
 		RedshiftInputOption:            model.WrapObject(o.RedshiftInputOption.ToInput(ctx)),
+		OracleInputOption:              model.WrapObject(o.OracleInputOption.ToInput(ctx)),
 		FacebookAdsInsightsInputOption: model.WrapObject(o.FacebookAdsInsightsInputOption.ToInput(ctx)),
 		MarketoInputOption:             model.WrapObject(o.MarketoInputOption.ToInput(ctx)),
 		CustomConnectorInputOption:     model.WrapObject(customConnectorInput),
@@ -135,6 +141,7 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 		S3InputOption:                  model.WrapObject(o.S3InputOption.ToUpdateInput(ctx)),
 		BigqueryInputOption:            model.WrapObject(o.BigqueryInputOption.ToUpdateInput(ctx)),
 		PostgreSQLInputOption:          model.WrapObject(o.PostgreSQLInputOption.ToUpdateInput(ctx)),
+		SQLServerInputOption:           model.WrapObject(o.SQLServerInputOption.ToUpdateInput(ctx)),
 		GoogleAnalytics4InputOption:    model.WrapObject(o.GoogleAnalytics4InputOption.ToUpdateInput(ctx)),
 		HttpInputOption:                model.WrapObject(httpInput),
 		KintoneInputOption:             model.WrapObject(o.KintoneInputOption.ToUpdateInput(ctx)),
@@ -147,6 +154,7 @@ func (o InputOption) ToUpdateInput(ctx context.Context) (*client.UpdateInputOpti
 		GoogleAdsInputOption:           model.WrapObject(o.GoogleAdsInputOption.ToUpdateInput(ctx)),
 		GoogleDriveInputOption:         model.WrapObject(o.GoogleDriveInputOption.ToUpdateInput(ctx)),
 		RedshiftInputOption:            model.WrapObject(o.RedshiftInputOption.ToUpdateInput(ctx)),
+		OracleInputOption:              model.WrapObject(o.OracleInputOption.ToUpdateInput(ctx)),
 		FacebookAdsInsightsInputOption: model.WrapObject(o.FacebookAdsInsightsInputOption.ToUpdateInput(ctx)),
 		MarketoInputOption:             model.WrapObject(o.MarketoInputOption.ToUpdateInput(ctx)),
 		CustomConnectorInputOption:     model.WrapObject(customConnectorInput),
