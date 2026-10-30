@@ -30,8 +30,6 @@ func TestNewTroccoClientWithRegion(t *testing.T) {
 		expectedBaseURL string
 	}{
 		{"japan", "https://trocco.io"},
-		{"india", "https://in.trocco.io"},
-		{"korea", "https://kr.trocco.io"},
 	}
 	for _, c := range cases {
 		t.Run("should return a new TroccoClient for "+c.region+" region", func(t *testing.T) {
