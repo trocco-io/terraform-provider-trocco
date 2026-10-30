@@ -76,6 +76,17 @@ resource "trocco_bigquery_datamart_definition" "insert_mode" {
   partitioning_time        = "DAY"
   partitioning_field       = "created_at"
   clustering_fields        = ["id", "name"]
+  table_description        = "Table description"
+  column_descriptions = [
+    {
+      name        = "id"
+      description = "Primary key"
+    },
+    {
+      name        = "name"
+      description = "Name of the record"
+    },
+  ]
 }
 ```
 
@@ -161,6 +172,13 @@ resource "trocco_bigquery_datamart_definition" "with_notifications" {
       record_count      = 100
       record_operator   = "below"
       message           = "Record count is below 100."
+    },
+    {
+      destination_type                 = "http"
+      http_notification_destination_id = 1
+      notification_type                = "job"
+      notify_when                      = "failed"
+      message                          = "{\"text\": \"Job failed.\"}"
     }
   ]
 }
@@ -204,6 +222,7 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 
 - `before_load` (String) The query to be executed before loading the data into the destination table. Available only in `insert` mode
 - `clustering_fields` (List of String) Column names to be used for clustering. At most 4 fields can be specified. Available only in `insert` mode
+- `column_descriptions` (Attributes List) Descriptions of the destination table columns. Only the specified columns are reflected in the BigQuery column descriptions after the job runs. The order of the array is preserved. Available only in `insert` mode (see [below for nested schema](#nestedatt--column_descriptions))
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--custom_variable_settings))
 - `description` (String) Description of the datamart definition. It must be at least 1 character
 - `destination_dataset` (String) Destination dataset where the query result will be inserted. Required in `insert` mode
@@ -218,7 +237,7 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 - `lookback_period_to` (Number) End value of the lookback period
 - `lookback_period_unit` (String) Unit of the lookback period. The following units are supported: `days`, `hours`
 - `merge_keys` (List of String) Key columns to uniquely identify records. Required when `write_disposition` is `incremental` or `scd_type_2`
-- `notifications` (Attributes Set) Notifications to be attached to the datamart definition (see [below for nested schema](#nestedatt--notifications))
+- `notifications` (Attributes List) Notifications to be attached to the datamart definition (see [below for nested schema](#nestedatt--notifications))
 - `on_matched_action` (String) Behavior when a record with a matching key exists. The following actions are supported: `upsert`, `skip`. Required when `write_disposition` is `incremental`
 - `partitioning` (String) The following partitioning types are supported: `ingestion_time`, `time_unit_column`. In the case of `ingestion_time`, partitions are cut based on TROCCO's job execution time. In the case of `time_unit_column`, partitioning is done based on the reference column. Available only in `insert` mode
 - `partitioning_field` (String) Column name to be used for partitioning. Required when `partitioning` is `time_unit_column`
@@ -226,6 +245,7 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 - `resource_group_id` (Number) ID of the resource group to which the datamart definition belongs
 - `schedules` (Attributes Set) Schedules to be attached to the datamart definition (see [below for nested schema](#nestedatt--schedules))
 - `schema_evolution_mode` (String) Schema evolution mode. The following modes are supported: `detect_only`, `auto_add_column`. Available when `write_disposition` is `incremental` or `scd_type_2`
+- `table_description` (String) Description of the destination table. It is reflected in the BigQuery table description after the job runs. It must be at most 1024 characters. Available only in `insert` mode
 - `write_disposition` (String) The following write dispositions are supported: `append`, `truncate`, `incremental`, `scd_type_2`. Required in `insert` mode
 
 ### Read-Only
@@ -234,6 +254,15 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 - `is_current_column` (String) SCD Type 2 is-current flag column name. Fixed value: `trocco_is_current`
 - `valid_from_column` (String) SCD Type 2 valid-from column name. Fixed value: `trocco_valid_from`
 - `valid_to_column` (String) SCD Type 2 valid-to column name. Fixed value: `trocco_valid_to`
+
+<a id="nestedatt--column_descriptions"></a>
+### Nested Schema for `column_descriptions`
+
+Required:
+
+- `description` (String) Description of the column. It must be at most 1024 characters. Specifying an empty string removes the description of the column in BigQuery after the job runs
+- `name` (String) Column name. It must start with a letter or underscore and contain only letters, digits, and underscores
+
 
 <a id="nestedatt--custom_variable_settings"></a>
 ### Nested Schema for `custom_variable_settings`
@@ -270,17 +299,22 @@ Read-Only:
 
 Required:
 
-- `destination_type` (String) Destination service where the notification will be sent. The following types are supported: `slack`, `email`
+- `destination_type` (String) Destination service where the notification will be sent. The following types are supported: `slack`, `email`, `http`
 - `message` (String) The message to be sent with the notification
 - `notification_type` (String) Category of condition. The following types are supported: `job`, `record`
 
 Optional:
 
 - `email_id` (Number) ID of the email used to send notifications. Required when `destination_type` is `email`
+- `http_notification_destination_id` (Number) ID of the HTTP notification destination used to send notifications. Required when `destination_type` is `http`
 - `notify_when` (String) Specifies the job status that trigger a notification. The following types are supported: `finished`, `failed`. Required when `notification_type` is `job`
 - `record_count` (Number) The number of records to be used for condition. Required when `notification_type` is `record`
 - `record_operator` (String) Operator to be used for condition. The following operators are supported: `above`, `below`. Required when `notification_type` is `record`
 - `slack_channel_id` (Number) ID of the slack channel used to send notifications. Required when `destination_type` is `slack`
+
+Read-Only:
+
+- `id` (Number) Server-assigned ID of the notification. Unique within `(notification_type, destination_type)` for matching across API responses.
 
 
 <a id="nestedatt--schedules"></a>

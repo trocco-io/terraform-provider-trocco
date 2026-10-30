@@ -45,12 +45,28 @@ func (d *DatabricksOutputOptionColumnPlanModifier) PlanModifyObject(ctx context.
 		return
 	}
 
-	if typ.ValueString() != "TIMESTAMP" && !timezone.IsNull() {
-		addDatabricksOutputOptionColumnAttributeError(req, resp, "timezone can only be set when type is 'TIMESTAMP'")
+	if typ.IsUnknown() || valueType.IsUnknown() || timestampFormat.IsUnknown() || timezone.IsUnknown() {
+		return
 	}
 
-	if !timestampFormat.IsNull() && (typ.ValueString() != "TIMESTAMP" || (valueType.ValueString() != "string" && valueType.ValueString() != "nstring" && valueType.ValueString() != "timestamp")) {
-		addDatabricksOutputOptionColumnAttributeError(req, resp, "timestamp_format can only be set when type is 'TIMESTAMP' and value_type is string, nstring, or timestamp")
+	// TROCCO decides whether it stores `timestamp_format` and `timezone` from
+	// `value_type` alone, because that is what selects the embulk column setter
+	// that reads them; `type` is only the DDL type, and is consulted for
+	// `timezone` when `value_type` is omitted. A value TROCCO does not store is
+	// dropped silently, which surfaces as "Provider produced inconsistent result
+	// after apply", so reject the combination while planning instead.
+	timestampFormatAvailable := valueType.ValueString() == "string" || valueType.ValueString() == "nstring"
+	timezoneAvailable := timestampFormatAvailable || valueType.ValueString() == "date" || valueType.ValueString() == "time"
+	if valueType.ValueString() == "" {
+		timezoneAvailable = typ.ValueString() == "DATE" || typ.ValueString() == "TIMESTAMP"
+	}
+
+	if !timestampFormat.IsNull() && !timestampFormatAvailable {
+		addDatabricksOutputOptionColumnAttributeError(req, resp, "timestamp_format can only be set when value_type is string or nstring")
+	}
+
+	if !timezone.IsNull() && !timezoneAvailable {
+		addDatabricksOutputOptionColumnAttributeError(req, resp, "timezone can only be set when value_type is string, nstring, date or time, or, when value_type is omitted, when type is 'DATE' or 'TIMESTAMP'")
 	}
 }
 

@@ -78,11 +78,20 @@ resource "trocco_job_definition" "mysql_to_databricks" {
       default_time_zone        = "Asia/Tokyo"
       databricks_output_option_column_options = [
         {
-          name             = "id"
+          name = "id"
+          # `string` and `nstring` are the only value types that keep
+          # `timestamp_format`, whatever `type` is.
           type             = "TIMESTAMP"
-          value_type       = "timestamp"
+          value_type       = "string"
           timestamp_format = "%Y-%m-%d %H:%M:%S"
           timezone         = "Asia/Tokyo"
+        },
+        {
+          # `date` keeps `timezone` without keeping `timestamp_format`.
+          name       = "created_on"
+          type       = "DATE"
+          value_type = "date"
+          timezone   = "Asia/Tokyo"
         }
       ]
       databricks_output_option_merge_keys = [

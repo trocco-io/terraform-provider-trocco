@@ -9,7 +9,7 @@ import (
 
 func TestAccJobDefinitionResourceDatabricksToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.databricks_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -68,7 +68,7 @@ func TestAccJobDefinitionResourceDatabricksToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceMysqlToDatabricks(t *testing.T) {
 	resourceName := "trocco_job_definition.mysql_to_databricks"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -93,12 +93,17 @@ func TestAccJobDefinitionResourceMysqlToDatabricks(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.batch_size", "40000"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.mode", "merge"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.default_time_zone", "Asia/Tokyo"),
-					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.#", "2"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.0.name", "id"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.0.type", "TIMESTAMP"),
-					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.0.value_type", "timestamp"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.0.value_type", "string"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.0.timestamp_format", "%Y-%m-%d %H:%M:%S"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.0.timezone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.1.name", "created_on"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.1.type", "DATE"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.1.value_type", "date"),
+					resource.TestCheckNoResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.1.timestamp_format"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_column_options.1.timezone", "Asia/Tokyo"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.databricks_output_option.databricks_output_option_merge_keys.#", "1"),
 				),
 			},

@@ -9,7 +9,7 @@ import (
 
 func TestAccJobDefinitionResourceMarketoToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.marketo_lead_with_date_filter"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -52,7 +52,7 @@ func TestAccJobDefinitionResourceMarketoToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceMarketoActivityToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.marketo_activity_with_type_filter"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -96,7 +96,7 @@ func TestAccJobDefinitionResourceMarketoActivityToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceMarketoCustomObjectToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.marketo_custom_object_with_filter"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -137,7 +137,7 @@ func TestAccJobDefinitionResourceMarketoCustomObjectToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceMarketoFolderToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.marketo_folder_transfer"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -176,7 +176,7 @@ func TestAccJobDefinitionResourceMarketoFolderToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceMarketoWithCustomVariablesToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.marketo_with_custom_variables_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

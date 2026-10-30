@@ -25,6 +25,7 @@ func OutputOptionSchema() schema.Attribute {
 			"google_drive_output_option":        GoogleDriveOutputOptionSchema(),
 			"gcs_output_option":                 GcsOutputOptionSchema(),
 			"redshift_output_option":            RedshiftOutputOptionSchema(),
+			"custom_connector_output_option":    CustomConnectorOutputOptionSchema(),
 		},
 		PlanModifiers: []planmodifier.Object{
 			&planModifier.OutputOptionPlanModifier{},

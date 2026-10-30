@@ -5,6 +5,8 @@ import (
 	"terraform-provider-trocco/internal/client"
 	"terraform-provider-trocco/internal/provider/model"
 	outputOptionModel "terraform-provider-trocco/internal/provider/model/job_definition/output_option"
+
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 )
 
 type OutputOption struct {
@@ -22,9 +24,20 @@ type OutputOption struct {
 	GoogleDriveOutputOption        *outputOptionModel.GoogleDriveOutputOption        `tfsdk:"google_drive_output_option"`
 	GcsOutputOption                *outputOptionModel.GcsOutputOption                `tfsdk:"gcs_output_option"`
 	RedshiftOutputOption           *outputOptionModel.RedshiftOutputOption           `tfsdk:"redshift_output_option"`
+	CustomConnectorOutputOption    *outputOptionModel.CustomConnectorOutputOption    `tfsdk:"custom_connector_output_option"`
 }
 
-func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *OutputOption {
+// NewOutputOption builds the TF model from the API response. previous is the
+// plan (Create/Update) or the prior state (Read); it is only consulted for
+// attributes the API accepts but never returns, so that they survive the
+// round trip instead of being reset to null.
+func NewOutputOption(ctx context.Context, outputOption client.OutputOption, previous *OutputOption) (*OutputOption, diag.Diagnostics) {
+	var previousCustomConnectorOutputOption *outputOptionModel.CustomConnectorOutputOption
+	if previous != nil {
+		previousCustomConnectorOutputOption = previous.CustomConnectorOutputOption
+	}
+	customConnectorOutputOption, diags := outputOptionModel.NewCustomConnectorOutputOption(ctx, outputOption.CustomConnectorOutputOption, previousCustomConnectorOutputOption)
+
 	return &OutputOption{
 		BigQueryOutputOption:           outputOptionModel.NewBigQueryOutputOption(ctx, outputOption.BigQueryOutputOption),
 		SnowflakeOutputOption:          outputOptionModel.NewSnowflakeOutputOption(ctx, outputOption.SnowflakeOutputOption),
@@ -40,10 +53,13 @@ func NewOutputOption(ctx context.Context, outputOption client.OutputOption) *Out
 		GoogleDriveOutputOption:        outputOptionModel.NewGoogleDriveOutputOption(ctx, outputOption.GoogleDriveOutputOption),
 		GcsOutputOption:                outputOptionModel.NewGcsOutputOption(ctx, outputOption.GcsOutputOption),
 		RedshiftOutputOption:           outputOptionModel.NewRedshiftOutputOption(ctx, outputOption.RedshiftOutputOption),
-	}
+		CustomConnectorOutputOption:    customConnectorOutputOption,
+	}, diags
 }
 
-func (o OutputOption) ToInput(ctx context.Context) client.OutputOptionInput {
+func (o OutputOption) ToInput(ctx context.Context) (client.OutputOptionInput, diag.Diagnostics) {
+	customConnectorInput, diags := o.CustomConnectorOutputOption.ToInput(ctx)
+
 	return client.OutputOptionInput{
 		BigQueryOutputOption:           model.WrapObject(o.BigQueryOutputOption.ToInput(ctx)),
 		SnowflakeOutputOption:          model.WrapObject(o.SnowflakeOutputOption.ToInput(ctx)),
@@ -59,10 +75,13 @@ func (o OutputOption) ToInput(ctx context.Context) client.OutputOptionInput {
 		GoogleDriveOutputOption:        model.WrapObject(o.GoogleDriveOutputOption.ToInput(ctx)),
 		GcsOutputOption:                model.WrapObject(o.GcsOutputOption.ToInput(ctx)),
 		RedshiftOutputOption:           model.WrapObject(o.RedshiftOutputOption.ToInput(ctx)),
-	}
+		CustomConnectorOutputOption:    model.WrapObject(customConnectorInput),
+	}, diags
 }
 
-func (o OutputOption) ToUpdateInput(ctx context.Context) *client.UpdateOutputOptionInput {
+func (o OutputOption) ToUpdateInput(ctx context.Context) (*client.UpdateOutputOptionInput, diag.Diagnostics) {
+	customConnectorInput, diags := o.CustomConnectorOutputOption.ToUpdateInput(ctx)
+
 	return &client.UpdateOutputOptionInput{
 		BigQueryOutputOption:           model.WrapObject(o.BigQueryOutputOption.ToUpdateInput(ctx)),
 		SnowflakeOutputOption:          model.WrapObject(o.SnowflakeOutputOption.ToUpdateInput(ctx)),
@@ -78,5 +97,6 @@ func (o OutputOption) ToUpdateInput(ctx context.Context) *client.UpdateOutputOpt
 		GoogleDriveOutputOption:        model.WrapObject(o.GoogleDriveOutputOption.ToUpdateInput(ctx)),
 		GcsOutputOption:                model.WrapObject(o.GcsOutputOption.ToUpdateInput(ctx)),
 		RedshiftOutputOption:           model.WrapObject(o.RedshiftOutputOption.ToUpdateInput(ctx)),
-	}
+		CustomConnectorOutputOption:    model.WrapObject(customConnectorInput),
+	}, diags
 }

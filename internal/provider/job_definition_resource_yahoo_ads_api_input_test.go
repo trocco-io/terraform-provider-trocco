@@ -9,7 +9,7 @@ import (
 
 func TestAccJobDefinitionResourceYahooAdsApiYdnReportToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.yahoo_ads_report_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -61,7 +61,7 @@ func TestAccJobDefinitionResourceYahooAdsApiYdnReportToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceYahooAdsApiYdnStatsToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.yahoo_ads_stats_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

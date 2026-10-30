@@ -2,10 +2,12 @@ package pipeline_definition
 
 import (
 	"context"
+	"fmt"
 	pipelineDefinitionEntities "terraform-provider-trocco/internal/client/entity/pipeline_definition"
 	pipelineDefinitionParameters "terraform-provider-trocco/internal/client/parameter/pipeline_definition"
 	"terraform-provider-trocco/internal/provider/custom_type"
 	model "terraform-provider-trocco/internal/provider/model"
+	"terraform-provider-trocco/internal/provider/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -16,17 +18,20 @@ import (
 //
 
 type Notification struct {
+	ID              types.Int64              `tfsdk:"id"`
 	Type            types.String             `tfsdk:"type"`
 	DestinationType types.String             `tfsdk:"destination_type"`
 	NotifyWhen      types.String             `tfsdk:"notify_when"`
 	Time            types.Int64              `tfsdk:"time"`
 	EmailConfig     *EmailNotificationConfig `tfsdk:"email_config"`
 	SlackConfig     *SlackNotificationConfig `tfsdk:"slack_config"`
+	HTTPConfig      *HTTPNotificationConfig  `tfsdk:"http_config"`
 }
 
-func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Notification, previousIsNull bool) types.Set {
+func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Notification, previousIsNull bool, refNotifs []*Notification) types.List {
 	objectType := types.ObjectType{
 		AttrTypes: map[string]attr.Type{
+			"id":               types.Int64Type,
 			"type":             types.StringType,
 			"destination_type": types.StringType,
 			"notify_when":      types.StringType,
@@ -43,15 +48,24 @@ func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Not
 					"message":         custom_type.TrimmedStringType{},
 				},
 			},
+			"http_config": types.ObjectType{
+				AttrTypes: map[string]attr.Type{
+					"notification_id": types.Int64Type,
+					"message":         custom_type.TrimmedStringType{},
+				},
+			},
 		},
 	}
 
+	// A nil response is normalized to an empty slice so that the previous
+	// (plan or state) value decides between null and an empty list; an
+	// explicitly configured `notifications = []` must survive apply.
 	if ens == nil {
-		return types.SetNull(objectType)
+		ens = []*pipelineDefinitionEntities.Notification{}
 	}
 
 	if previousIsNull && len(ens) == 0 {
-		return types.SetNull(objectType)
+		return types.ListNull(objectType)
 	}
 
 	mds := []*Notification{}
@@ -59,22 +73,26 @@ func NewNotifications(ctx context.Context, ens []*pipelineDefinitionEntities.Not
 		mds = append(mds, NewNotification(en))
 	}
 
-	setValue, diags := types.SetValueFrom(ctx, objectType, mds)
+	mds = utils.MatchByKey(mds, refNotifs, pipelineNotificationKey, pipelineNotificationFallbackKey)
+
+	listValue, diags := types.ListValueFrom(ctx, objectType, mds)
 	if diags.HasError() {
-		return types.SetNull(objectType)
+		return types.ListNull(objectType)
 	}
 
-	return setValue
+	return listValue
 }
 
 func NewNotification(en *pipelineDefinitionEntities.Notification) *Notification {
 	return &Notification{
+		ID:              types.Int64Value(en.ID),
 		Type:            types.StringValue(en.Type),
 		DestinationType: types.StringValue(en.DestinationType),
 		NotifyWhen:      types.StringPointerValue(en.NotifyWhen),
 		Time:            types.Int64PointerValue(en.Time),
 		EmailConfig:     NewEmailNotificationConfig(en.EmailConfig),
 		SlackConfig:     NewSlackNotificationConfig(en.SlackConfig),
+		HTTPConfig:      NewHTTPNotificationConfig(en.HTTPConfig),
 	}
 }
 
@@ -91,6 +109,9 @@ func (n *Notification) ToInput() *pipelineDefinitionParameters.Notification {
 	}
 	if n.SlackConfig != nil {
 		param.SlackConfig = n.SlackConfig.ToInput()
+	}
+	if n.HTTPConfig != nil {
+		param.HTTPConfig = n.HTTPConfig.ToInput()
 	}
 
 	return param
@@ -148,4 +169,46 @@ func (c *SlackNotificationConfig) ToInput() *pipelineDefinitionParameters.SlackN
 		NotificationID: c.NotificationID.ValueInt64(),
 		Message:        c.Message.ValueString(),
 	}
+}
+
+//
+// HTTPNotificationConfig
+//
+
+type HTTPNotificationConfig struct {
+	NotificationID types.Int64                    `tfsdk:"notification_id"`
+	Message        custom_type.TrimmedStringValue `tfsdk:"message"`
+}
+
+func NewHTTPNotificationConfig(en *pipelineDefinitionEntities.HTTPNotificationConfig) *HTTPNotificationConfig {
+	if en == nil {
+		return nil
+	}
+
+	return &HTTPNotificationConfig{
+		NotificationID: types.Int64Value(en.NotificationID),
+		Message:        custom_type.TrimmedStringValue{StringValue: types.StringValue(en.Message)},
+	}
+}
+
+func (c *HTTPNotificationConfig) ToInput() *pipelineDefinitionParameters.HTTPNotificationConfig {
+	return &pipelineDefinitionParameters.HTTPNotificationConfig{
+		NotificationID: c.NotificationID.ValueInt64(),
+		Message:        c.Message.ValueString(),
+	}
+}
+
+func pipelineNotificationKey(n *Notification) string {
+	return fmt.Sprintf("%s|%s|%d",
+		n.Type.ValueString(),
+		n.DestinationType.ValueString(),
+		n.ID.ValueInt64(),
+	)
+}
+
+func pipelineNotificationFallbackKey(n *Notification) string {
+	return fmt.Sprintf("%s|%s",
+		n.Type.ValueString(),
+		n.DestinationType.ValueString(),
+	)
 }

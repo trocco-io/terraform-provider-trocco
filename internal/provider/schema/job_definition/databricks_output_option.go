@@ -85,11 +85,11 @@ func DatabricksOutputOptionSchema() schema.Attribute {
 						},
 						"timestamp_format": schema.StringAttribute{
 							Optional:            true,
-							MarkdownDescription: "Timestamp format",
+							MarkdownDescription: "Timestamp format (can only be set when `value_type` is `string` or `nstring`, the value types whose embulk column setter reads it)",
 						},
 						"timezone": schema.StringAttribute{
 							Optional:            true,
-							MarkdownDescription: "Time zone",
+							MarkdownDescription: "Time zone (can only be set when `value_type` is `string`, `nstring`, `date` or `time`, or, with `value_type` omitted, when `type` is `DATE` or `TIMESTAMP`)",
 						},
 					},
 					PlanModifiers: []planmodifier.Object{

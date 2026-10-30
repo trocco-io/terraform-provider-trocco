@@ -20,3 +20,11 @@ linters:
     - "thelper"
     - "unconvert"
     - "unparam"
+  exclusions:
+    rules:
+      # Test mock servers encode fixture entities that contain secret-like
+      # fields such as API keys, which are not real secrets.
+      - path: _test\.go
+        linters:
+          - gosec
+        text: "G117:"

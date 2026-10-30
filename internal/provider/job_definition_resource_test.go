@@ -7,9 +7,27 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
+// Regression test: an explicitly configured `notifications = []` must survive
+// apply as an empty list, not become null.
+func TestAccJobDefinitionResourceNotificationsEmptyList(t *testing.T) {
+	resourceName := "trocco_job_definition.notifications_empty_test"
+	resource.ParallelTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: providerConfig + LoadTextFile("testdata/fixtures/mysql_connection.tf") + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/notifications/empty.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "notifications_empty_test"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "0"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccJobDefinitionResourceNotifications(t *testing.T) {
 	resourceName := "trocco_job_definition.notifications_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -18,16 +36,18 @@ func TestAccJobDefinitionResourceNotifications(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "notifications_test"),
 					resource.TestCheckResourceAttr(resourceName, "description", "Test job definition with notifications"),
-					// Email message
-					resource.TestCheckResourceAttr(resourceName, "notifications.0.message", "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  \n"),
-					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "email"),
+					// Slack message
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.message", "This is a multi-line message\nwith several lines\n  and some indentation\n    to test TrimmedStringType\n"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "job"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "finished"),
-					// Slack message
-					resource.TestCheckResourceAttr(resourceName, "notifications.1.message", "This is a multi-line message\nwith several lines\n  and some indentation\n    to test TrimmedStringType\n"),
-					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "slack"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.0.id"),
+					// Email message
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.message", "  This is another multi-line message\nwith leading and trailing whitespace\n  \n  to test TrimmedStringType\n  \n"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "email"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "job"),
 					resource.TestCheckResourceAttr(resourceName, "notifications.1.notify_when", "finished"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.1.id"),
 				),
 			},
 			// Import testing
@@ -44,6 +64,58 @@ func TestAccJobDefinitionResourceNotifications(t *testing.T) {
 					jobDefinitionId := s.RootModule().Resources[resourceName].Primary.ID
 					return jobDefinitionId, nil
 				},
+			},
+			// Reordering the notifications in config should be reflected in state
+			// without leaving a perpetual diff after refresh.
+			{
+				Config: providerConfig + LoadTextFile("testdata/fixtures/mysql_connection.tf") + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/notifications/reorder.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "email"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "slack"),
+				),
+			},
+			// Multiple notifications sharing the same (type, destination_type)
+			// must keep their distinct destination IDs without being swapped.
+			{
+				Config: providerConfig + LoadTextFile("testdata/fixtures/mysql_connection.tf") + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/notifications/multiple_slack.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "job"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "finished"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.0.slack_channel_id", "trocco_notification_destination.slack", "id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "slack"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "job"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notify_when", "failed"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.slack_channel_id", "trocco_notification_destination.slack_b", "id"),
+				),
+			},
+			// HTTP notification destination for job, record and exec_time notifications.
+			{
+				Config: providerConfig + LoadTextFile("testdata/fixtures/mysql_connection.tf") + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/notifications/http.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "notifications.#", "3"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.destination_type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notification_type", "job"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.0.notify_when", "failed"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.0.http_notification_destination_id", "trocco_notification_destination.http", "id"),
+					resource.TestCheckResourceAttrSet(resourceName, "notifications.0.id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.destination_type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.notification_type", "record"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.record_count", "10"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.record_operator", "below"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.1.record_type", "transfer"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.1.http_notification_destination_id", "trocco_notification_destination.http", "id"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.destination_type", "http"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.notification_type", "exec_time"),
+					resource.TestCheckResourceAttr(resourceName, "notifications.2.minutes", "10"),
+					resource.TestCheckResourceAttrPair(resourceName, "notifications.2.http_notification_destination_id", "trocco_notification_destination.http", "id"),
+				),
+			},
+			// Refresh after the HTTP notifications must not produce a diff.
+			{
+				Config:   providerConfig + LoadTextFile("testdata/fixtures/mysql_connection.tf") + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/notifications/http.tf"),
+				PlanOnly: true,
 			},
 		},
 	})

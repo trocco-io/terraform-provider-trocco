@@ -1,0 +1,1 @@
+terraform import trocco_dbt_job_definition.example <dbt_job_definition_id>

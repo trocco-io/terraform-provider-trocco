@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"terraform-provider-trocco/internal/client"
+	jobDefinitionEntities "terraform-provider-trocco/internal/client/entity/job_definition"
 	"terraform-provider-trocco/internal/client/parameter"
 	jobDefinitionParameters "terraform-provider-trocco/internal/client/parameter/job_definition"
 	filterParameters "terraform-provider-trocco/internal/client/parameter/job_definition/filter"
@@ -29,12 +30,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
 
 var (
 	_ resource.Resource                = &jobDefinitionResource{}
 	_ resource.ResourceWithConfigure   = &jobDefinitionResource{}
 	_ resource.ResourceWithImportState = &jobDefinitionResource{}
+	_ resource.ResourceWithModifyPlan  = &jobDefinitionResource{}
 )
 
 func NewJobDefinitionResource() resource.Resource {
@@ -43,6 +46,59 @@ func NewJobDefinitionResource() resource.Resource {
 
 type jobDefinitionResource struct {
 	client *client.TroccoClient
+}
+
+// ModifyPlan marks the custom_connector_input_option snapshot attributes as
+// unknown whenever an update is planned.
+//
+// The API rebuilds the snapshot from the referenced endpoint on every upsert
+// (its create_snapshot_from! runs unconditionally) and the provider always
+// sends custom_connector_input_option on update, so the values the update
+// returns can differ from the ones in state - after switching to another
+// endpoint, or after the endpoint definition itself changed. Carrying the
+// prior state values into the plan, which is what Terraform does for computed
+// attributes by default, would then fail the apply with "Provider produced
+// inconsistent result after apply".
+//
+// Keying off "an update is planned" rather than off the attributes that
+// trigger a new snapshot keeps this correct if the API grows more of them.
+func (r *jobDefinitionResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	// On create every computed attribute is already unknown, and a destroy
+	// has no plan to modify.
+	if req.State.Raw.IsNull() || req.Plan.Raw.IsNull() {
+		return
+	}
+	// Without a change there is no request, hence no new snapshot.
+	if req.Plan.Raw.Equal(req.State.Raw) {
+		return
+	}
+
+	inputOptionPath := path.Root("input_option").AtName("custom_connector_input_option")
+
+	var config types.Object
+	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, inputOptionPath, &config)...)
+	if resp.Diagnostics.HasError() || config.IsNull() || config.IsUnknown() {
+		return
+	}
+
+	for _, attribute := range job_definition.CustomConnectorSnapshotAttributes(inputOptionPath, config) {
+		value, err := attribute.Type.ValueFromTerraform(
+			ctx,
+			tftypes.NewValue(attribute.Type.TerraformType(ctx), tftypes.UnknownValue),
+		)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Planning job definition",
+				fmt.Sprintf("Unable to plan %s as unknown, got error: %s", attribute.Path, err),
+			)
+			return
+		}
+
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, attribute.Path, value)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
 }
 
 func (r *jobDefinitionResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
@@ -116,6 +172,13 @@ func (r *jobDefinitionResource) Schema(ctx context.Context, req resource.SchemaR
 				},
 				MarkdownDescription: "ID of the resource group to which the job definition belongs",
 			},
+			"self_hosted_runner_cluster_id": schema.Int64Attribute{
+				Optional: true,
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
+				},
+				MarkdownDescription: "ID of the self-hosted runner cluster on which the job runs. If not specified, the job runs on the TROCCO-managed infrastructure. Only accounts that can use self-hosted runners can set it.",
+			},
 			"resource_enhancement": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
@@ -184,6 +247,7 @@ type jobDefinitionResourceModel struct {
 	Name                      types.String                     `tfsdk:"name"`
 	Description               types.String                     `tfsdk:"description"`
 	ResourceGroupID           types.Int64                      `tfsdk:"resource_group_id"`
+	SelfHostedRunnerClusterID types.Int64                      `tfsdk:"self_hosted_runner_cluster_id"`
 	IsRunnableConcurrently    types.Bool                       `tfsdk:"is_runnable_concurrently"`
 	RetryLimit                types.Int64                      `tfsdk:"retry_limit"`
 	ResourceEnhancement       types.String                     `tfsdk:"resource_enhancement"`
@@ -199,7 +263,7 @@ type jobDefinitionResourceModel struct {
 	FilterStringTransforms    types.List                       `tfsdk:"filter_string_transforms"`
 	FilterHashes              types.List                       `tfsdk:"filter_hashes"`
 	FilterUnixTimeConversions types.List                       `tfsdk:"filter_unixtime_conversions"`
-	Notifications             types.Set                        `tfsdk:"notifications"`
+	Notifications             types.List                       `tfsdk:"notifications"`
 	Schedules                 types.Set                        `tfsdk:"schedules"`
 	Labels                    types.Set                        `tfsdk:"labels"`
 }
@@ -215,7 +279,7 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 	}
 
 	// Extract notifications using helper function
-	notifications := utils.ConvertSetToSlice(ctx, m.Notifications,
+	notifications := utils.ConvertListToSlice(ctx, m.Notifications,
 		func(n jobDefinitionModel.JobDefinitionNotification) jobDefinitionParameters.JobDefinitionNotificationInput {
 			return n.ToInput()
 		}, &diags)
@@ -280,6 +344,12 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 		return nil, diags
 	}
 
+	outputOption, d := m.OutputOption.ToInput(ctx)
+	diags.Append(d...)
+	if diags.HasError() {
+		return nil, diags
+	}
+
 	// Only set schedules if not empty to avoid "not allowed to schedule setting" error
 	var schedulesToSet []parameter.ScheduleInput
 	if len(schedules) > 0 {
@@ -290,6 +360,7 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 		Name:                      m.Name.ValueString(),
 		Description:               model.NewNullableString(m.Description),
 		ResourceGroupID:           model.NewNullableInt64(m.ResourceGroupID),
+		SelfHostedRunnerClusterID: model.NewNullableInt64(m.SelfHostedRunnerClusterID),
 		IsRunnableConcurrently:    m.IsRunnableConcurrently.ValueBool(),
 		RetryLimit:                m.RetryLimit.ValueInt64(),
 		ResourceEnhancement:       m.ResourceEnhancement.ValueStringPointer(),
@@ -304,7 +375,7 @@ func (m *jobDefinitionResourceModel) ToCreateJobDefinitionInput(ctx context.Cont
 		InputOptionType:           m.InputOptionType.ValueString(),
 		InputOption:               inputOption,
 		OutputOptionType:          m.OutputOptionType.ValueString(),
-		OutputOption:              m.OutputOption.ToInput(ctx),
+		OutputOption:              outputOption,
 		Labels:                    labels,
 		Schedules:                 schedulesToSet,
 		Notifications:             notifications,
@@ -348,20 +419,27 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
+	outputOption, diags := jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption, plan.OutputOption)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
+
 	newState := jobDefinitionResourceModel{
-		ID:                     types.Int64Value(jobDefinition.ID),
-		Name:                   types.StringValue(jobDefinition.Name),
-		Description:            types.StringPointerValue(jobDefinition.Description),
-		ResourceGroupID:        types.Int64PointerValue(jobDefinition.ResourceGroupID),
-		IsRunnableConcurrently: types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
-		RetryLimit:             types.Int64Value(jobDefinition.RetryLimit),
-		ResourceEnhancement:    types.StringPointerValue(jobDefinition.ResourceEnhancement),
-		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
-		InputOption:            inputOption,
-		OutputOptionType:       types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:           jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption),
-		FilterRows:             filter.NewFilterRows(ctx, jobDefinition.FilterRows),
-		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
+		ID:                        types.Int64Value(jobDefinition.ID),
+		Name:                      types.StringValue(jobDefinition.Name),
+		Description:               types.StringPointerValue(jobDefinition.Description),
+		ResourceGroupID:           types.Int64PointerValue(jobDefinition.ResourceGroupID),
+		SelfHostedRunnerClusterID: types.Int64PointerValue(jobDefinition.SelfHostedRunnerClusterID),
+		IsRunnableConcurrently:    types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
+		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
+		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
+		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
+		InputOption:               inputOption,
+		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
+		OutputOption:              outputOption,
+		FilterRows:                filter.NewFilterRows(ctx, jobDefinition.FilterRows),
+		FilterAddTime:             filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
 
 	filterColumns, diags := filter.NewFilterColumns(ctx, jobDefinition.FilterColumns)
@@ -438,18 +516,7 @@ func (r *jobDefinitionResource) Update(ctx context.Context, req resource.UpdateR
 		})
 	}
 
-	if jobDefinition.Notifications != nil {
-		notifications := jobDefinitionModel.NewJobDefinitionNotifications(jobDefinition.Notifications)
-		notificationsValue, diags := types.SetValueFrom(ctx, types.ObjectType{
-			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
-		}, notifications)
-		resp.Diagnostics.Append(diags...)
-		newState.Notifications = notificationsValue
-	} else {
-		newState.Notifications = types.SetNull(types.ObjectType{
-			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
-		})
-	}
+	newState.Notifications = newJobDefinitionNotificationsValue(ctx, jobDefinition.Notifications, plan.Notifications, &resp.Diagnostics)
 
 	if jobDefinition.Schedules != nil {
 		schedules := model.NewSchedules(jobDefinition.Schedules)
@@ -491,7 +558,7 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 	}
 
 	// Extract notifications using helper function
-	notifications := utils.ConvertSetToSlice(ctx, m.Notifications,
+	notifications := utils.ConvertListToSlice(ctx, m.Notifications,
 		func(n jobDefinitionModel.JobDefinitionNotification) jobDefinitionParameters.JobDefinitionNotificationInput {
 			return n.ToInput()
 		}, &diags)
@@ -556,6 +623,12 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 		return nil, diags
 	}
 
+	outputOption, d := m.OutputOption.ToUpdateInput(ctx)
+	diags.Append(d...)
+	if diags.HasError() {
+		return nil, diags
+	}
+
 	// Only set schedules if not empty to avoid "not allowed to schedule setting" error
 	var schedulesPointer *[]parameter.ScheduleInput
 	if len(schedules) > 0 {
@@ -566,6 +639,7 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 		Name:                      m.Name.ValueStringPointer(),
 		Description:               model.NewNullableString(m.Description),
 		ResourceGroupID:           model.NewNullableInt64(m.ResourceGroupID),
+		SelfHostedRunnerClusterID: model.NewNullableInt64(m.SelfHostedRunnerClusterID),
 		IsRunnableConcurrently:    m.IsRunnableConcurrently.ValueBoolPointer(),
 		RetryLimit:                m.RetryLimit.ValueInt64Pointer(),
 		ResourceEnhancement:       m.ResourceEnhancement.ValueStringPointer(),
@@ -578,7 +652,7 @@ func (m *jobDefinitionResourceModel) ToUpdateJobDefinitionInput(ctx context.Cont
 		FilterHashes:              &filterHashes,
 		FilterUnixTimeConversions: &filterUnixTimeconversions,
 		InputOption:               inputOption,
-		OutputOption:              m.OutputOption.ToUpdateInput(ctx),
+		OutputOption:              outputOption,
 		Labels:                    &labels,
 		Schedules:                 schedulesPointer,
 		Notifications:             &notifications,
@@ -616,20 +690,27 @@ func (r *jobDefinitionResource) Create(
 		return
 	}
 
+	outputOption, diags := jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption, plan.OutputOption)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
+
 	newState := jobDefinitionResourceModel{
-		ID:                     types.Int64Value(jobDefinition.ID),
-		Name:                   types.StringValue(jobDefinition.Name),
-		Description:            types.StringPointerValue(jobDefinition.Description),
-		ResourceGroupID:        types.Int64PointerValue(jobDefinition.ResourceGroupID),
-		IsRunnableConcurrently: types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
-		RetryLimit:             types.Int64Value(jobDefinition.RetryLimit),
-		ResourceEnhancement:    types.StringPointerValue(jobDefinition.ResourceEnhancement),
-		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
-		InputOption:            inputOption,
-		OutputOptionType:       types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:           jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption),
-		FilterRows:             filter.NewFilterRows(ctx, jobDefinition.FilterRows),
-		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
+		ID:                        types.Int64Value(jobDefinition.ID),
+		Name:                      types.StringValue(jobDefinition.Name),
+		Description:               types.StringPointerValue(jobDefinition.Description),
+		ResourceGroupID:           types.Int64PointerValue(jobDefinition.ResourceGroupID),
+		SelfHostedRunnerClusterID: types.Int64PointerValue(jobDefinition.SelfHostedRunnerClusterID),
+		IsRunnableConcurrently:    types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
+		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
+		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
+		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
+		InputOption:               inputOption,
+		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
+		OutputOption:              outputOption,
+		FilterRows:                filter.NewFilterRows(ctx, jobDefinition.FilterRows),
+		FilterAddTime:             filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
 
 	filterColumns, diags := filter.NewFilterColumns(ctx, jobDefinition.FilterColumns)
@@ -706,18 +787,7 @@ func (r *jobDefinitionResource) Create(
 		})
 	}
 
-	if jobDefinition.Notifications != nil {
-		notifications := jobDefinitionModel.NewJobDefinitionNotifications(jobDefinition.Notifications)
-		notificationsValue, diags := types.SetValueFrom(ctx, types.ObjectType{
-			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
-		}, notifications)
-		resp.Diagnostics.Append(diags...)
-		newState.Notifications = notificationsValue
-	} else {
-		newState.Notifications = types.SetNull(types.ObjectType{
-			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
-		})
-	}
+	newState.Notifications = newJobDefinitionNotificationsValue(ctx, jobDefinition.Notifications, plan.Notifications, &resp.Diagnostics)
 
 	if jobDefinition.Schedules != nil {
 		schedules := model.NewSchedules(jobDefinition.Schedules)
@@ -773,20 +843,27 @@ func (r *jobDefinitionResource) Read(
 		return
 	}
 
+	outputOption, diags := jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption, state.OutputOption)
+	if diags.HasError() {
+		resp.Diagnostics.Append(diags...)
+		return
+	}
+
 	newState := jobDefinitionResourceModel{
-		ID:                     types.Int64Value(jobDefinition.ID),
-		Name:                   types.StringValue(jobDefinition.Name),
-		Description:            types.StringPointerValue(jobDefinition.Description),
-		ResourceGroupID:        types.Int64PointerValue(jobDefinition.ResourceGroupID),
-		IsRunnableConcurrently: types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
-		RetryLimit:             types.Int64Value(jobDefinition.RetryLimit),
-		ResourceEnhancement:    types.StringPointerValue(jobDefinition.ResourceEnhancement),
-		InputOptionType:        types.StringValue(jobDefinition.InputOptionType),
-		InputOption:            inputOption,
-		OutputOptionType:       types.StringValue(jobDefinition.OutputOptionType),
-		OutputOption:           jobDefinitionModel.NewOutputOption(ctx, jobDefinition.OutputOption),
-		FilterRows:             filter.NewFilterRows(ctx, jobDefinition.FilterRows),
-		FilterAddTime:          filter.NewFilterAddTime(jobDefinition.FilterAddTime),
+		ID:                        types.Int64Value(jobDefinition.ID),
+		Name:                      types.StringValue(jobDefinition.Name),
+		Description:               types.StringPointerValue(jobDefinition.Description),
+		ResourceGroupID:           types.Int64PointerValue(jobDefinition.ResourceGroupID),
+		SelfHostedRunnerClusterID: types.Int64PointerValue(jobDefinition.SelfHostedRunnerClusterID),
+		IsRunnableConcurrently:    types.BoolPointerValue(jobDefinition.IsRunnableConcurrently),
+		RetryLimit:                types.Int64Value(jobDefinition.RetryLimit),
+		ResourceEnhancement:       types.StringPointerValue(jobDefinition.ResourceEnhancement),
+		InputOptionType:           types.StringValue(jobDefinition.InputOptionType),
+		InputOption:               inputOption,
+		OutputOptionType:          types.StringValue(jobDefinition.OutputOptionType),
+		OutputOption:              outputOption,
+		FilterRows:                filter.NewFilterRows(ctx, jobDefinition.FilterRows),
+		FilterAddTime:             filter.NewFilterAddTime(jobDefinition.FilterAddTime),
 	}
 
 	filterColumns, diags := filter.NewFilterColumns(ctx, jobDefinition.FilterColumns)
@@ -863,18 +940,7 @@ func (r *jobDefinitionResource) Read(
 		})
 	}
 
-	if jobDefinition.Notifications != nil {
-		notifications := jobDefinitionModel.NewJobDefinitionNotifications(jobDefinition.Notifications)
-		notificationsValue, diags := types.SetValueFrom(ctx, types.ObjectType{
-			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
-		}, notifications)
-		resp.Diagnostics.Append(diags...)
-		newState.Notifications = notificationsValue
-	} else {
-		newState.Notifications = types.SetNull(types.ObjectType{
-			AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
-		})
-	}
+	newState.Notifications = newJobDefinitionNotificationsValue(ctx, jobDefinition.Notifications, state.Notifications, &resp.Diagnostics)
 
 	if jobDefinition.Schedules != nil {
 		schedules := model.NewSchedules(jobDefinition.Schedules)
@@ -996,4 +1062,50 @@ func validateHttpInputOption(httpInputOption *inputOptionModel.HttpInputOption, 
 			)
 		}
 	}
+}
+
+// newJobDefinitionNotificationsValue converts notifications in an API response
+// to a state value. When the response has none, the previous (plan or state)
+// value decides between null and an empty list so that an explicitly
+// configured `notifications = []` survives apply.
+func newJobDefinitionNotificationsValue(ctx context.Context, apiNotifications []jobDefinitionEntities.JobDefinitionNotification, previous types.List, diags *diag.Diagnostics) types.List {
+	objectType := types.ObjectType{
+		AttrTypes: jobDefinitionModel.JobDefinitionNotification{}.AttrTypes(),
+	}
+
+	if len(apiNotifications) == 0 {
+		if previous.IsNull() || previous.IsUnknown() {
+			return types.ListNull(objectType)
+		}
+		emptyValue, d := types.ListValueFrom(ctx, objectType, []jobDefinitionModel.JobDefinitionNotification{})
+		diags.Append(d...)
+		return emptyValue
+	}
+
+	notifications := jobDefinitionModel.NewJobDefinitionNotifications(apiNotifications)
+	var refNotifs []jobDefinitionModel.JobDefinitionNotification
+	if !previous.IsNull() && !previous.IsUnknown() {
+		if refDiags := previous.ElementsAs(ctx, &refNotifs, false); refDiags.HasError() {
+			refNotifs = nil
+		}
+	}
+	notifications = utils.MatchByKey(notifications, refNotifs, jobNotificationKey, jobNotificationFallbackKey)
+	listValue, d := types.ListValueFrom(ctx, objectType, notifications)
+	diags.Append(d...)
+	return listValue
+}
+
+func jobNotificationKey(n jobDefinitionModel.JobDefinitionNotification) string {
+	return fmt.Sprintf("%s|%s|%d",
+		n.NotificationType.ValueString(),
+		n.DestinationType.ValueString(),
+		n.ID.ValueInt64(),
+	)
+}
+
+func jobNotificationFallbackKey(n jobDefinitionModel.JobDefinitionNotification) string {
+	return fmt.Sprintf("%s|%s",
+		n.NotificationType.ValueString(),
+		n.DestinationType.ValueString(),
+	)
 }

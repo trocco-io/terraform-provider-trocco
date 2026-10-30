@@ -130,6 +130,7 @@ func (p *TroccoProvider) Configure(ctx context.Context, req provider.ConfigureRe
 func (p *TroccoProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewBigqueryDatamartDefinitionResource,
+		NewSnowflakeDatamartDefinitionResource,
 		NewConnectionResource,
 		NewUserResource,
 		NewPipelineDefinitionResource,
@@ -139,6 +140,9 @@ func (p *TroccoProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewLabelResource,
 		NewNotificationDestinationResource,
 		NewDbtGitRepositoryResource,
+		NewDbtJobDefinitionResource,
+		NewCustomConnectorInputResource,
+		NewCustomConnectorOutputResource,
 	}
 }
 

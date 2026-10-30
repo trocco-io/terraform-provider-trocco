@@ -11,6 +11,7 @@ type RedshiftDataCheckTaskConfigInput struct {
 	Operator        string                   `json:"operator,omitempty"`
 	QueryResult     *parameter.NullableInt64 `json:"query_result,omitempty"`
 	AcceptsNull     *parameter.NullableBool  `json:"accepts_null,omitempty"`
+	IgnoreResult    *parameter.NullableBool  `json:"ignore_result,omitempty"`
 	Database        string                   `json:"database,omitempty"`
 	CustomVariables []CustomVariable         `json:"custom_variables,omitempty"`
 }

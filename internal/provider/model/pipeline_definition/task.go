@@ -18,6 +18,7 @@ type Task struct {
 	BigqueryDataCheckConfig                   *BigqueryDataCheckTaskConfig                   `tfsdk:"bigquery_data_check_config"`
 	HTTPRequestConfig                         *HTTPRequestTaskConfig                         `tfsdk:"http_request_config"`
 	RedshiftDataCheckConfig                   *RedshiftDataCheckTaskConfig                   `tfsdk:"redshift_data_check_config"`
+	DatabricksDataCheckConfig                 *DatabricksDataCheckTaskConfig                 `tfsdk:"databricks_data_check_config"`
 	SlackNotificationConfig                   *SlackNotificationTaskConfig                   `tfsdk:"slack_notification_config"`
 	SnowflakeDataCheckConfig                  *SnowflakeDataCheckTaskConfig                  `tfsdk:"snowflake_data_check_config"`
 	TableauDataExtractionConfig               *TableauDataExtractionTaskConfig               `tfsdk:"tableau_data_extraction_config"`
@@ -115,6 +116,7 @@ func NewTask(ctx context.Context, en *pipelineDefinitionEntities.Task, keys map[
 		BigqueryDataCheckConfig:                   NewBigqueryDataCheckTaskConfig(ctx, en.BigqueryDataCheckConfig),
 		SnowflakeDataCheckConfig:                  NewSnowflakeDataCheckTaskConfig(ctx, en.SnowflakeDataCheckConfig),
 		RedshiftDataCheckConfig:                   NewRedshiftDataCheckTaskConfig(ctx, en.RedshiftDataCheckConfig),
+		DatabricksDataCheckConfig:                 NewDatabricksDataCheckTaskConfig(ctx, en.DatabricksDataCheckConfig),
 		HTTPRequestConfig:                         NewHTTPRequestTaskConfig(ctx, en.HTTPRequestConfig, previousHTTPRequestConfig),
 		IfElseConfig:                              NewIfElseTaskConfig(ctx, en.IfElseConfig, keys),
 	}
@@ -166,6 +168,9 @@ func (t *Task) ToInput(ctx context.Context, identifiers map[string]int64) *pipel
 	if t.RedshiftDataCheckConfig != nil {
 		in.RedshiftDataCheckConfig = t.RedshiftDataCheckConfig.ToInput(ctx)
 	}
+	if t.DatabricksDataCheckConfig != nil {
+		in.DatabricksDataCheckConfig = t.DatabricksDataCheckConfig.ToInput(ctx)
+	}
 	if t.HTTPRequestConfig != nil {
 		in.HTTPRequestConfig = t.HTTPRequestConfig.ToInput(ctx)
 	}
@@ -190,6 +195,9 @@ func TaskObjectAttrTypes() map[string]attr.Type {
 		},
 		"redshift_data_check_config": types.ObjectType{
 			AttrTypes: RedshiftDataCheckTaskConfigAttrTypes(),
+		},
+		"databricks_data_check_config": types.ObjectType{
+			AttrTypes: DatabricksDataCheckTaskConfigAttrTypes(),
 		},
 		"slack_notification_config": types.ObjectType{
 			AttrTypes: SlackNotificationTaskConfigAttrTypes(),

@@ -5,6 +5,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -40,6 +42,14 @@ func RedshiftDatacheckTaskConfigSchema() schema.Attribute {
 			"accepts_null": schema.BoolAttribute{
 				MarkdownDescription: "Whether the datacheck task accepts null values",
 				Required:            true,
+			},
+			"ignore_result": schema.BoolAttribute{
+				MarkdownDescription: "Whether to use the query result for branching. When true, the task is treated as successful even if the datacheck matches the error condition, and the check result can be referenced from subsequent if_else tasks. The server-side default is `false`",
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"database": schema.StringAttribute{
 				MarkdownDescription: "The database to use for the datacheck task",

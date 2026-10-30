@@ -1,0 +1,1 @@
+terraform import trocco_custom_connector_output.example <custom_connector_output_id>

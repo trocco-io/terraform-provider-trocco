@@ -28,20 +28,29 @@ type Connection struct {
 	HasServiceAccountJSONKey         *bool                  `json:"has_service_account_json_key"`         // bigquery, gcs, google_spreadsheets, google_analytics4, google_drive (read-only)
 	GoogleOAuth2CredentialID         *int64                 `json:"google_oauth2_credential_id"`          // bigquery, gcs, google_spreadsheets, google_analytics4, google_drive (read-only)
 	WorkloadIdentityFederationConfig interface{}            `json:"workload_identity_federation_config"`  // bigquery
-	Host                             *string                `json:"host"`                                 // snowflake, mysql, postgresql, sftp, mongodb, redshift
-	UserName                         *string                `json:"user_name"`                            // snowflake, mysql, postgresql, salesforce, sftp, mongodb, redshift
+	Host                             *string                `json:"host"`                                 // snowflake, mysql, postgresql, sftp, mongodb, redshift, oracle
+	UserName                         *string                `json:"user_name"`                            // snowflake, mysql, postgresql, salesforce, sftp, mongodb, redshift, oracle
 	Role                             *string                `json:"role"`                                 // snowflake
 	AuthMethod                       *string                `json:"auth_method"`                          // snowflake, mongodb
-	AWSPrivatelinkEnabled            *bool                  `json:"aws_privatelink_enabled"`              // snowflake, sftp, redshift (read-only)
-	Driver                           *string                `json:"driver"`                               // mysql, postgresql, snowflake
+	AWSPrivatelinkEnabled            *bool                  `json:"aws_privatelink_enabled"`              // snowflake, sftp, redshift, oracle (read-only)
+	Driver                           *string                `json:"driver"`                               // mysql, postgresql, snowflake, oracle
+	TnsAdminOra                      *string                `json:"tns_admin_ora"`                        // oracle
+	HasWalletFile                    *bool                  `json:"has_wallet_file"`                      // oracle (read-only)
 	ApplicationName                  *string                `json:"application_name"`                     // gcs
 	ServiceAccountEmail              *string                `json:"service_account_email"`                // gcs
-	Port                             *int64                 `json:"port"`                                 // mysql, postgresql, sftp, mongodb, redshift
-	SSL                              *bool                  `json:"ssl"`                                  // mysql, postgresql, redshift
-	GatewayEnabled                   *bool                  `json:"gateway_enabled"`                      // mysql, postgresql, mongodb, redshift
-	GatewayHost                      *string                `json:"gateway_host"`                         // redshift
-	GatewayPort                      *int64                 `json:"gateway_port"`                         // redshift
-	GatewayUserName                  *string                `json:"gateway_user_name"`                    // redshift
+	Port                             *int64                 `json:"port"`                                 // mysql, postgresql, sftp, mongodb, redshift, oracle
+	SSL                              *bool                  `json:"ssl"`                                  // mysql, postgresql, redshift, oracle
+	SSLCA                            *string                `json:"ssl_ca"`                               // oracle (write-only)
+	GatewayEnabled                   *bool                  `json:"gateway_enabled"`                      // mysql, postgresql, mongodb, redshift, oracle
+	GatewayHost                      *string                `json:"gateway_host"`                         // redshift, oracle
+	GatewayPort                      *int64                 `json:"gateway_port"`                         // redshift, oracle
+	GatewayUserName                  *string                `json:"gateway_user_name"`                    // redshift, oracle
+	GatewayPassword                  *string                `json:"gateway_password"`                     // oracle
+	HasGatewayPassword               *bool                  `json:"has_gateway_password"`                 // oracle (read-only)
+	GatewayKey                       *string                `json:"gateway_key"`                          // oracle
+	HasGatewayKey                    *bool                  `json:"has_gateway_key"`                      // oracle (read-only)
+	GatewayKeyPassphrase             *string                `json:"gateway_key_passphrase"`               // oracle
+	HasGatewayKeyPassphrase          *bool                  `json:"has_gateway_key_passphrase"`           // oracle (read-only)
 	AuthEndPoint                     *string                `json:"auth_end_point"`                       // salesforce
 	AWSAuthType                      *string                `json:"aws_auth_type,omitempty"`              // s3
 	AWSAccessKeyID                   *string                `json:"aws_access_key_id,omitempty"`          // s3, redshift
@@ -52,6 +61,7 @@ type Connection struct {
 	LoginMethod                      *string                `json:"login_method"`                         // kintone
 	Username                         *string                `json:"username"`                             // kintone
 	BasicAuthUsername                *string                `json:"basic_auth_username"`                  // kintone
+	ClientCertificateEnabled         *bool                  `json:"client_certificate_enabled"`           // kintone
 	SecretKey                        *string                `json:"secret_key"`                           // sftp
 	SecretKeyPassphrase              *string                `json:"secret_key_passphrase"`                // sftp
 	UserDirectoryIsRoot              *bool                  `json:"user_directory_is_root"`               // sftp
@@ -60,7 +70,7 @@ type Connection struct {
 	ServerHostname                   *string                `json:"server_hostname"`                      // databricks
 	HttpPath                         *string                `json:"http_path"`                            // databricks
 	AuthType                         *string                `json:"auth_type"`                            // databricks
-	OAuth2ClientID                   *string                `json:"oauth2_client_id"`                     // databricks
+	OAuth2ClientID                   *string                `json:"oauth2_client_id"`                     // databricks, custom_connector
 	ConnectionStringFormat           *string                `json:"connection_string_format"`             // mongodb
 	ReadPreference                   *string                `json:"read_preference"`                      // mongodb
 	AuthSource                       *string                `json:"auth_source"`                          // mongodb
@@ -73,6 +83,10 @@ type Connection struct {
 	APIMaxCallCount                  *int64                 `json:"api_max_call_count"`                   // marketo
 	// pagerduty (auto-generated)
 	APIKey *string `json:"api_key"` // API トークン
+	// custom_connector
+	CustomConnectorID *int64    `json:"custom_connector_id,omitempty"`
+	Scopes            *[]string `json:"scopes,omitempty"`
+	Authorized        *bool     `json:"authorized,omitempty"`
 }
 
 type GetConnectionsInput struct {
@@ -81,33 +95,35 @@ type GetConnectionsInput struct {
 }
 
 type CreateConnectionInput struct {
-	Name                             string                    `json:"name"`                                          // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb, google_drive, redshift
-	Description                      *string                   `json:"description,omitempty"`                         // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb, google_drive, redshift
-	ResourceGroupID                  *parameter.NullableInt64  `json:"resource_group_id,omitempty"`                   // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb, google_drive, redshift
+	Name                             string                    `json:"name"`                                          // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb, google_drive, redshift, oracle
+	Description                      *string                   `json:"description,omitempty"`                         // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb, google_drive, redshift, oracle
+	ResourceGroupID                  *parameter.NullableInt64  `json:"resource_group_id,omitempty"`                   // bigquery, snowflake, gcs, google_spreadsheets, mysql, salesforce, s3, postgresql, google_analytics4, kintone, sftp, mongodb, google_drive, redshift, oracle
 	ProjectID                        *string                   `json:"project_id,omitempty"`                          // bigquery, gcs
 	ServiceAccountJSONKey            *string                   `json:"service_account_json_key,omitempty"`            // bigquery, gcs, google_spreadsheets, google_analytics4, google_drive
 	IsWorkloadIdentityFederation     *bool                     `json:"is_workload_identity_federation,omitempty"`     // bigquery
 	WorkloadIdentityFederationConfig interface{}               `json:"workload_identity_federation_config,omitempty"` // bigquery
-	Host                             *string                   `json:"host,omitempty"`                                // snowflake, mysql, postgresql, sftp, mongodb, redshift
-	UserName                         *string                   `json:"user_name,omitempty"`                           // snowflake, mysql, postgresql, salesforce, sftp, mongodb, redshift
+	Host                             *string                   `json:"host,omitempty"`                                // snowflake, mysql, postgresql, sftp, mongodb, redshift, oracle
+	UserName                         *string                   `json:"user_name,omitempty"`                           // snowflake, mysql, postgresql, salesforce, sftp, mongodb, redshift, oracle
 	Role                             *string                   `json:"role,omitempty"`                                // snowflake
 	AuthMethod                       *string                   `json:"auth_method,omitempty"`                         // snowflake, mongodb
-	Password                         *string                   `json:"password,omitempty"`                            // snowflake, mysql, postgresql, salesforce, kintone, sftp, mongodb, redshift
+	Password                         *string                   `json:"password,omitempty"`                            // snowflake, mysql, postgresql, salesforce, kintone, sftp, mongodb, redshift, oracle
 	PrivateKey                       *string                   `json:"private_key,omitempty"`                         // snowflake
+	TnsAdminOra                      *string                   `json:"tns_admin_ora,omitempty"`                       // oracle
+	WalletFile                       *string                   `json:"wallet_file,omitempty"`                         // oracle (base64 encoded)
 	ApplicationName                  *string                   `json:"application_name,omitempty"`                    // gcs
 	ServiceAccountEmail              *string                   `json:"service_account_email,omitempty"`               // gcs
-	Port                             *parameter.NullableInt64  `json:"port,omitempty"`                                // mysql, postgresql, sftp, mongodb, redshift
-	SSL                              *parameter.NullableBool   `json:"ssl,omitempty"`                                 // mysql, postgresql, redshift
-	SSLCA                            *string                   `json:"ssl_ca,omitempty"`                              // mysql, postgresql
+	Port                             *parameter.NullableInt64  `json:"port,omitempty"`                                // mysql, postgresql, sftp, mongodb, redshift, oracle
+	SSL                              *parameter.NullableBool   `json:"ssl,omitempty"`                                 // mysql, postgresql, redshift, oracle
+	SSLCA                            *string                   `json:"ssl_ca,omitempty"`                              // mysql, postgresql, oracle
 	SSLCert                          *string                   `json:"ssl_cert,omitempty"`                            // mysql, postgresql
 	SSLKey                           *string                   `json:"ssl_key,omitempty"`                             // mysql, postgresql
-	GatewayEnabled                   *parameter.NullableBool   `json:"gateway_enabled,omitempty"`                     // mysql, postgresql, mongodb, redshift
-	GatewayHost                      *string                   `json:"gateway_host,omitempty"`                        // mysql, postgresql, mongodb, redshift
-	GatewayPort                      *parameter.NullableInt64  `json:"gateway_port,omitempty"`                        // mysql, postgresql, mongodb, redshift
-	GatewayUserName                  *string                   `json:"gateway_user_name,omitempty"`                   // mysql, postgresql, mongodb, redshift
-	GatewayPassword                  *string                   `json:"gateway_password,omitempty"`                    // mysql, postgresql, mongodb, redshift
-	GatewayKey                       *string                   `json:"gateway_key,omitempty"`                         // mysql, postgresql, mongodb, redshift
-	GatewayKeyPassphrase             *string                   `json:"gateway_key_passphrase,omitempty"`              // mysql, postgresql, mongodb, redshift
+	GatewayEnabled                   *parameter.NullableBool   `json:"gateway_enabled,omitempty"`                     // mysql, postgresql, mongodb, redshift, oracle
+	GatewayHost                      *string                   `json:"gateway_host,omitempty"`                        // mysql, postgresql, mongodb, redshift, oracle
+	GatewayPort                      *parameter.NullableInt64  `json:"gateway_port,omitempty"`                        // mysql, postgresql, mongodb, redshift, oracle
+	GatewayUserName                  *string                   `json:"gateway_user_name,omitempty"`                   // mysql, postgresql, mongodb, redshift, oracle
+	GatewayPassword                  *string                   `json:"gateway_password,omitempty"`                    // mysql, postgresql, mongodb, redshift, oracle
+	GatewayKey                       *string                   `json:"gateway_key,omitempty"`                         // mysql, postgresql, mongodb, redshift, oracle
+	GatewayKeyPassphrase             *string                   `json:"gateway_key_passphrase,omitempty"`              // mysql, postgresql, mongodb, redshift, oracle
 	SecurityToken                    *string                   `json:"security_token,omitempty"`                      // salesforce
 	AuthEndPoint                     *string                   `json:"auth_end_point,omitempty"`                      // salesforce
 	AWSAuthType                      *string                   `json:"aws_auth_type,omitempty"`                       // s3
@@ -118,24 +134,27 @@ type CreateConnectionInput struct {
 	SSLClientCa                      *string                   `json:"ssl_client_ca,omitempty"`                       // postgresql
 	SSLClientKey                     *string                   `json:"ssl_client_key,omitempty"`                      // postgresql
 	SSLMode                          *parameter.NullableString `json:"ssl_mode,omitempty"`                            // postgresql
-	Driver                           *parameter.NullableString `json:"driver,omitempty"`                              // mysql, postgresql, snowflake
+	Driver                           *parameter.NullableString `json:"driver,omitempty"`                              // mysql, postgresql, snowflake, oracle
 	Domain                           *string                   `json:"domain,omitempty"`                              // kintone
 	LoginMethod                      *string                   `json:"login_method,omitempty"`                        // kintone
 	Token                            *string                   `json:"token,omitempty"`                               // kintone
 	Username                         *parameter.NullableString `json:"username,omitempty"`                            // kintone
 	BasicAuthUsername                *parameter.NullableString `json:"basic_auth_username,omitempty"`                 // kintone
 	BasicAuthPassword                *parameter.NullableString `json:"basic_auth_password,omitempty"`                 // kintone
+	ClientCertificateEnabled         *bool                     `json:"client_certificate_enabled,omitempty"`          // kintone
+	ClientCertificate                *parameter.NullableString `json:"client_certificate,omitempty"`                  // kintone
+	ClientCertificatePassword        *parameter.NullableString `json:"client_certificate_password,omitempty"`         // kintone
 	SecretKey                        *string                   `json:"secret_key,omitempty"`                          // sftp
 	SecretKeyPassphrase              *string                   `json:"secret_key_passphrase,omitempty"`               // sftp
 	UserDirectoryIsRoot              *bool                     `json:"user_directory_is_root,omitempty"`              // sftp
 	WindowsServer                    *bool                     `json:"windows_server,omitempty"`                      // sftp
-	SSHTunnelID                      *parameter.NullableInt64  `json:"ssh_tunnel_id,omitempty"`                       // sftp, redshift
-	AWSPrivatelinkEnabled            *bool                     `json:"aws_privatelink_enabled,omitempty"`             // sftp, redshift
+	SSHTunnelID                      *parameter.NullableInt64  `json:"ssh_tunnel_id,omitempty"`                       // sftp, redshift, oracle
+	AWSPrivatelinkEnabled            *bool                     `json:"aws_privatelink_enabled,omitempty"`             // sftp, redshift, oracle
 	HttpPath                         *string                   `json:"http_path,omitempty"`                           // databricks
 	AuthType                         *string                   `json:"auth_type,omitempty"`                           // databricks
 	PersonalAccessToken              *parameter.NullableString `json:"personal_access_token,omitempty"`               // databricks
-	OAuth2ClientID                   *parameter.NullableString `json:"oauth2_client_id,omitempty"`                    // databricks
-	OAuth2ClientSecret               *parameter.NullableString `json:"oauth2_client_secret,omitempty"`                // databricks
+	OAuth2ClientID                   *parameter.NullableString `json:"oauth2_client_id,omitempty"`                    // databricks, custom_connector
+	OAuth2ClientSecret               *parameter.NullableString `json:"oauth2_client_secret,omitempty"`                // databricks, custom_connector
 	ServerHostname                   *string                   `json:"server_hostname,omitempty"`                     // databricks
 	ConnectionStringFormat           *parameter.NullableString `json:"connection_string_format,omitempty"`            // mongodb
 	ReadPreference                   *parameter.NullableString `json:"read_preference,omitempty"`                     // mongodb
@@ -149,6 +168,9 @@ type CreateConnectionInput struct {
 	APIMaxCallCount                  *parameter.NullableInt64  `json:"api_max_call_count,omitempty"`                  // marketo
 	// pagerduty (auto-generated)
 	APIKey *string `json:"api_key,omitempty"`
+	// custom_connector
+	CustomConnectorID *int64    `json:"custom_connector_id,omitempty"`
+	Scopes            *[]string `json:"scopes,omitempty"`
 }
 
 type UpdateConnectionInput struct {
@@ -159,26 +181,28 @@ type UpdateConnectionInput struct {
 	ServiceAccountJSONKey            *string                   `json:"service_account_json_key"`                      // bigquery, gcs, google_spreadsheets, google_analytics4, google_drive
 	IsWorkloadIdentityFederation     *bool                     `json:"is_workload_identity_federation,omitempty"`     // bigquery
 	WorkloadIdentityFederationConfig interface{}               `json:"workload_identity_federation_config,omitempty"` // bigquery
-	Host                             *string                   `json:"host,omitempty"`                                // snowflake, mysql, postgresql, sftp, mongodb, redshift
-	UserName                         *string                   `json:"user_name,omitempty"`                           // snowflake, mysql, postgresql, salesforce, sftp, mongodb, redshift
+	Host                             *parameter.NullableString `json:"host,omitempty"`                                // snowflake, mysql, postgresql, sftp, mongodb, redshift, oracle
+	UserName                         *string                   `json:"user_name,omitempty"`                           // snowflake, mysql, postgresql, salesforce, sftp, mongodb, redshift, oracle
 	Role                             *string                   `json:"role,omitempty"`                                // snowflake
 	AuthMethod                       *string                   `json:"auth_method,omitempty"`                         // snowflake, mongodb
-	Password                         *string                   `json:"password,omitempty"`                            // snowflake, mysql, postgresql, salesforce, kintone, sftp, mongodb, redshift
+	Password                         *string                   `json:"password,omitempty"`                            // snowflake, mysql, postgresql, salesforce, kintone, sftp, mongodb, redshift, oracle
 	PrivateKey                       *string                   `json:"private_key,omitempty"`                         // snowflake
+	TnsAdminOra                      *parameter.NullableString `json:"tns_admin_ora,omitempty"`                       // oracle
+	WalletFile                       *parameter.NullableString `json:"wallet_file,omitempty"`                         // oracle (base64 encoded)
 	ApplicationName                  *string                   `json:"application_name,omitempty"`                    // gcs
 	ServiceAccountEmail              *string                   `json:"service_account_email,omitempty"`               // gcs
-	Port                             *parameter.NullableInt64  `json:"port,omitempty"`                                // mysql, postgresql, sftp, mongodb, redshift
-	SSL                              *parameter.NullableBool   `json:"ssl,omitempty"`                                 // mysql, postgresql, redshift
-	SSLCA                            *string                   `json:"ssl_ca,omitempty"`                              // mysql, postgresql
+	Port                             *parameter.NullableInt64  `json:"port,omitempty"`                                // mysql, postgresql, sftp, mongodb, redshift, oracle
+	SSL                              *parameter.NullableBool   `json:"ssl,omitempty"`                                 // mysql, postgresql, redshift, oracle
+	SSLCA                            *string                   `json:"ssl_ca,omitempty"`                              // mysql, postgresql, oracle
 	SSLCert                          *string                   `json:"ssl_cert,omitempty"`                            // mysql, postgresql
 	SSLKey                           *string                   `json:"ssl_key,omitempty"`                             // mysql, postgresql
-	GatewayEnabled                   *parameter.NullableBool   `json:"gateway_enabled,omitempty"`                     // mysql, postgresql, mongodb, redshift
-	GatewayHost                      *string                   `json:"gateway_host,omitempty"`                        // mysql, postgresql, mongodb, redshift
-	GatewayPort                      *parameter.NullableInt64  `json:"gateway_port,omitempty"`                        // mysql, postgresql, mongodb, redshift
-	GatewayUserName                  *string                   `json:"gateway_user_name,omitempty"`                   // mysql, postgresql, mongodb, redshift
-	GatewayPassword                  *string                   `json:"gateway_password,omitempty"`                    // mysql, postgresql, mongodb, redshift
-	GatewayKey                       *string                   `json:"gateway_key,omitempty"`                         // mysql, postgresql, mongodb, redshift
-	GatewayKeyPassphrase             *string                   `json:"gateway_key_passphrase,omitempty"`              // mysql, postgresql, mongodb, redshift
+	GatewayEnabled                   *parameter.NullableBool   `json:"gateway_enabled,omitempty"`                     // mysql, postgresql, mongodb, redshift, oracle
+	GatewayHost                      *string                   `json:"gateway_host,omitempty"`                        // mysql, postgresql, mongodb, redshift, oracle
+	GatewayPort                      *parameter.NullableInt64  `json:"gateway_port,omitempty"`                        // mysql, postgresql, mongodb, redshift, oracle
+	GatewayUserName                  *string                   `json:"gateway_user_name,omitempty"`                   // mysql, postgresql, mongodb, redshift, oracle
+	GatewayPassword                  *string                   `json:"gateway_password,omitempty"`                    // mysql, postgresql, mongodb, redshift, oracle
+	GatewayKey                       *string                   `json:"gateway_key,omitempty"`                         // mysql, postgresql, mongodb, redshift, oracle
+	GatewayKeyPassphrase             *string                   `json:"gateway_key_passphrase,omitempty"`              // mysql, postgresql, mongodb, redshift, oracle
 	SecurityToken                    *string                   `json:"security_token,omitempty"`                      // salesforce
 	AuthEndPoint                     *string                   `json:"auth_end_point,omitempty"`                      // salesforce
 	AWSAuthType                      *string                   `json:"aws_auth_type,omitempty"`                       // s3
@@ -189,24 +213,27 @@ type UpdateConnectionInput struct {
 	SSLClientCa                      *string                   `json:"ssl_client_ca,omitempty"`                       // postgresql
 	SSLClientKey                     *string                   `json:"ssl_client_key,omitempty"`                      // postgresql
 	SSLMode                          *parameter.NullableString `json:"ssl_mode,omitempty"`                            // postgresql
-	Driver                           *parameter.NullableString `json:"driver,omitempty"`                              // mysql, postgresql, snowflake
+	Driver                           *parameter.NullableString `json:"driver,omitempty"`                              // mysql, postgresql, snowflake, oracle
 	Domain                           *string                   `json:"domain,omitempty"`                              // kintone
 	LoginMethod                      *string                   `json:"login_method,omitempty"`                        // kintone
 	Token                            *string                   `json:"token,omitempty"`                               // kintone
 	Username                         *parameter.NullableString `json:"username,omitempty"`                            // kintone
 	BasicAuthUsername                *parameter.NullableString `json:"basic_auth_username,omitempty"`                 // kintone
 	BasicAuthPassword                *parameter.NullableString `json:"basic_auth_password,omitempty"`                 // kintone
+	ClientCertificateEnabled         *bool                     `json:"client_certificate_enabled,omitempty"`          // kintone
+	ClientCertificate                *parameter.NullableString `json:"client_certificate,omitempty"`                  // kintone
+	ClientCertificatePassword        *parameter.NullableString `json:"client_certificate_password,omitempty"`         // kintone
 	SecretKey                        *string                   `json:"secret_key,omitempty"`                          // sftp
 	SecretKeyPassphrase              *string                   `json:"secret_key_passphrase,omitempty"`               // sftp
 	UserDirectoryIsRoot              *bool                     `json:"user_directory_is_root,omitempty"`              // sftp
 	WindowsServer                    *bool                     `json:"windows_server,omitempty"`                      // sftp
-	SSHTunnelID                      *parameter.NullableInt64  `json:"ssh_tunnel_id,omitempty"`                       // sftp, redshift
-	AWSPrivatelinkEnabled            *bool                     `json:"aws_privatelink_enabled,omitempty"`             // sftp, redshift
+	SSHTunnelID                      *parameter.NullableInt64  `json:"ssh_tunnel_id,omitempty"`                       // sftp, redshift, oracle
+	AWSPrivatelinkEnabled            *bool                     `json:"aws_privatelink_enabled,omitempty"`             // sftp, redshift, oracle
 	HttpPath                         *string                   `json:"http_path,omitempty"`                           // databricks
 	AuthType                         *string                   `json:"auth_type,omitempty"`                           // databricks
 	PersonalAccessToken              *parameter.NullableString `json:"personal_access_token,omitempty"`               // databricks
-	OAuth2ClientID                   *parameter.NullableString `json:"oauth2_client_id,omitempty"`                    // databricks
-	OAuth2ClientSecret               *parameter.NullableString `json:"oauth2_client_secret,omitempty"`                // databricks
+	OAuth2ClientID                   *parameter.NullableString `json:"oauth2_client_id,omitempty"`                    // databricks, custom_connector
+	OAuth2ClientSecret               *parameter.NullableString `json:"oauth2_client_secret,omitempty"`                // databricks, custom_connector
 	ServerHostname                   *string                   `json:"server_hostname,omitempty"`                     // databricks
 	ConnectionStringFormat           *parameter.NullableString `json:"connection_string_format,omitempty"`            // mongodb
 	ReadPreference                   *parameter.NullableString `json:"read_preference,omitempty"`                     // mongodb
@@ -220,6 +247,8 @@ type UpdateConnectionInput struct {
 	APIMaxCallCount                  *parameter.NullableInt64  `json:"api_max_call_count,omitempty"`                  // marketo
 	// pagerduty (auto-generated)
 	APIKey *string `json:"api_key,omitempty"`
+	// custom_connector (custom_connector_id is immutable and intentionally omitted here)
+	Scopes *[]string `json:"scopes,omitempty"`
 }
 
 func (c *TroccoClient) GetConnections(connectionType string, in *GetConnectionsInput) (*ConnectionList, error) {

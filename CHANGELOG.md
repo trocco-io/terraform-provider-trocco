@@ -1,3 +1,94 @@
+## 0.37.0
+
+FEATURES:
+- `trocco_snowflake_datamart_definition` resource:
+  - Added new resource to manage Snowflake datamart definitions, supporting `append`, `truncate`, `replace`, `incremental`, and `scd_type_2` write dispositions and quality checks
+- `trocco_bigquery_datamart_definition` resource:
+  - Added `table_description` and `column_descriptions` attributes (available only in `insert` mode)
+  - Added support for `http` notification destinations in `notifications`
+- `trocco_notification_destination` resource:
+  - Added support for `http` type with `http_config` block (`name`, `url`, `description`, `headers`, `query_params`)
+- `trocco_job_definition` resource:
+  - Added support for `oracle` input option
+  - Added support for `sqlserver` input option
+  - Added `self_hosted_runner_cluster_id` attribute to run the job on a self-hosted runner cluster
+  - Added support for `http` notification destinations in `notifications` via `http_notification_destination_id`
+- `trocco_pipeline_definition` resource:
+  - Added support for `http` notification destinations in `notifications` via `http_config` block
+- `trocco_connection` resource:
+  - Added support for `oracle` connection type
+  - Added support for `sqlserver` connection type
+  - Added `client_certificate`, `client_certificate_password`, and `client_certificate_enabled` attributes for `kintone` connection type to connect through kintone secure access
+
+BUG FIXES:
+- `trocco_pipeline_definition` resource:
+  - Fixed `custom_variable_loop.{bigquery,redshift,snowflake}_config.variables` being sent to TROCCO in alphabetical order instead of the configured order by changing the attribute from a set to a list
+    - After upgrading, `terraform plan` may show an update for `variables` if the configured order differs from the order stored in TROCCO. Applying it restores the configured order, which is the intended behavior.
+- `trocco_notification_destination` resource:
+  - Changing `type` now forces replacement instead of an in-place update, which could overwrite an unrelated notification destination
+- `trocco_job_definition` and `trocco_bigquery_datamart_definition` resources:
+  - Fixed `Provider produced inconsistent result after apply` when `notifications = []` is configured
+- `trocco_connection` resource:
+  - `ssl_enabled` now defaults to `false` for `redshift` connection type, so omitting it no longer causes a permanent diff
+- Fixed documented `trocco_job_definition` examples that failed to plan because of `json_expand_columns = []`
+
+CHORE:
+- Updated Go to 1.27.3 and golangci-lint to v2.15.0
+
+## 0.36.0
+
+FEATURES:
+- `trocco_custom_connector_input` resource:
+  - Added new resource to manage custom connector input definitions
+- `trocco_custom_connector_output` resource:
+  - Added new resource to manage custom connector output definitions
+- `trocco_connection` resource:
+  - Added support for `custom_connector` type
+- `trocco_job_definition` resource:
+  - Added support for `custom_connector` input option
+  - Added support for `custom_connector` output option
+
+BUG FIXES:
+- `trocco_job_definition` resource:
+  - Fixed `Provider produced inconsistent result after apply` on `databricks_output_option` column options by validating `timestamp_format` and `timezone` against `value_type` instead of `type`, mirroring the API's rule
+
+CHORE:
+- Changed E2E tests to run on push to `main` instead of on pull request
+
+## 0.35.0
+
+FEATURES:
+- `trocco_pipeline_definition` resource:
+  - Added support for `databricks_data_check` task type
+  - Added `ignore_result` attribute to `bigquery_data_check_config`, `snowflake_data_check_config`, `redshift_data_check_config`, and `databricks_data_check_config`
+
+## 0.34.0
+
+BREAKING CHANGES:
+- `notifications` changed from a set to a list in `trocco_pipeline_definition`, `trocco_job_definition`, and `trocco_bigquery_datamart_definition`:
+  - This changes the internal state representation of `notifications`. After upgrading, resources that manage `notifications` require a state re-import:
+    ```sh
+    terraform state rm <resource_address>
+    terraform import <resource_address> <id>
+    terraform plan  # should report no changes
+    ```
+  - No action is required if `notifications` is not managed in your Terraform configuration.
+
+BUG FIXES:
+- `trocco_pipeline_definition`, `trocco_job_definition`, and `trocco_bigquery_datamart_definition` resources:
+  - Fixed `Provider produced inconsistent result after apply` on `notifications` by changing the attribute from a set to a list and aligning state with the configured ordering
+
+## 0.33.0
+
+FEATURES:
+- `trocco_dbt_git_repository` resource:
+  - Added new resource to manage dbt Git repositories
+- `trocco_dbt_job_definition` resource:
+  - Added new resource to manage dbt job definitions
+
+BUG FIXES:
+- Improved Unknown value handling in `UniqueTeamValidator` to avoid false validation errors
+
 ## 0.32.0
 
 FEATURES:

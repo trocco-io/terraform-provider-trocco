@@ -9,7 +9,7 @@ import (
 
 func TestAccJobDefinitionResourceSftpToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.sftp_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Step 1: Create with SFTP CSV parser
@@ -56,7 +56,7 @@ func TestAccJobDefinitionResourceSftpToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceBigQueryToSftpCSV(t *testing.T) {
 	resourceName := "trocco_job_definition.bigquery_to_sftp_csv"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Step 1: Create with CSV formatter
@@ -111,7 +111,7 @@ func TestAccJobDefinitionResourceBigQueryToSftpCSV(t *testing.T) {
 
 func TestAccJobDefinitionResourceBigQueryToSftpJSONL(t *testing.T) {
 	resourceName := "trocco_job_definition.bigquery_to_sftp_jsonl"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Step 1: Create with JSONL formatter

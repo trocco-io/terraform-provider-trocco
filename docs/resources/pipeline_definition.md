@@ -94,6 +94,16 @@ resource "trocco_pipeline_definition" "notifications" {
         message         = "The quick brown fox jumps over the lazy dog."
       }
     },
+    {
+      type             = "job_execution"
+      destination_type = "http"
+      notify_when      = "failed"
+
+      http_config = {
+        notification_id = 1                                      # ID of a trocco_notification_destination with type = "http"
+        message         = "{\"text\": \"The workflow failed.\"}" # sent as the request body; must be a JSON string
+      }
+    },
   ]
 }
 ```
@@ -445,6 +455,68 @@ resource "trocco_pipeline_definition" "bigquery_data_check_with_custom_variables
 }
 ```
 
+##### Databricks
+
+```terraform
+resource "trocco_pipeline_definition" "databricks_data_check" {
+  name = "databricks_data_check"
+
+  tasks = [
+    {
+      key  = "databricks_data_check"
+      type = "databricks_data_check"
+
+      databricks_data_check_config = {
+        name          = "Example"
+        connection_id = 1
+        query         = "SELECT COUNT(id) FROM examples"
+        operator      = "equal"
+        query_result  = 1
+        accepts_null  = false
+        ignore_result = true
+      }
+    }
+  ]
+}
+
+resource "trocco_pipeline_definition" "databricks_data_check_with_custom_variables" {
+  name = "databricks_data_check_with_custom_variables"
+
+  tasks = [
+    {
+      key  = "databricks_data_check_with_custom_variables"
+      type = "databricks_data_check"
+
+      databricks_data_check_config = {
+        name          = "Example"
+        connection_id = 1
+        query         = "SELECT COUNT(id) FROM examples"
+        operator      = "equal"
+        query_result  = 1
+        accepts_null  = false
+
+        custom_variables = [
+          {
+            name  = "$string$"
+            type  = "string"
+            value = "foo"
+          },
+          {
+            name      = "$timestamp$"
+            type      = "timestamp"
+            quantity  = 1,
+            unit      = "hour"
+            direction = "ago"
+            format    = "%Y-%m-%d %H:%M:%S"
+            time_zone = "Asia/Tokyo"
+          },
+        ]
+      }
+    }
+  ]
+}
+```
+
 ##### Redshift
 
 ```terraform
@@ -699,7 +771,7 @@ resource "trocco_pipeline_definition" "trocco_pipeline" {
 - `max_retries` (Number) The maximum number of retries that the pipeline can have
 - `max_task_parallelism` (Number) The maximum number of tasks that the pipeline can run in parallel
 - `min_retry_interval` (Number) The minimum time in minutes between retries
-- `notifications` (Attributes Set) The notifications of the pipeline definition (see [below for nested schema](#nestedatt--notifications))
+- `notifications` (Attributes List) The notifications of the pipeline definition (see [below for nested schema](#nestedatt--notifications))
 - `resource_group_id` (Number) The resource group ID of the pipeline definition
 - `schedules` (Attributes Set) The schedules of the pipeline definition (see [below for nested schema](#nestedatt--schedules))
 - `task_dependencies` (Attributes Set) The task dependencies of the workflow. (see [below for nested schema](#nestedatt--task_dependencies))
@@ -720,9 +792,14 @@ Required:
 Optional:
 
 - `email_config` (Attributes) The email configuration of the notification (see [below for nested schema](#nestedatt--notifications--email_config))
+- `http_config` (Attributes) The HTTP configuration of the notification. Used when `destination_type` is `http` (see [below for nested schema](#nestedatt--notifications--http_config))
 - `notify_when` (String) When to notify
 - `slack_config` (Attributes) The slack configuration of the notification (see [below for nested schema](#nestedatt--notifications--slack_config))
 - `time` (Number) The time of the notification
+
+Read-Only:
+
+- `id` (Number) Server-assigned ID of the notification. Unique within `(type, destination_type)` for matching across API responses.
 
 <a id="nestedatt--notifications--email_config"></a>
 ### Nested Schema for `notifications.email_config`
@@ -731,6 +808,15 @@ Required:
 
 - `message` (String) The message of the notification
 - `notification_id` (Number) The notification id
+
+
+<a id="nestedatt--notifications--http_config"></a>
+### Nested Schema for `notifications.http_config`
+
+Required:
+
+- `message` (String) The message of the notification. It is sent as the request body and must be a valid JSON string
+- `notification_id` (Number) The ID of the HTTP notification destination
 
 
 <a id="nestedatt--notifications--slack_config"></a>
@@ -779,6 +865,7 @@ Required:
 Optional:
 
 - `bigquery_data_check_config` (Attributes) The datacheck task config of the pipeline definition (see [below for nested schema](#nestedatt--tasks--bigquery_data_check_config))
+- `databricks_data_check_config` (Attributes) The datacheck task config of the pipeline definition (see [below for nested schema](#nestedatt--tasks--databricks_data_check_config))
 - `http_request_config` (Attributes) The task configuration for the HTTP request task. (see [below for nested schema](#nestedatt--tasks--http_request_config))
 - `if_else_config` (Attributes) The task configuration for the if-else task. (see [below for nested schema](#nestedatt--tasks--if_else_config))
 - `redshift_data_check_config` (Attributes) The task configuration for the datacheck task. (see [below for nested schema](#nestedatt--tasks--redshift_data_check_config))
@@ -812,10 +899,47 @@ Required:
 Optional:
 
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--bigquery_data_check_config--custom_variables))
+- `ignore_result` (Boolean) Whether to use the query result for branching. When true, the task is treated as successful even if the datacheck matches the error condition, and the check result can be referenced from subsequent if_else tasks. The server-side default is `false`
 - `query` (String) The query of the datacheck task
 
 <a id="nestedatt--tasks--bigquery_data_check_config--custom_variables"></a>
 ### Nested Schema for `tasks.bigquery_data_check_config.custom_variables`
+
+Required:
+
+- `name` (String) The name of the custom variable
+- `type` (String) The type of the custom variable
+
+Optional:
+
+- `direction` (String) The direction of the custom variable
+- `format` (String) The format of the custom variable
+- `quantity` (Number) The quantity of the custom variable
+- `time_zone` (String) The time zone of the custom variable
+- `unit` (String) The unit of the custom variable
+- `value` (String) The value of the custom variable
+
+
+
+<a id="nestedatt--tasks--databricks_data_check_config"></a>
+### Nested Schema for `tasks.databricks_data_check_config`
+
+Required:
+
+- `accepts_null` (Boolean) Whether the datacheck task accepts null
+- `connection_id` (Number) The connection id of the datacheck task
+- `name` (String) The name of the datacheck task
+- `operator` (String) The operator of the datacheck task
+- `query_result` (Number) The query result of the datacheck task
+
+Optional:
+
+- `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--databricks_data_check_config--custom_variables))
+- `ignore_result` (Boolean) Whether to use the query result for branching. When true, the task is treated as successful even if the datacheck matches the error condition, and the check result can be referenced from subsequent if_else tasks. The server-side default is `false`
+- `query` (String) The query of the datacheck task
+
+<a id="nestedatt--tasks--databricks_data_check_config--custom_variables"></a>
+### Nested Schema for `tasks.databricks_data_check_config.custom_variables`
 
 Required:
 
@@ -952,6 +1076,7 @@ Optional:
 
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--redshift_data_check_config--custom_variables))
 - `database` (String) The database to use for the datacheck task
+- `ignore_result` (Boolean) Whether to use the query result for branching. When true, the task is treated as successful even if the datacheck matches the error condition, and the check result can be referenced from subsequent if_else tasks. The server-side default is `false`
 - `query` (String) The query to run for the datacheck task
 
 <a id="nestedatt--tasks--redshift_data_check_config--custom_variables"></a>
@@ -998,6 +1123,7 @@ Required:
 Optional:
 
 - `custom_variables` (Attributes Set) The custom variables of the pipeline definition (see [below for nested schema](#nestedatt--tasks--snowflake_data_check_config--custom_variables))
+- `ignore_result` (Boolean) Whether to use the query result for branching. When true, the task is treated as successful even if the datacheck matches the error condition, and the check result can be referenced from subsequent if_else tasks. The server-side default is `false`
 - `query` (String) The query to run for the datacheck task
 - `warehouse` (String) The warehouse to use for the datacheck task
 
@@ -1066,7 +1192,7 @@ Required:
 
 - `connection_id` (Number) BigQuery connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 
 
 <a id="nestedatt--tasks--trocco_azure_synapse_analytics_datamart_config--custom_variable_loop--period_config"></a>
@@ -1125,7 +1251,7 @@ Required:
 - `connection_id` (Number) Redshift connection ID
 - `database` (String) Redshift database
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 
 
 <a id="nestedatt--tasks--trocco_azure_synapse_analytics_datamart_config--custom_variable_loop--snowflake_config"></a>
@@ -1135,7 +1261,7 @@ Required:
 
 - `connection_id` (Number) Snowflake connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 - `warehouse` (String) Snowflake warehouse
 
 
@@ -1194,7 +1320,7 @@ Required:
 
 - `connection_id` (Number) BigQuery connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 
 
 <a id="nestedatt--tasks--trocco_bigquery_datamart_config--custom_variable_loop--period_config"></a>
@@ -1253,7 +1379,7 @@ Required:
 - `connection_id` (Number) Redshift connection ID
 - `database` (String) Redshift database
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 
 
 <a id="nestedatt--tasks--trocco_bigquery_datamart_config--custom_variable_loop--snowflake_config"></a>
@@ -1263,7 +1389,7 @@ Required:
 
 - `connection_id` (Number) Snowflake connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 - `warehouse` (String) Snowflake warehouse
 
 
@@ -1330,7 +1456,7 @@ Required:
 
 - `connection_id` (Number) BigQuery connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 
 
 <a id="nestedatt--tasks--trocco_pipeline_config--custom_variable_loop--period_config"></a>
@@ -1389,7 +1515,7 @@ Required:
 - `connection_id` (Number) Redshift connection ID
 - `database` (String) Redshift database
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 
 
 <a id="nestedatt--tasks--trocco_pipeline_config--custom_variable_loop--snowflake_config"></a>
@@ -1399,7 +1525,7 @@ Required:
 
 - `connection_id` (Number) Snowflake connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 - `warehouse` (String) Snowflake warehouse
 
 
@@ -1458,7 +1584,7 @@ Required:
 
 - `connection_id` (Number) BigQuery connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 
 
 <a id="nestedatt--tasks--trocco_redshift_datamart_config--custom_variable_loop--period_config"></a>
@@ -1517,7 +1643,7 @@ Required:
 - `connection_id` (Number) Redshift connection ID
 - `database` (String) Redshift database
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 
 
 <a id="nestedatt--tasks--trocco_redshift_datamart_config--custom_variable_loop--snowflake_config"></a>
@@ -1527,7 +1653,7 @@ Required:
 
 - `connection_id` (Number) Snowflake connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 - `warehouse` (String) Snowflake warehouse
 
 
@@ -1586,7 +1712,7 @@ Required:
 
 - `connection_id` (Number) BigQuery connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 
 
 <a id="nestedatt--tasks--trocco_snowflake_datamart_config--custom_variable_loop--period_config"></a>
@@ -1645,7 +1771,7 @@ Required:
 - `connection_id` (Number) Redshift connection ID
 - `database` (String) Redshift database
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 
 
 <a id="nestedatt--tasks--trocco_snowflake_datamart_config--custom_variable_loop--snowflake_config"></a>
@@ -1655,7 +1781,7 @@ Required:
 
 - `connection_id` (Number) Snowflake connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 - `warehouse` (String) Snowflake warehouse
 
 
@@ -1728,7 +1854,7 @@ Required:
 
 - `connection_id` (Number) BigQuery connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 
 
 <a id="nestedatt--tasks--trocco_transfer_config--custom_variable_loop--period_config"></a>
@@ -1787,7 +1913,7 @@ Required:
 - `connection_id` (Number) Redshift connection ID
 - `database` (String) Redshift database
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 
 
 <a id="nestedatt--tasks--trocco_transfer_config--custom_variable_loop--snowflake_config"></a>
@@ -1797,7 +1923,7 @@ Required:
 
 - `connection_id` (Number) Snowflake connection ID
 - `query` (String) Query to expand custom variables
-- `variables` (Set of String) Custom variables to be expanded
+- `variables` (List of String) Custom variables to be expanded. The order corresponds to the column order of the query result.
 - `warehouse` (String) Snowflake warehouse
 
 
