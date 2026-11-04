@@ -49,6 +49,12 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 	httpInputOption, diags := inputOptionModel.NewHttpInputOption(ctx, inputOption.HttpInputOption, previousHttpInputOption)
 	customConnectorInputOption, d := inputOptionModel.NewCustomConnectorInputOption(ctx, inputOption.CustomConnectorInputOption)
 	diags.Append(d...)
+
+	var previousPostgreSQLInputOption *inputOptionModel.PostgreSQLInputOption
+	if previous != nil {
+		previousPostgreSQLInputOption = previous.PostgreSQLInputOption
+	}
+
 	return &InputOption{
 		GcsInputOption:                 inputOptionModel.NewGcsInputOption(ctx, inputOption.GcsInputOption),
 		MySQLInputOption:               inputOptionModel.NewMysqlInputOption(ctx, inputOption.MySQLInputOption),
@@ -57,7 +63,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		GoogleSpreadsheetsInputOption:  inputOptionModel.NewGoogleSpreadsheetsInputOption(ctx, inputOption.GoogleSpreadsheetsInputOption),
 		S3InputOption:                  inputOptionModel.NewS3InputOption(ctx, inputOption.S3InputOption),
 		BigqueryInputOption:            inputOptionModel.NewBigqueryInputOption(ctx, inputOption.BigqueryInputOption),
-		PostgreSQLInputOption:          inputOptionModel.NewPostgreSQLInputOption(ctx, inputOption.PostgreSQLInputOption),
+		PostgreSQLInputOption:          inputOptionModel.NewPostgreSQLInputOption(ctx, inputOption.PostgreSQLInputOption, previousPostgreSQLInputOption),
 		SQLServerInputOption:           inputOptionModel.NewSQLServerInputOption(ctx, inputOption.SQLServerInputOption),
 		GoogleAnalytics4InputOption:    inputOptionModel.NewGoogleAnalytics4InputOption(ctx, inputOption.GoogleAnalytics4InputOption),
 		HttpInputOption:                httpInputOption,

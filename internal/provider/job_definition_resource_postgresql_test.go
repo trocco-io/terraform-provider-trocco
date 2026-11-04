@@ -26,7 +26,7 @@ func TestAccJobDefinitionResourcePostgresqlToBigQuery(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "input_option.postgresql_input_option.database", "test_database"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.postgresql_input_option.schema", "public"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.postgresql_input_option.fetch_rows", "1000"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.postgresql_input_option.default_time_zone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.postgresql_input_option.source_time_zone", "Asia/Tokyo"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.dataset", "test_dataset"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "postgresql_to_bigquery_test_table"),
 					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.mode", "append"),
