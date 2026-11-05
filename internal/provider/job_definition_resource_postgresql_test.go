@@ -34,6 +34,29 @@ func TestAccJobDefinitionResourcePostgresqlToBigQuery(t *testing.T) {
 				),
 			},
 			{
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/postgresql_to_bigquery/update.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", "PostgreSQL to BigQuery Test (Updated)"),
+					resource.TestCheckResourceAttr(resourceName, "retry_limit", "5"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.postgresql_input_option.database", "test_database_updated"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.postgresql_input_option.source_time_zone", "UTC"),
+					resource.TestCheckResourceAttr(resourceName, "output_option.bigquery_output_option.table", "postgresql_to_bigquery_test_table_updated"),
+				),
+			},
+			{
+				// Removes source_time_zone from config entirely after it was set to
+				// "UTC" above. It has no server-side default, so the API must be told
+				// explicitly to clear it; omitting the key from the update request
+				// would leave the prior value in place and desync state from config
+				// on every subsequent plan.
+				ResourceName: resourceName,
+				Config:       providerConfig + LoadTextFile("testdata/fixtures/bigquery_connection.tf") + LoadTextFile("testdata/job_definition/postgresql_to_bigquery/update_clear_time_zone.tf"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckNoResourceAttr(resourceName, "input_option.postgresql_input_option.source_time_zone"),
+				),
+			},
+			{
 				ResourceName:            resourceName,
 				ImportState:             true,
 				ImportStateVerify:       true,
