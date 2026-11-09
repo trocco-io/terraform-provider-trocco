@@ -206,6 +206,10 @@ func TestAccDatamartDefinitionResourceForBigqueryQualityCheck(t *testing.T) {
 				ResourceName:      resourceName,
 				ImportState:       true,
 				ImportStateVerify: true,
+				ImportStateVerifyIgnore: []string{
+					// The query attribute is trimmed and set in state, so different from the resource config.
+					"query",
+				},
 			},
 			{
 				Config: providerConfig + LoadTextFile("testdata/bigquery_datamart_definition/quality_check/update.tf"),

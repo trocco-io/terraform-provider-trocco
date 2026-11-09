@@ -735,7 +735,9 @@ func (r *bigqueryDatamartDefinitionResource) Create(ctx context.Context, req res
 		}
 		if plan.QualityCheckEnabled.ValueBool() {
 			optionInput.SetQualityCheckEnabled(true)
-			optionInput.SetQualityCheckOnViolation(plan.QualityCheckOnViolation.ValueString())
+			if !plan.QualityCheckOnViolation.IsNull() {
+				optionInput.SetQualityCheckOnViolation(plan.QualityCheckOnViolation.ValueString())
+			}
 			if !plan.QualityCheckLookbackPeriodColumn.IsNull() {
 				optionInput.SetQualityCheckLookbackPeriodColumn(plan.QualityCheckLookbackPeriodColumn.ValueString())
 			}
@@ -2085,30 +2087,20 @@ func convertLabelsForCreate(ctx context.Context, source types.Set, diags *resour
 
 // convertBigqueryDatamartQualityChecks converts the quality_checks list into API inputs, preserving the order.
 func convertBigqueryDatamartQualityChecks(ctx context.Context, source types.List, diags *diag.Diagnostics) []client.DatamartBigqueryQualityCheckInput {
-	if source.IsNull() || source.IsUnknown() {
-		return []client.DatamartBigqueryQualityCheckInput{}
-	}
-
-	var checks []bigqueryDatamartQualityCheckModel
-	diags.Append(source.ElementsAs(ctx, &checks, false)...)
-	if diags.HasError() {
-		return nil
-	}
-
-	result := make([]client.DatamartBigqueryQualityCheckInput, 0, len(checks))
-	for _, v := range checks {
-		result = append(result, client.NewDatamartBigqueryQualityCheckInput(
+	return utils.ConvertListToSlice(ctx, source, func(v bigqueryDatamartQualityCheckModel) client.DatamartBigqueryQualityCheckInput {
+		return client.NewDatamartBigqueryQualityCheckInput(
 			v.CheckType.ValueString(),
 			utils.ConvertStringList(ctx, v.ColumnNames),
-		))
-	}
-	return result
+		)
+	}, diags)
 }
 
-// applyBigqueryDatamartQualityCheckForUpdate always sends quality_check_enabled on update. When any
-// quality_check_* key is present the API replaces the whole block, and sending false
-// clears it. Omitting every key would leave the server state untouched and the resource
-// would drift from the configuration, so the flag is sent unconditionally.
+// applyBigqueryDatamartQualityCheckForUpdate always sends quality_check_enabled on update. The API
+// updates only the quality_check_* keys present in the request, and sending false disables quality
+// checks (the API stops returning the block). Omitting every key would leave the server state
+// untouched and the resource would drift from the configuration, so the flag is sent
+// unconditionally and, when enabled, every other quality_check_* key is sent with an explicit
+// null for unset values so that the server state matches the configuration.
 func applyBigqueryDatamartQualityCheckForUpdate(ctx context.Context, plan *bigqueryDatamartDefinitionModel, opt *client.UpdateDatamartBigqueryOptionInput, diags *diag.Diagnostics) {
 	enabled := plan.QualityCheckEnabled.ValueBool()
 	opt.SetQualityCheckEnabled(enabled)
@@ -2116,7 +2108,11 @@ func applyBigqueryDatamartQualityCheckForUpdate(ctx context.Context, plan *bigqu
 		return
 	}
 
-	opt.SetQualityCheckOnViolation(plan.QualityCheckOnViolation.ValueString())
+	if plan.QualityCheckOnViolation.IsNull() {
+		opt.SetQualityCheckOnViolationEmpty()
+	} else {
+		opt.SetQualityCheckOnViolation(plan.QualityCheckOnViolation.ValueString())
+	}
 	if plan.QualityCheckLookbackPeriodColumn.IsNull() {
 		opt.SetQualityCheckLookbackPeriodColumnEmpty()
 	} else {
