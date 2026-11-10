@@ -184,6 +184,77 @@ resource "trocco_bigquery_datamart_definition" "with_notifications" {
 }
 ```
 
+### With Schema Evolution Notifications
+
+```terraform
+resource "trocco_bigquery_datamart_definition" "with_schema_evolution_notifications" {
+  name                     = "example_with_schema_evolution_notifications"
+  is_runnable_concurrently = false
+  bigquery_connection_id   = 1
+  query                    = "SELECT * FROM tables"
+  query_mode               = "insert"
+  destination_dataset      = "dist_datasets"
+  destination_table        = "dist_tables"
+  write_disposition        = "incremental"
+  merge_keys               = ["id"]
+  on_matched_action        = "upsert"
+  schema_evolution_mode    = "detect_only"
+  notifications = [
+    {
+      destination_type  = "slack"
+      slack_channel_id  = 1
+      notification_type = "job"
+      notify_when       = "schema_evolution_detected"
+      message           = "@here A schema change was detected."
+    }
+  ]
+}
+```
+
+### With Quality Checks
+
+```terraform
+resource "trocco_bigquery_datamart_definition" "with_quality_checks" {
+  name                     = "example_with_quality_checks"
+  is_runnable_concurrently = false
+  bigquery_connection_id   = 1
+  query                    = "SELECT * FROM tables"
+  query_mode               = "insert"
+  destination_dataset      = "dist_datasets"
+  destination_table        = "dist_tables"
+  write_disposition        = "append"
+
+  quality_check_enabled                     = true
+  quality_check_on_violation                = "warn"
+  quality_check_lookback_period_column      = "updated_at"
+  quality_check_lookback_period_column_type = "TIMESTAMP"
+  quality_check_lookback_period_timezone    = "Asia/Tokyo"
+  quality_check_lookback_period_from        = 3
+  quality_check_lookback_period_to          = 0
+  quality_check_lookback_period_unit        = "days"
+  quality_checks = [
+    {
+      check_type   = "not_null"
+      column_names = ["id"]
+    },
+    {
+      check_type   = "composite_unique"
+      column_names = ["id", "updated_at"]
+    }
+  ]
+
+  notifications = [
+    {
+      destination_type  = "slack"
+      slack_channel_id  = 1
+      notification_type = "job"
+      notify_when       = "quality_check_failed"
+      message           = "@here A quality check was violated."
+    }
+  ]
+}
+```
+
 ### With Labels
 
 ```terraform
@@ -242,6 +313,15 @@ resource "trocco_bigquery_datamart_definition" "with_labels" {
 - `partitioning` (String) The following partitioning types are supported: `ingestion_time`, `time_unit_column`. In the case of `ingestion_time`, partitions are cut based on TROCCO's job execution time. In the case of `time_unit_column`, partitioning is done based on the reference column. Available only in `insert` mode
 - `partitioning_field` (String) Column name to be used for partitioning. Required when `partitioning` is `time_unit_column`
 - `partitioning_time` (String) The granularity of table partitioning. The following units are supported: `DAY`, `HOUR`, `MONTH`, `YEAR`. Required when `partitioning` is set
+- `quality_check_enabled` (Boolean) Whether to run quality checks against the destination table after loading. Defaults to `false`. Available only in `insert` mode
+- `quality_check_lookback_period_column` (String) Column name for the lookback period for quality checks. Available when `quality_check_enabled` is `true`
+- `quality_check_lookback_period_column_type` (String) Data type of the lookback period column for quality checks. The following types are supported: `TIMESTAMP`, `DATETIME`, `DATE`
+- `quality_check_lookback_period_from` (Number) Start value of the lookback period for quality checks
+- `quality_check_lookback_period_timezone` (String) Timezone for the lookback period for quality checks
+- `quality_check_lookback_period_to` (Number) End value of the lookback period for quality checks
+- `quality_check_lookback_period_unit` (String) Unit of the lookback period for quality checks. The following units are supported: `days`, `hours`
+- `quality_check_on_violation` (String) Behavior when a quality check is violated. `fail` marks the job as failed; `warn` keeps the job succeeded and triggers `quality_check_failed` notifications. Required when `quality_check_enabled` is `true`
+- `quality_checks` (Attributes List) Quality checks to run against the destination table after loading. The order is preserved. Required when `quality_check_enabled` is `true` (see [below for nested schema](#nestedatt--quality_checks))
 - `resource_group_id` (Number) ID of the resource group to which the datamart definition belongs
 - `schedules` (Attributes Set) Schedules to be attached to the datamart definition (see [below for nested schema](#nestedatt--schedules))
 - `schema_evolution_mode` (String) Schema evolution mode. The following modes are supported: `detect_only`, `auto_add_column`. Available when `write_disposition` is `incremental` or `scd_type_2`
@@ -307,7 +387,7 @@ Optional:
 
 - `email_id` (Number) ID of the email used to send notifications. Required when `destination_type` is `email`
 - `http_notification_destination_id` (Number) ID of the HTTP notification destination used to send notifications. Required when `destination_type` is `http`
-- `notify_when` (String) Specifies the job status that trigger a notification. The following types are supported: `finished`, `failed`. Required when `notification_type` is `job`
+- `notify_when` (String) Specifies the job status that triggers a notification. The following types are supported: `finished` (the job finished regardless of the result), `failed` (the job failed), `quality_check_failed` (the job succeeded but at least one quality check was violated; fires only when `quality_check_on_violation` is `warn`), `schema_evolution_detected` (a schema change was detected regardless of the job result; requires `schema_evolution_mode` with `write_disposition` `incremental` or `scd_type_2`). Required when `notification_type` is `job`
 - `record_count` (Number) The number of records to be used for condition. Required when `notification_type` is `record`
 - `record_operator` (String) Operator to be used for condition. The following operators are supported: `above`, `below`. Required when `notification_type` is `record`
 - `slack_channel_id` (Number) ID of the slack channel used to send notifications. Required when `destination_type` is `slack`
@@ -315,6 +395,15 @@ Optional:
 Read-Only:
 
 - `id` (Number) Server-assigned ID of the notification. Unique within `(notification_type, destination_type)` for matching across API responses.
+
+
+<a id="nestedatt--quality_checks"></a>
+### Nested Schema for `quality_checks`
+
+Required:
+
+- `check_type` (String) Type of the quality check. The following types are supported: `not_null`, `unique`, `composite_unique`
+- `column_names` (List of String) Column names to be checked. At least 1 column must be specified
 
 
 <a id="nestedatt--schedules"></a>

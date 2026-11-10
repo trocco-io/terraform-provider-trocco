@@ -117,6 +117,16 @@ type DatamartBigqueryOption struct {
 	LookbackPeriodFrom       *int64              `json:"lookback_period_from"`
 	LookbackPeriodTo         *int64              `json:"lookback_period_to"`
 	LookbackPeriodUnit       *string             `json:"lookback_period_unit"`
+	// The API returns the quality check fields only when quality checks are enabled.
+	QualityCheckEnabled                  *bool                          `json:"quality_check_enabled"`
+	QualityCheckOnViolation              *string                        `json:"quality_check_on_violation"`
+	QualityCheckLookbackPeriodColumn     *string                        `json:"quality_check_lookback_period_column"`
+	QualityCheckLookbackPeriodColumnType *string                        `json:"quality_check_lookback_period_column_type"`
+	QualityCheckLookbackPeriodTimezone   *string                        `json:"quality_check_lookback_period_timezone"`
+	QualityCheckLookbackPeriodFrom       *int64                         `json:"quality_check_lookback_period_from"`
+	QualityCheckLookbackPeriodTo         *int64                         `json:"quality_check_lookback_period_to"`
+	QualityCheckLookbackPeriodUnit       *string                        `json:"quality_check_lookback_period_unit"`
+	QualityChecks                        []DatamartBigqueryQualityCheck `json:"quality_checks"`
 }
 
 type ColumnDescription struct {
@@ -159,6 +169,11 @@ type DatamartSnowflakeSetting struct {
 }
 
 type DatamartSnowflakeQualityCheck struct {
+	CheckType   string   `json:"check_type"`
+	ColumnNames []string `json:"column_names"`
+}
+
+type DatamartBigqueryQualityCheck struct {
 	CheckType   string   `json:"check_type"`
 	ColumnNames []string `json:"column_names"`
 }
@@ -328,30 +343,39 @@ func NewTimestampTypeCustomVariableSettingInput(
 }
 
 type CreateDatamartBigqueryOptionInput struct {
-	BigqueryConnectionID     int64                     `json:"bigquery_connection_id"`
-	QueryMode                string                    `json:"query_mode"`
-	Query                    string                    `json:"query"`
-	DestinationDataset       *string                   `json:"destination_dataset,omitempty"`
-	DestinationTable         *string                   `json:"destination_table,omitempty"`
-	WriteDisposition         *string                   `json:"write_disposition,omitempty"`
-	BeforeLoad               *string                   `json:"before_load,omitempty"`
-	Partitioning             *string                   `json:"partitioning,omitempty"`
-	PartitioningTime         *string                   `json:"partitioning_time,omitempty"`
-	PartitioningField        *string                   `json:"partitioning_field,omitempty"`
-	ClusteringFields         *[]string                 `json:"clustering_fields,omitempty"`
-	Location                 *string                   `json:"location,omitempty"`
-	TableDescription         *string                   `json:"table_description,omitempty"`
-	ColumnDescriptions       *[]ColumnDescriptionInput `json:"column_descriptions,omitempty"`
-	MergeKeys                *[]string                 `json:"merge_keys,omitempty"`
-	OnMatchedAction          *string                   `json:"on_matched_action,omitempty"`
-	IncrementalColumn        *string                   `json:"incremental_column,omitempty"`
-	SchemaEvolutionMode      *string                   `json:"schema_evolution_mode,omitempty"`
-	LookbackPeriodColumn     *string                   `json:"lookback_period_column,omitempty"`
-	LookbackPeriodColumnType *string                   `json:"lookback_period_column_type,omitempty"`
-	LookbackPeriodTimezone   *string                   `json:"lookback_period_timezone,omitempty"`
-	LookbackPeriodFrom       *int64                    `json:"lookback_period_from,omitempty"`
-	LookbackPeriodTo         *int64                    `json:"lookback_period_to,omitempty"`
-	LookbackPeriodUnit       *string                   `json:"lookback_period_unit,omitempty"`
+	BigqueryConnectionID                 int64                                `json:"bigquery_connection_id"`
+	QueryMode                            string                               `json:"query_mode"`
+	Query                                string                               `json:"query"`
+	DestinationDataset                   *string                              `json:"destination_dataset,omitempty"`
+	DestinationTable                     *string                              `json:"destination_table,omitempty"`
+	WriteDisposition                     *string                              `json:"write_disposition,omitempty"`
+	BeforeLoad                           *string                              `json:"before_load,omitempty"`
+	Partitioning                         *string                              `json:"partitioning,omitempty"`
+	PartitioningTime                     *string                              `json:"partitioning_time,omitempty"`
+	PartitioningField                    *string                              `json:"partitioning_field,omitempty"`
+	ClusteringFields                     *[]string                            `json:"clustering_fields,omitempty"`
+	Location                             *string                              `json:"location,omitempty"`
+	TableDescription                     *string                              `json:"table_description,omitempty"`
+	ColumnDescriptions                   *[]ColumnDescriptionInput            `json:"column_descriptions,omitempty"`
+	MergeKeys                            *[]string                            `json:"merge_keys,omitempty"`
+	OnMatchedAction                      *string                              `json:"on_matched_action,omitempty"`
+	IncrementalColumn                    *string                              `json:"incremental_column,omitempty"`
+	SchemaEvolutionMode                  *string                              `json:"schema_evolution_mode,omitempty"`
+	LookbackPeriodColumn                 *string                              `json:"lookback_period_column,omitempty"`
+	LookbackPeriodColumnType             *string                              `json:"lookback_period_column_type,omitempty"`
+	LookbackPeriodTimezone               *string                              `json:"lookback_period_timezone,omitempty"`
+	LookbackPeriodFrom                   *int64                               `json:"lookback_period_from,omitempty"`
+	LookbackPeriodTo                     *int64                               `json:"lookback_period_to,omitempty"`
+	LookbackPeriodUnit                   *string                              `json:"lookback_period_unit,omitempty"`
+	QualityCheckEnabled                  *bool                                `json:"quality_check_enabled,omitempty"`
+	QualityCheckOnViolation              *string                              `json:"quality_check_on_violation,omitempty"`
+	QualityCheckLookbackPeriodColumn     *string                              `json:"quality_check_lookback_period_column,omitempty"`
+	QualityCheckLookbackPeriodColumnType *string                              `json:"quality_check_lookback_period_column_type,omitempty"`
+	QualityCheckLookbackPeriodTimezone   *string                              `json:"quality_check_lookback_period_timezone,omitempty"`
+	QualityCheckLookbackPeriodFrom       *int64                               `json:"quality_check_lookback_period_from,omitempty"`
+	QualityCheckLookbackPeriodTo         *int64                               `json:"quality_check_lookback_period_to,omitempty"`
+	QualityCheckLookbackPeriodUnit       *string                              `json:"quality_check_lookback_period_unit,omitempty"`
+	QualityChecks                        *[]DatamartBigqueryQualityCheckInput `json:"quality_checks,omitempty"`
 }
 
 type ColumnDescriptionInput struct {
@@ -625,6 +649,42 @@ func (o *CreateDatamartSnowflakeSettingInput) SetQualityChecks(qualityChecks []D
 	o.QualityChecks = &qualityChecks
 }
 
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetQualityCheckEnabled(qualityCheckEnabled bool) {
+	datamartBigqueryOption.QualityCheckEnabled = &qualityCheckEnabled
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetQualityCheckOnViolation(qualityCheckOnViolation string) {
+	datamartBigqueryOption.QualityCheckOnViolation = &qualityCheckOnViolation
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodColumn(column string) {
+	datamartBigqueryOption.QualityCheckLookbackPeriodColumn = &column
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodColumnType(columnType string) {
+	datamartBigqueryOption.QualityCheckLookbackPeriodColumnType = &columnType
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodTimezone(timezone string) {
+	datamartBigqueryOption.QualityCheckLookbackPeriodTimezone = &timezone
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodFrom(from int64) {
+	datamartBigqueryOption.QualityCheckLookbackPeriodFrom = &from
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodTo(to int64) {
+	datamartBigqueryOption.QualityCheckLookbackPeriodTo = &to
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodUnit(unit string) {
+	datamartBigqueryOption.QualityCheckLookbackPeriodUnit = &unit
+}
+
+func (datamartBigqueryOption *CreateDatamartBigqueryOptionInput) SetQualityChecks(qualityChecks []DatamartBigqueryQualityCheckInput) {
+	datamartBigqueryOption.QualityChecks = &qualityChecks
+}
+
 type CreateDatamartDefinitionOutput struct {
 	DatamartDefinition
 }
@@ -729,6 +789,16 @@ type UpdateDatamartBigqueryOptionInput struct {
 	LookbackPeriodFrom       *parameter.NullableInt64  `json:"lookback_period_from,omitempty"`
 	LookbackPeriodTo         *parameter.NullableInt64  `json:"lookback_period_to,omitempty"`
 	LookbackPeriodUnit       *parameter.NullableString `json:"lookback_period_unit,omitempty"`
+	// A pointer to false is still serialized so that the server clears the quality check block.
+	QualityCheckEnabled                  *bool                                `json:"quality_check_enabled,omitempty"`
+	QualityCheckOnViolation              *parameter.NullableString            `json:"quality_check_on_violation,omitempty"`
+	QualityCheckLookbackPeriodColumn     *parameter.NullableString            `json:"quality_check_lookback_period_column,omitempty"`
+	QualityCheckLookbackPeriodColumnType *parameter.NullableString            `json:"quality_check_lookback_period_column_type,omitempty"`
+	QualityCheckLookbackPeriodTimezone   *parameter.NullableString            `json:"quality_check_lookback_period_timezone,omitempty"`
+	QualityCheckLookbackPeriodFrom       *parameter.NullableInt64             `json:"quality_check_lookback_period_from,omitempty"`
+	QualityCheckLookbackPeriodTo         *parameter.NullableInt64             `json:"quality_check_lookback_period_to,omitempty"`
+	QualityCheckLookbackPeriodUnit       *parameter.NullableString            `json:"quality_check_lookback_period_unit,omitempty"`
+	QualityChecks                        *[]DatamartBigqueryQualityCheckInput `json:"quality_checks,omitempty"`
 }
 
 func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetBigqueryConnectionID(bigqueryConnectionID int64) {
@@ -1088,6 +1158,82 @@ func (o *UpdateDatamartSnowflakeSettingInput) SetQualityCheckLookbackPeriodUnitE
 
 func (o *UpdateDatamartSnowflakeSettingInput) SetQualityChecks(qualityChecks []DatamartSnowflakeQualityCheckInput) {
 	o.QualityChecks = &qualityChecks
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckEnabled(qualityCheckEnabled bool) {
+	datamartBigqueryOption.QualityCheckEnabled = &qualityCheckEnabled
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckOnViolation(qualityCheckOnViolation string) {
+	datamartBigqueryOption.QualityCheckOnViolation = &parameter.NullableString{Value: qualityCheckOnViolation, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckOnViolationEmpty() {
+	datamartBigqueryOption.QualityCheckOnViolation = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodColumn(column string) {
+	datamartBigqueryOption.QualityCheckLookbackPeriodColumn = &parameter.NullableString{Value: column, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodColumnEmpty() {
+	datamartBigqueryOption.QualityCheckLookbackPeriodColumn = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodColumnType(columnType string) {
+	datamartBigqueryOption.QualityCheckLookbackPeriodColumnType = &parameter.NullableString{Value: columnType, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodColumnTypeEmpty() {
+	datamartBigqueryOption.QualityCheckLookbackPeriodColumnType = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodTimezone(timezone string) {
+	datamartBigqueryOption.QualityCheckLookbackPeriodTimezone = &parameter.NullableString{Value: timezone, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodTimezoneEmpty() {
+	datamartBigqueryOption.QualityCheckLookbackPeriodTimezone = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodFrom(from int64) {
+	datamartBigqueryOption.QualityCheckLookbackPeriodFrom = &parameter.NullableInt64{Value: from, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodFromEmpty() {
+	datamartBigqueryOption.QualityCheckLookbackPeriodFrom = &parameter.NullableInt64{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodTo(to int64) {
+	datamartBigqueryOption.QualityCheckLookbackPeriodTo = &parameter.NullableInt64{Value: to, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodToEmpty() {
+	datamartBigqueryOption.QualityCheckLookbackPeriodTo = &parameter.NullableInt64{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodUnit(unit string) {
+	datamartBigqueryOption.QualityCheckLookbackPeriodUnit = &parameter.NullableString{Value: unit, Valid: true}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityCheckLookbackPeriodUnitEmpty() {
+	datamartBigqueryOption.QualityCheckLookbackPeriodUnit = &parameter.NullableString{Valid: false}
+}
+
+func (datamartBigqueryOption *UpdateDatamartBigqueryOptionInput) SetQualityChecks(qualityChecks []DatamartBigqueryQualityCheckInput) {
+	datamartBigqueryOption.QualityChecks = &qualityChecks
+}
+
+type DatamartBigqueryQualityCheckInput struct {
+	CheckType   string   `json:"check_type"`
+	ColumnNames []string `json:"column_names"`
+}
+
+func NewDatamartBigqueryQualityCheckInput(checkType string, columnNames []string) DatamartBigqueryQualityCheckInput {
+	return DatamartBigqueryQualityCheckInput{
+		CheckType:   checkType,
+		ColumnNames: columnNames,
+	}
 }
 
 type ScheduleInput struct {
