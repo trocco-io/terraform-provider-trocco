@@ -10,7 +10,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 )
 
@@ -96,9 +95,15 @@ func SqlserverInputOptionSchema() schema.Attribute {
 			},
 			"default_time_zone": schema.StringAttribute{
 				Optional:            true,
-				Computed:            true,
-				MarkdownDescription: "Default time zone. enter the server-side time zone setting for SQL Server. If the time zone is set to Japan, enter “Asia/Tokyo”.",
-				Default:             stringdefault.StaticString("UTC"),
+				DeprecationMessage:  "default_time_zone has no effect on how DATE/DATETIME/DATETIME2 values without time zone are interpreted. Use source_time_zone instead.",
+				MarkdownDescription: "Deprecated: has no effect. Use `source_time_zone` instead.",
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"source_time_zone": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Timezone (IANA format, e.g., 'Asia/Tokyo') used to interpret DATE/DATETIME/DATETIME2 columns without timezone information. If omitted, the timezone of the machine running the transfer is used.",
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},

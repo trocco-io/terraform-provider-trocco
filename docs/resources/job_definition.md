@@ -4081,7 +4081,7 @@ Optional:
 
 - `connect_timeout` (Number) Connection timeout (sec)
 - `custom_variable_settings` (Attributes List) (see [below for nested schema](#nestedatt--input_option--sqlserver_input_option--custom_variable_settings))
-- `default_time_zone` (String) Default time zone. enter the server-side time zone setting for SQL Server. If the time zone is set to Japan, enter “Asia/Tokyo”.
+- `default_time_zone` (String, Deprecated) Deprecated: has no effect. Use `source_time_zone` instead.
 - `fetch_rows` (Number) Number of records processed by the cursor at one time
 - `incremental_columns` (String) Columns to determine incremental data
 - `incremental_loading_enabled` (Boolean) If it is true, to be incremental loading. If it is false, to be all record loading
@@ -4090,6 +4090,7 @@ Optional:
 - `query` (String) If you want to use all record loading, specify it.
 - `schema` (String) schema name. If not specified, the default schema of the connected user (usually dbo) is used.
 - `socket_timeout` (Number) Socket timeout (seconds)
+- `source_time_zone` (String) Timezone (IANA format, e.g., 'Asia/Tokyo') used to interpret DATE/DATETIME/DATETIME2 columns without timezone information. If omitted, the timezone of the machine running the transfer is used.
 - `table` (String) table name. If you want to use incremental loading, specify it.
 
 <a id="nestedatt--input_option--sqlserver_input_option--input_option_columns"></a>
