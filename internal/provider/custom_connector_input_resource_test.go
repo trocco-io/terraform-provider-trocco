@@ -9,7 +9,7 @@ import (
 
 func TestAccCustomConnectorInputResource(t *testing.T) {
 	resourceName := "trocco_custom_connector_input.test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
@@ -139,7 +139,7 @@ func TestAccCustomConnectorInputResourceInvalidConfig(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			resource.Test(t, resource.TestCase{
+			resource.ParallelTest(t, resource.TestCase{
 				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 				Steps: []resource.TestStep{
 					{

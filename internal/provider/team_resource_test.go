@@ -9,7 +9,7 @@ import (
 
 func TestAccTeamResource(t *testing.T) {
 	resourceName := "trocco_team.test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
@@ -46,7 +46,7 @@ func TestAccTeamResource(t *testing.T) {
 }
 
 func TestAccTeamNoMembers(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -58,7 +58,7 @@ func TestAccTeamNoMembers(t *testing.T) {
 }
 
 func TestAccTeamInvalidRole(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -70,7 +70,7 @@ func TestAccTeamInvalidRole(t *testing.T) {
 }
 
 func TestAccTeamWithUnknownValues(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Test with unknown values from another resource (simulating plan phase)
@@ -112,7 +112,7 @@ func TestAccTeamWithUnknownValues(t *testing.T) {
 }
 
 func TestAccTeamValidationErrors(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Test validation error with multiple team_members but no team_admin

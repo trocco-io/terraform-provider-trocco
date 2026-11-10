@@ -13,17 +13,11 @@ import (
 
 const (
 	RegionJapan  = "japan"
-	RegionIndia  = "india"
-	RegionKorea  = "korea"
 	BaseURLJapan = "https://trocco.io"
-	BaseURLIndia = "https://in.trocco.io"
-	BaseURLKorea = "https://kr.trocco.io"
 )
 
 var RegionBaseURLMap = map[string]string{
 	RegionJapan: BaseURLJapan,
-	RegionIndia: BaseURLIndia,
-	RegionKorea: BaseURLKorea,
 }
 
 type TroccoClient struct {

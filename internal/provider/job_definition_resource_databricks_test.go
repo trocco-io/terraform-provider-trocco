@@ -9,7 +9,7 @@ import (
 
 func TestAccJobDefinitionResourceDatabricksToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.databricks_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -68,7 +68,7 @@ func TestAccJobDefinitionResourceDatabricksToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceMysqlToDatabricks(t *testing.T) {
 	resourceName := "trocco_job_definition.mysql_to_databricks"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

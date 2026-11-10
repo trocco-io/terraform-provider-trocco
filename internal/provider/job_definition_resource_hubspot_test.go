@@ -9,7 +9,7 @@ import (
 
 func TestAccJobDefinitionResourceHubspotToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.hubspot_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -58,7 +58,7 @@ func TestAccJobDefinitionResourceHubspotToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceMysqlToHubspot(t *testing.T) {
 	resourceName := "trocco_job_definition.mysql_to_hubspot"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

@@ -11,7 +11,7 @@ func TestAccJobDefinitionResourceCustomConnectorToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.custom_connector_to_bigquery"
 	inputOption := "input_option.custom_connector_input_option"
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

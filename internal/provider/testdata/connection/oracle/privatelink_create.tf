@@ -7,5 +7,5 @@ resource "trocco_connection" "oracle_privatelink_test" {
   password                = "test_password"
   driver                  = "19c-ojdbc8.jar"
   aws_privatelink_enabled = true
-  ssh_tunnel_id           = 1
+  ssh_tunnel_id           = "%s"
 }

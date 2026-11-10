@@ -10,7 +10,7 @@ import (
 
 func TestAccJobDefinitionResourceOracleIncrementalToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.oracle_incremental_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -56,7 +56,7 @@ func TestAccJobDefinitionResourceOracleIncrementalToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceOracleMultiColumnIncrementalToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.oracle_multi_incremental_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -83,7 +83,7 @@ func TestAccJobDefinitionResourceOracleMultiColumnIncrementalToBigQuery(t *testi
 
 func TestAccJobDefinitionResourceOracleTnsToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.oracle_tns_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -111,7 +111,7 @@ func TestAccJobDefinitionResourceOracleTnsToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceOracleDefaultsToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.oracle_defaults_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -144,7 +144,7 @@ func TestAccJobDefinitionResourceOracleDefaultsToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceOracleServiceNameToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.oracle_service_name_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -173,7 +173,7 @@ func TestAccJobDefinitionResourceOracleServiceNameToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceOracleUpdateConnectionMethod(t *testing.T) {
 	resourceName := "trocco_job_definition.oracle_update_connection_method"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -201,7 +201,7 @@ func TestAccJobDefinitionResourceOracleUpdateConnectionMethod(t *testing.T) {
 }
 
 func TestAccJobDefinitionResourceOracleMissingInputOptionColumns(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -215,7 +215,7 @@ func TestAccJobDefinitionResourceOracleMissingInputOptionColumns(t *testing.T) {
 }
 
 func TestAccJobDefinitionResourceOracleInputOptionConflict(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -230,7 +230,7 @@ func TestAccJobDefinitionResourceOracleInputOptionConflict(t *testing.T) {
 
 func TestAccJobDefinitionResourceOracleToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.oracle_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

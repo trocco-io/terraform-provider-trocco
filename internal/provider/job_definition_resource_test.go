@@ -11,7 +11,7 @@ import (
 // apply as an empty list, not become null.
 func TestAccJobDefinitionResourceNotificationsEmptyList(t *testing.T) {
 	resourceName := "trocco_job_definition.notifications_empty_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -27,7 +27,7 @@ func TestAccJobDefinitionResourceNotificationsEmptyList(t *testing.T) {
 
 func TestAccJobDefinitionResourceNotifications(t *testing.T) {
 	resourceName := "trocco_job_definition.notifications_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

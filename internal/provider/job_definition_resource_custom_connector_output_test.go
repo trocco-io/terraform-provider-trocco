@@ -11,7 +11,7 @@ func TestAccJobDefinitionResourceMysqlToCustomConnector(t *testing.T) {
 	resourceName := "trocco_job_definition.mysql_to_custom_connector"
 	outputOption := "output_option.custom_connector_output_option"
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

@@ -9,7 +9,7 @@ import (
 
 func TestAccResourceGroupResource(t *testing.T) {
 	resourceName := "trocco_resource_group.test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
@@ -65,7 +65,7 @@ func TestAccResourceGroupResource(t *testing.T) {
 }
 
 func TestAccResourceGroupNoTeams(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -87,7 +87,7 @@ func TestAccResourceGroupNoTeams(t *testing.T) {
 }
 
 func TestAccResourceGroupDuplicateRoles(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

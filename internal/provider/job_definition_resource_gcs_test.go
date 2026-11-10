@@ -9,7 +9,7 @@ import (
 
 func TestAccJobDefinitionResourceGcsToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.gcs_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -49,7 +49,7 @@ func TestAccJobDefinitionResourceGcsToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceMysqlToGcsCSV(t *testing.T) {
 	resourceName := "trocco_job_definition.mysql_to_gcs"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -119,7 +119,7 @@ func TestAccJobDefinitionResourceMysqlToGcsCSV(t *testing.T) {
 
 func TestAccJobDefinitionResourceMysqlToGcsJSONL(t *testing.T) {
 	resourceName := "trocco_job_definition.mysql_to_gcs"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

@@ -30,7 +30,7 @@ func TestAccNotificationDestinationResource(t *testing.T) {
 func testAccNotificationDestinationResourceTypeChange(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_notification_destination.type_change_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -76,7 +76,7 @@ func testAccNotificationDestinationResourceTypeChange(t *testing.T) {
 func testAccNotificationDestinationResourceHTTP(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_notification_destination.http_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -140,7 +140,7 @@ func testAccNotificationDestinationResourceHTTP(t *testing.T) {
 func testAccNotificationDestinationResourceEmail(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_notification_destination.email_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -167,7 +167,7 @@ func testAccNotificationDestinationResourceEmail(t *testing.T) {
 func testAccNotificationDestinationResourceSlackChannel(t *testing.T) {
 	t.Helper()
 	resourceName := "trocco_notification_destination.slack_channel_test"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -184,7 +184,7 @@ func testAccNotificationDestinationResourceSlackChannel(t *testing.T) {
 }
 
 func TestInvalidNotificationDestinationType(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Invalid type
@@ -328,7 +328,7 @@ func TestInvalidEmailValidation(t *testing.T) {
 	}
 	for _, testCase := range invalidEmails {
 		t.Run(testCase.email, func(t *testing.T) {
-			resource.Test(t, resource.TestCase{
+			resource.ParallelTest(t, resource.TestCase{
 				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 				Steps: []resource.TestStep{
 					{

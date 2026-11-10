@@ -9,7 +9,7 @@ import (
 
 func TestAccJobDefinitionResourceMysqlToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.mysql_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -42,7 +42,7 @@ func TestAccJobDefinitionResourceMysqlToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceKintoneToMysql(t *testing.T) {
 	resourceName := "trocco_job_definition.kintone_to_mysql"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

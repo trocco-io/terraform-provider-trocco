@@ -10,7 +10,7 @@ import (
 
 func TestAccJobDefinitionResourceSqlserverToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.sqlserver_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -55,7 +55,7 @@ func TestAccJobDefinitionResourceSqlserverToBigQuery(t *testing.T) {
 }
 
 func TestJobDefinitionResourceSqlserverEmptyColumnOptions(t *testing.T) {
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

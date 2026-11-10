@@ -10,7 +10,7 @@ import (
 
 func TestAccJobDefinitionResourceKintoneToSnowflake(t *testing.T) {
 	resourceName := "trocco_job_definition.kintone_to_snowflake"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -51,7 +51,7 @@ func TestAccJobDefinitionResourceKintoneToSnowflake(t *testing.T) {
 
 func TestAccJobDefinitionResourceKintoneToSnowflakeInvalid(t *testing.T) {
 	resourceName := "trocco_job_definition.kintone_to_snowflake"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -65,7 +65,7 @@ func TestAccJobDefinitionResourceKintoneToSnowflakeInvalid(t *testing.T) {
 
 func TestAccJobDefinitionResourceMysqlToKintone(t *testing.T) {
 	resourceName := "trocco_job_definition.mysql_to_kintone"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

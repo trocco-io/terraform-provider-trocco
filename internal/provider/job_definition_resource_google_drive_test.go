@@ -9,7 +9,7 @@ import (
 
 func TestAccJobDefinitionResourceGoogleDriveToBigQuery(t *testing.T) {
 	resourceName := "trocco_job_definition.google_drive_to_bigquery"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -50,7 +50,7 @@ func TestAccJobDefinitionResourceGoogleDriveToBigQuery(t *testing.T) {
 
 func TestAccJobDefinitionResourceBigQueryToGoogleDrive(t *testing.T) {
 	resourceName := "trocco_job_definition.bigquery_to_google_drive"
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
