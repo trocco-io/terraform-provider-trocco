@@ -29,7 +29,7 @@ func TestAccJobDefinitionResourceSqlserverToBigQuery(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "input_option.sqlserver_input_option.fetch_rows", "1000"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.sqlserver_input_option.connect_timeout", "300"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.sqlserver_input_option.socket_timeout", "1801"),
-					resource.TestCheckResourceAttr(resourceName, "input_option.sqlserver_input_option.default_time_zone", "Asia/Tokyo"),
+					resource.TestCheckResourceAttr(resourceName, "input_option.sqlserver_input_option.source_time_zone", "Asia/Tokyo"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.sqlserver_input_option.input_option_columns.#", "4"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.sqlserver_input_option.input_option_column_options.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "input_option.sqlserver_input_option.input_option_column_options.0.column_name", "created_at"),

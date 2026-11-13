@@ -43,7 +43,7 @@ resource "trocco_job_definition" "sqlserver_to_bigquery_by_table" {
       incremental_loading_enabled = true
       table                       = each.key
       incremental_columns         = "id"
-      default_time_zone           = "UTC"
+      source_time_zone            = "UTC"
       input_option_columns        = each.value
     }
   }
