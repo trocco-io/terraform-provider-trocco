@@ -48,7 +48,7 @@ resource "trocco_job_definition" "postgresql_to_bigquery" {
       connect_timeout             = 300
       socket_timeout              = 1801
       fetch_rows                  = 1000
-      default_time_zone           = "Asia/Tokyo"
+      source_time_zone            = "Asia/Tokyo"
       query                       = <<-EOT
         select
             *

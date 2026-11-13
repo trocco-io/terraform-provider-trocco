@@ -15,7 +15,7 @@ type PostgreSQLInputOptionInput struct {
 	FetchRows                 *parameter.NullableInt64                                `json:"fetch_rows,omitempty"`
 	ConnectTimeout            *parameter.NullableInt64                                `json:"connect_timeout,omitempty"`
 	SocketTimeout             *parameter.NullableInt64                                `json:"socket_timeout,omitempty"`
-	DefaultTimeZone           *parameter.NullableString                               `json:"default_time_zone,omitempty"`
+	SourceTimeZone            *parameter.NullableString                               `json:"source_time_zone,omitempty"`
 	PostgreSQLConnectionID    int64                                                   `json:"postgresql_connection_id"`
 	InputOptionColumns        []PostgreSQLInputOptionColumn                           `json:"input_option_columns"`
 	CustomVariableSettings    *[]parameter.CustomVariableSettingInput                 `json:"custom_variable_settings,omitempty"`
@@ -33,7 +33,7 @@ type UpdatePostgreSQLInputOptionInput struct {
 	FetchRows                 *parameter.NullableInt64                                `json:"fetch_rows,omitempty"`
 	ConnectTimeout            *parameter.NullableInt64                                `json:"connect_timeout,omitempty"`
 	SocketTimeout             *parameter.NullableInt64                                `json:"socket_timeout,omitempty"`
-	DefaultTimeZone           *parameter.NullableString                               `json:"default_time_zone,omitempty"`
+	SourceTimeZone            *parameter.NullableString                               `json:"source_time_zone,omitempty"`
 	PostgreSQLConnectionID    *int64                                                  `json:"postgresql_connection_id,omitempty"`
 	InputOptionColumns        []PostgreSQLInputOptionColumn                           `json:"input_option_columns,omitempty"`
 	CustomVariableSettings    *[]parameter.CustomVariableSettingInput                 `json:"custom_variable_settings,omitempty"`

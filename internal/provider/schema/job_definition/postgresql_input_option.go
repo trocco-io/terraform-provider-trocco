@@ -98,9 +98,15 @@ func PostgresqlInputOptionSchema() schema.Attribute {
 			},
 			"default_time_zone": schema.StringAttribute{
 				Optional:            true,
-				Computed:            true,
-				MarkdownDescription: "Default time zone. enter the server-side time zone setting for PostgreSQL. If the time zone is set to Japan, enter “Asia/Tokyo”.",
-				Default:             stringdefault.StaticString("UTC"),
+				DeprecationMessage:  "default_time_zone has no effect on how DATE/TIMESTAMP values without time zone are interpreted. Use source_time_zone instead.",
+				MarkdownDescription: "Deprecated: has no effect. Use `source_time_zone` instead.",
+				Validators: []validator.String{
+					stringvalidator.UTF8LengthAtLeast(1),
+				},
+			},
+			"source_time_zone": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Timezone (IANA format, e.g., 'Asia/Tokyo') used to interpret DATE/TIMESTAMP columns without timezone information. If omitted, the timezone of the machine running the transfer is used.",
 				Validators: []validator.String{
 					stringvalidator.UTF8LengthAtLeast(1),
 				},
