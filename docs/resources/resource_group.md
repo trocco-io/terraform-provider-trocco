@@ -71,6 +71,6 @@ import {
 Using the [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import):
 
 ```shell
-terraform import trocco_resource.import_resource_group <resource_group_id>
+terraform import trocco_resource_group.example <resource_group_id>
 ```
 
