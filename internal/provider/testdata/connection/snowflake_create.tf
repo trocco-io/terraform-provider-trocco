@@ -6,4 +6,5 @@ resource "trocco_connection" "snowflake_test" {
   host      = "example.snowflakecomputing.com"
   user_name = "root"
   password  = "password"
+  driver    = "snowflake_jdbc_4_4_1"
 }

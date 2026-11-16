@@ -6,6 +6,7 @@ resource "trocco_connection" "snowflake_transition" {
   host        = "example.snowflakecomputing.com"
   user_name   = "root"
   private_key = "-----BEGIN PRIVATE KEY-----\ndummy\n-----END PRIVATE KEY-----\n"
+  driver      = "snowflake_jdbc_4_4_1"
 }
 
 resource "trocco_notification_destination" "transition_slack" {

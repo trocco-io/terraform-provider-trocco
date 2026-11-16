@@ -136,6 +136,7 @@ func testAccConnectionResourceSnowflake(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "connection_type", "snowflake"),
 					resource.TestCheckResourceAttr(resourceName, "name", "snowflake test"),
+					resource.TestCheckResourceAttr(resourceName, "driver", "snowflake_jdbc_4_4_1"),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 				),
 			},
@@ -487,7 +488,12 @@ func TestInvalidDriver(t *testing.T) {
 		{
 			name:        "mismatch_driver_snowflake",
 			configFile:  "testdata/connection/mismatch_driver_snowflake.tf",
-			expectError: "are: snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0",
+			expectError: `are:\s+snowflake_jdbc_3_14_2,\s+snowflake_jdbc_3_17_0,\s+snowflake_jdbc_3_24_2,\s+snowflake_jdbc_4_4_1`,
+		},
+		{
+			name:        "missing_driver_snowflake",
+			configFile:  "testdata/connection/missing_driver_snowflake.tf",
+			expectError: `driver\s+is\s+required\s+for\s+Snowflake\s+connection`,
 		},
 		{
 			name:        "mismatch_driver_oracle",
@@ -920,7 +926,7 @@ func testAccConnectionResourceOracleDriverRequired(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				// Unlike MySQL/Snowflake, the Oracle backend fills in a default
+				// Unlike MySQL, the Oracle backend fills in a default
 				// driver when none is sent, which would otherwise produce an
 				// inconsistent result after apply. driver must be required
 				// at plan time for Oracle, same as PostgreSQL.

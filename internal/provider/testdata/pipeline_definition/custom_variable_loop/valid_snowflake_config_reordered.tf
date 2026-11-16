@@ -47,6 +47,7 @@ resource "trocco_connection" "snowflake_conn" {
   host      = "example.snowflakecomputing.com"
   user_name = "root"
   password  = "password"
+  driver    = "snowflake_jdbc_4_4_1"
 }
 
 resource "trocco_pipeline_definition" "trocco_bigquery_datamart" {

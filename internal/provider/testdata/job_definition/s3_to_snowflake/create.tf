@@ -19,6 +19,7 @@ resource "trocco_connection" "snowflake" {
   auth_method = "user_password"
   user_name   = "dummy_name"
   password    = "dummy_password"
+  driver      = "snowflake_jdbc_4_4_1"
 }
 
 
