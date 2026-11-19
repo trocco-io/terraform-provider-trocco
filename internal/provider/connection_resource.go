@@ -847,7 +847,7 @@ func (r *connectionResource) Schema(
 			"driver": schema.StringAttribute{
 				MarkdownDescription: `Snowflake, MySQL, PostgreSQL, SQL Server, Oracle: The name of a Database driver.
   - MySQL: null, mysql_connector_java_5_1_49
-  - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
+  - Snowflake: snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0, snowflake_jdbc_3_24_2, snowflake_jdbc_4_4_1 (required for Snowflake)
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
   - SQL Server: ms_sqlserver_jdbc_driver_8_2, ms_sqlserver_jdbc_driver_12_6, ms_sqlserver_jdbc_driver_13_4, jtds_driver_1_3_1
   - Oracle: 12c-ojdbc7.jar, 19c-ojdbc8.jar, 26ai-ojdbc8.jar (required for Oracle)
@@ -860,6 +860,8 @@ func (r *connectionResource) Schema(
 						// Snowflake
 						"snowflake_jdbc_3_14_2",
 						"snowflake_jdbc_3_17_0",
+						"snowflake_jdbc_3_24_2",
+						"snowflake_jdbc_4_4_1",
 						// PostgreSQL
 						"postgresql_42_5_1",
 						"postgresql_9_4_1205_jdbc41",
@@ -1724,7 +1726,8 @@ func (r *connectionResource) ValidateConfig(
 		if plan.AuthMethod.ValueString() == "user_password" {
 			validateRequiredString(plan.Password, "password", "Snowflake", resp)
 		}
-		validateStringAgainstPatterns(plan.Driver, "driver", "Snowflake", resp, "snowflake_jdbc_3_14_2", "snowflake_jdbc_3_17_0")
+		validateRequiredString(plan.Driver, "driver", "Snowflake", resp)
+		validateStringAgainstPatterns(plan.Driver, "driver", "Snowflake", resp, "snowflake_jdbc_3_14_2", "snowflake_jdbc_3_17_0", "snowflake_jdbc_3_24_2", "snowflake_jdbc_4_4_1")
 	case "gcs":
 		validateRequiredString(plan.ApplicationName, "application_name", "GCS", resp)
 		validateRequiredString(plan.ServiceAccountEmail, "service_account_email", "GCS", resp)

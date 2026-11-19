@@ -69,6 +69,7 @@ resource "trocco_connection" "snowflake" {
   auth_method = "user_password"
   user_name   = "<User Name>"
   password    = "<Password>"
+  driver      = "snowflake_jdbc_4_4_1"
 }
 ```
 
@@ -426,7 +427,7 @@ resource "trocco_connection" "custom_connector_oauth2" {
 - `domain` (String) Kintone: Domain.
 - `driver` (String) Snowflake, MySQL, PostgreSQL, SQL Server, Oracle: The name of a Database driver.
   - MySQL: null, mysql_connector_java_5_1_49
-  - Snowflake: null, snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0,
+  - Snowflake: snowflake_jdbc_3_14_2, snowflake_jdbc_3_17_0, snowflake_jdbc_3_24_2, snowflake_jdbc_4_4_1 (required for Snowflake)
   - PostgreSQL: postgresql_42_5_1, postgresql_9_4_1205_jdbc41
   - SQL Server: ms_sqlserver_jdbc_driver_8_2, ms_sqlserver_jdbc_driver_12_6, ms_sqlserver_jdbc_driver_13_4, jtds_driver_1_3_1
   - Oracle: 12c-ojdbc7.jar, 19c-ojdbc8.jar, 26ai-ojdbc8.jar (required for Oracle)
