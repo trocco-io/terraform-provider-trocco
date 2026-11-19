@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"terraform-provider-trocco/internal/client/parameter"
 	notificationDestinationParameters "terraform-provider-trocco/internal/client/parameter/notification_destination"
 	"testing"
 
@@ -261,7 +262,7 @@ func TestCreateNotificationDestinationHTTP(t *testing.T) {
 		HTTPConfig: &notificationDestinationParameters.HTTPConfigInput{
 			Name:        lo.ToPtr("my-webhook"),
 			URL:         lo.ToPtr("https://example.com/webhook"),
-			Description: lo.ToPtr("desc"),
+			Description: &parameter.NullableString{Value: "desc", Valid: true},
 			Headers:     &[]notificationDestinationParameters.HTTPKeyValueInput{{Key: "Authorization", Value: "Bearer xxx", Masking: true}},
 			QueryParams: &[]notificationDestinationParameters.HTTPKeyValueInput{},
 		},
@@ -281,10 +282,10 @@ func TestUpdateNotificationDestinationHTTP(t *testing.T) {
 
 		body, err := io.ReadAll(r.Body)
 		assert.NoError(t, err)
-		assert.JSONEq(t, `{"http_config":{"name":"renamed","url":"https://example.com/webhook/v2","description":"","headers":[],"query_params":[{"key":"token","value":"yyy","masking":false}]}}`, string(body))
+		assert.JSONEq(t, `{"http_config":{"name":"renamed","url":"https://example.com/webhook/v2","description":null,"headers":[],"query_params":[{"key":"token","value":"yyy","masking":false}]}}`, string(body))
 
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"id":3,"type":"http","name":"renamed","url":"https://example.com/webhook/v2","description":"","headers":[],"query_params":[{"id":21,"key":"token","value":"yyy","masking":false}]}`))
+		_, _ = w.Write([]byte(`{"id":3,"type":"http","name":"renamed","url":"https://example.com/webhook/v2","description":null,"headers":[],"query_params":[{"id":21,"key":"token","value":"yyy","masking":false}]}`))
 	}))
 	defer s.Close()
 
@@ -294,7 +295,7 @@ func TestUpdateNotificationDestinationHTTP(t *testing.T) {
 		HTTPConfig: &notificationDestinationParameters.HTTPConfigInput{
 			Name:        lo.ToPtr("renamed"),
 			URL:         lo.ToPtr("https://example.com/webhook/v2"),
-			Description: lo.ToPtr(""),
+			Description: &parameter.NullableString{},
 			Headers:     &[]notificationDestinationParameters.HTTPKeyValueInput{},
 			QueryParams: &[]notificationDestinationParameters.HTTPKeyValueInput{{Key: "token", Value: "yyy", Masking: false}},
 		},
