@@ -25,6 +25,7 @@ type SQLServerInputOption struct {
 	ConnectTimeout            types.Int64  `tfsdk:"connect_timeout"`
 	SocketTimeout             types.Int64  `tfsdk:"socket_timeout"`
 	DefaultTimeZone           types.String `tfsdk:"default_time_zone"`
+	SourceTimeZone            types.String `tfsdk:"source_time_zone"`
 	InputOptionColumns        types.List   `tfsdk:"input_option_columns"`
 	CustomVariableSettings    types.List   `tfsdk:"custom_variable_settings"`
 	InputOptionColumnOptions  types.List   `tfsdk:"input_option_column_options"`
@@ -42,9 +43,20 @@ func (SQLServerInputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewSQLServerInputOption(ctx context.Context, sqlserverInputOption *inputOptionEntities.SQLServerInputOption) *SQLServerInputOption {
+func NewSQLServerInputOption(ctx context.Context, sqlserverInputOption *inputOptionEntities.SQLServerInputOption, previous *SQLServerInputOption) *SQLServerInputOption {
 	if sqlserverInputOption == nil {
 		return nil
+	}
+
+	// default_time_zone is deprecated and no longer interpreted by the transfer
+	// plugin. Terraform stops managing it going forward (ToInput/ToUpdateInput no
+	// longer send it), so its value is carried forward from the prior state/plan
+	// rather than read from the API response, to avoid a plan diff on existing
+	// configs that still set it (mirrors how write-only/API-omitted values are
+	// handled elsewhere, e.g. HttpInputOption).
+	defaultTimeZone := types.StringNull()
+	if previous != nil {
+		defaultTimeZone = previous.DefaultTimeZone
 	}
 
 	result := &SQLServerInputOption{
@@ -58,7 +70,8 @@ func NewSQLServerInputOption(ctx context.Context, sqlserverInputOption *inputOpt
 		FetchRows:                 types.Int64Value(sqlserverInputOption.FetchRows),
 		ConnectTimeout:            types.Int64Value(sqlserverInputOption.ConnectTimeout),
 		SocketTimeout:             types.Int64Value(sqlserverInputOption.SocketTimeout),
-		DefaultTimeZone:           types.StringValue(sqlserverInputOption.DefaultTimeZone),
+		DefaultTimeZone:           defaultTimeZone,
+		SourceTimeZone:            types.StringPointerValue(sqlserverInputOption.SourceTimeZone),
 		SQLServerConnectionID:     types.Int64Value(sqlserverInputOption.SQLServerConnectionID),
 	}
 
@@ -144,7 +157,7 @@ func (sqlserverInputOption *SQLServerInputOption) ToInput(ctx context.Context) *
 		FetchRows:                 model.NewNullableInt64(sqlserverInputOption.FetchRows),
 		ConnectTimeout:            model.NewNullableInt64(sqlserverInputOption.ConnectTimeout),
 		SocketTimeout:             model.NewNullableInt64(sqlserverInputOption.SocketTimeout),
-		DefaultTimeZone:           model.NewNullableString(sqlserverInputOption.DefaultTimeZone),
+		SourceTimeZone:            model.NewNullableString(sqlserverInputOption.SourceTimeZone),
 		SQLServerConnectionID:     sqlserverInputOption.SQLServerConnectionID.ValueInt64(),
 		InputOptionColumns:        toSQLServerInputOptionColumnsInput(columnValues),
 		InputOptionColumnOptions:  model.WrapObjectList(toInputOptionColumnOptions(columnOptions)),
@@ -186,7 +199,7 @@ func (sqlserverInputOption *SQLServerInputOption) ToUpdateInput(ctx context.Cont
 		FetchRows:                 model.NewNullableInt64(sqlserverInputOption.FetchRows),
 		ConnectTimeout:            model.NewNullableInt64(sqlserverInputOption.ConnectTimeout),
 		SocketTimeout:             model.NewNullableInt64(sqlserverInputOption.SocketTimeout),
-		DefaultTimeZone:           model.NewNullableString(sqlserverInputOption.DefaultTimeZone),
+		SourceTimeZone:            model.NewNullableString(sqlserverInputOption.SourceTimeZone),
 		SQLServerConnectionID:     sqlserverInputOption.SQLServerConnectionID.ValueInt64Pointer(),
 		InputOptionColumns:        toSQLServerInputOptionColumnsInput(columnValues),
 		InputOptionColumnOptions:  model.WrapObjectList(toInputOptionColumnOptions(columnOptions)),

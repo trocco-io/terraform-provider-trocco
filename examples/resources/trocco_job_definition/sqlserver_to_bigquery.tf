@@ -32,7 +32,7 @@ resource "trocco_job_definition" "sqlserver_to_bigquery_example" {
       connect_timeout             = 300
       socket_timeout              = 1800
       fetch_rows                  = 10000
-      default_time_zone           = "UTC"
+      source_time_zone            = "UTC"
       input_option_columns = [
         {
           name = "id"

@@ -9,7 +9,7 @@ resource "trocco_job_definition" "sqlserver_input_example" {
       connect_timeout             = 300
       socket_timeout              = 1801
       fetch_rows                  = 1000
-      default_time_zone           = "Asia/Tokyo"
+      source_time_zone            = "Asia/Tokyo" # replaces default_time_zone, which had no effect
       query                       = <<-EOT
         select
             *

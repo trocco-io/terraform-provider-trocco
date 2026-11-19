@@ -14,7 +14,7 @@ type SQLServerInputOption struct {
 	FetchRows                 int64                           `json:"fetch_rows"`
 	ConnectTimeout            int64                           `json:"connect_timeout"`
 	SocketTimeout             int64                           `json:"socket_timeout"`
-	DefaultTimeZone           string                          `json:"default_time_zone"`
+	SourceTimeZone            *string                         `json:"source_time_zone"`
 	InputOptionColumns        []SQLServerInputOptionColumn    `json:"input_option_columns"`
 	CustomVariableSettings    *[]entity.CustomVariableSetting `json:"custom_variable_settings"`
 	InputOptionColumnOptions  []InputOptionColumnOptions      `json:"input_option_column_options"`

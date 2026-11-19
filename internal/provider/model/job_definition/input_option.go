@@ -49,6 +49,12 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 	httpInputOption, diags := inputOptionModel.NewHttpInputOption(ctx, inputOption.HttpInputOption, previousHttpInputOption)
 	customConnectorInputOption, d := inputOptionModel.NewCustomConnectorInputOption(ctx, inputOption.CustomConnectorInputOption)
 	diags.Append(d...)
+
+	var previousSQLServerInputOption *inputOptionModel.SQLServerInputOption
+	if previous != nil {
+		previousSQLServerInputOption = previous.SQLServerInputOption
+	}
+
 	return &InputOption{
 		GcsInputOption:                 inputOptionModel.NewGcsInputOption(ctx, inputOption.GcsInputOption),
 		MySQLInputOption:               inputOptionModel.NewMysqlInputOption(ctx, inputOption.MySQLInputOption),
@@ -58,7 +64,7 @@ func NewInputOption(ctx context.Context, inputOption client.InputOption, previou
 		S3InputOption:                  inputOptionModel.NewS3InputOption(ctx, inputOption.S3InputOption),
 		BigqueryInputOption:            inputOptionModel.NewBigqueryInputOption(ctx, inputOption.BigqueryInputOption),
 		PostgreSQLInputOption:          inputOptionModel.NewPostgreSQLInputOption(ctx, inputOption.PostgreSQLInputOption),
-		SQLServerInputOption:           inputOptionModel.NewSQLServerInputOption(ctx, inputOption.SQLServerInputOption),
+		SQLServerInputOption:           inputOptionModel.NewSQLServerInputOption(ctx, inputOption.SQLServerInputOption, previousSQLServerInputOption),
 		GoogleAnalytics4InputOption:    inputOptionModel.NewGoogleAnalytics4InputOption(ctx, inputOption.GoogleAnalytics4InputOption),
 		HttpInputOption:                httpInputOption,
 		KintoneInputOption:             inputOptionModel.NewKintoneInputOption(ctx, inputOption.KintoneInputOption),
