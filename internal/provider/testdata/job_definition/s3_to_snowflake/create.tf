@@ -98,7 +98,12 @@ resource "trocco_job_definition" "s3_test" {
         stop_on_invalid_record  = true
         trim_if_not_quoted      = false
       }
-      decompression_type          = "default"
+      decompression_type = "gzip"
+      # TROCCO creates a decoder for gzip/bzip2, so `decoder` must be declared
+      # explicitly to keep the plan and the applied state consistent.
+      decoder = {
+        match_name = ""
+      }
       incremental_loading_enabled = false
       is_skip_header_line         = false
       path_match_pattern          = ""
