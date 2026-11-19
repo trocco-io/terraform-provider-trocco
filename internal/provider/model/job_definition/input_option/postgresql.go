@@ -25,6 +25,7 @@ type PostgreSQLInputOption struct {
 	ConnectTimeout            types.Int64  `tfsdk:"connect_timeout"`
 	SocketTimeout             types.Int64  `tfsdk:"socket_timeout"`
 	DefaultTimeZone           types.String `tfsdk:"default_time_zone"`
+	SourceTimeZone            types.String `tfsdk:"source_time_zone"`
 	InputOptionColumns        types.List   `tfsdk:"input_option_columns"`
 	CustomVariableSettings    types.List   `tfsdk:"custom_variable_settings"`
 	InputOptionColumnOptions  types.List   `tfsdk:"input_option_column_options"`
@@ -54,9 +55,17 @@ func (PostgreSQLInputOptionColumn) attrTypes() map[string]attr.Type {
 	}
 }
 
-func NewPostgreSQLInputOption(ctx context.Context, postgresqlInputOption *inputOptionEntities.PostgreSQLInputOption) *PostgreSQLInputOption {
+func NewPostgreSQLInputOption(ctx context.Context, postgresqlInputOption *inputOptionEntities.PostgreSQLInputOption, previous *PostgreSQLInputOption) *PostgreSQLInputOption {
 	if postgresqlInputOption == nil {
 		return nil
+	}
+
+	// default_time_zone is deprecated and has no effect; the Public API no longer accepts or
+	// returns it, so its value is carried forward from the prior state/plan instead of the API
+	// response (mirrors how write-only/API-omitted values are handled elsewhere, e.g. HttpInputOption).
+	defaultTimeZone := types.StringNull()
+	if previous != nil {
+		defaultTimeZone = previous.DefaultTimeZone
 	}
 
 	result := &PostgreSQLInputOption{
@@ -70,7 +79,8 @@ func NewPostgreSQLInputOption(ctx context.Context, postgresqlInputOption *inputO
 		FetchRows:                 types.Int64Value(postgresqlInputOption.FetchRows),
 		ConnectTimeout:            types.Int64Value(postgresqlInputOption.ConnectTimeout),
 		SocketTimeout:             types.Int64Value(postgresqlInputOption.SocketTimeout),
-		DefaultTimeZone:           types.StringValue(postgresqlInputOption.DefaultTimeZone),
+		DefaultTimeZone:           defaultTimeZone,
+		SourceTimeZone:            types.StringPointerValue(postgresqlInputOption.SourceTimeZone),
 		PostgreSQLConnectionID:    types.Int64Value(postgresqlInputOption.PostgreSQLConnectionID),
 	}
 
@@ -183,7 +193,7 @@ func (postgresqlInputOption *PostgreSQLInputOption) ToInput(ctx context.Context)
 		FetchRows:                 model.NewNullableInt64(postgresqlInputOption.FetchRows),
 		ConnectTimeout:            model.NewNullableInt64(postgresqlInputOption.ConnectTimeout),
 		SocketTimeout:             model.NewNullableInt64(postgresqlInputOption.SocketTimeout),
-		DefaultTimeZone:           model.NewNullableString(postgresqlInputOption.DefaultTimeZone),
+		SourceTimeZone:            model.NewNullableString(postgresqlInputOption.SourceTimeZone),
 		PostgreSQLConnectionID:    postgresqlInputOption.PostgreSQLConnectionID.ValueInt64(),
 		InputOptionColumns:        toPostgresqlInputOptionColumnsInput(columnOptionValues),
 		InputOptionColumnOptions:  model.WrapObjectList(toInputOptionColumnOptions(columnOptions)),
@@ -237,7 +247,7 @@ func (postgresqlInputOption *PostgreSQLInputOption) ToUpdateInput(ctx context.Co
 		FetchRows:                 model.NewNullableInt64(postgresqlInputOption.FetchRows),
 		ConnectTimeout:            model.NewNullableInt64(postgresqlInputOption.ConnectTimeout),
 		SocketTimeout:             model.NewNullableInt64(postgresqlInputOption.SocketTimeout),
-		DefaultTimeZone:           model.NewNullableString(postgresqlInputOption.DefaultTimeZone),
+		SourceTimeZone:            model.NewNullableString(postgresqlInputOption.SourceTimeZone),
 		PostgreSQLConnectionID:    postgresqlInputOption.PostgreSQLConnectionID.ValueInt64Pointer(),
 		InputOptionColumns:        toPostgresqlInputOptionColumnsInput(columnOptionValues),
 		InputOptionColumnOptions:  model.WrapObjectList(toInputOptionColumnOptions(columnOptions)),
