@@ -5,6 +5,8 @@ on:
 
 jobs:
   pinact:
+    # This job must run only on the private (development) repository.
+    if: github.repository == 'primenumber-dev/terraform-provider-trocco'
     runs-on: ubuntu-24.04
     permissions:
       contents: read

@@ -20,6 +20,8 @@ jobs:
   # Ensure project builds before running testing matrix
   build:
     name: Build
+    # This job must run only on the private (development) repository.
+    if: github.repository == 'primenumber-dev/terraform-provider-trocco'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -43,6 +45,8 @@ jobs:
             (echo; echo "Unexpected difference in Terraform formatting. Run 'terraform fmt -recursive .' command and commit."; exit 1)
 
   generate:
+    # This job must run only on the private (development) repository.
+    if: github.repository == 'primenumber-dev/terraform-provider-trocco'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -64,6 +68,8 @@ jobs:
 
   test:
     name: Tests
+    # This job must run only on the private (development) repository.
+    if: github.repository == 'primenumber-dev/terraform-provider-trocco'
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15
